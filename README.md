@@ -11,9 +11,7 @@ I wrote a lot of code for this a year ago here: https://github.com/milena-t/calc
 * [Martinez-Pacheco 2020](https://academic.oup.com/gbe/article/12/11/2015/5892261) 
   * double check y linked gene presence by `blastn` against the assembly.
   * *"the best BlastN match (usually around 92–95% identity over the entire sequence) onto the annotated X chromosome of the reference genomes was considered the X gametologs"*
-  * If the X gametolog is missing in the annotation, the sequene from the transcriptome was used instead
   * [Marques 2005](https://journals.plos.org/plosbiology/article?id=10.1371/journal.pbio.0030357) for identifying retrogenes. blast proteins against assembly, merge nearby matches, *"query and target sequences had >50% similarity on the amino acid level and over >80% of their length* \[are\] *shared"*, verify absence of introns. with some `paml` stuff, they identified the ancestral gametolog that all retrogenes originate from (useful for FastX?)
-* [Peneder 2017](https://onlinelibrary.wiley.com/doi/full/10.1002/ece3.3278)
 * **[Whittle 2020](https://academic.oup.com/g3journal/article/10/3/1125/6026234): no FastX in beetles**
 * [Mank 2009](https://academic.oup.com/mbe/article/27/3/661/1000994?login=true) Faster-Z in birds is mainly due to drift
   * Positive selection would be fixation of recessive male-biased mutations
