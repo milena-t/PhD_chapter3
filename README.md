@@ -9,6 +9,7 @@ I wrote a lot of code for this a year ago here: https://github.com/milena-t/calc
 ### Species selection
 
 * Include *Tribolium castaneum* and *Tribolium freemani* because of Whittle2020, T. freemani assembly [here](https://www.ebi.ac.uk/ena/browser/view/GCA_022388455.1)
+* include *Coccinella magnifica* (darwin tree of life project, [here](https://www.ebi.ac.uk/ena/browser/view/GCA_965644565.1?show=chromosomes)) as sister species to *Coccinella septempunctata*
 
 ### Methods
 
