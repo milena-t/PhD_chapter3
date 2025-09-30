@@ -6,10 +6,15 @@ I wrote a lot of code for this a year ago here: https://github.com/milena-t/calc
 
 ## Notes
 
+DTOL open data release policy [here](https://www.darwintreeoflife.org/wp-content/uploads/2024/10/DToL-Open-Data-Release-Policy.docx_.pdf)
+
 ### Species selection
 
-* Include *Tribolium castaneum* and *Tribolium freemani* because of Whittle2020, T. freemani assembly [here](https://www.ebi.ac.uk/ena/browser/view/GCA_022388455.1)
-* include *Coccinella magnifica* (darwin tree of life project, [here](https://www.ebi.ac.uk/ena/browser/view/GCA_965644565.1?show=chromosomes)) as sister species to *Coccinella septempunctata*
+* Include *Tribolium freemani* as a sister species to *T. castaneum* because of Whittle2020, T. freemani assembly [here](https://www.ebi.ac.uk/ena/browser/view/GCA_022388455.1)
+  * no annotation available
+* include *Coccinella magnifica* (darwin tree of life project, [here](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/965/644/565/GCA_965644565.1_icCocMagn1.hap1.1/)) as sister species to *Coccinella septempunctata*
+  * no annotation available
+  * Timetree says that they are "tne same species" so unclear what that means for their phylogenetic distance
 
 ### Methods
 
