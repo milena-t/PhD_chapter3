@@ -2,7 +2,7 @@
 #SBATCH -A uppmax2025-2-148
 #SBATCH -p core
 #SBATCH -n 20
-#SBATCH -t 5:00:00
+#SBATCH -t 1-10:00:00
 #SBATCH -J repeatmasking
 #SBATCH -M rackham
 #SBATCH -o repeatmasking.log
