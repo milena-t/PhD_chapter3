@@ -3,9 +3,9 @@
 #SBATCH -p core
 #SBATCH -n 20
 #SBATCH -t 1-10:00:00
-#SBATCH -J repeatmasking
+#SBATCH -J repeatmasking_Cmag
 #SBATCH -M rackham
-#SBATCH -o repeatmasking.log
+#SBATCH -o repeatmasking_Cmag.log
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user milena.trabert@ebc.uu.se
 
