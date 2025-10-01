@@ -11,7 +11,7 @@ DTOL open data release policy [here](https://www.darwintreeoflife.org/wp-content
 ### Species selection
 
 * Include *Tribolium freemani* as a sister species to *T. castaneum* because of Whittle2020, T. freemani assembly [here](https://www.ebi.ac.uk/ena/browser/view/GCA_022388455.1)
-  * no annotation available
+  * no annotation available -> but RNAseq so I am annotating it myself from scratch
 * include *Coccinella magnifica* (darwin tree of life project, [here](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/965/644/565/GCA_965644565.1_icCocMagn1.hap1.1/)) as sister species to *Coccinella septempunctata*
   * no annotation available
   * Timetree says that they are "tne same species" so unclear what that means for their phylogenetic distance
