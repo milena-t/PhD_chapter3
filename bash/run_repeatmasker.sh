@@ -2,7 +2,7 @@
 #SBATCH -A uppmax2025-2-148
 #SBATCH -p core
 #SBATCH -n 20
-#SBATCH -t 1-10:00:00
+#SBATCH -t 2-00:00:00
 #SBATCH -J repeatmasking_Cmag
 #SBATCH -M rackham
 #SBATCH -o repeatmasking_Cmag.log
@@ -60,7 +60,7 @@ else
   mkdir -p "$LIBRARIES_DIR"
   BuildDatabase -name "${LIBRARIES_DIR}/${SPECIES_IDENT}_repeats" $ASSEMBLY  # this takes like 15 mins for Cmac
   echo "=====================> build database done"
-  RepeatModeler -database "${LIBRARIES_DIR}/${SPECIES_IDENT}_repeats" -threads 20 -LTRStruct  # this takes over a day for Cmac
+  RepeatModeler -database "${LIBRARIES_DIR}/${SPECIES_IDENT}_repeats" -threads 20 -LTRStruct -recoverDir /proj/snic2021-6-30/Milena/chapter3/repeat_libraries/RM_17427.TueSep301323112025  # this takes over a day for Cmac
   echo "=====================> repeatmodeller done"
 fi
 
