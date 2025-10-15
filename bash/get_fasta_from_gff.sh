@@ -21,7 +21,7 @@ ASS_TFRE=/proj/naiss2023-6-65/Milena/chapter3/species_annotations/Tfre_GCA_02238
 for ANNOT_DIR in ${TOP_ANDIR}/C_magnifica ${TOP_ANDIR}/T_freemani
 do 
     cd $ANNOT_DIR
-    ANNOT_GTF="/braker/braker.gtf"
+    ANNOT_GTF="braker/braker.gtf"
     FILTERED_GTF="${ANNOT_GTF%.*}_isoform_filtered.gff" # originally gtf but keep_longest_isoform.pl automatically returns gff version 3 
     ANNOT_TRANSCRIPTS=isoform_filtered_transcripts.fna
     ANNOT_PROTEINS=isoform_filtered_proteins.faa
