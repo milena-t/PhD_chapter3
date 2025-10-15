@@ -25,7 +25,7 @@ W_DIR=$(pwd)
 # ANNOT_DIRS=/proj/naiss2023-6-65/Milena/gene_family_analysis/native_annotations_gff/*gff
 ANNOT_DIR=/proj/naiss2023-6-65/Milena/chapter3/species_assemblies/
 
-for ANNOT_GTF in ${ANNOT_DIR}C_magnifica/braker ${ANNOT_DIR}T_freemani/braker
+for ANNOT_GTF in ${ANNOT_DIR}C_magnifica/braker/braker.gtf ${ANNOT_DIR}T_freemani/braker/braker.gtf
 do 
     echo $ANNOT_GTF
     FILTERED_GTF="${ANNOT_GTF%.*}_isoform_filtered.gff" # originally gtf but keep_longest_isoform.pl automatically returns gff version 3 
