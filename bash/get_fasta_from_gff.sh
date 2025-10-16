@@ -14,7 +14,7 @@
 
 module load bioinfo-tools gffread/0.12.7 samtools/1.20 emboss/6.6.0
 
-TOP_ANDIR=/proj/naiss2023-6-65/Milena/chapter3/species_annotations
+TOP_ANDIR=/proj/naiss2023-6-65/Milena/chapter3/species_assemblies
 ASS_CMAG=/proj/naiss2023-6-65/Milena/chapter3/species_annotations/Cmag_GCA_965644565.1.fasta.masked
 ASS_TFRE=/proj/naiss2023-6-65/Milena/chapter3/species_annotations/Tfre_GCA_022388455.1.fasta.masked
 
