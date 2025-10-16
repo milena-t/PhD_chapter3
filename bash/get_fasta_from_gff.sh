@@ -18,7 +18,7 @@ TOP_ANDIR=/proj/naiss2023-6-65/Milena/chapter3/species_annotations
 ASS_CMAG=/proj/naiss2023-6-65/Milena/chapter3/species_annotations/Cmag_GCA_965644565.1.fasta.masked
 ASS_TFRE=/proj/naiss2023-6-65/Milena/chapter3/species_annotations/Tfre_GCA_022388455.1.fasta.masked
 
-for ANNOT_DIR in ${TOP_ANDIR}/C_magnifica ${TOP_ANDIR}/T_freemani
+for ANNOT_DIR in ${TOP_ANDIR}/T_freemani #${TOP_ANDIR}/C_magnifica
 do 
     cd $ANNOT_DIR
     ANNOT_GTF="braker/braker.gtf"
