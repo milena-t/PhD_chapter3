@@ -39,7 +39,7 @@ do
     #sed -i 's/|/_/g' $ASSEMBLY
 
     echo $(pwd)
-    echo $ASSEMBLY
+    echo $(ll $ASSEMBLY)
 
     SPECIES_NAME=$(basename "$ANNOT_DIR")
     echo $SPECIES_NAME
