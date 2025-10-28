@@ -8,6 +8,7 @@
 #SBATCH --mail-user milena.trabert@ebc.uu.se
 
 # Bioinfo tools not needed on pelle
+module load bioinfo-tools java/OpenJDK_24+36
 
 cd /proj/naiss2023-6-65/Milena/chapter3/MCScanX-1_0_0/downstream_analyses
 
