@@ -1,0 +1,4 @@
+1000	//dimension (in pixels) of the x-axis
+1500	//dimension (in pixels) of the y-axis
+mc1,mc10,mc11,mc12,mc13,mc14,mc15,mc16,mc17,mc18,mc19,mc2,mc20,mc21,mc22,mc23,mc24,mc25,mc26,mc27,mc28,mc29,mc3,mc30,mc31,mc32,mc33,mc34,mc35,mc36,mc37,mc38,mc39,mc4,mc40,mc41,mc42,mc43,mc44,mc45,mc46,mc47,mc48,mc49,mc5,mc50,mc51,mc52,mc53,mc54,mc55,mc56,mc57,mc58,mc59,mc6,mc60,mc61,mc62,mc63,mc64,mc65,mc66,mc67,mc68,mc69,mc7,mc70,mc71,mc72,mc73,mc74,mc75,mc76,mc77,mc78,mc79,mc8,mc80,mc81,mc82,mc83,mc84,mc85,mc86,mc87,mc88,mc89,mc9,mc90,mc91	//chromosomes in x-axis
+cs10,cs11,cs13,cs14,cs15,cs16,cs17,cs2,cs20,cs22,cs23,cs3,cs6,cs7,cs8,cs9	//chromosomes in y-axis
