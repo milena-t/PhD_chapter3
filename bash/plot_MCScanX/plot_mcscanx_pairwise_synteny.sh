@@ -15,7 +15,7 @@ cd /proj/naiss2023-6-65/Milena/chapter2/MCScanX-1_0_0/downstream_analyses
 java dual_synteny_plotter \
     -g /proj/naiss2023-6-65/Milena/chapter3/MCScanX/all_species/all_species.gff \
     -s /proj/naiss2023-6-65/Milena/chapter3/MCScanX/all_species/all_species.collinearity \
-    -c /Users/miltr339/work/PhD_code/PhD_chapter3/bash/plot_MCScanX/plot_ctl_Tcas_Tfre.ctl \
+    -c /proj/naiss2023-6-65/Milena/chapter3/bash/plot_MCScanX/plot_ctl_Tcas_Tfre.ctl \
     -o /proj/naiss2023-6-65/Milena/chapter3/MCScanX/plots/plot_ctl_Tcas_Tfre.png
 
 echo "--> done Tcas Tfre"
@@ -23,7 +23,7 @@ echo "--> done Tcas Tfre"
 java dual_synteny_plotter \
     -g /proj/naiss2023-6-65/Milena/chapter3/MCScanX/all_species/all_species.gff \
     -s /proj/naiss2023-6-65/Milena/chapter3/MCScanX/all_species/all_species.collinearity \
-    -c /Users/miltr339/work/PhD_code/PhD_chapter3/bash/plot_MCScanX/plot_ctl_Csep_Cmag.ctl \
+    -c /proj/naiss2023-6-65/Milena/chapter3/bash/plot_MCScanX/plot_ctl_Csep_Cmag.ctl \
     -o /proj/naiss2023-6-65/Milena/chapter3/MCScanX/plots/plot_ctl_Csep_Cmag.png
 
 echo "--> done Csep Cmag"
