@@ -63,7 +63,7 @@ I want to look at groups of sister-species to take into account the evolutionary
 * **Bruchids**
   * *C. maculatus:* from Kaufmann et al.: 
     ```python
-    { X : ['utg000114l_1', 'utg000139l_1', 'utg000191l_1', 'utg000326l_1', 'utg000359l_1', 'utg000532l_1', 'utg000602l_1']
+    { X : ['utg 000385l_1','utg 000006l_1','utg 000025l_1','utg 000027l_1']
       Y : []}
     ``` 
   <details>
@@ -74,7 +74,7 @@ I want to look at groups of sister-species to take into account the evolutionary
       Y : []}
     ``` 
   </details>
-  
+
   * *B. siliquastri* identified by the DTOL project with the assembly
     ```python
     { X : ['X']
@@ -82,8 +82,8 @@ I want to look at groups of sister-species to take into account the evolutionary
     ``` 
   * *A. obtectus* Identified by me and Göran's project about it
     ```python
-    { X : ["HiC_scaffold_10"]
-      Y : []}
+    { X : ["HiC_scaffold_10", 'scaffold_21'] # double check assembly versions for correct scaffold names, i also have 'Chr_10' as a name
+      Y : ['scaffold_13', 'scaffold_86']} # some have HiC and some don't but that may just be manual renaming of the largest to chromosomes
     ``` 
 * **Cochinella**
   * *C. septempunctata*
