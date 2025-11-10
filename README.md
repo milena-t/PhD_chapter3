@@ -84,6 +84,12 @@ graph TD;
     XY_chr --> basicFastX
     dNdS_groups --> rearrangeA(dNdS for A depending on if A is rearranged between pairs or not)
     mcscanx_out --> rearrangeA
+
+    OG_dNdS([https://github.com/milena-t/calculate_orthogroup_dNdS])
+    gametologs --> OG_dNdS
+    basicFastX --> OG_dNdS
+    rearrangeA --> OG_dNdS
+
 ```   
 
 </details>
