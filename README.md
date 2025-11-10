@@ -81,8 +81,8 @@ graph TD;
     dNdS_groups --> basicFastX(whole-phylogeny 1-to-1 orthologs for basic FastX);
     dNdS_groups --> gametologs(dNdS for X genes depending on if they have an ancestral Y gametolog or not);
     dNdS_groups --> rearrangeA(dNdS for A depending on if A is rearranged between pairs or not)
-    XY_chr --> gametologs
     XY_chr --> basicFastX
+    XY_chr --> gametologs
     mcscanx_out --> rearrangeA
 
     OG_dNdS([https://github.com/milena-t/calculate_orthogroup_dNdS])
