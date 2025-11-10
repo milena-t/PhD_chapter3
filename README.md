@@ -62,8 +62,10 @@ graph TD;
     species_Ann --> is_filter{{bash/isoform_filter_gff.sh}};
     is_filter --> get_prot{{bash/get_fasta_from_gff.sh}};
     get_prot --> protfiles(proteinfiles of all species);
+    species_Ass --> protfiles
     protfiles --> blast{{all-against-all proteinblast}};
     blast -- merge all species --> mcscanx_blast(mcscanx blast input);
+
 
     mcscanx_bed --> run_mcscanx{{run MCScanX}};
     mcscanx_blast --> run_mcscanx
