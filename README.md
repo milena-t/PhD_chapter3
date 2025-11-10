@@ -75,8 +75,9 @@ graph TD;
     protfiles --> orthofinder{{run orthofinder}};
     
     blast --> XY_paralogs(identify species with XY gametologs with blast BRH);
-    XY_paralogs --> dNdS_groups(make orthogroups to compare dNdS);
+    dNdS_groups(make orthogroups to compare dNdS);
     orthofinder --> dNdS_groups;
+    XY_paralogs --> dNdS_groups;
 
     dNdS_groups --> basicFastX(whole-phylogeny 1-to-1 orthologs for basic FastX);
     dNdS_groups --> gametologs(dNdS for X genes depending on if they have an ancestral Y gametolog or not);
