@@ -47,8 +47,37 @@ DTOL open data release policy [here](https://www.darwintreeoflife.org/wp-content
     * Vibranovski, M. D., Zhang, Y. & Long, M. General gene movement off the X chromosome in the Drosophila genus. Genome Res. 19, 897–903
   (2009)
 
+## Workflow
 
-## Species selection
+<details>
+<summary>Flowchart for my pipeline</summary>
+
+```mermaid
+graph TD;
+    species_Ass(species assemblies);
+    species_Ass --> simplified_bed{{bash/make_bedfiles_for_MCScanX.sh}};
+    simplified_bed --> merge all species --> mcscanx_bed(mcscanx annotation input);
+    
+    species_Ann(species annotations);
+    species_Ann --> is_filter{{bash/isoform_filter_gff.sh}};
+    is_filter --> get_prot{{bash/get_fasta_from_gff.sh}};
+    get_prot --> protfiles(proteinfiles of all species);
+    get_prot --> blast{{all-against-all proteinblast}};
+    blast --> merge all species --> mcscanx_blast(mcscanx blast input);
+
+    mcscanx_bed --> run_mcscanx{{run MCScanX}};
+    mcscanx_blast --> run_mcscanx
+
+    species_Ass --> NCBI and SATC --> XY_chr(identify X and Y chromosmes);
+    protfiles --> orthofinder{{run orthofinder}};
+    orthofinder --> between_species(identify whole-phylogeny 1-to-1 orthologs);
+    
+    protfiles --> XY_paralogs(identify species with XY gametologs with blast BRH);
+```   
+
+</details>
+
+### Species selection
 
 I want to look at groups of sister-species to take into account the evolutionary distance when comparing dN/dS ratio
 
