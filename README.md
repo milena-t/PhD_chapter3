@@ -88,7 +88,7 @@ I want to look at groups of sister-species to take into account the evolutionary
   * *C. septempunctata*
     ```python
     { X : ["NC_058198.1"],
-      Y : []}
+      Y : []} # there's no Y linkage group but MT is OU015583.1
     ``` 
   * *C. magnifica*
     ```python
