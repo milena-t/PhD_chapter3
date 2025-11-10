@@ -76,11 +76,13 @@ graph TD;
     
     blast --> XY_paralogs(identify species with XY gametologs with blast BRH);
     XY_paralogs --> dNdS_groups(make orthogroups to compare dNdS);
-    orthofinder --> dNdS_groups
+    orthofinder --> dNdS_groups;
 
     dNdS_groups --> gametologs(dNdS for X genes depending on if they have an ancestral Y gametolog or not);
     XY_chr --> gametologs
     dNdS_groups --> basicFastX(whole-phylogeny 1-to-1 orthologs for basic FastX);
+    mcscanx_out --> rearrangeA(dNdS for A depending on if A is rearranged between pairs or not)
+    mcscanx_out --> rearrangeA
 ```   
 
 </details>
