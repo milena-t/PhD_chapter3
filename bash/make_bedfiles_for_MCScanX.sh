@@ -20,9 +20,21 @@ module load bioinfo-tools biopython/1.80-py3.10.8
 # echo "done C_maculatus_superscaffolded.gff"
 # python3 /proj/snic2021-6-30/Milena/chapter2/PhD_chapter2/src/make_bedfile_for_MCScanX.py /proj/naiss2023-6-65/Milena/chapter2/native_annotations/T_castaneum.gff tc
 # echo "done T_castaneum.gff"
-# python3 /proj/snic2021-6-30/Milena/chapter2/PhD_chapter2/src/make_bedfile_for_MCScanX.py /proj/naiss2023-6-65/Milena/chapter3/species_annotations/C_magnifica/braker_isoform_filtered.gff mc #unsure if it gets fucked if i have cm twice
-# echo "done C_magnifica.gff"
-# python3 /proj/snic2021-6-30/Milena/chapter2/PhD_chapter2/src/make_bedfile_for_MCScanX.py /proj/naiss2023-6-65/Milena/chapter3/species_annotations/T_freemani/braker_isoform_filtered.gff tf
-# echo "done C_freemani.gff"
-python3 /proj/snic2021-6-30/Milena/chapter2/PhD_chapter2/src/make_bedfile_for_MCScanX.py /proj/naiss2023-6-65/Milena/chapter2/native_annotations/C_septempunctata.gff cs
-echo "done C_septempunctata.gff"
+# python3 /proj/snic2021-6-30/Milena/chapter2/PhD_chapter2/src/make_bedfile_for_MCScanX.py /proj/naiss2023-6-65/Milena/chapter2/native_annotations/C_septempunctata.gff cs
+# echo "done C_septempunctata.gff"
+python3 /proj/snic2021-6-30/Milena/chapter2/PhD_chapter2/src/make_bedfile_for_MCScanX.py /proj/naiss2023-6-65/Milena/chapter3/species_annotations/C_magnifica/braker_isoform_filtered.gff mc #unsure if it gets fucked if i have cm twice
+echo "done C_magnifica.gff"
+python3 /proj/snic2021-6-30/Milena/chapter2/PhD_chapter2/src/make_bedfile_for_MCScanX.py /proj/naiss2023-6-65/Milena/chapter3/species_annotations/T_freemani/braker_isoform_filtered.gff tf
+echo "done C_freemani.gff"
+
+### merge for run
+
+cat \
+/proj/naiss2023-6-65/Milena/chapter3/species_annotations/T_freemani/braker_isoform_filtered_simplified.bed \
+/proj/naiss2023-6-65/Milena/chapter3/species_annotations/C_magnifica/braker_isoform_filtered_simplified.bed \
+/proj/naiss2023-6-65/Milena/chapter2/native_annotations/C_septempunctata_simplified.bed \
+/proj/naiss2023-6-65/Milena/chapter2/native_annotations/T_castaneum_simplified.bed \
+/proj/naiss2023-6-65/Milena/chapter2/native_annotations/C_maculatus_superscaffolded_simplified.bed \
+/proj/naiss2023-6-65/Milena/chapter2/native_annotations/C_chinensis_simplified.bed \
+/proj/naiss2023-6-65/Milena/chapter2/native_annotations/B_siliquastri_simplified.bed \
+/proj/naiss2023-6-65/Milena/chapter2/native_annotations/A_obtectus_simplified.bed > /proj/naiss2023-6-65/Milena/chapter3/MCScanX/all_species/all_species.gff
