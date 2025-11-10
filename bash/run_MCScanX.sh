@@ -2,7 +2,7 @@
 #SBATCH -A uppmax2025-2-148
 #SBATCH -n 1
 #SBATCH -p core
-#SBATCH -t 1:00:00
+#SBATCH -t 10:00:00
 #SBATCH -J run_MCScanX
 #SBATCH -o run_MCScanX.log
 #SBATCH --mail-type=ALL
