@@ -62,7 +62,7 @@ graph TD;
     species_Ann --> is_filter{{bash/isoform_filter_gff.sh}};
     is_filter --> get_prot{{bash/get_fasta_from_gff.sh}};
     get_prot --> protfiles(proteinfiles of all species);
-    get_prot --> blast{{all-against-all proteinblast}};
+    protfiles --> blast{{all-against-all proteinblast}};
     blast -- merge all species --> mcscanx_blast(mcscanx blast input);
 
     mcscanx_bed --> run_mcscanx{{run MCScanX}};
@@ -73,9 +73,14 @@ graph TD;
 
     species_Ass -- NCBI and SATC --> XY_chr(identify X and Y chromosmes);
     protfiles --> orthofinder{{run orthofinder}};
-    orthofinder --> between_species(identify whole-phylogeny 1-to-1 orthologs);
     
     protfiles --> XY_paralogs(identify species with XY gametologs with blast BRH);
+    XY_paralogs --> dNdS_groups(make orthogroups to compare dNdS);
+    orthofinder --> dNdS_groups
+
+    dNdS_groups --> basicFastX(whole-phylogeny 1-to-1 orthologs for basic FastX);
+    dNdS_groups --> gametologs(dNdS for X genes depending on if they have an ancestral Y gametolog or not);
+    XY_chr --> gametologs
 ```   
 
 </details>
