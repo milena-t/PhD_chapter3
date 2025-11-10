@@ -56,14 +56,14 @@ DTOL open data release policy [here](https://www.darwintreeoflife.org/wp-content
 graph TD;
     species_Ass(species assemblies);
     species_Ass --> simplified_bed{{bash/make_bedfiles_for_MCScanX.sh}};
-    simplified_bed --> merge all species --> mcscanx_bed(mcscanx annotation input);
+    simplified_bed --> merge_all_species --> mcscanx_bed(mcscanx annotation input);
     
     species_Ann(species annotations);
     species_Ann --> is_filter{{bash/isoform_filter_gff.sh}};
     is_filter --> get_prot{{bash/get_fasta_from_gff.sh}};
     get_prot --> protfiles(proteinfiles of all species);
     get_prot --> blast{{all-against-all proteinblast}};
-    blast --> merge all species --> mcscanx_blast(mcscanx blast input);
+    blast --> merge_all_species --> mcscanx_blast(mcscanx blast input);
 
     mcscanx_bed --> run_mcscanx{{run MCScanX}};
     mcscanx_blast --> run_mcscanx
