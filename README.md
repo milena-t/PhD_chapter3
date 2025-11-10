@@ -8,14 +8,6 @@ I wrote a lot of code for this a year ago here: https://github.com/milena-t/calc
 
 DTOL open data release policy [here](https://www.darwintreeoflife.org/wp-content/uploads/2024/10/DToL-Open-Data-Release-Policy.docx_.pdf)
 
-### Species selection
-
-* Include *Tribolium freemani* as a sister species to *T. castaneum* because of Whittle2020, T. freemani assembly [here](https://www.ebi.ac.uk/ena/browser/view/GCA_022388455.1)
-  * no annotation available -> but RNAseq so I am annotating it myself from scratch
-* include *Coccinella magnifica* (darwin tree of life project, [here](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/965/644/565/GCA_965644565.1_icCocMagn1.hap1.1/)) as sister species to *Coccinella septempunctata*
-  * no annotation available
-  * Timetree says that they are "tne same species" so unclear what that means for their phylogenetic distance
-
 ### Methods
 
 * [Martinez-Pacheco 2020](https://academic.oup.com/gbe/article/12/11/2015/5892261) 
@@ -54,3 +46,45 @@ DTOL open data release policy [here](https://www.darwintreeoflife.org/wp-content
     * Meisel, R. P., Han, M. V. & Hahn, M. W. A complex suite of forces drives gene traffic from Drosophila X chromosomes. Genome Biol. Evol. 1, 176–188 (2009).
     * Vibranovski, M. D., Zhang, Y. & Long, M. General gene movement off the X chromosome in the Drosophila genus. Genome Res. 19, 897–903
   (2009)
+
+
+## Species selection
+
+I want to look at groups of sister-species to take into account the evolutionary distance when comparing dN/dS ratio
+
+* Include *Tribolium freemani* as a sister species to *T. castaneum* because of Whittle2020, T. freemani assembly [here](https://www.ebi.ac.uk/ena/browser/view/GCA_022388455.1)
+  * no annotation available -> but RNAseq so I am annotating it myself from scratch
+* include *Coccinella magnifica* (darwin tree of life project, [here](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/965/644/565/GCA_965644565.1_icCocMagn1.hap1.1/)) as sister species to *Coccinella septempunctata*
+  * no annotation available
+  * Timetree says that they are "tne same species" so unclear what that means for their phylogenetic distance
+
+### sex chromosome identification
+
+* **Bruchids**
+  * *C. maculatus:* from Kaufmann et al.: 
+    ```python
+    { X : []
+      Y : []}
+    ``` 
+  * *C. chinensis:* identified by me
+    ```python
+    { X : []
+      Y : []}
+    ``` 
+  * *B. siliquastri* identified by the DTOL project with the assembly
+    ```python
+    { X : ['X']
+      Y : ['Y']}
+    ``` 
+  * *A. obtectus* Identified by me and Göran's project about it
+    ```python
+    { X : []
+      Y : []}
+    ``` 
+* **Cochinella**
+  * *C. septempunctata*
+  * *C. magnifica*
+* **Tribolium**
+  * *T. castaneum*
+  * *T. freemani*
+
