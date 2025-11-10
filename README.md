@@ -76,34 +76,35 @@ I want to look at groups of sister-species to take into account the evolutionary
     ```
   * *B. siliquastri* identified by the DTOL project with the assembly
     ```python
-    { X : ['X']
+    { X : ['X'],
       Y : ['Y']}
     ``` 
   * *A. obtectus* Identified by me and Göran's project about it
     ```python
-    { X : ['CAVLJG010000002.1']# ["HiC_scaffold_10", 'scaffold_21'] # double check assembly versions for correct scaffold names, i also have 'Chr_10' as a name
+    { X : ['CAVLJG010000002.1'], # ["HiC_scaffold_10", 'scaffold_21'] # double check assembly versions for correct scaffold names, i also have 'Chr_10' as a name
       Y : ['scaffold_13', 'scaffold_86']} # some have HiC and some don't but that may just be manual renaming of the largest to chromosomes
     ``` 
 * **Cochinella**
   * *C. septempunctata*
     ```python
-    { X : ["NC_058198.1"]
+    { X : ["NC_058198.1"],
       Y : []}
     ``` 
   * *C. magnifica*
     ```python
-    { X : []
-      Y : []}
+    { X : ['OZ286750.1'],
+      Y : []} # there's no Y linkage group identified but MT is OZ286751.1
     ``` 
 * **Tribolium**
+  In [Whittle 2020](https://academic.oup.com/g3journal/article/10/3/1125/6026234) the Y chromosome in *T. castaneum* was not included because "*\[it\] is small (<5MB), highly degenerate, contains few if any protein-coding genes, and is not included in the genetic linkage map; accordingly it was not studied*". Unsure how I am going to identify them, maybe I can find some WGS illumina data to do SATC?
   * *T. castaneum*
     ```python
-    { X : ["NC_087403.1"]
-      Y : []}
+    { X : ["NC_087403.1"], # linkage grounp 10
+      Y : []} # there is a linkage grounp 11 (NC_087404.1) and in the RefSeq sequence there's a MT linkage group NC_003081.2
     ``` 
   * *T. freemani*
     ```python
-    { X : []
+    { X : ['ENA_CM039461_CM039461.1_Tribolium_freemani_isolate_YK'], # according to NCBI this is linkage group X
       Y : []}
     ``` 
 
