@@ -71,7 +71,7 @@ graph TD;
     mcscanx_out --> mcscanx_plot([protein synteny plot, pairwise and riparian plot with all species])
     mcscanx_plot .-> conf_X(confirm X-chromosome identification)
 
-    species_Ass --> NCBI and SATC --> XY_chr(identify X and Y chromosmes);
+    species_Ass --> NCBI_and_SATC --> XY_chr(identify X and Y chromosmes);
     protfiles --> orthofinder{{run orthofinder}};
     orthofinder --> between_species(identify whole-phylogeny 1-to-1 orthologs);
     
