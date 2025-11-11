@@ -159,7 +159,7 @@ C:98.7%[S:72.2%,D:26.5%],F:0.6%,M:0.7%,n:1013
 
 #### Single exon genes
 
-<p float="center">
+<p float="left">
   <img src="data/annotation_evaluation/single_exon_genes_white_bg.png" width="75%" />
 </p>
 

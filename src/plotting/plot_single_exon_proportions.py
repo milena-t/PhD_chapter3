@@ -277,7 +277,7 @@ def plot_single_exon_proportion(native_numbers, species_names = [], filename = "
     fs = 35 # 37 originally
     
     width = 0.6 # (this is a fraction of the standardized 1 unit of space between axis ticks)
-    aspect_ratio = 15 / 12 # nice for a presentation
+    aspect_ratio = 15 / 10 # nice for a presentation
     ymax_factor = 1.25
 
     height_pixels = 2000  # Height in pixels
