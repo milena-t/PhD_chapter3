@@ -274,7 +274,7 @@ def plot_single_exon_proportion(native_numbers, species_names = [], filename = "
     # figure proportions according to the data included (longer or shorter)
 
     # fontsize scales with the dpi somehow which i have to do extra because i change the aspect ratio manually below
-    fs = 35 # 37 originally
+    fs = 40 # 37 originally
     
     width = 0.6 # (this is a fraction of the standardized 1 unit of space between axis ticks)
     aspect_ratio = 15 / 10 # nice for a presentation
