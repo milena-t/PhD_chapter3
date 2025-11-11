@@ -118,7 +118,7 @@ I have annotated *T. freemani* with available RNAseq data from Whittle2020, but 
 
 *C. magnifica*
 
-´´´text
+```text
 C:96.0%[S:86.6%,D:9.4%],F:0.9%,M:3.1%,n:1013	   
 972	Complete BUSCOs (C)			   
 877	Complete and single-copy BUSCOs (S)	   
@@ -126,7 +126,7 @@ C:96.0%[S:86.6%,D:9.4%],F:0.9%,M:3.1%,n:1013
 9	Fragmented BUSCOs (F)			   
 32	Missing BUSCOs (M)			   
 1013	Total BUSCO groups searched
-´´´
+```
 
 *T. freemani*
 ```text
