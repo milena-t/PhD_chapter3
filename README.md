@@ -148,6 +148,7 @@ I want to look at groups of sister-species to take into account the evolutionary
       Y : []} # there's no Y linkage group identified but MT is OZ286751.1
     ``` 
 * **Tribolium**
+  
   In [Whittle 2020](https://academic.oup.com/g3journal/article/10/3/1125/6026234) the Y chromosome in *T. castaneum* was not included because "*\[it\] is small (<5MB), highly degenerate, contains few if any protein-coding genes, and is not included in the genetic linkage map; accordingly it was not studied*". Unsure how I am going to identify them, maybe I can find some WGS illumina data to do SATC?
   * *T. castaneum*
     ```python
