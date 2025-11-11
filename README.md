@@ -116,9 +116,9 @@ I have annotated *T. freemani* with available RNAseq data from Whittle2020, but 
 <details>
 <summary>BUSCO scores</summary>
 
-*C. magnifica*
-
 ```text
+C. magnifica
+
 C:96.0%[S:86.6%,D:9.4%],F:0.9%,M:3.1%,n:1013	   
 972	Complete BUSCOs (C)			   
 877	Complete and single-copy BUSCOs (S)	   
@@ -128,9 +128,9 @@ C:96.0%[S:86.6%,D:9.4%],F:0.9%,M:3.1%,n:1013
 1013	Total BUSCO groups searched
 ```
 
-*T. freemani*
-
 ```text
+T. freemani
+
 C:96.6%[S:88.5%,D:8.1%],F:1.4%,M:2.0%,n:1013	   
 978	Complete BUSCOs (C)			   
 896	Complete and single-copy BUSCOs (S)	   
