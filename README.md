@@ -140,6 +140,18 @@ C:96.6%[S:88.5%,D:8.1%],F:1.4%,M:2.0%,n:1013
 1013	Total BUSCO groups searched
 ```
 
+```text
+C. maculatus superscaffolded (adult LOME RNAseq but no larval)
+
+C:98.7%[S:72.2%,D:26.5%],F:0.6%,M:0.7%,n:1013	   
+999	Complete BUSCOs (C)			   
+731	Complete and single-copy BUSCOs (S)	   
+268	Complete and duplicated BUSCOs (D)	   
+6	Fragmented BUSCOs (F)			   
+8	Missing BUSCOs (M)			   
+1013	Total BUSCO groups searched
+```
+
 </details>
 
 ### sex chromosome identification
