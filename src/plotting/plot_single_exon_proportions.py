@@ -34,7 +34,9 @@ def make_species_order_from_tree(newick_tree_path):
 
 
 def get_single_exon_genes(dir_path, species_list, write_to_file = False, outfile_name = "", include_total_gene_num = False):
-    # get a dictionary with {species_name : [list, of, single, exon, transcripts]} from files generated in 04c_make_single_exon_gene_lists.sh
+    """
+    get a dictionary with {species_name : [list, of, single, exon, transcripts]} from files generated in 04c_make_single_exon_gene_lists.sh
+    """
 
     directory = Path(dir_path)
     # List all files in the directory
@@ -114,7 +116,6 @@ def get_single_exon_genes(dir_path, species_list, write_to_file = False, outfile
             except:
                 keys = list(infile_dict.keys())
                 print(f"{species} transcript number did not work with {transcripts_num_key}, available keys are: {keys}")
-
 
     if write_to_file:
         gff.write_dict_to_file(species_dict, f"{dir_path}/../{outfile_name}")
@@ -263,7 +264,7 @@ def format_func(value, tick_number):
 
 
 
-def plot_single_exon_no_species_specific_three_annot(native_numbers, orthodb_numbers = {}, orthoDB_unmasked_numbers = {}, species_names = [], filename = "", L50_values = {}):
+def plot_single_exon_proportion(native_numbers, species_names = [], filename = "", transparent_bg = False):
 
     print(f" plotting for these {len(species_names)} species: \n{species_names}")
 
@@ -275,24 +276,9 @@ def plot_single_exon_no_species_specific_three_annot(native_numbers, orthodb_num
     # fontsize scales with the dpi somehow which i have to do extra because i change the aspect ratio manually below
     fs = 35 # 37 originally
     
-    if len(orthodb_numbers) == 0 and len(orthoDB_unmasked_numbers) == 0:
-        width = 0.35 # (this is a fraction of the standardized 1 unit of space between axis ticks)
-        aspect_ratio = 17 / 12 # nice for a presentation
-        ymax_factor = 1.25
-    elif (len(orthodb_numbers) == 0 and len(orthoDB_unmasked_numbers) > 0) or (len(orthodb_numbers) > 0 and len(orthoDB_unmasked_numbers) == 0):
-        width = 0.33 
-        aspect_ratio = 21 / 12 
-        ymax_factor = 1.25
-    elif len(orthodb_numbers) > 0 and len(orthoDB_unmasked_numbers) > 0:
-        width = 0.22
-        fs = fs*1.15 
-        aspect_ratio = 24 / 12
-        ymax_factor = 1.25
-    else:
-        width = 0.175
-        fs = fs*0.9 # a smaller fontsize is nicer for the longer figure since it needs to be shown larger overall anyways
-        aspect_ratio = 27 / 12
-        ymax_factor = 1.25
+    width = 0.6 # (this is a fraction of the standardized 1 unit of space between axis ticks)
+    aspect_ratio = 15 / 12 # nice for a presentation
+    ymax_factor = 1.25
 
     height_pixels = 2000  # Height in pixels
     width_pixels = int(height_pixels * aspect_ratio)  # Width in pixels
@@ -320,106 +306,35 @@ def plot_single_exon_no_species_specific_three_annot(native_numbers, orthodb_num
     color = [colors["native"], colors["native"]]
     hatching = ["//", "" ]
 
-
-    if (len(orthodb_numbers)>0 and len(orthoDB_unmasked_numbers) == 0) or (len(orthodb_numbers) == 0 and len(orthoDB_unmasked_numbers) > 0):
-        category = " (native)"
-        x_subtr = width/2
-    elif len(orthodb_numbers)>0 and len(orthoDB_unmasked_numbers) > 0:
-        category = " (native)"
-        x_subtr = width # 2*width
-    else:
-        category = ""
-        x_subtr = 0
+    category = ""
+    x_subtr = 0
     
     print(f"bar width = {width}")
 
     # total number of genes (with single-exons hatched)
     native_rects1_base = ax.bar(x - x_subtr, single_exon_genes, width, label='proportion of which are single-exon', color= color[0], hatch=hatching[0])
     native_rects1_top = ax.bar(x - x_subtr, multi_exon_genes, width, bottom=single_exon_genes, label='all genes'+category, color= color[1], hatch=hatching[1])
-
-
-    #### plot orthoDB uniform masking annotation ####
-
-    if len(orthodb_numbers) > 0:
-        num_single_exon_genes = orthodb_numbers["num_single_exon_genes"]
-        num_total_genes = orthodb_numbers["num_total_genes"]
-
-        single_exon_genes = [num_single_exon_genes[species] for species in species_names]
-        multi_exon_genes = [num_total_genes[species]-num_single_exon_genes[species] for species in species_names]
-
-        color = [colors["orthodb"], colors["orthodb"]]
-        hatching = ["//", ""]
-
-        if len(orthoDB_unmasked_numbers) == 0:
-            # total number of genes (with single-exons hatched)            
-            orthodb_rects1_base = ax.bar(x + width/2, single_exon_genes, width, label='proportion of which are single-exon', color= color[0], hatch=hatching[0])            
-            orthodb_rects1_top = ax.bar(x + width/2, multi_exon_genes, width, bottom=single_exon_genes, label='all genes (uniform)', color= color[1], hatch=hatching[1])  
-        elif len(orthoDB_unmasked_numbers) > 0:
-            # total number of genes (with single-exons hatched)            
-            orthodb_rects1_base = ax.bar(x, single_exon_genes, width, label='proportion of which are single-exon', color= color[0], hatch=hatching[0])            
-            orthodb_rects1_top = ax.bar(x, multi_exon_genes, width, bottom=single_exon_genes, label='all genes (uniform)', color= color[1], hatch=hatching[1])  
-
-        plt.rcParams.update({'hatch.color': hatch_color})
-        if len(orthoDB_unmasked_numbers)== 0:
-            ymax_factor = 1.6
-        ymax = max(num_total_genes.values())*ymax_factor
-    
-    
-    #### plot orthoDB filtered annotation ####
-
-    if len(orthoDB_unmasked_numbers) > 0:
-        num_single_exon_genes = orthoDB_unmasked_numbers["num_single_exon_genes"]
-        num_total_genes = orthoDB_unmasked_numbers["num_total_genes"]
-
-        single_exon_genes = [num_single_exon_genes[species] for species in species_names]
-        multi_exon_genes = [num_total_genes[species]-num_single_exon_genes[species] for species in species_names]
-
-        color = [colors["orthoDB_unmasked"], colors["orthoDB_unmasked"]]
-        hatching = ["//", ""]
-           
-        orthodb_rects1_base = ax.bar(x + x_subtr, single_exon_genes, width, label='proportion of which are single-exon', color= color[0], hatch=hatching[0])            
-        orthodb_rects1_top = ax.bar(x + x_subtr, multi_exon_genes, width, bottom=single_exon_genes, label='all genes (uniform no remasking)', color= color[1], hatch=hatching[1])  
-        plt.rcParams.update({'hatch.color': hatch_color})
-        ymax = max(num_total_genes.values())*ymax_factor
-
-
+    ymax = max(num_total_genes.values())*ymax_factor
     #### set up labels and stuff ####
     
     ax.set_ylabel('Number of genes', fontsize=fs+4)
     ax.set_title('Proportion of single-exon genes', fontsize=fs+4)
     ax.set_xticks(x)
-    if len(L50_values) > 0:
-        ax.set_xlabel('Species (L50 value of the assembly)', fontsize=fs+4)
-        xtick_labels = [species.replace("_", ". ")+f" ({L50_values[species]})" for species in species_names]
-    else:
-        ax.set_xlabel('', fontsize=fs+4)
-        xtick_labels = [species.replace("_", " ") for species in species_names]
+    ax.set_xlabel('', fontsize=fs+4)
+    xtick_labels = [species.replace("_", ". ") for species in species_names]
     ax.set_xticklabels(xtick_labels, rotation=90, fontsize=fs)
     ax.set_yticklabels([f'{int(tick)/1e3:.0f}k' for tick in ax.get_yticks()], fontsize=fs)
 
     # make custom legend patch for the dashed bars
     plt.rcParams.update({'hatch.color': "#3f3832ff"})
-    dashed_handle = mpatches.Patch(hatch = "//", alpha = 0.0)
-    dashed_label = "proportion of genes that are single-exon"
+    # dashed_handle = mpatches.Patch(hatch = "//", alpha = 0.0)
+    # dashed_label = "proportion of genes that are single-exon"
 
     # Legend with custom order
     handles, labels = ax.get_legend_handles_labels()
-
-    if len(orthodb_numbers)>0 and len(orthoDB_unmasked_numbers)>0:
-        new_order = [1,3,5]
-        handles = [handles[idx] for idx in new_order]
-        labels = [labels[idx] for idx in new_order]
-        handles.append(dashed_handle)
-        labels.append(dashed_label)
-        new_order = [0,2,1,3]
-        handles = [handles[idx] for idx in new_order]
-        labels = [labels[idx] for idx in new_order]
-    else:
-        new_order = [1,3]
-        handles = [handles[idx] for idx in new_order]
-        labels = [labels[idx] for idx in new_order]
-        handles.append(dashed_handle)
-        labels.append(dashed_label)
+    new_order = [1,0]
+    handles = [handles[i] for i in new_order]
+    labels = [labels[i] for i in new_order]
 
     ax.legend(handles, labels, fontsize=fs, ncol=2, loc='upper center')
 
@@ -428,8 +343,12 @@ def plot_single_exon_no_species_specific_three_annot(native_numbers, orthodb_num
     ax.set_xlim(-0.5, len(xtick_labels)-0.5)
 
     plt.tight_layout()
-
-    plt.savefig(filename, dpi = 300, transparent = True)
+    if transparent_bg:
+        plt.savefig(filename, dpi = 300, transparent = True)
+    else: 
+        filename_white = ".".join(filename.split(".")[:-1])
+        filename_white = f"{filename_white}_white_bg.png"
+        plt.savefig(filename_white, dpi = 300, transparent = False)
     print("Figure saved in the current working directory directory as: "+filename)
 
 
@@ -438,84 +357,33 @@ if __name__ == '__main__':
 
     ## calculate all the numbers from input data
     try:
+        username = "miltr339"
         tree_path = "/Users/miltr339/work/PhD_code/PhD_chapter3/data/orthofinder_species_tree.nw"
         species_names = make_species_order_from_tree(tree_path)
     except:
+        username = "milena"
         tree_path = "/Users/milena/work/PhD_code/PhD_chapter3/data/orthofinder_species_tree.nw"
         species_names = make_species_order_from_tree(tree_path)
 
-    ### original plotting with species specific and single-exon genes and their intersection
-    if False:
-
-        single_exon_dict_orthoDB, num_single_exon_dict_orthoDB = get_single_exon_genes("/Users/milena/work/single_exon_genes/orthoDB", species_names, write_to_file=False, outfile_name="orthoDB_single_exon_transcripts_list_14_species.txt")
-        single_exon_dict_orthoDB_unmasked, num_single_exon_dict_orthoDB_unmasked = get_single_exon_genes("/Users/milena/work/single_exon_genes/orthoDB_old", species_names, write_to_file=False, outfile_name="orthoDB_single_exon_transcripts_list_14_species.txt")
-        single_exon_dict_native, num_single_exon_dict_native = get_single_exon_genes("/Users/milena/work/single_exon_genes/native", species_names, write_to_file=False, outfile_name="native_single_exon_transcripts_list_14_species.txt")
-        
-        ## TODO: get for filtered annotations
-        ## filter the orthoDB dictionaries to include only the overlap-filtered transcripts
-        orthoDB_filtered_proteinseqs_dir = "/Users/milena/work/orthoDB_proteinseqs/overlap_filtered_proteinseqs/"
-        filtered_proteinfasta = {
-            "A_obtectus" : f"{orthoDB_filtered_proteinseqs_dir}A_obtectus_filtered_proteinfasta_overlap_filtered.fa",
-            "A_verrucosus" : f"{orthoDB_filtered_proteinseqs_dir}A_verrucosus_filtered_proteinfasta_overlap_filtered.fa",
-            "B_siliquastri" : f"{orthoDB_filtered_proteinseqs_dir}B_siliquastri_filtered_proteinfasta_overlap_filtered.fa",
-            "C_chinensis" : f"{orthoDB_filtered_proteinseqs_dir}C_chinensis_filtered_proteinfasta_overlap_filtered.fa",
-            "C_maculatus" : f"{orthoDB_filtered_proteinseqs_dir}C_maculatus_filtered_proteinfasta_overlap_filtered.fa",
-            "C_septempunctata" : f"{orthoDB_filtered_proteinseqs_dir}C_septempunctata_filtered_proteinfasta_overlap_filtered.fa",
-            "D_melanogaster" : f"{orthoDB_filtered_proteinseqs_dir}D_melanogaster_filtered_proteinfasta_overlap_filtered.fa",
-            "D_ponderosae" : f"{orthoDB_filtered_proteinseqs_dir}D_ponderosae_filtered_proteinfasta_overlap_filtered.fa",
-            "I_luminosus" : f"{orthoDB_filtered_proteinseqs_dir}I_luminosus_filtered_proteinfasta_overlap_filtered.fa",
-            "P_pyralis" : f"{orthoDB_filtered_proteinseqs_dir}P_pyralis_filtered_proteinfasta_overlap_filtered.fa",
-            "R_ferrugineus" : f"{orthoDB_filtered_proteinseqs_dir}R_ferrugineus_filtered_proteinfasta_overlap_filtered.fa",
-            "T_castaneum" : f"{orthoDB_filtered_proteinseqs_dir}T_castaneum_filtered_proteinfasta_overlap_filtered.fa",
-            "T_molitor" : f"{orthoDB_filtered_proteinseqs_dir}T_molitor_filtered_proteinfasta_overlap_filtered.fa",
-            "Z_morio" : f"{orthoDB_filtered_proteinseqs_dir}Z_morio_filtered_proteinfasta_overlap_filtered.fa"
-        }
-        orthoDB_annotations = {
-            "A_obtectus" : "/Users/milena/work/orthoDB_annotations/A_obtectus_isoform_filtered.gff",
-            "A_verrucosus" : "/Users/milena/work/orthoDB_annotations/A_verrucousus_isoform_filtered.gff",
-            "B_siliquastri" : "/Users/milena/work/orthoDB_annotations/B_siliquastri_isoform_filtered.gff",
-            "C_analis" : "/Users/milena/work/orthoDB_annotations/C_analis_isoform_filtered.gff",
-            "C_chinensis" : "/Users/milena/work/orthoDB_annotations/C_chinensis_isoform_filtered.gff",
-            "C_maculatus" : "/Users/milena/work/orthoDB_annotations/C_maculatus_isoform_filtered.gff",
-            "C_septempunctata" : "/Users/milena/work/orthoDB_annotations/C_septempunctata_isoform_filtered.gff",
-            "D_melanogaster" : "/Users/milena/work/orthoDB_annotations/D_melanogaster_isoform_filtered.gff",
-            "D_ponderosae" : "/Users/milena/work/orthoDB_annotations/D_ponderosae_isoform_filtered.gff",
-            "I_luminosus" : "/Users/milena/work/orthoDB_annotations/I_luminosus_isoform_filtered.gff",
-            "P_pyralis" : "/Users/milena/work/orthoDB_annotations/P_pyralis_isoform_filtered.gff",
-            "R_ferrugineus" : "/Users/milena/work/orthoDB_annotations/R_ferrugineus_isoform_filtered.gff",
-            "T_castaneum" : "/Users/milena/work/orthoDB_annotations/T_castaneum_isoform_filtered.gff",
-            "T_molitor" : "/Users/milena/work/orthoDB_annotations/T_molitor_isoform_filtered.gff",
-            "Z_morio" : "/Users/milena/work/orthoDB_annotations/Z_morio_isoform_filtered.gff"
-    }
-        
     if True:
+        ## get the data about single-exon genes by running PhD_chapter3/bash/calculate_single_exon_stats.sh
+        ## the resulting output files are evaluated by get_single_exon_genes
+        single_exon_stats_dir = f"/Users/{username}/work/chapter3/single_exon_stats"
+        single_exon_dict, num_single_exon_dict, num_transcripts_dict = get_single_exon_genes(single_exon_stats_dir, species_names, write_to_file=False, outfile_name="native_single_exon_transcripts_list_14_species.txt", include_total_gene_num = True)
 
-        single_exon_dict_orthoDB, num_single_exon_dict_orthoDB, num_transcripts_dict_orthoDB = get_single_exon_genes("/Users/miltr339/work/single_exon_genes/orthoDB", species_names, write_to_file=False, outfile_name="orthoDB_single_exon_transcripts_list_14_species.txt", include_total_gene_num = True)
-        single_exon_dict_orthoDB_unmasked, num_single_exon_dict_orthoDB_unmasked, num_transcripts_dict_orthoDB_unmasked = get_single_exon_genes("/Users/miltr339/work/single_exon_genes/orthoDB_old", species_names, write_to_file=False, outfile_name="orthoDB_single_exon_transcripts_list_14_species.txt", include_total_gene_num = True)
-        single_exon_dict_native, num_single_exon_dict_native, num_transcripts_dict_native = get_single_exon_genes("/Users/miltr339/work/single_exon_genes/native", species_names, write_to_file=False, outfile_name="native_single_exon_transcripts_list_14_species.txt", include_total_gene_num = True)
-
-        orthodb_numbers = {
-            "num_single_exon_genes" : num_single_exon_dict_orthoDB,
-            "num_total_genes" : num_transcripts_dict_orthoDB
+        SE_numbers = {
+            "num_single_exon_genes" : num_single_exon_dict,
+            "num_total_genes" : num_transcripts_dict
         }
-        print(f"\t --> orthodb_numbers = {orthodb_numbers}")
-        orthodb_unmasked_numbers = {
-            "num_single_exon_genes" : num_single_exon_dict_orthoDB_unmasked,
-            "num_total_genes" : num_transcripts_dict_orthoDB_unmasked
-        }
-        print(f"\t --> orthodb_unmasked_numbers = {orthodb_unmasked_numbers}")
-        native_numbers = {
-            "num_single_exon_genes" : num_single_exon_dict_native,
-            "num_total_genes" : num_transcripts_dict_native
-        }
-        print(f"\t --> native_numbers = {native_numbers}")
+        print(f"\t --> native_numbers = {SE_numbers}")
         print()
         
 
-        data = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/"
+        data = f"/Users/{username}/work/PhD_code/PhD_chapter3/data/annotation_evaluation/"
         
         ### plot all three annotations
-        plot_single_exon_no_species_specific_three_annot(native_numbers, orthodb_numbers = orthodb_numbers, orthoDB_unmasked_numbers = orthodb_unmasked_numbers, species_names = species_names, filename = f"{data}single_exon_Genes_14_species_3_annotations.png", L50_values = L50_values)
+        plot_single_exon_proportion(SE_numbers, species_names = species_names, filename = f"{data}single_exon_genes.png", transparent_bg=True)
+        plot_single_exon_proportion(SE_numbers, species_names = species_names, filename = f"{data}single_exon_genes.png", transparent_bg=False)
         
         ### plot native and one other 
         # plot_single_exon_no_species_specific_three_annot(native_numbers, orthoDB_unmasked_numbers = orthodb_unmasked_numbers, species_names = species_names, filename = f"{data}single_exon_Genes_14_species_2_annotations_no_uniform.png", L50_values = L50_values)

@@ -114,7 +114,9 @@ I want to look at groups of sister-species to take into account the evolutionary
 I have annotated *T. freemani* with available RNAseq data from Whittle2020, but there was no RNAseq data for *C. septempunctata*. 
 
 <details>
-<summary>BUSCO scores</summary>
+<summary>Annotation Evaluation</summary>
+
+#### BUSCO scores
 
 ```text
 C. magnifica
@@ -154,6 +156,12 @@ C:98.7%[S:72.2%,D:26.5%],F:0.6%,M:0.7%,n:1013
 8	Missing BUSCOs (M)			   
 1013	Total BUSCO groups searched
 ```
+
+#### Single exon genes
+
+<p float="left">
+  <img src="data/annotation_evaluation/single_exon_genes_white_bg.png" width="50%" />
+</p>
 
 </details>
 
