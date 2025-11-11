@@ -2,7 +2,7 @@
 #SBATCH -A uppmax2025-2-148
 #SBATCH -p core
 #SBATCH -n 20
-#SBATCH -t 2:00:00
+#SBATCH -t 20:00
 #SBATCH -J BUSCO
 #SBATCH -o busco.log
 #SBATCH --mail-type=ALL
@@ -20,5 +20,6 @@ module load bioinfo-tools BUSCO/5.5.0
 
 cd /proj/naiss2023-6-65/Milena/chapter3/species_annotations/BUSCO
 
-busco -i T_freemani_isoform_filtered_proteins.faa -m proteins -l $BUSCO_LINEAGE_SETS/arthropoda_odb10/ -o T_freemani_busco -c 20 -f 
-busco -i C_magnifica_isoform_filtered_proteins.faa -m proteins -l $BUSCO_LINEAGE_SETS/arthropoda_odb10/ -o C_magnifica_busco -c 20 -f 
+# busco -i T_freemani_isoform_filtered_proteins.faa -m proteins -l $BUSCO_LINEAGE_SETS/arthropoda_odb10/ -o T_freemani_busco -c 20 -f 
+# busco -i C_magnifica_isoform_filtered_proteins.faa -m proteins -l $BUSCO_LINEAGE_SETS/arthropoda_odb10/ -o C_magnifica_busco -c 20 -f 
+busco -i C_maculatus_superscaffolded_isoform_filtered_proteins.faa -m proteins -l $BUSCO_LINEAGE_SETS/arthropoda_odb10/ -o C_maculatus_superscaffolded_busco -c 20 -f 
