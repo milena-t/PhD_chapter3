@@ -59,6 +59,7 @@ graph TD;
     simplified_bed -- merge all species --> mcscanx_bed(mcscanx annotation input);
     
     species_Ann(species annotations);
+    species_Ann -- new annotations --> ([run BUSCO and other annotation evaluation]);
     species_Ann --> is_filter{{bash/isoform_filter_gff.sh}};
     is_filter --> get_prot{{bash/get_fasta_from_gff.sh}};
     get_prot --> protfiles(proteinfiles of all species);
