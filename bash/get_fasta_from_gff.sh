@@ -14,50 +14,36 @@
 
 module load bioinfo-tools gffread/0.12.7 samtools/1.20 emboss/6.6.0
 
-TOP_ANDIR=/proj/naiss2023-6-65/Milena/chapter3/species_assemblies
-ASS_CMAG=/proj/naiss2023-6-65/Milena/chapter3/species_annotations/Cmag_GCA_965644565.1.fasta.masked
-ASS_TFRE=/proj/naiss2023-6-65/Milena/chapter3/species_annotations/Tfre_GCA_022388455.1.fasta.masked
+ANNOT_GTF=$1
+ASSEMBLY=$2
 
-for ANNOT_DIR in ${TOP_ANDIR}/T_freemani #${TOP_ANDIR}/C_magnifica
-do 
-    cd $ANNOT_DIR
-    ANNOT_GTF="braker/braker.gtf"
-    FILTERED_GTF="${ANNOT_GTF%.*}_isoform_filtered.gff" # originally gtf but keep_longest_isoform.pl automatically returns gff version 3 
-    ANNOT_TRANSCRIPTS=isoform_filtered_transcripts.fna
-    ANNOT_PROTEINS=isoform_filtered_proteins.faa
-    ASSEMBLY=assembly_genomic.fna.masked
+ANNOT_TRANSCRIPTS=isoform_filtered_transcripts.fna
+ANNOT_PROTEINS=isoform_filtered_proteins.faa
 
-    # braker doesn't like spaces in the contig names so it replaces them with underscores. 
-    # The below command makes them match the first column in the gtf file again.
-    # run only once
-    # sed -i 's/ /_/g' $ASSEMBLY 
+# braker doesn't like spaces in the contig names so it replaces them with underscores. 
+# The below command makes them match the first column in the gtf file again.
+# run only once
+# sed -i 's/ /_/g' $ASSEMBLY 
+# for the callosobruchuses there is an additional replacement necessary
+# In analis and chinensis, the fasta headers look like this: >31|quiver but the annotation looks for this 31_quiver
+# maculatus has a longer header but also some "|" that are replaced by braker in the annotation 
+# also run only once
+#sed -i 's/|/_/g' $ASSEMBLY
 
-    # for the callosobruchuses there is an additional replacement necessary
-    # In analis and chinensis, the fasta headers look like this: >31|quiver but the annotation looks for this 31_quiver
-    # maculatus has a longer header but also some "|" that are replaced by braker in the annotation 
-    # also run only once
-    #sed -i 's/|/_/g' $ASSEMBLY
+echo $(pwd)
+echo $(ll $ASSEMBLY)
 
-    echo $(pwd)
-    echo $(ll $ASSEMBLY)
+# index assemblies (greatly decreases computing time, and won't work for the more fragmented callosobruchus assemblies otherwise)
+samtools faidx $ASSEMBLY
+# extract transcript sequences
+gffread -M -x $ANNOT_TRANSCRIPTS -g $ASSEMBLY $ANNOT_GTF
+# change fasta headers to include species names
+# sed -i "s/>/>${SPECIES_NAME}_/g" $ANNOT_TRANSCRIPTS
+# translate transcript sequences
+transeq -sequence $ANNOT_TRANSCRIPTS -outseq $ANNOT_PROTEINS
+ls -lh $ANNOT_TRANSCRIPTS
+echo "###########################################"
 
-    SPECIES_NAME=$(basename "$ANNOT_DIR")
-    echo $SPECIES_NAME
-
-    # index assemblies (greatly decreases computing time, and won't work for the more fragmented callosobruchus assemblies otherwise)
-    samtools faidx $ASSEMBLY
-    # extract transcript sequences
-    gffread -M -x $ANNOT_TRANSCRIPTS -g $ASSEMBLY $ANNOT_GTF
-    # change fasta headers to include species names
-    sed -i "s/>/>${SPECIES_NAME}_/g" $ANNOT_TRANSCRIPTS
-    # translate transcript sequences
-    transeq -sequence $ANNOT_TRANSCRIPTS -outseq $ANNOT_PROTEINS
-
-
-    ls -lh $ANNOT_TRANSCRIPTS
-    echo "###########################################"
-
-done
 
 # get number of transcripts in all output files:
 # for transcripts in $(echo */isoform_filtered_transcripts.faa) ; do echo $transcripts ; grep ">" $transcripts | wc -l ; done
