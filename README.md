@@ -162,8 +162,9 @@ C:98.7%[S:72.2%,D:26.5%],F:0.6%,M:0.7%,n:1013
     ``` 
   * *A. obtectus* Identified by me and Göran's project about it
     ```python
-    { X : ['CAVLJG010000002.1'],
-      Y : ['scaffold_13', 'scaffold_86']} # some have HiC and some don't but that may just be manual renaming of the largest to chromosomes
+    #### TODO double check these contig IDs
+    { X : ['CAVLJG010000002.1'], # chr_10 or HiC_scaffold_13 , also scaffold_21 but that's not in the HiC version
+      Y : ['CAVLJG010000002.1', ]} # ### TODO fix which ones!!
     ``` 
 * **Diorhabada** 
   * [Diorhabda sublineata](https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_026230105.1/)
