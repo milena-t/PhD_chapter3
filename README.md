@@ -163,7 +163,7 @@ C:98.7%[S:72.2%,D:26.5%],F:0.6%,M:0.7%,n:1013
   * *A. obtectus* Identified by me and Göran's project about it
     ```python
     #### TODO double check these contig IDs
-    { X : ['CAVLJG010000002.1'], # chr_10 or HiC_scaffold_13 , also scaffold_21 but that's not in the HiC version
+    { X : ['CAVLJG010000002.1', 'CAVLJG010001231.1'], # also [chr_10,scaffold_21] which is labelled as "contig: " at the end of the ENA header, or (in the uppmax-version) HiC_scaffold_13
       Y : ['CAVLJG010000002.1', ]} # ### TODO fix which ones!!
     ``` 
 * **Diorhabada** 
