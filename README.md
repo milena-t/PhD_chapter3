@@ -163,9 +163,38 @@ C:98.7%[S:72.2%,D:26.5%],F:0.6%,M:0.7%,n:1013
   * *A. obtectus* Identified by me and Göran's project about it
     ```python
     #### TODO double check these contig IDs
-    { X : ['CAVLJG010000002.1', 'CAVLJG010001231.1'], # also [chr_10,scaffold_21] which is labelled as "contig: " at the end of the ENA header, or (in the uppmax-version) HiC_scaffold_13
-      Y : ['CAVLJG010000002.1', ]} # ### TODO fix which ones!!
+    { X : ["CAVLJG010000002.1","CAVLJG010003236.1","CAVLJG010003544.1","CAVLJG010000099.1","CAVLJG010000155.1","CAVLJG010000244.1","CAVLJG010000377.1","CAVLJG010000488.1",],
+      Y : ["CAVLJG010000343.1","CAVLJG010002896.1","CAVLJG010000233.1","CAVLJG010000566.1","CAVLJG010000588.1",]}
     ``` 
+    <details>
+    <summary>A_obtectus chromosome name conversions</summary>
+    The chromosome names in the ENA version of the assembly are weird, a whole header is like 
+    ```
+    >ENA|CAVLJG010000002|CAVLJG010000002.1 Acanthoscelides obtectus genome assembly, contig: chr_10
+    >ENA|CAVLJG010002896|CAVLJG010002896.1 Acanthoscelides obtectus genome assembly, contig: scaffold_36
+    ```
+    and somehow in the mapping for the sex chromosome identification that Angela did, the contigs are identified as `chr_10` and `scaffold_36`, and not as `CAVLJG010000002.1`. This is confusing because in the original version of this assembly on uppmax after superscaffolding before it was deposited, the contigs are named like `HiC_scaffold_1`, and these scaffold numbers do *not* correspond to the ones in the ENA/NCBI headers! To be super clear I list below the complete X and Y association, which I need for further analyses because the annotation obviously uses `CAVLJG010000002.1` and not some weird tail end of the header.
+
+    ```text
+    X-contigs > 100 kb:
+    * chr_10 :       CAVLJG010000002.1, 43142905 bp
+    * scaffold_49 :  CAVLJG010003236.1, 333528 bp
+    * scaffold_77 :  CAVLJG010003544.1, 217000 bp
+    * scaffold_108 : CAVLJG010000099.1, 157500 bp
+    * scaffold_113 : CAVLJG010000155.1, 147000 bp
+    * scaffold_121 : CAVLJG010000244.1, 129500 bp
+    * scaffold_133 : CAVLJG010000377.1, 114918 bp
+    * scaffold_143 : CAVLJG010000488.1, 105500 bp
+
+    Y-contigs > 100 kb:
+    * scaffold_13 :  CAVLJG010000343.1, 1187000 bp
+    * scaffold_36 :  CAVLJG010002896.1, 421500 bp
+    * scaffold_120 : CAVLJG010000233.1, 131000 bp
+    * scaffold_150 : CAVLJG010000566.1, 100909 bp
+    * scaffold_152 : CAVLJG010000588.1, 100000 bp
+    ```
+    </details>
+
 * **Diorhabada** 
   * [Diorhabda sublineata](https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_026230105.1/)
   ```python

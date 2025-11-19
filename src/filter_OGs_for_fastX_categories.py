@@ -46,8 +46,8 @@ def filepaths(username = "miltr339"):
 def sex_chromosome_names():
     contig_names_dict = {
         "A_obtectus" : {
-            "X" : ['CAVLJG010000002.1'],
-            "Y" : ['scaffold_13', 'scaffold_86']
+            "X" : ["CAVLJG010000002.1","CAVLJG010003236.1","CAVLJG010003544.1","CAVLJG010000099.1","CAVLJG010000155.1","CAVLJG010000244.1","CAVLJG010000377.1","CAVLJG010000488.1",],
+            "Y" : ["CAVLJG010000343.1","CAVLJG010002896.1","CAVLJG010000233.1","CAVLJG010000566.1","CAVLJG010000588.1",]
         },
         "B_siliquastri" : {
             "X" : ['X'],
@@ -69,6 +69,7 @@ def sex_chromosome_names():
             "Y" : ['NC_079486.1']
         },
     }
+    return contig_names_dict
 
 def associate_Aobt_contig_names(ENA_assembly, uppmax_assembly, minlen = 1e5):
 
@@ -103,8 +104,41 @@ def associate_Aobt_contig_names(ENA_assembly, uppmax_assembly, minlen = 1e5):
     for i in range(len(nat_sorted_lengths)):
         print(f"{i}\n * {nat_sorted_lengths[i]}\t: {out_dict_nat[nat_sorted_lengths[i]]}\n * {ENA_sorted_lengths[i]}\t: {out_dict_ENA[ENA_sorted_lengths[i]]}")
 
-    print(out_dict_ENA[43142905])
-    print(out_dict_nat[43142905])
+    # print(out_dict_ENA[43142905])
+    # print(out_dict_nat[43142905])
+
+
+def print_contig_names_lengths(ENA_assembly, minlen = 1e5, xlist=[], ylist=[]):
+
+    out_dict_ENA = {}
+    for record in SeqIO.parse(ENA_assembly, "fasta"):
+        contig_len = len(record.seq)
+        header = record.description # description gives the whole fasta header even after spaces, which name and id leave out
+        contig = header.split("contig: ")[-1]
+        ENA_name = header.split(" ")[0].split("|")[-1]
+        out_dict_ENA[contig] = [contig_len, ENA_name]
+    
+    if len(xlist)>0:
+        print(f"X-contigs:")
+        for x_contig in xlist:
+            out_list = out_dict_ENA[x_contig]
+            contig_len = out_list[0]
+            if contig_len<minlen:
+                continue
+            ENA_name = out_list[1]
+            print(f"* {x_contig} : {ENA_name}, {contig_len} bp")
+    
+    if len(ylist)>0:
+        print(f"\n========================================================================\n")
+        print(f"Y-contigs:")
+        for y_contig in ylist:
+            out_list = out_dict_ENA[y_contig]
+            contig_len = out_list[0]
+            if contig_len<minlen:
+                continue
+            ENA_name = out_list[1]
+            print(f"* {y_contig} : {ENA_name}, {contig_len} bp")
+
 
 
 if __name__ == "__main__":
@@ -112,4 +146,8 @@ if __name__ == "__main__":
     tree, orthogroups, proteins_dict, nucleotides_dict, annotations_dict = filepaths()
 
     obtectus_dir="/Users/miltr339/work/a_obtectus/"
-    associate_Aobt_contig_names(ENA_assembly=f"{obtectus_dir}A_obtectus_ENA_superscaffolded.fasta", uppmax_assembly=f"{obtectus_dir}A_obtectus_from_uppmax.fasta")
+    aobt_xlist = ["chr_10","scaffold_49","scaffold_77","scaffold_108","scaffold_113","scaffold_121","scaffold_133","scaffold_143","scaffold_176","scaffold_186","scaffold_188","scaffold_192","scaffold_200","scaffold_207","scaffold_219","scaffold_227","scaffold_246","scaffold_276","scaffold_319","scaffold_327","scaffold_328","scaffold_341","scaffold_356","scaffold_363","scaffold_365","scaffold_370","scaffold_408","scaffold_411","scaffold_419","scaffold_420","scaffold_435","scaffold_482","scaffold_507","scaffold_524","scaffold_547","scaffold_563","scaffold_589","scaffold_602","scaffold_604","scaffold_621","scaffold_630","scaffold_633","scaffold_676","scaffold_697","scaffold_734","scaffold_768","scaffold_803","scaffold_838","scaffold_840","scaffold_855","scaffold_1045","scaffold_1086","scaffold_1100","scaffold_1154","scaffold_1176","scaffold_1195","scaffold_1209","scaffold_1267","scaffold_1338","scaffold_1339","scaffold_1356","scaffold_1498","scaffold_1564","scaffold_1663","scaffold_1704","scaffold_1759","scaffold_1786","scaffold_1796","scaffold_1822","scaffold_1875","scaffold_1902","scaffold_1913","scaffold_1914","scaffold_1922","scaffold_1949","scaffold_1956","scaffold_1988","scaffold_2012","scaffold_2027","scaffold_2033","scaffold_2041","scaffold_2045","scaffold_2061","scaffold_2071","scaffold_2101","scaffold_2107","scaffold_2124","scaffold_2144","scaffold_2194","scaffold_2225","scaffold_2265","scaffold_2289","scaffold_2371","scaffold_2372","scaffold_2403","scaffold_2469","scaffold_2509","scaffold_2524"]
+    aobt_ylist = ["scaffold_13","scaffold_36","scaffold_120","scaffold_150","scaffold_152","scaffold_265","scaffold_284","scaffold_287","scaffold_303","scaffold_618","scaffold_1035","scaffold_1472","scaffold_1594","scaffold_1702","scaffold_2097","scaffold_2445"]
+    
+    print_contig_names_lengths(ENA_assembly=f"{obtectus_dir}A_obtectus_ENA_superscaffolded.fasta", minlen=100e3, xlist=aobt_xlist, ylist=aobt_ylist)
+
