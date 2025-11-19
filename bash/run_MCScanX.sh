@@ -16,4 +16,5 @@ module load bioinfo-tools
 # ./MCScanX test
 
 ## runs really fast for five coleopteran species
+cd /proj/naiss2023-6-65/Milena/chapter3/MCScanX/chrysomelidae
 ./MCScanX all_species
