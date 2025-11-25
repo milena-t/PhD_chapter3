@@ -161,6 +161,11 @@ def get_OG_member_contigs(orthogroups_dict:dict, annotations_dict:dict, max_GF_s
         print(f" * {species}")
         annotations_class_dict[species] = gff.parse_gff3_general(annot_path, keep_feature_category=gff.FeatureCategory.Transcript, verbose=False)
 
+    ### TEST CMAC annotation
+    # cmac_annot = annotations_class_dict["C_maculatus"]
+    # print(cmac_annot["g14846.t1"])
+    # raise RuntimeError
+
     orthogroups_contigs_dict = {}
     print(f"\n... replace all gene IDs with contigs")
     for OG_id, species_dict in tqdm(orthogroups_dict.items()):
@@ -169,13 +174,32 @@ def get_OG_member_contigs(orthogroups_dict:dict, annotations_dict:dict, max_GF_s
             continue
         
         orthogroups_contigs_dict[OG_id] = {}
+        genes_not_found_dict = {}
         for species, GF_transcript_list in species_dict.items():
+            annot_dict = annotations_class_dict[species]
+
             formatted_transcripts = [tr_ID[:-2] if tr_ID[-2:] == "_1" else tr_ID for tr_ID in GF_transcript_list]
-            try:
-                contigs = [annotations_class_dict[species][tr_ID].contig if tr_ID != "" else tr_ID for tr_ID in formatted_transcripts]
-            except:
-                print(f"{OG_id}, {species}: gene IDs not found {formatted_transcripts}")
+            
+            contigs = []
+            genes_not_found = []
+            
+            for tr_ID in formatted_transcripts:
+                if tr_ID != "":
+                    try:
+                        contigs.append(annot_dict[tr_ID].contig)
+                    except:
+                        # print(f"{OG_id}, {species}: gene IDs not found {formatted_transcripts}")
+                        genes_not_found.append(tr_ID)
+                else:
+                    contigs.append(tr_ID)
+            
+            if genes_not_found != []:
+                genes_not_found_dict[species]= contigs
+            
             orthogroups_contigs_dict[OG_id][species] = contigs
+
+        if genes_not_found_dict !={}:
+            print(f"* {OG_id} genes not found: {genes_not_found_dict}")
         # raise RuntimeError
     return orthogroups_contigs_dict
 
@@ -196,8 +220,9 @@ if __name__ == "__main__":
     orthogroups = OGs.parse_orthogroups_dict(orthogroups_path)
     orthogroups_contigs_dict = get_OG_member_contigs(orthogroups, annotations_dict, max_GF_size = 2)
     print(f"{len(orthogroups)} orthogroups in original file, {len(orthogroups_contigs_dict)} in filtered file with contigs")
-    OG_ex = orthogroups["N0.HOG0000000"]
-    print(f"example N0.HOG0000000: {OG_ex}")
-    cont_ex = orthogroups_contigs_dict["N0.HOG0000000"]
-    print(f"example N0.HOG0000000: {cont_ex}")
+    OG_example = "N0.HOG0005248"
+    OG_ex = orthogroups[OG_example]
+    print(f"example {OG_example}: {OG_ex}")
+    cont_ex = orthogroups_contigs_dict[OG_example]
+    print(f"example {OG_example}: {cont_ex}")
 
