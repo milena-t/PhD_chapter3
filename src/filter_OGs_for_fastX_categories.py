@@ -3,6 +3,7 @@
 import parse_orthogroups as OGs
 import parse_gff as gff
 from Bio import SeqIO
+from tqdm import tqdm
 
 def filepaths(username = "miltr339"):
     """
@@ -54,8 +55,8 @@ def sex_chromosome_names():
             "Y" : ['Y']
         },
         "C_chinensis" : {
-            "X" : ["1092_quiver","1124_quiver","1080_quiver","1105_quiver","1148_quiver","1339_quiver","1435_quiver","1482_quiver","1501_quiver","1565_quiver","1694_quiver","1688_quiver","1758_quiver","1618_quiver","1786_quiver","1816_quiver","1815_quiver","1817_quiver","1826_quiver","1889_quiver","1898_quiver","1908_quiver","1911_quiver","1933_quiver","2046_quiver","2054_quiver","2056_quiver","5713_quiver","2194_quiver","2226_quiver","2306_quiver","2357_quiver","2381_quiver","2392_quiver","2400_quiver","2435_quiver","2453_quiver","2513_quiver","2524_quiver","2569_quiver","2576_quiver","2580_quiver","2599_quiver","2693_quiver","2733_quiver","1210_quiver","2935_quiver","2958_quiver","2964_quiver","3034_quiver","3068_quiver","3080_quiver","3091_quiver"],
-            "Y" : ["850_quiver","949_quiver","1088_quiver","1125_quiver","1159_quiver","1134_quiver","1224_quiver","1369_quiver","1410_quiver","1568_quiver","1577_quiver","1619_quiver","1634_quiver","1646_quiver","1652_quiver","1665_quiver","1681_quiver","1697_quiver","1722_quiver","1766_quiver","1783_quiver","1891_quiver","1937_quiver","1963_quiver","1790_quiver","1997_quiver","2073_quiver","2113_quiver","2163_quiver","2166_quiver","5705_quiver","2245_quiver","2259_quiver","2260_quiver","2334_quiver","2340_quiver","2382_quiver","2443_quiver","2511_quiver","2534_quiver","2573_quiver","2597_quiver","2651_quiver","2707_quiver","2766_quiver","2773_quiver","2791_quiver","2830_quiver","2875_quiver","3022_quiver","3070_quiver","3074_quiver","3075_quiver","3078_quiver"]
+            "X" : ["1092|quiver","1124|quiver","1080|quiver","1105|quiver","1148|quiver","1339|quiver","1435|quiver","1482|quiver","1501|quiver","1565|quiver","1694|quiver","1688|quiver","1758|quiver","1618|quiver","1786|quiver","1816|quiver","1815|quiver","1817|quiver","1826|quiver","1889|quiver","1898|quiver","1908|quiver","1911|quiver","1933|quiver","2046|quiver","2054|quiver","2056|quiver","5713|quiver","2194|quiver","2226|quiver","2306|quiver","2357|quiver","2381|quiver","2392|quiver","2400|quiver","2435|quiver","2453|quiver","2513|quiver","2524|quiver","2569|quiver","2576|quiver","2580|quiver","2599|quiver","2693|quiver","2733|quiver","1210|quiver","2935|quiver","2958|quiver","2964|quiver","3034|quiver","3068|quiver","3080|quiver","3091|quiver"],
+            "Y" : ["850|quiver","949|quiver","1088|quiver","1125|quiver","1159|quiver","1134|quiver","1224|quiver","1369|quiver","1410|quiver","1568|quiver","1577|quiver","1619|quiver","1634|quiver","1646|quiver","1652|quiver","1665|quiver","1681|quiver","1697|quiver","1722|quiver","1766|quiver","1783|quiver","1891|quiver","1937|quiver","1963|quiver","1790|quiver","1997|quiver","2073|quiver","2113|quiver","2163|quiver","2166|quiver","5705|quiver","2245|quiver","2259|quiver","2260|quiver","2334|quiver","2340|quiver","2382|quiver","2443|quiver","2511|quiver","2534|quiver","2573|quiver","2597|quiver","2651|quiver","2707|quiver","2766|quiver","2773|quiver","2791|quiver","2830|quiver","2875|quiver","3022|quiver","3070|quiver","3074|quiver","3075|quiver","3078|quiver"]
         },
         "C_maculatus" : {
             "X" : ['utg000057l_1','utg000114l_1','utg000139l_1','utg000191l_1','utg000326l_1','utg000359l_1','utg000532l_1','utg000602l_1'],
@@ -140,6 +141,44 @@ def print_contig_names_lengths(ENA_assembly, minlen = 1e5, xlist=[], ylist=[]):
             print(f"* {y_contig} : {ENA_name}, {contig_len} bp")
 
 
+def filter_orthogroups_dict(orthogroups_contigs_dict:dict):
+    """
+    filter the orthogroups dict for the fastX analysis. split into several dictionaries:
+    * one_to_one : 1-to-1 orthologs present in all species, regardless of chromosomal position 
+    * gametologs : orthogroups with two gene family members in each species
+    """
+
+
+def get_OG_member_contigs(orthogroups_dict:dict, annotations_dict:dict, max_GF_size:int = 30000):
+    """
+    Transform the orthogroups dict with the gene IDs into the same dict but with contig IDs
+    the contig IDs come from the gff files in annotations_dict
+    I also add a filtering step to get rid of gene families that have too many duplications already to make all future operations based on this quicker
+    """
+
+    annotations_class_dict = annotations_dict
+    for species, annot_path in annotations_dict.items():
+        print(f" * {species}")
+        annotations_class_dict[species] = gff.parse_gff3_general(annot_path, keep_feature_category=gff.FeatureCategory.Transcript, verbose=False)
+
+    orthogroups_contigs_dict = {}
+    print(f"\n... replace all gene IDs with contigs")
+    for OG_id, species_dict in tqdm(orthogroups_dict.items()):
+        if any(len(GF_list) > max_GF_size for GF_list in species_dict.values()):
+            # print(f"{OG_id} excluded because at least one GF has more than {max_GF_size} members")
+            continue
+        
+        orthogroups_contigs_dict[OG_id] = {}
+        for species, GF_transcript_list in species_dict.items():
+            formatted_transcripts = [tr_ID[:-2] if tr_ID[-2:] == "_1" else tr_ID for tr_ID in GF_transcript_list]
+            try:
+                contigs = [annotations_class_dict[species][tr_ID].contig if tr_ID != "" else tr_ID for tr_ID in formatted_transcripts]
+            except:
+                print(f"{OG_id}, {species}: gene IDs not found {formatted_transcripts}")
+            orthogroups_contigs_dict[OG_id][species] = contigs
+        # raise RuntimeError
+    return orthogroups_contigs_dict
+
 
 if __name__ == "__main__":
 
@@ -155,24 +194,10 @@ if __name__ == "__main__":
     species_list = gff.make_species_order_from_tree(tree)
     print(species_list)
     orthogroups = OGs.parse_orthogroups_dict(orthogroups_path)
-    print(len(orthogroups))
-    print(orthogroups["N0.HOG0000000"])
+    orthogroups_contigs_dict = get_OG_member_contigs(orthogroups, annotations_dict, max_GF_size = 2)
+    print(f"{len(orthogroups)} orthogroups in original file, {len(orthogroups_contigs_dict)} in filtered file with contigs")
+    OG_ex = orthogroups["N0.HOG0000000"]
+    print(f"example N0.HOG0000000: {OG_ex}")
+    cont_ex = orthogroups_contigs_dict["N0.HOG0000000"]
+    print(f"example N0.HOG0000000: {cont_ex}")
 
-
-    chromosome_names = ["1", "2", "3"]
-    chromosome_lengths = [100, 200, 300]
-
-    coordinates_1 = [12, 35, 80]
-    coordinates_2 = [60, 130, 189]
-    coordinates_3 = [81, 160, 235]
-
-    coordinates = [coordinates_1, coordinates_2, coordinates_3]
-    coordinates_absolute = [] # or initialize list of 0s with correct length
-
-    current_chromosome_start = 0
-    for i in range(len(chromosome_lengths)):
-        chromosome_name = chromosome_names[i]
-        current_coordinates = coordinates[i]
-        for within_chromosome_coordinate in current_coordinates:
-            coordinates_absolute.append(within_chromosome_coordinate + current_chromosome_start)
-        current_chromosome_start = current_chromosome_start + chromosome_lengths[i]
