@@ -17,6 +17,6 @@ OUT_DIR=/proj/naiss2023-6-65/Milena/chapter3/orthofinder
 IN_FASTA_DIR=/proj/naiss2023-6-65/Milena/chapter3/protein_data/orthofinder_dir
 
 # remove it if it does exist, this overwrites all preexisting results
-# rm -r $OUT_DIR
+rm -r $OUT_DIR
 
 orthofinder.py -t 20 -a 20 -f $IN_FASTA_DIR -o $OUT_DIR
