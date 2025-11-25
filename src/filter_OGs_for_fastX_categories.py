@@ -10,7 +10,7 @@ def filepaths(username = "miltr339"):
     get all filepaths with the correct username
     """
     tree = f"/Users/{username}/work/PhD_code/PhD_chapter3/data/orthofinder/species_tree.nw"
-    orthogroups = f"/Users/{username}/work/chapter3/orthofinder/N0.tsv"
+    orthogroups = f"/Users/{username}/work/PhD_code/PhD_chapter3/data/orthofinder/N0.tsv"
 
     proteins_dir=f"/Users/{username}/work/native_proteinseqs/"
     proteins_dict = {
@@ -58,9 +58,14 @@ def sex_chromosome_names():
             "X" : ["1092|quiver","1124|quiver","1080|quiver","1105|quiver","1148|quiver","1339|quiver","1435|quiver","1482|quiver","1501|quiver","1565|quiver","1694|quiver","1688|quiver","1758|quiver","1618|quiver","1786|quiver","1816|quiver","1815|quiver","1817|quiver","1826|quiver","1889|quiver","1898|quiver","1908|quiver","1911|quiver","1933|quiver","2046|quiver","2054|quiver","2056|quiver","5713|quiver","2194|quiver","2226|quiver","2306|quiver","2357|quiver","2381|quiver","2392|quiver","2400|quiver","2435|quiver","2453|quiver","2513|quiver","2524|quiver","2569|quiver","2576|quiver","2580|quiver","2599|quiver","2693|quiver","2733|quiver","1210|quiver","2935|quiver","2958|quiver","2964|quiver","3034|quiver","3068|quiver","3080|quiver","3091|quiver"],
             "Y" : ["850|quiver","949|quiver","1088|quiver","1125|quiver","1159|quiver","1134|quiver","1224|quiver","1369|quiver","1410|quiver","1568|quiver","1577|quiver","1619|quiver","1634|quiver","1646|quiver","1652|quiver","1665|quiver","1681|quiver","1697|quiver","1722|quiver","1766|quiver","1783|quiver","1891|quiver","1937|quiver","1963|quiver","1790|quiver","1997|quiver","2073|quiver","2113|quiver","2163|quiver","2166|quiver","5705|quiver","2245|quiver","2259|quiver","2260|quiver","2334|quiver","2340|quiver","2382|quiver","2443|quiver","2511|quiver","2534|quiver","2573|quiver","2597|quiver","2651|quiver","2707|quiver","2766|quiver","2773|quiver","2791|quiver","2830|quiver","2875|quiver","3022|quiver","3070|quiver","3074|quiver","3075|quiver","3078|quiver"]
         },
+        # "C_maculatus_Kaufmann2023" : {
+        #     "X" : ['utg000057l_1','utg000114l_1','utg000139l_1','utg000191l_1','utg000326l_1','utg000359l_1','utg000532l_1','utg000602l_1'],
+        #     "Y" : ['utg000322l_1','utg000312c_1','utg000610l_1','utg001235l_1']
+        # },
         "C_maculatus" : {
-            "X" : ['utg000057l_1','utg000114l_1','utg000139l_1','utg000191l_1','utg000326l_1','utg000359l_1','utg000532l_1','utg000602l_1'],
-            "Y" : ['utg000322l_1','utg 000312c_1','utg 000610l_1','utg 001235l_1']},
+            "X" : ['scaffold_10','scaffold_14','scaffold_23','scaffold_31','scaffold_34','scaffold_83'],
+            "Y" : ['scaffold_26','scaffold_48','scaffold_103','scaffold_112','scaffold_164']
+        },
         "D_carinulata" : {
             "X" : ['NC_079472.1'],
             "Y" : ['NC_079473.1']
@@ -141,15 +146,9 @@ def print_contig_names_lengths(ENA_assembly, minlen = 1e5, xlist=[], ylist=[]):
             print(f"* {y_contig} : {ENA_name}, {contig_len} bp")
 
 
-def filter_orthogroups_dict(orthogroups_contigs_dict:dict):
-    """
-    filter the orthogroups dict for the fastX analysis. split into several dictionaries:
-    * one_to_one : 1-to-1 orthologs present in all species, regardless of chromosomal position 
-    * gametologs : orthogroups with two gene family members in each species
-    """
 
 
-def get_OG_member_contigs(orthogroups_dict:dict, annotations_dict:dict, max_GF_size:int = 30000):
+def get_OG_member_contigs(orthogroups_dict:dict, annotations_dict:dict, max_GF_size:int = 30000, verbose = True):
     """
     Transform the orthogroups dict with the gene IDs into the same dict but with contig IDs
     the contig IDs come from the gff files in annotations_dict
@@ -194,15 +193,23 @@ def get_OG_member_contigs(orthogroups_dict:dict, annotations_dict:dict, max_GF_s
                     contigs.append(tr_ID)
             
             if genes_not_found != []:
-                genes_not_found_dict[species]= contigs
+                genes_not_found_dict[species]= genes_not_found
             
             orthogroups_contigs_dict[OG_id][species] = contigs
 
-        if genes_not_found_dict !={}:
-            print(f"* {OG_id} genes not found: {genes_not_found_dict}")
+        if genes_not_found_dict !={} and verbose:
+            print(f"* {OG_id} genes present in the orthofinder run not found in the annotation: {genes_not_found_dict}")
         # raise RuntimeError
+
     return orthogroups_contigs_dict
 
+
+def filter_orthogroups_dict(orthogroups_contigs_dict:dict, sex_chromosomes_dict:dict):
+    """
+    filter the orthogroups dict for the fastX analysis. split into several dictionaries:
+    * one_to_one : 1-to-1 orthologs present in all species, regardless of chromosomal position 
+    * gametologs : orthogroups with two gene family members in each species, one on an X and one on a Y
+    """
 
 if __name__ == "__main__":
 
