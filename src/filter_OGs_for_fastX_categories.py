@@ -256,22 +256,32 @@ if __name__ == "__main__":
         print_contig_names_lengths(ENA_assembly=f"{obtectus_dir}A_obtectus_ENA_superscaffolded.fasta", minlen=100e3, xlist=aobt_xlist, ylist=aobt_ylist)
 
     ### TODO 
-    species_list = gff.make_species_order_from_tree(tree)
-    print(species_list)
-    orthogroups = OGs.parse_orthogroups_dict(orthogroups_path)
-    orthogroups_contigs_dict = get_OG_member_contigs(orthogroups, annotations_dict, max_GF_size = 2)
-    print(f"\n{len(orthogroups)} orthogroups in original file, {len(orthogroups_contigs_dict)} in filtered file with contigs\n")
-    
-    OG_example = "N0.HOG0005248"
-    OG_ex = orthogroups[OG_example]
-    print(f"example {OG_example}: {OG_ex}")
-    cont_ex = orthogroups_contigs_dict[OG_example]
-    print(f"example {OG_example}: {cont_ex}")
 
-    fastx_dict = filter_orthogroups_dict(orthogroups_contigs_dict, sex_chr_contigs_dict)
-    print(f"\n fastX-orthogroups:")
-    for key, value in fastx_dict.items():
-        if len(value)<5:
-            print(f"{key} : {len(value)} orthogroups: {value}")
-        else:
-            print(f"{key} : {len(value)} orthogroups")
+    if True:
+        orthogroups = OGs.parse_orthogroups_class(orthogroups_path, verbose=True)
+        print(f"read {len(orthogroups)} Orthogroups")
+        OGs_list = list(orthogroups.keys())
+        # OG_example = OGs_list[0]
+        OG_example = "N0.HOG0005248"
+        print(orthogroups[OG_example])
+
+    if False:
+        orthogroups = OGs.parse_orthogroups_dict(orthogroups_path)
+        species_list = gff.make_species_order_from_tree(tree)
+        print(species_list)
+        orthogroups_contigs_dict = get_OG_member_contigs(orthogroups, annotations_dict, max_GF_size = 2)
+        print(f"\n{len(orthogroups)} orthogroups in original file, {len(orthogroups_contigs_dict)} in filtered file with contigs\n")
+        
+        OG_example = "N0.HOG0005248"
+        OG_ex = orthogroups[OG_example]
+        print(f"example {OG_example}: {OG_ex}")
+        cont_ex = orthogroups_contigs_dict[OG_example]
+        print(f"example {OG_example}: {cont_ex}")
+
+        fastx_dict = filter_orthogroups_dict(orthogroups_contigs_dict, sex_chr_contigs_dict)
+        print(f"\n fastX-orthogroups:")
+        for key, value in fastx_dict.items():
+            if len(value)<5:
+                print(f"{key} : {len(value)} orthogroups: {value}")
+            else:
+                print(f"{key} : {len(value)} orthogroups")

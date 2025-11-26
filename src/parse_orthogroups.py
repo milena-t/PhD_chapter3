@@ -11,6 +11,143 @@ from statistics import mean
 
 
 
+class Orthogroup_Member:
+    """
+    Data structure to contain all the information each orthogorup member can have
+    """
+    def __init__(self, transcript_ID:str, orthogroup_ID:str, species:str) -> None:
+        self.transcript_ID = transcript_ID
+        self.orthogroup_ID = orthogroup_ID
+        self.species = species
+        self.contig = "None" # contig ID
+        self.chromosome_type = "None" # "X", "Y" or "A"
+
+    def __str__(self):
+        if self.chromosome_type == "None" and self.contig == "None":
+            return(
+            f"\t *  transcript: {self.transcript_ID} in species: {self.species}")
+        else:
+            return(
+            f"\t *  transcript: {self.transcript_ID} in species: {self.species} on contig {self.contig} ({self.chromosome_type} chromosome)")
+
+
+class Orthogroup:
+    """ 
+    data structure containing all orthogroup members in a list where each list element is an object of class Orthogroup_Member
+    """
+    def __init__(self, OG_id:str) -> None:
+        self.ID = OG_id
+        self.members = []
+
+    @property
+    def num_members(self):
+        return len(list(self.members.keys()))
+
+    @property
+    def members_by_species(self):
+        ### the usual {species : [ Orthogroup_Member1, Orthogroup_Member2, ...] } except it's the Orthogroup_Member class and not just a transcript ID
+        if self.members == []:
+            raise RuntimeError(f"Orthogroup {self.ID} is empty!")
+        species_dict = {}
+        for OG_member in self.members:
+            curr_species = OG_member.species
+            if curr_species in species_dict:
+                species_dict[curr_species].append(OG_member.transcript_ID)
+            else:
+                species_dict[curr_species] = [OG_member.transcript_ID]
+        return species_dict
+
+    @property
+    def members_by_chromosome(self):
+        """
+        returns a dictionary with the different chromosome types:
+        {
+            A : [ Orthogroup_Member1, Orthogroup_Member2, ...], 
+            X : [...], 
+            Y : [...], 
+            None : [...]
+        }
+        """
+        if self.members == []:
+            raise RuntimeError(f"Orthogroup {self.ID} is empty!")
+        contigs_dict = {
+            "A" : [],
+            "X" : [],
+            "Y" : [],
+            "None" : [] 
+        }
+        for OG_member in self.members:
+            curr_chromosome = OG_member.chromosome_type
+            try:
+                contigs_dict[curr_chromosome].append(OG_member.transcript_ID)
+            except:
+                raise RuntimeError(f"member {OG_member.transcript_ID} of orthogroup {self.ID} has an invalid chromosome type: {curr_chromosome}!")
+        return contigs_dict   
+
+    def add_member(self, og_member:Orthogroup_Member):
+        self.members.append(og_member)
+
+    def __str__(self) -> str:
+        print(f"Orthogroup: {self.ID} has {len(self.members)} members")
+        string_list_orig = [print(OG_member) for OG_member in self.members]
+        string_list = [string for string in string_list_orig if type(string) == str]
+        return "\n".join(string_list)
+
+
+
+def parse_orthogroups_class(filepath, sig_list:list[str] = [], verbose = False, remove_transcript_ID_suffix = True):
+    """
+    Get a dictionary of all the orthogroups like below. if a list of significant orthogroups from CAFE is included then only parse those ones.
+    {orthogroup1_ID : Orthogroup}
+    """
+    out_dict = {}
+    # og_df = pd.read_csv(filepath, sep="\t")
+    # print(og_df)
+
+    if verbose:
+        print(f"reading orthogroups from {filepath}")
+
+    with open(filepath, "r") as N0_infile:
+        N0_infile = N0_infile.readlines()
+        headers = N0_infile[0].strip().split("\t")
+        headers =headers[3:] # remove non-species headers for the orthogroup identifiers
+        headers_clean = [gff.split_at_second_occurrence(header) for header in headers]
+
+        for i, orthogroup_line in enumerate(N0_infile[1:]):
+            orthogroup_line = orthogroup_line.strip().split("\t")
+            if len(orthogroup_line[3:])< len(headers): # the orthogroups line cuts off after the last species with members
+                len_diff = len(headers)-len(orthogroup_line[3:])
+                for i in range(len_diff):
+                    orthogroup_line.append('')
+                
+            orthogroup = orthogroup_line[0] # column 0 for the hierarchical one, otherwise 1 for the old one (which is deprecated because of duplicates)
+            orthogroup_line=orthogroup_line[3:]
+
+            if len(sig_list)>0 and orthogroup not in sig_list:
+                continue # skip this orthogroup
+
+            OG_class = Orthogroup(orthogroup)
+            
+            for column in range(len(orthogroup_line)):
+                species_col = gff.split_at_second_occurrence(headers[column])
+                if len(orthogroup_line[column].split(", "))>0:
+                    transcripts_list = [transcript.replace(f"{species_col}_", "") for transcript in orthogroup_line[column].split(", ")]
+                    for transcript_id in transcripts_list:
+                        if transcript_id != '':
+                            if remove_transcript_ID_suffix:
+                                transcript_id = transcript_id[:-2]
+                            orthogroup_member = Orthogroup_Member(transcript_ID = transcript_id, orthogroup_ID = orthogroup, species = species_col)
+                            OG_class.add_member(orthogroup_member)
+
+            out_dict[orthogroup] = OG_class
+            
+            ### break
+
+    # print(f"{duplicates_count} orthogroups with duplicate names" )
+    return(out_dict)
+
+
+
 def get_orthogroup_sizes(orthogroup_dict, q = 0):
     """
     returns a dict of all orthogroups sizes. Do NOT confuse it with gene family sizes! (get_GF_sizes function instead)
