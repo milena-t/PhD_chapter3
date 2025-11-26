@@ -209,12 +209,46 @@ def filter_orthogroups_dict(orthogroups_contigs_dict:dict, sex_chromosomes_dict:
     filter the orthogroups dict for the fastX analysis. split into several dictionaries:
     * one_to_one : 1-to-1 orthologs present in all species, regardless of chromosomal position 
     * gametologs : orthogroups with two gene family members in each species, one on an X and one on a Y
+    returns a dict where the value is a list of orthogroup IDs that follow the categories
     """
+    out_dict = {
+        "1-to-1" : [],
+        "gametologs" : []  # any GF has a member on the X and one on the Y
+    }
+
+    for OG_id, species_dict in orthogroups_contigs_dict.items():
+
+        one_to_one = True
+        gametologs = False
+        for species, contig_list in species_dict.items():
+            
+            if len(contig_list)!=1 or contig_list[0] == '':
+                one_to_one = False
+            
+            # if len(contig_list) != 2:
+            #     gametologs = False
+        
+            if len(contig_list)==2:
+                x_list = sex_chromosomes_dict[species]["X"]
+                y_list = sex_chromosomes_dict[species]["Y"]
+                xy = contig_list[0] in x_list and contig_list[1] in y_list
+                yx = contig_list[0] in y_list and contig_list[1] in x_list
+
+                if xy or yx: 
+                    gametologs=True
+        
+        if one_to_one:
+            out_dict["1-to-1"].append(OG_id)
+        if gametologs:
+            out_dict["gametologs"].append(OG_id)
+    
+    return out_dict
+
 
 if __name__ == "__main__":
 
     tree, orthogroups_path, proteins_dict, nucleotides_dict, annotations_dict = filepaths()
-
+    sex_chr_contigs_dict = sex_chromosome_names()
     if False:
         obtectus_dir="/Users/miltr339/work/a_obtectus/"
         aobt_xlist = ["chr_10","scaffold_49","scaffold_77","scaffold_108","scaffold_113","scaffold_121","scaffold_133","scaffold_143","scaffold_176","scaffold_186","scaffold_188","scaffold_192","scaffold_200","scaffold_207","scaffold_219","scaffold_227","scaffold_246","scaffold_276","scaffold_319","scaffold_327","scaffold_328","scaffold_341","scaffold_356","scaffold_363","scaffold_365","scaffold_370","scaffold_408","scaffold_411","scaffold_419","scaffold_420","scaffold_435","scaffold_482","scaffold_507","scaffold_524","scaffold_547","scaffold_563","scaffold_589","scaffold_602","scaffold_604","scaffold_621","scaffold_630","scaffold_633","scaffold_676","scaffold_697","scaffold_734","scaffold_768","scaffold_803","scaffold_838","scaffold_840","scaffold_855","scaffold_1045","scaffold_1086","scaffold_1100","scaffold_1154","scaffold_1176","scaffold_1195","scaffold_1209","scaffold_1267","scaffold_1338","scaffold_1339","scaffold_1356","scaffold_1498","scaffold_1564","scaffold_1663","scaffold_1704","scaffold_1759","scaffold_1786","scaffold_1796","scaffold_1822","scaffold_1875","scaffold_1902","scaffold_1913","scaffold_1914","scaffold_1922","scaffold_1949","scaffold_1956","scaffold_1988","scaffold_2012","scaffold_2027","scaffold_2033","scaffold_2041","scaffold_2045","scaffold_2061","scaffold_2071","scaffold_2101","scaffold_2107","scaffold_2124","scaffold_2144","scaffold_2194","scaffold_2225","scaffold_2265","scaffold_2289","scaffold_2371","scaffold_2372","scaffold_2403","scaffold_2469","scaffold_2509","scaffold_2524"]
@@ -226,10 +260,18 @@ if __name__ == "__main__":
     print(species_list)
     orthogroups = OGs.parse_orthogroups_dict(orthogroups_path)
     orthogroups_contigs_dict = get_OG_member_contigs(orthogroups, annotations_dict, max_GF_size = 2)
-    print(f"{len(orthogroups)} orthogroups in original file, {len(orthogroups_contigs_dict)} in filtered file with contigs")
+    print(f"\n{len(orthogroups)} orthogroups in original file, {len(orthogroups_contigs_dict)} in filtered file with contigs\n")
+    
     OG_example = "N0.HOG0005248"
     OG_ex = orthogroups[OG_example]
     print(f"example {OG_example}: {OG_ex}")
     cont_ex = orthogroups_contigs_dict[OG_example]
     print(f"example {OG_example}: {cont_ex}")
 
+    fastx_dict = filter_orthogroups_dict(orthogroups_contigs_dict, sex_chr_contigs_dict)
+    print(f"\n fastX-orthogroups:")
+    for key, value in fastx_dict.items():
+        if len(value)<5:
+            print(f"{key} : {len(value)} orthogroups: {value}")
+        else:
+            print(f"{key} : {len(value)} orthogroups")
