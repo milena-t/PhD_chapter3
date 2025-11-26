@@ -148,7 +148,7 @@ def print_contig_names_lengths(ENA_assembly, minlen = 1e5, xlist=[], ylist=[]):
 
 
 
-def get_OG_member_contigs(orthogroups_dict:dict, annotations_dict:dict, max_GF_size:int = 30000, verbose = True):
+def get_OG_member_contigs(orthogroups_dict:dict, annotations_dict:dict, sex_chromosomes_dict:dict, max_GF_size:int = 30000, verbose = True):
     """
     Transform the orthogroups dict with the gene IDs into the same dict but with contig IDs
     the contig IDs come from the gff files in annotations_dict
@@ -165,43 +165,43 @@ def get_OG_member_contigs(orthogroups_dict:dict, annotations_dict:dict, max_GF_s
     # print(cmac_annot["g14846.t1"])
     # raise RuntimeError
 
-    orthogroups_contigs_dict = {}
-    print(f"\n... replace all gene IDs with contigs")
-    for OG_id, species_dict in tqdm(orthogroups_dict.items()):
+    # orthogroups_contigs_dict = {}
+    print(f"\n... get all contigs for gene IDs")
+    for OG_id, orthogroup_class in tqdm(orthogroups_dict.items()):
+
+        species_dict = orthogroup_class.member_IDs_by_species
+        
         if any(len(GF_list) > max_GF_size for GF_list in species_dict.values()):
             # print(f"{OG_id} excluded because at least one GF has more than {max_GF_size} members")
             continue
         
-        orthogroups_contigs_dict[OG_id] = {}
+        # orthogroups_contigs_dict[OG_id] = {}
         genes_not_found_dict = {}
         for species, GF_transcript_list in species_dict.items():
-            annot_dict = annotations_class_dict[species]
+            annot_dict = annotations_dict[species]
+            sex_chr_dict = sex_chr_contigs_dict[species]
 
-            formatted_transcripts = [tr_ID[:-2] if tr_ID[-2:] == "_1" else tr_ID for tr_ID in GF_transcript_list]
-            
             contigs = []
-            genes_not_found = []
             
-            for tr_ID in formatted_transcripts:
-                if tr_ID != "":
-                    try:
-                        contigs.append(annot_dict[tr_ID].contig)
-                    except:
-                        # print(f"{OG_id}, {species}: gene IDs not found {formatted_transcripts}")
-                        genes_not_found.append(tr_ID)
-                else:
-                    contigs.append(tr_ID)
-            
-            if genes_not_found != []:
-                genes_not_found_dict[species]= genes_not_found
-            
-            orthogroups_contigs_dict[OG_id][species] = contigs
+            for tr_ID in GF_transcript_list:
+                orthogroup_class.members[tr_ID].contig = annot_dict[tr_ID].contig
+                autosome = True
+                for chr_cat in ["X", "Y"]:
+                    if tr_ID in sex_chr_dict[chr_cat]:
+                        orthogroup_class.members[tr_ID].chromosome_type = chr_cat
+                        autosome = False
+                        break
+                if autosome:
+                    orthogroup_class.members[tr_ID].chromosome_type = chr_cat = "A"
+
+            # orthogroups_contigs_dict[OG_id][species] = contigs
 
         if genes_not_found_dict !={} and verbose:
             print(f"* {OG_id} genes present in the orthofinder run not found in the annotation: {genes_not_found_dict}")
         # raise RuntimeError
 
-    return orthogroups_contigs_dict
+    # return orthogroups_contigs_dict
+    return orthogroups_dict
 
 
 def filter_orthogroups_dict(orthogroups_contigs_dict:dict, sex_chromosomes_dict:dict):
@@ -264,6 +264,11 @@ if __name__ == "__main__":
         # OG_example = OGs_list[0]
         OG_example = "N0.HOG0005248"
         print(orthogroups[OG_example])
+        # print(orthogroups[OG_example].member_IDs_by_species)
+        orthogroups_contigs_dict = get_OG_member_contigs(orthogroups, annotations_dict, sex_chr_contigs_dict, max_GF_size = 2)
+
+        OG_example = "N0.HOG0005248"
+        print(orthogroups_contigs_dict[OG_example])
 
     if False:
         orthogroups = OGs.parse_orthogroups_dict(orthogroups_path)

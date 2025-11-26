@@ -25,10 +25,10 @@ class Orthogroup_Member:
     def __str__(self):
         if self.chromosome_type == "None" and self.contig == "None":
             return(
-            f"\t *  transcript: {self.transcript_ID} in species: {self.species}")
+            f"\t *  {self.species} transcript: {self.transcript_ID}")
         else:
             return(
-            f"\t *  transcript: {self.transcript_ID} in species: {self.species} on contig {self.contig} ({self.chromosome_type} chromosome)")
+            f"\t *  {self.species} transcript: {self.transcript_ID}, \t on contig: {self.contig} ({self.chromosome_type} chromosome)")
 
 
 class Orthogroup:
@@ -37,19 +37,20 @@ class Orthogroup:
     """
     def __init__(self, OG_id:str) -> None:
         self.ID = OG_id
-        self.members = []
+        self.members = {}
+
 
     @property
-    def num_members(self):
+    def size(self):
         return len(list(self.members.keys()))
 
     @property
-    def members_by_species(self):
+    def member_IDs_by_species(self):
         ### the usual {species : [ Orthogroup_Member1, Orthogroup_Member2, ...] } except it's the Orthogroup_Member class and not just a transcript ID
-        if self.members == []:
+        if self.members == {}:
             raise RuntimeError(f"Orthogroup {self.ID} is empty!")
         species_dict = {}
-        for OG_member in self.members:
+        for OG_member in self.members.values():
             curr_species = OG_member.species
             if curr_species in species_dict:
                 species_dict[curr_species].append(OG_member.transcript_ID)
@@ -68,7 +69,7 @@ class Orthogroup:
             None : [...]
         }
         """
-        if self.members == []:
+        if self.members == {}:
             raise RuntimeError(f"Orthogroup {self.ID} is empty!")
         contigs_dict = {
             "A" : [],
@@ -76,7 +77,7 @@ class Orthogroup:
             "Y" : [],
             "None" : [] 
         }
-        for OG_member in self.members:
+        for OG_member in self.members.values():
             curr_chromosome = OG_member.chromosome_type
             try:
                 contigs_dict[curr_chromosome].append(OG_member.transcript_ID)
@@ -85,13 +86,19 @@ class Orthogroup:
         return contigs_dict   
 
     def add_member(self, og_member:Orthogroup_Member):
-        self.members.append(og_member)
+        if og_member.transcript_ID not in self.members:
+            self.members[og_member.transcript_ID] = og_member
+        else:
+            raise RuntimeError(f"Duplicate transcript ID {og_member.transcript_ID} in orthogroup {self.ID}")
 
     def __str__(self) -> str:
         print(f"Orthogroup: {self.ID} has {len(self.members)} members")
-        string_list_orig = [print(OG_member) for OG_member in self.members]
+        string_list_orig = [print(OG_member) for OG_member in self.members.values()]
         string_list = [string for string in string_list_orig if type(string) == str]
         return "\n".join(string_list)
+
+    def __repr__(self):
+        return "Orthogroup"
 
 
 
