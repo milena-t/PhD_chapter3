@@ -222,15 +222,24 @@ if __name__ == "__main__":
         print(f"read {len(orthogroups)} Orthogroups")
         OGs_list = list(orthogroups.keys())
         # OG_example = OGs_list[0]
-        OG_example = "N0.HOG0005248"
-        print(orthogroups[OG_example])
+        # OG_example = "N0.HOG0005248"
+        # print(orthogroups[OG_example])
         # print(orthogroups[OG_example].member_IDs_by_species)
-        orthogroups_contigs_dict = get_OG_member_contigs(orthogroups, annotations_dict, sex_chr_contigs_dict, max_GF_size = 2)
 
+        ### TODO something is still weird
+        # * nothingis filtered for max_GF_size
+        # * no X or Y contigs are assigned
+        orthogroups_contigs_dict = get_OG_member_contigs(orthogroups, annotations_dict, sex_chr_contigs_dict , max_GF_size = 2)
+        
         OG_example = "N0.HOG0005248"
         print(orthogroups_contigs_dict[OG_example])
 
+        for OG_id, orthogroup in orthogroups_contigs_dict.items():
+            print(OG_id)
+            if orthogroup.is_on_chr_type("Y"):
+                print(orthogroup)
 
+        print(f"\n{len(orthogroups)} orthogroups in original file, {len(orthogroups_contigs_dict)} in filtered file with contigs\n")
 
     if False:
         orthogroups = OGs.parse_orthogroups_dict(orthogroups_path)

@@ -97,6 +97,23 @@ class Orthogroup:
         species_set = set(species_list)
         return species_list == species_set
 
+    def is_on_chr_type(self, chr_type, only_this_type = False):
+        """
+        is this orthogroup on X|Y|A ? 
+        """
+        if chr_type not in ["X", "Y", "A", "None"]:
+            raise RuntimeError(f"{chr_type} is an invalid chromosome type, please use 'X', 'Y', 'A', or 'None'")
+
+        chr_type_list = [member_transcript.chromosome_type for member_transcript in self.members.values()]
+        chr_type_unique = list(set(chr_type_list))
+        if only_this_type:
+            if len(chr_type_unique)!=1 or chr_type_unique[0] != chr_type:
+                return False
+            else:
+                return True
+        else:
+            return chr_type in chr_type_unique
+
     def add_member(self, og_member:Orthogroup_Member):
         if og_member.transcript_ID not in self.members:
             self.members[og_member.transcript_ID] = og_member
