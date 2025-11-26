@@ -46,7 +46,7 @@ class Orthogroup:
 
     @property
     def member_IDs_by_species(self):
-        ### the usual {species : [ Orthogroup_Member1, Orthogroup_Member2, ...] } except it's the Orthogroup_Member class and not just a transcript ID
+        ### the usual {species : [ transcript_ID, transcript_ID, ...] } except it's the Orthogroup_Member class and not just a transcript ID
         if self.members == {}:
             raise RuntimeError(f"Orthogroup {self.ID} is empty!")
         species_dict = {}
@@ -84,6 +84,15 @@ class Orthogroup:
             except:
                 raise RuntimeError(f"member {OG_member.transcript_ID} of orthogroup {self.ID} has an invalid chromosome type: {curr_chromosome}!")
         return contigs_dict   
+
+    @property
+    def is_one_to_one(self):
+        """
+        is this orthogroup made up of 1-to-1 orthologs? returns True|False
+        """
+        species_list = [member_transcript.species for member_transcript in self.members.values()]
+        species_set = set(species_list)
+        return species_list == species_set
 
     def add_member(self, og_member:Orthogroup_Member):
         if og_member.transcript_ID not in self.members:

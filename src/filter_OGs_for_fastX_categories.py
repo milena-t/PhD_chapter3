@@ -204,46 +204,6 @@ def get_OG_member_contigs(orthogroups_dict:dict, annotations_dict:dict, sex_chro
     return orthogroups_dict
 
 
-def filter_orthogroups_dict(orthogroups_contigs_dict:dict, sex_chromosomes_dict:dict):
-    """
-    filter the orthogroups dict for the fastX analysis. split into several dictionaries:
-    * one_to_one : 1-to-1 orthologs present in all species, regardless of chromosomal position 
-    * gametologs : orthogroups with two gene family members in each species, one on an X and one on a Y
-    returns a dict where the value is a list of orthogroup IDs that follow the categories
-    """
-    out_dict = {
-        "1-to-1" : [],
-        "gametologs" : []  # any GF has a member on the X and one on the Y
-    }
-
-    for OG_id, species_dict in orthogroups_contigs_dict.items():
-
-        one_to_one = True
-        gametologs = False
-        for species, contig_list in species_dict.items():
-            
-            if len(contig_list)!=1 or contig_list[0] == '':
-                one_to_one = False
-            
-            # if len(contig_list) != 2:
-            #     gametologs = False
-        
-            if len(contig_list)==2:
-                x_list = sex_chromosomes_dict[species]["X"]
-                y_list = sex_chromosomes_dict[species]["Y"]
-                xy = contig_list[0] in x_list and contig_list[1] in y_list
-                yx = contig_list[0] in y_list and contig_list[1] in x_list
-
-                if xy or yx: 
-                    gametologs=True
-        
-        if one_to_one:
-            out_dict["1-to-1"].append(OG_id)
-        if gametologs:
-            out_dict["gametologs"].append(OG_id)
-    
-    return out_dict
-
 
 if __name__ == "__main__":
 
@@ -269,6 +229,8 @@ if __name__ == "__main__":
 
         OG_example = "N0.HOG0005248"
         print(orthogroups_contigs_dict[OG_example])
+
+
 
     if False:
         orthogroups = OGs.parse_orthogroups_dict(orthogroups_path)
