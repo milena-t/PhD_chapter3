@@ -26,7 +26,10 @@ class Orthogroup_Member:
         if self.chromosome_type == "None" and self.contig == "None":
             return(
             f"\t *  {self.species} transcript: {self.transcript_ID}")
-        else:
+        elif self.chromosome_type == "None" and self.contig != "None":
+            return(
+            f"\t *  {self.species} transcript: {self.transcript_ID}, \t on contig: {self.contig}")
+        elif self.chromosome_type != "None" and self.contig != "None":
             return(
             f"\t *  {self.species} transcript: {self.transcript_ID}, \t on contig: {self.contig} ({self.chromosome_type} chromosome)")
 
