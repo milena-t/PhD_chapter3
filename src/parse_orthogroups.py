@@ -63,7 +63,7 @@ class Orthogroup:
         """
         returns a dictionary with the different chromosome types:
         {
-            A : [ Orthogroup_Member1, Orthogroup_Member2, ...], 
+            A : [ transcript_ID, transcript_ID, ...], 
             X : [...], 
             Y : [...], 
             None : [...]
