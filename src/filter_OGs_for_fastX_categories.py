@@ -233,36 +233,36 @@ if __name__ == "__main__":
         # * nothingis filtered for max_GF_size
         # * no X or Y contigs are assigned
         orthogroups_contigs_dict = get_OG_member_contigs(orthogroups, annotations_dict, sex_chr_contigs_dict)# , max_GF_size = 2)
-        print(f"\n{len(orthogroups)} orthogroups in original file, {len(orthogroups_contigs_dict)} in filtered file with contigs\n")
+        if len(orthogroups) == len(orthogroups_contigs_dict):
+            print(f"\n{len(orthogroups)} orthogroups in original file, {len(orthogroups_contigs_dict)} in filtered file with contigs\n")
         
         OG_example = "N0.HOG0005248"
         # print(orthogroups_contigs_dict[OG_example])
 
         count_gametologs = 0
+        count_onetoone = 0
+        count_onetoone_X = 0
+        count_onetoone_A = 0
+        count_onetoone_mixed = 0
         for OG_id, orthogroup in orthogroups_contigs_dict.items():
             if orthogroup.has_gametolog:
-                print(orthogroup)
+                # print(orthogroup)
                 count_gametologs += 1
+            if orthogroup.is_one_to_one:
+                count_onetoone += 1
+                if orthogroup.is_on_chr_type("X", exclusive = True):
+                    count_onetoone_X += 1
+                elif orthogroup.is_on_chr_type("A", exclusive = True):
+                    count_onetoone_A += 1
+                else:
+                    count_onetoone_mixed += 1
+
         print(f"{count_gametologs} orthogroups contain gametologs")
+        print(f"""
+{count_onetoone} 1-to-1 orthologs,
+    * {count_onetoone_X} exclusively X-linked
+    * {count_onetoone_A} exclusively A-linked
+    * {count_onetoone_mixed} from different chromosome types
+""")
 
 
-    if False:
-        orthogroups = OGs.parse_orthogroups_dict(orthogroups_path)
-        species_list = gff.make_species_order_from_tree(tree)
-        print(species_list)
-        orthogroups_contigs_dict = get_OG_member_contigs(orthogroups, annotations_dict, max_GF_size = 2)
-        print(f"\n{len(orthogroups)} orthogroups in original file, {len(orthogroups_contigs_dict)} in filtered file with contigs\n")
-        
-        OG_example = "N0.HOG0005248"
-        OG_ex = orthogroups[OG_example]
-        print(f"example {OG_example}: {OG_ex}")
-        cont_ex = orthogroups_contigs_dict[OG_example]
-        print(f"example {OG_example}: {cont_ex}")
-
-        fastx_dict = filter_orthogroups_dict(orthogroups_contigs_dict, sex_chr_contigs_dict)
-        print(f"\n fastX-orthogroups:")
-        for key, value in fastx_dict.items():
-            if len(value)<5:
-                print(f"{key} : {len(value)} orthogroups: {value}")
-            else:
-                print(f"{key} : {len(value)} orthogroups")

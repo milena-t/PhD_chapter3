@@ -31,21 +31,34 @@ class Orthogroup_Member:
             f"\t *  {self.species} transcript: {self.transcript_ID}, \t on contig: {self.contig}")
         elif self.chromosome_type != "None" and self.contig != "None":
             return(
-            f"\t *  {self.species} transcript: {self.transcript_ID}, \t on contig: {self.contig} ({self.chromosome_type} chromosome)")
+            f"\t *  {self.species} transcript: {self.transcript_ID}, \t {self.chromosome_type} chromosome (on contig: {self.contig})")
 
 
 class Orthogroup:
     """ 
-    data structure containing all orthogroup members in a list where each list element is an object of class Orthogroup_Member
+    data structure containing all orthogroup members:
+    {
+        Orthogroup_ID : {
+            transcript1_ID : Orthogroup_Member1,
+            transcript2_ID : Orthogroup_Member2,
+            ...
+        }
+    }
     """
     def __init__(self, OG_id:str) -> None:
         self.ID = OG_id
         self.members = {}
 
 
+    def add_member(self, og_member:Orthogroup_Member):
+        if og_member.transcript_ID not in self.members:
+            self.members[og_member.transcript_ID] = og_member
+        else:
+            raise RuntimeError(f"Duplicate transcript ID {og_member.transcript_ID} in orthogroup {self.ID}")
+
     @property
     def size(self):
-        return len(list(self.members.keys()))
+        return len(self.members)
 
     @property
     def member_IDs_by_species(self):
@@ -101,7 +114,7 @@ class Orthogroup:
         species_list = [member_transcript.species for member_transcript in self.members.values()]
         if len(species_list)>1:
             species_set = set(species_list)
-            return species_list == species_set
+            return len(species_list) == len(species_set)
         else:
             return False
 
@@ -124,7 +137,7 @@ class Orthogroup:
         return False
 
  
-    def is_on_chr_type(self, chr_type, only_this_type = False):
+    def is_on_chr_type(self, chr_type, exclusive = False):
         """
         is this orthogroup on X|Y|A ? 
         """
@@ -133,7 +146,7 @@ class Orthogroup:
 
         chr_type_list = [member_transcript.chromosome_type for member_transcript in self.members.values()]
         chr_type_unique = list(set(chr_type_list))
-        if only_this_type:
+        if exclusive:
             if len(chr_type_unique)!=1 or chr_type_unique[0] != chr_type:
                 return False
             else:
@@ -141,16 +154,13 @@ class Orthogroup:
         else:
             return chr_type in chr_type_unique
 
-    def add_member(self, og_member:Orthogroup_Member):
-        if og_member.transcript_ID not in self.members:
-            self.members[og_member.transcript_ID] = og_member
-        else:
-            raise RuntimeError(f"Duplicate transcript ID {og_member.transcript_ID} in orthogroup {self.ID}")
 
     def __str__(self) -> str:
-        print(f"Orthogroup: {self.ID} has {len(self.members)} members")
+        species_list = [OG_member.species for OG_member in self.members.values()]
+        species_unique = list(set(species_list))
+        print(f"Orthogroup: {self.ID} has {len(self.members)} members in {len(species_unique)} species:")
         string_list_orig = [print(OG_member) for OG_member in self.members.values()]
-        string_list = [string for string in string_list_orig if type(string) == str]
+        string_list = [string for i, string in enumerate(string_list_orig) if type(string) == str]
         return "\n".join(string_list)
 
     def __repr__(self):
