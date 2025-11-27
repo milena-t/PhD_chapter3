@@ -49,7 +49,9 @@ class Orthogroup:
 
     @property
     def member_IDs_by_species(self):
-        ### the usual {species : [ transcript_ID, transcript_ID, ...] } except it's the Orthogroup_Member class and not just a transcript ID
+        """
+        the usual {species : [ transcript_ID, transcript_ID, ...] } except it's the Orthogroup_Member class and not just a transcript ID
+        """
         if self.members == {}:
             raise RuntimeError(f"Orthogroup {self.ID} is empty!")
         species_dict = {}
@@ -88,15 +90,40 @@ class Orthogroup:
                 raise RuntimeError(f"member {OG_member.transcript_ID} of orthogroup {self.ID} has an invalid chromosome type: {curr_chromosome}!")
         return contigs_dict   
 
+
     @property
     def is_one_to_one(self):
         """
         is this orthogroup made up of 1-to-1 orthologs? returns True|False
         """
+        if self.members == {}:
+            raise RuntimeError(f"Orthogroup {self.ID} is empty!")
         species_list = [member_transcript.species for member_transcript in self.members.values()]
-        species_set = set(species_list)
-        return species_list == species_set
+        if len(species_list)>1:
+            species_set = set(species_list)
+            return species_list == species_set
+        else:
+            return False
 
+    @property
+    def has_gametolog(self):
+        """
+        does the orthogroup contain gametologs?
+        any species in the orthogroup where there is one gene family members on the X and one on the Y
+        """
+        if self.members == {}:
+            raise RuntimeError(f"Orthogroup {self.ID} is empty!")
+        # species_list = [member_transcript.species for member_transcript in self.members.values()]
+        species_chromosomes = {member_transcript.species : [] for member_transcript in self.members.values()}
+        for member in self.members.values():
+            species_chromosomes[member.species].append(member.chromosome_type)
+        
+        for chromosome_list in species_chromosomes.values():
+            if "X" in chromosome_list and "Y" in chromosome_list:
+                return True
+        return False
+
+ 
     def is_on_chr_type(self, chr_type, only_this_type = False):
         """
         is this orthogroup on X|Y|A ? 

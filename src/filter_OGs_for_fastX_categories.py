@@ -165,8 +165,8 @@ def get_OG_member_contigs(orthogroups_dict:dict, annotations_dict:dict, sex_chro
     # print(cmac_annot["g14846.t1"])
     # raise RuntimeError
 
-    # orthogroups_contigs_dict = {}
-    print(f"\n... get all contigs for gene IDs")
+    orthogroups_contigs_dict = {}
+    print(f"\n * assign chromosomes to transcript IDs")
     for OG_id, orthogroup_class in tqdm(orthogroups_dict.items()):
 
         species_dict = orthogroup_class.member_IDs_by_species
@@ -175,33 +175,36 @@ def get_OG_member_contigs(orthogroups_dict:dict, annotations_dict:dict, sex_chro
             # print(f"{OG_id} excluded because at least one GF has more than {max_GF_size} members")
             continue
         
-        # orthogroups_contigs_dict[OG_id] = {}
         genes_not_found_dict = {}
         for species, GF_transcript_list in species_dict.items():
             annot_dict = annotations_dict[species]
-            sex_chr_dict = sex_chr_contigs_dict[species]
-
-            contigs = []
+            sex_chr_dict = sex_chromosomes_dict[species]
             
             for tr_ID in GF_transcript_list:
-                orthogroup_class.members[tr_ID].contig = annot_dict[tr_ID].contig
+                try:
+                    transcript_contig = annot_dict[tr_ID].contig
+                except:
+                    raise RuntimeError(f"{species} transcript {tr_ID} (orthogroup {OG_id}) is not found in the given assembly for {species}: \n\t --> {annotations_dict[species]}")
+                orthogroup_class.members[tr_ID].contig = transcript_contig
                 autosome = True
                 for chr_cat in ["X", "Y"]:
-                    if tr_ID in sex_chr_dict[chr_cat]:
+                    if transcript_contig in sex_chr_dict[chr_cat]:
                         orthogroup_class.members[tr_ID].chromosome_type = chr_cat
                         autosome = False
                         break
+                # this is a bit sensitive because I don't actually have a dict that contains the autosomes.
+                # it should be fine, since if transcript_contig can catch errors, but 
                 if autosome:
                     orthogroup_class.members[tr_ID].chromosome_type = chr_cat = "A"
 
-            # orthogroups_contigs_dict[OG_id][species] = contigs
+        orthogroups_contigs_dict[OG_id] = orthogroup_class
 
         if genes_not_found_dict !={} and verbose:
             print(f"* {OG_id} genes present in the orthofinder run not found in the annotation: {genes_not_found_dict}")
         # raise RuntimeError
 
-    # return orthogroups_contigs_dict
-    return orthogroups_dict
+    return orthogroups_contigs_dict
+    # return orthogroups_dict
 
 
 
@@ -229,17 +232,19 @@ if __name__ == "__main__":
         ### TODO something is still weird
         # * nothingis filtered for max_GF_size
         # * no X or Y contigs are assigned
-        orthogroups_contigs_dict = get_OG_member_contigs(orthogroups, annotations_dict, sex_chr_contigs_dict , max_GF_size = 2)
+        orthogroups_contigs_dict = get_OG_member_contigs(orthogroups, annotations_dict, sex_chr_contigs_dict)# , max_GF_size = 2)
+        print(f"\n{len(orthogroups)} orthogroups in original file, {len(orthogroups_contigs_dict)} in filtered file with contigs\n")
         
         OG_example = "N0.HOG0005248"
-        print(orthogroups_contigs_dict[OG_example])
+        # print(orthogroups_contigs_dict[OG_example])
 
+        count_gametologs = 0
         for OG_id, orthogroup in orthogroups_contigs_dict.items():
-            print(OG_id)
-            if orthogroup.is_on_chr_type("Y"):
+            if orthogroup.has_gametolog:
                 print(orthogroup)
+                count_gametologs += 1
+        print(f"{count_gametologs} orthogroups contain gametologs")
 
-        print(f"\n{len(orthogroups)} orthogroups in original file, {len(orthogroups_contigs_dict)} in filtered file with contigs\n")
 
     if False:
         orthogroups = OGs.parse_orthogroups_dict(orthogroups_path)
