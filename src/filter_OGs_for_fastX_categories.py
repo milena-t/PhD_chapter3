@@ -261,7 +261,7 @@ def write_orthogroups_contigs_to_file(orthogroups:dict, sex_chromosomes_contigs_
 
             OG_species_list = orthogroup.member_species_list
             # only include 1-to-1 orthologs that have a member in all species in the species list
-            if len(species_list) != len(OG_species_list):
+            if len(set(species_list) - set(OG_species_list))>0:
                 # print(f"{orthogroup.ID} does not contain all species")
                 continue
 
@@ -306,8 +306,8 @@ def plot_orthogroup_sex_chromosome_table(orthogroups_sex_chromosomes_file, filte
 
     # Plotting
     plot_name = orthogroups_sex_chromosomes_file.split(".")[0]+"_upset_plot.png"
-    plt.suptitle("X chromosome presence/absence of single-copy orthologs")
-    plt.savefig(plot_name, dpi = 300)
+    plt.suptitle("X chromosome presence of single-copy orthologs")
+    plt.savefig(plot_name, dpi = 300, transparent = True)
     print(f"plot saved here: {plot_name}") 
 
 if __name__ == "__main__":
@@ -335,6 +335,8 @@ if __name__ == "__main__":
             print(f"\n{len(orthogroups)} orthogroups in original file, {len(orthogroups_contigs_dict)} in filtered file with contigs\n")
 
         binary_file_for_upset = write_orthogroups_contigs_to_file(orthogroups=orthogroups_contigs_dict, sex_chromosomes_contigs_file = f"{data_dir}/orthogroups_by_contig.tsv", species_list=tree_species_list, binary_file = True)
+        # binary_file_for_upset = write_orthogroups_contigs_to_file(orthogroups=orthogroups_contigs_dict, sex_chromosomes_contigs_file = f"{data_dir}/orthogroups_by_contig.tsv", species_list=['A_obtectus', 'B_siliquastri', 'C_maculatus', 'C_chinensis'], binary_file = True)
+        # binary_file_for_upset = write_orthogroups_contigs_to_file(orthogroups=orthogroups_contigs_dict, sex_chromosomes_contigs_file = f"{data_dir}/orthogroups_by_contig.tsv", species_list=['D_carinulata', 'D_sublineata'], binary_file = True)
         
         if False:
             OG_example = "N0.HOG0005248"
