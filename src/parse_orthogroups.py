@@ -15,12 +15,12 @@ class Orthogroup_Member:
     """
     Data structure to contain all the information each orthogorup member can have
     """
-    def __init__(self, transcript_ID:str, orthogroup_ID:str, species:str) -> None:
+    def __init__(self, orthogroup_ID:str, species:str, transcript_ID:str = "None", contig:str = "None", chromosome_type:str = "None") -> None:
         self.transcript_ID = transcript_ID
         self.orthogroup_ID = orthogroup_ID
         self.species = species
-        self.contig = "None" # contig ID
-        self.chromosome_type = "None" # "X", "Y" or "A"
+        self.contig = contig # contig ID
+        self.chromosome_type = chromosome_type # "X", "Y" or "A"
 
     def __str__(self):
         if self.chromosome_type == "None" and self.contig == "None":
@@ -56,14 +56,43 @@ class Orthogroup:
         else:
             raise RuntimeError(f"Duplicate transcript ID {og_member.transcript_ID} in orthogroup {self.ID}")
 
+
     @property
     def size(self):
         return len(self.members)
 
+
+    @property
+    def member_species_list(self):
+        species_list = []
+        if self.members == {}:
+            raise RuntimeError(f"Orthogroup {self.ID} is empty!")
+        for OG_member in self.members.values():
+            species_list.append(OG_member.species)
+        species_list_unique = list(set(species_list))
+        return species_list_unique
+
+
+    @property
+    def member_IDs_by_X_chr_type(self):
+        """
+        the usual {species : [ chromosome_type, chromosome_type, ...] } 
+        """
+        if self.members == {}:
+            raise RuntimeError(f"Orthogroup {self.ID} is empty!")
+        species_dict = {}
+        for OG_member in self.members.values():
+            curr_species = OG_member.species
+            if curr_species in species_dict:
+                species_dict[curr_species].append(OG_member.chromosome_type)
+            else:
+                species_dict[curr_species] = [OG_member.chromosome_type]
+        return species_dict
+
     @property
     def member_IDs_by_species(self):
         """
-        the usual {species : [ transcript_ID, transcript_ID, ...] } except it's the Orthogroup_Member class and not just a transcript ID
+        the usual {species : [ transcript_ID, transcript_ID, ...] }
         """
         if self.members == {}:
             raise RuntimeError(f"Orthogroup {self.ID} is empty!")
@@ -153,6 +182,43 @@ class Orthogroup:
                 return True
         else:
             return chr_type in chr_type_unique
+
+
+    def contains_species(self, species_name:str, exclusive = False) -> bool:
+        """
+        is the species given in species_name part of the orthogroup? 
+        if exclusive, is the orthogroup made up only of this species?
+        """
+        if self.members == {}:
+            raise RuntimeError(f"Orthogroup {self.ID} is empty!")
+        species_list = [member_transcript.species for member_transcript in self.members.values()]
+        if exclusive:
+            species_unique = list(set(species_list))
+            if len(species_unique) == 1 and species_unique[0] == species_name:
+                return True
+        elif species_name in species_list:
+            return True
+        else:
+            return False
+
+    
+    def exclude_species(self, species_name:str):
+        """
+        return a new version of the orthogroup that has all transcripts of one species removed
+        """
+        if self.members == {}:
+            raise RuntimeError(f"Orthogroup {self.ID} is empty!")
+        if self.contains_species(species_name=species_name) == False:
+            raise RuntimeError(f"Orthogroup {self.ID} does not contain species {species_name}")
+        orthogroup2 = self
+        orthogroup2.members = {}
+        for transcript_ID, transcript in self.members.items():
+            if transcript.species == species_name:
+                continue
+            else:
+                orthogroup2.add_member(transcript)
+
+        return orthogroup2
 
 
     def __str__(self) -> str:

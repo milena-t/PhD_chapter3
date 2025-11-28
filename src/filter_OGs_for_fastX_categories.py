@@ -4,6 +4,11 @@ import parse_orthogroups as OGs
 import parse_gff as gff
 from Bio import SeqIO
 from tqdm import tqdm
+import pandas as pd
+from collections import defaultdict
+import upsetplot
+import matplotlib.pyplot as plt
+import numpy as np
 
 def filepaths(username = "miltr339"):
     """
@@ -207,62 +212,141 @@ def get_OG_member_contigs(orthogroups_dict:dict, annotations_dict:dict, sex_chro
     # return orthogroups_dict
 
 
+def write_orthogroups_contigs_to_file(orthogroups:dict, sex_chromosomes_contigs_file:str = "orthogroups_by_contig.tsv", species_list = [], binary_file = False, species_exclude = ""):
+    """
+    make a tsv file for all the 1-to-1 orthogroups that contains the contig positions instead of the transcript IDs
+    You can make a file that contains the chromosome IDs, or a binary file that has 1 and 0 for presence/absence on the X chromosome
+    """
+    if species_list ==[]:
+        ## get species list
+        for orthogroup in orthogroups.values():
+            member_species = orthogroup.member_species_list
+            species_list.extend(member_species)
+        species_list = list(set(member_species))
+        print(f"species list undefined, complete species list inferred from orthogroups data: {species_list}")
+    else:
+        print(f"species list given: {species_list} ({len(species_list)} members)")
+    
+    if species_exclude != "" and species_exclude in species_list:
+        species_list.remove(species_exclude)
+    elif species_exclude != "" and species_exclude not in species_list:
+        print(f"{species_exclude} was not excluded because it is not in {species_list}")
+    elif species_exclude == "":
+        print(f"all species included")
+
+    header_t = "\t".join(species_list)
+    header = f"orthogroup\t{header_t}\n"
+
+    if binary_file:
+        chr_dict = {
+        "X" :"1",
+        "A" :"0",
+        "Y" :"0",
+        "None": "0"}
+    else:
+        chr_dict = {
+        "X" :"X",
+        "A" :"A",
+        "Y" :"Y",
+        "None": "None"}
+
+    with open(sex_chromosomes_contigs_file, "w") as outfile:
+        outfile.write(header)
+        for orthogroup in orthogroups.values():
+
+            # only include 1-to-1 orthologs
+            if orthogroup.is_one_to_one == False:
+                continue
+
+            OG_species_list = orthogroup.member_species_list
+            # only include 1-to-1 orthologs that have a member in all species in the species list
+            if len(species_list) != len(OG_species_list):
+                print(f"{orthogroup.ID} does not contain all species")
+                continue
+
+            OG_dict = {orthogroup_member.species : orthogroup_member.chromosome_type for orthogroup_member in orthogroup.members.values()}
+            # if len(OG_dict)<len(species_list):
+            #     print(orthogroup)
+            #     print(f"{orthogroup.ID} does not contain all species")
+            OG_list = [chr_dict[OG_dict[species]] for species in species_list]
+            OG_line = "\t".join(OG_list)
+            whole_line = f"{orthogroup.ID}\t{OG_line}\n"
+            outfile.write(whole_line)
+    
+    print(f"orthogroup contigs outfile written to {sex_chromosomes_contigs_file}")
+
+    return sex_chromosomes_contigs_file
+
+    
+
 
 if __name__ == "__main__":
 
-    tree, orthogroups_path, proteins_dict, nucleotides_dict, annotations_dict = filepaths()
+    username = "miltr339"
+    data_dir = f"/Users/{username}/work/PhD_code/PhD_chapter3/data/orthofinder"
+    tree, orthogroups_path, proteins_dict, nucleotides_dict, annotations_dict = filepaths(username=username)
+    tree_species_list = gff.make_species_order_from_tree(tree)
     sex_chr_contigs_dict = sex_chromosome_names()
+    binary_file_for_upset = f"/Users/{username}/work/PhD_code/PhD_chapter3/data/orthofinder/orthogroups_by_contig.tsv"
+
     if False:
         obtectus_dir="/Users/miltr339/work/a_obtectus/"
         aobt_xlist = ["chr_10","scaffold_49","scaffold_77","scaffold_108","scaffold_113","scaffold_121","scaffold_133","scaffold_143","scaffold_176","scaffold_186","scaffold_188","scaffold_192","scaffold_200","scaffold_207","scaffold_219","scaffold_227","scaffold_246","scaffold_276","scaffold_319","scaffold_327","scaffold_328","scaffold_341","scaffold_356","scaffold_363","scaffold_365","scaffold_370","scaffold_408","scaffold_411","scaffold_419","scaffold_420","scaffold_435","scaffold_482","scaffold_507","scaffold_524","scaffold_547","scaffold_563","scaffold_589","scaffold_602","scaffold_604","scaffold_621","scaffold_630","scaffold_633","scaffold_676","scaffold_697","scaffold_734","scaffold_768","scaffold_803","scaffold_838","scaffold_840","scaffold_855","scaffold_1045","scaffold_1086","scaffold_1100","scaffold_1154","scaffold_1176","scaffold_1195","scaffold_1209","scaffold_1267","scaffold_1338","scaffold_1339","scaffold_1356","scaffold_1498","scaffold_1564","scaffold_1663","scaffold_1704","scaffold_1759","scaffold_1786","scaffold_1796","scaffold_1822","scaffold_1875","scaffold_1902","scaffold_1913","scaffold_1914","scaffold_1922","scaffold_1949","scaffold_1956","scaffold_1988","scaffold_2012","scaffold_2027","scaffold_2033","scaffold_2041","scaffold_2045","scaffold_2061","scaffold_2071","scaffold_2101","scaffold_2107","scaffold_2124","scaffold_2144","scaffold_2194","scaffold_2225","scaffold_2265","scaffold_2289","scaffold_2371","scaffold_2372","scaffold_2403","scaffold_2469","scaffold_2509","scaffold_2524"]
         aobt_ylist = ["scaffold_13","scaffold_36","scaffold_120","scaffold_150","scaffold_152","scaffold_265","scaffold_284","scaffold_287","scaffold_303","scaffold_618","scaffold_1035","scaffold_1472","scaffold_1594","scaffold_1702","scaffold_2097","scaffold_2445"]
         print_contig_names_lengths(ENA_assembly=f"{obtectus_dir}A_obtectus_ENA_superscaffolded.fasta", minlen=100e3, xlist=aobt_xlist, ylist=aobt_ylist)
 
-    ### TODO 
-
+    
+    ## make contigs file
     if True:
         orthogroups = OGs.parse_orthogroups_class(orthogroups_path, verbose=True)
-        print(f"read {len(orthogroups)} Orthogroups")
-        OGs_list = list(orthogroups.keys())
-        # OG_example = OGs_list[0]
-        # OG_example = "N0.HOG0005248"
-        # print(orthogroups[OG_example])
-        # print(orthogroups[OG_example].member_IDs_by_species)
-
-        ### TODO something is still weird
-        # * nothingis filtered for max_GF_size
-        # * no X or Y contigs are assigned
+        ## assign sex chromosomes
         orthogroups_contigs_dict = get_OG_member_contigs(orthogroups, annotations_dict, sex_chr_contigs_dict)# , max_GF_size = 2)
         if len(orthogroups) == len(orthogroups_contigs_dict):
             print(f"\n{len(orthogroups)} orthogroups in original file, {len(orthogroups_contigs_dict)} in filtered file with contigs\n")
+
+        binary_file_for_upset = write_orthogroups_contigs_to_file(orthogroups=orthogroups_contigs_dict, sex_chromosomes_contigs_file = f"{data_dir}/orthogroups_by_contig.tsv", species_list=tree_species_list, binary_file = True)
         
-        OG_example = "N0.HOG0005248"
-        # print(orthogroups_contigs_dict[OG_example])
+        if False:
+            OG_example = "N0.HOG0005248"
+            print(orthogroups_contigs_dict[OG_example])
+            species_example = orthogroups_contigs_dict[OG_example].member_species_list
+            print(species_example)
 
-        count_gametologs = 0
-        count_onetoone = 0
-        count_onetoone_X = 0
-        count_onetoone_A = 0
-        count_onetoone_mixed = 0
-        for OG_id, orthogroup in orthogroups_contigs_dict.items():
-            if orthogroup.has_gametolog:
-                # print(orthogroup)
-                count_gametologs += 1
-            if orthogroup.is_one_to_one:
-                count_onetoone += 1
-                if orthogroup.is_on_chr_type("X", exclusive = True):
-                    count_onetoone_X += 1
-                elif orthogroup.is_on_chr_type("A", exclusive = True):
-                    count_onetoone_A += 1
-                else:
-                    count_onetoone_mixed += 1
+        if False:
+            count_gametologs = 0
+            count_onetoone = 0
+            count_onetoone_X = 0
+            count_onetoone_A = 0
+            count_onetoone_mixed = 0
+            for OG_id, orthogroup in orthogroups_contigs_dict.items():
+                if orthogroup.has_gametolog:
+                    # print(orthogroup)
+                    count_gametologs += 1
+                if orthogroup.is_one_to_one:
+                    count_onetoone += 1
+                    # try:
+                    #     orthogroup_no_obt = orthogroup.exclude_species("A_obtectus")
+                    # except:
+                    #     orthogroup_no_obt = orthogroup
 
-        print(f"{count_gametologs} orthogroups contain gametologs")
-        print(f"""
+                    if orthogroup.is_on_chr_type("X", exclusive = True):
+                        count_onetoone_X += 1
+                    elif orthogroup.is_on_chr_type("A", exclusive = True):
+                        count_onetoone_A += 1
+                    else:
+                        count_onetoone_mixed += 1
+
+            print(f"{count_gametologs} orthogroups contain gametologs")
+            print(f"""
 {count_onetoone} 1-to-1 orthologs,
     * {count_onetoone_X} exclusively X-linked
     * {count_onetoone_A} exclusively A-linked
     * {count_onetoone_mixed} from different chromosome types
 """)
+
+
+    ## make upset plot
+    if True:
+        pass
 
 
