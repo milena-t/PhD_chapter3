@@ -109,7 +109,14 @@ def read_best_hits(blast_infile_path:str) -> dict:
             line = line.strip().split("\t")
             qseqid = line[0]
             rseqid = line[1]
-            bitscore = float(line[-1])
+
+            if qseqid == rseqid:
+                # for self-blast searches to find paralogs, skip self-hits
+                continue
+            try:
+                bitscore = float(line[-1])
+            except:
+                raise RuntimeError(f"{line} \nfrom {blast_infile_path}\ncould not be parsed\n")
             if qseqid not in best_hits_dict:
                 best_hits_dict[qseqid] = BestHit(qseqid=qseqid, rseqid=rseqid, bitscore=bitscore)
             else:
@@ -117,18 +124,25 @@ def read_best_hits(blast_infile_path:str) -> dict:
     return best_hits_dict  
 
 
-def get_BRHs(besthits_infile1, besthits_infile2, annotation1, annotation2, x_list1, x_list2, y_list1 = [], y_list2 = [], outfile_path:str = ""):
+def get_BRHs(besthits_infile1, besthits_infile2, annotation1, annotation2, x_list1, x_list2, y_list1 = [], y_list2 = [], species1 = "", species2 = "", outfile_path:str = ""):
     """
     get a dictionary with {species1_ID : species2_ID} of all best reciprocal hits
     """
     out_dict = {}
-    ## use annotation filenames as species headers
-    species1 = annotation1.split("/")[-1].split(".")[0]
-    species2 = annotation2.split("/")[-1].split(".")[0]
+    if type(annotation1) == str and type(annotation2)== str:
+        ## use annotation filenames as species headers
+        species1 = annotation1.split("/")[-1].split(".")[0]
+        species2 = annotation2.split("/")[-1].split(".")[0]
+        ## read annotations from filepaths
+        print(f"reading annotations of species 1 and 2...")
+        annotation1 = gff.parse_gff3_general(annotation1, verbose=False)
+        annotation2 = gff.parse_gff3_general(annotation2, verbose=False)
+    elif type(annotation1) == dict and type(annotation2) == dict:
+        ## use species names from parameters and assume that the annotations are already read in
+        if species1 == "" or species2 == "":
+            raise RuntimeError(f"if you include parsed annotations you have to give species names in the function parameters. You have given:\n species1 = '{species1}'\n species2 = '{species2}'")
+        pass
     header = f"{species1}\tchromosome\t{species2}\tchromosome\n"
-    print(f"reading annotations of species 1 and 2...")
-    annotation1 = gff.parse_gff3_general(annotation1, verbose=False)
-    annotation2 = gff.parse_gff3_general(annotation2, verbose=False)
 
     for species1_id, species1_besthit in besthits_infile1.items():
         species2_id = species1_besthit.rseqid
@@ -150,8 +164,14 @@ def get_BRHs(besthits_infile1, besthits_infile2, annotation1, annotation2, x_lis
                         species2_id = species2_id[:-2]
                     contig1 = "A"
                     contig2 = "A"
-                    ID_contig1 = annotation1[species1_id].contig
-                    ID_contig2 = annotation2[species2_id].contig
+                    try:
+                        ID_contig1 = annotation1[species1_id].contig
+                    except:
+                        raise RuntimeError(f"{species1_id} in {species1} not found in the annotation")
+                    try:
+                        ID_contig2 = annotation2[species2_id].contig
+                    except:
+                        raise RuntimeError(f"{species2_id} in {species2} not found in the annotation")
                     if ID_contig1 in x_list1:
                         contig1 = "X"
                     elif ID_contig1 in y_list1:
