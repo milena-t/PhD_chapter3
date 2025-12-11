@@ -307,7 +307,7 @@ def plot_orthogroup_sex_chromosome_table(orthogroups_sex_chromosomes_file, filte
     # Plotting
     plot_name = orthogroups_sex_chromosomes_file.split(".")[0]+"_upset_plot.png"
     plt.suptitle("X chromosome presence of single-copy orthologs")
-    plt.savefig(plot_name, dpi = 300, transparent = True)
+    plt.savefig(plot_name, dpi = 300, transparent = False)
     print(f"plot saved here: {plot_name}") 
 
 if __name__ == "__main__":

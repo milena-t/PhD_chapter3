@@ -209,4 +209,12 @@ C:98.7%[S:72.2%,D:26.5%],F:0.6%,M:0.7%,n:1013
   * There is also Diabrotica undecimpunctata but it does not have sex chromosomes identified, but it does have a giant genome at 1.7Gb
 
 
+# ortholog identification
 
+## orthofinder
+
+In the original analysis with Lila we ran orthofinder and used the orthologs that are 1-to-1 across all species. With the new species selection, I tried that here as well, but it seems like the *Diorhabda* X chromosomes are not syntenic. 
+
+<p float="left">
+  <img src="/Users/miltr339/work/PhD_code/PhD_chapter3/data/orthofinder/orthogroups_by_contig_upset_plot.png" width="65%" />
+</p>
