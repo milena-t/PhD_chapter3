@@ -114,7 +114,7 @@ I want to look at groups of sister-species to take into account the evolutionary
 I have annotated *T. freemani* with available RNAseq data from Whittle2020, but there was no RNAseq data for *C. septempunctata*. 
 
 <details>
-<summary>Annotation Evaluation</summary>
+<summary>Annotation Evaluation -- old species selection</summary>
 
 #### BUSCO scores
 
@@ -216,5 +216,5 @@ C:98.7%[S:72.2%,D:26.5%],F:0.6%,M:0.7%,n:1013
 In the original analysis with Lila we ran orthofinder and used the orthologs that are 1-to-1 across all species. With the new species selection, I tried that here as well, but it seems like the *Diorhabda* X chromosomes are not syntenic. 
 
 <p float="left">
-  <img src="/Users/miltr339/work/PhD_code/PhD_chapter3/data/orthofinder/orthogroups_by_contig_upset_plot.png" width="65%" />
+  <img src="data/orthofinder/orthogroups_by_contig_upset_plot.png" width="65%" />
 </p>
