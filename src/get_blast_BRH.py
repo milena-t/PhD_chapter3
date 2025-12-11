@@ -5,6 +5,38 @@ and the output is a tsv file with two columns, one is species1 and one is specie
 I identify the best hit by the highest bit score
 """
 import sys
+import parse_gff as gff
+import argparse
+
+def parse_args():
+    # Create the parser
+    program_description = """
+script to compute best reciprocal hits and their chromosome location from a bidirectional all-vs-all proteinblast search and the corresponding species annotations
+the result is a tsv file that includes the transcript IDs of the best hits and their chromosome location as X/Y/A (not actual contig IDs!)
+"""
+    parser = argparse.ArgumentParser(description=program_description)
+
+    # Add the arguments
+    parser.add_argument('--blast1', type=str, required=True, help='Absolute filepath to the all-vs-all blastp output where species1 is the query (outfmt 6')
+    parser.add_argument('--blast2', type=str, required=True, help='Absolute filepath to the all-vs-all blastp output where species2 is the query (outfmt 6')
+    parser.add_argument('-o', '--outfile', type=str, help='output filename, default: filename from blast1 + _BRH.tsv')
+    parser.add_argument('--annotation1', type=str, required=True, help='Absolute filepath to the annotation that blast1 query is based on')
+    parser.add_argument('--annotation2', type=str, required=True, help='Absolute filepath to the annotation that blast2 query is based on')
+    parser.add_argument('--verbose', action='store_true', help="enable verbose mode")
+    parser.add_argument('--X_contigs1', type=str, required=True, help='comma separated list of the names of X-linked contigs in species 1 (given directly in the command line with no spaces, not a path to a file!')
+    parser.add_argument('--X_contigs2', type=str, required=True, help='comma separated list of the names of X-linked contigs in species 2 (given directly in the command line with no spaces, not a path to a file!')
+    parser.add_argument('--Y_contigs1', type=str, help='comma separated list of the names of Y-linked contigs in species 1 (given directly in the command line with no spaces, not a path to a file!')
+    parser.add_argument('--Y_contigs2', type=str, help='comma separated list of the names of Y-linked contigs in species 2 (given directly in the command line with no spaces, not a path to a file!')
+ 
+
+    # Parse the arguments
+    args = parser.parse_args()
+
+    # set default values for non-obligatory arguments
+    if not args.outfile:
+        args.outfile = f"{args.blast1}_BRH.tsv"
+
+    return args
 
 blast_outfmt6_headers = ["qseqid", "rseqid", "pident", "length", "mismatch", "gapopen", "qstart", "qend", "sstart", "send", "evalue", "bitscore"]
 
@@ -85,11 +117,19 @@ def read_best_hits(blast_infile_path:str) -> dict:
     return best_hits_dict  
 
 
-def get_BRHs(besthits_infile1, besthits_infile2, outfile_path:str = ""):
+def get_BRHs(besthits_infile1, besthits_infile2, annotation1, annotation2, x_list1, x_list2, y_list1 = [], y_list2 = [], outfile_path:str = ""):
     """
     get a dictionary with {species1_ID : species2_ID} of all best reciprocal hits
     """
     out_dict = {}
+    ## use annotation filenames as species headers
+    species1 = annotation1.split("/")[-1].split(".")[0]
+    species2 = annotation2.split("/")[-1].split(".")[0]
+    header = f"{species1}\tchromosome\t{species2}\tchromosome\n"
+    print(f"reading annotations of species 1 and 2...")
+    annotation1 = gff.parse_gff3_general(annotation1, verbose=False)
+    annotation2 = gff.parse_gff3_general(annotation2, verbose=False)
+
     for species1_id, species1_besthit in besthits_infile1.items():
         species2_id = species1_besthit.rseqid
         try:
@@ -101,23 +141,52 @@ def get_BRHs(besthits_infile1, besthits_infile2, outfile_path:str = ""):
     if outfile_path != "":
         if len(out_dict)>0:
             with open(outfile_path, "w") as outfile:
+                outfile.write(header)
                 for species1_id, species2_id in out_dict.items():
-                    outfile.write(f"{species1_id}\t{species2_id}\n")
+                    ## remove the "_1" suffix so that they can be found in the annotation
+                    if species1_id[-2:] == "_1":
+                        species1_id = species1_id[:-2]
+                    if species2_id[-2:] == "_1":
+                        species2_id = species2_id[:-2]
+                    contig1 = "A"
+                    contig2 = "A"
+                    ID_contig1 = annotation1[species1_id].contig
+                    ID_contig2 = annotation2[species2_id].contig
+                    if ID_contig1 in x_list1:
+                        contig1 = "X"
+                    elif ID_contig1 in y_list1:
+                        contig1 = "Y"
+                    if ID_contig2 in x_list2:
+                        contig2 = "X"
+                    elif ID_contig2 in y_list2:
+                        contig2 = "Y"
+                    outfile.write(f"{species1_id}\t{contig1}\t{species2_id}\t{contig2}\n")
         print(f"outfile written to: {outfile_path}")
     return out_dict
 
 
 if __name__ == "__main__":
     
-    blast_infile_path1 = sys.argv[1]
-    blast_infile_path2 = sys.argv[2]
-    if len(sys.argv)==3:
-        outfile = f"{blast_infile_path1}_BRH.tsv"
-    elif len(sys.argv) == 4:
-        outfile_name = sys.argv[3]
+
+    args=parse_args()
+    blast_infile_path1 = args.blast1
+    blast_infile_path2 = args.blast2
+    outfile = args.outfile
+    annotation_path1 = args.annotation1
+    annotation_path2 = args.annotation2
+    verbose = args.verbose
+    X_list1 = args.X_contigs1.strip().split(",")
+    X_list2 = args.X_contigs2.strip().split(",")
+    if args.Y_contigs1 and args.Y_contigs2:
+        Y_list1 = args.Y_contigs1.strip().split(",")
+        Y_list2 = args.Y_contigs2.strip().split(",")
+    else:
+        Y_list1 = []
+        Y_list2 = []
 
     besthits_infile1 = read_best_hits(blast_infile_path1)
     besthits_infile2 = read_best_hits(blast_infile_path2)
-    print(besthits_infile1["rna-AOBTE_LOCUS3-2_1"])
+    # print(besthits_infile1["rna-AOBTE_LOCUS3-2_1"])
 
-    BRH_dict = get_BRHs(besthits_infile1, besthits_infile2, outfile_path=outfile)
+    BRH_dict = get_BRHs(besthits_infile1, besthits_infile2, annotation1=annotation_path1, annotation2=annotation_path2, x_list1=X_list1, x_list2=X_list2, y_list1=Y_list1, y_list2=Y_list2, outfile_path=outfile)
+

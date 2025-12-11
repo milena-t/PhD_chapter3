@@ -218,3 +218,8 @@ In the original analysis with Lila we ran orthofinder and used the orthologs tha
 <p float="left">
   <img src="data/orthofinder/orthogroups_by_contig_upset_plot.png" width="65%" />
 </p>
+
+## best reciprocal hits
+
+All comparisons of dNdS to identify fastX are always pairwise. Therefore it doesn't matter that a gene is 1-to-1 in all the species, only in the pair where i actually do the calculation. I will use the all-vs-all proteinblast that I made for the synteny with MCScanX (see chapter 2) to identify best reciprocal hits between pairs instead.
+
