@@ -32,7 +32,7 @@ OUTDIR=/proj/naiss2023-6-65/Milena/chapter3/all_vs_all_blastp
 ## --> re-run for new proteinfiles!
 
 ## make databases
-for SPECIES1 in $C_septempunctata_proteins # $T_freemani_proteins $C_magnifica_proteins # $A_obtectus_proteins $B_siliquastri_proteins $C_chinensis_proteins $C_maculatus_proteins $T_castaneum_proteins
+for SPECIES1 in $C_maculatus_proteins # $T_freemani_proteins $C_magnifica_proteins # $A_obtectus_proteins $B_siliquastri_proteins $C_chinensis_proteins $C_septempunctata_proteins $T_castaneum_proteins
 do
     makeblastdb -in $SPECIES1 -dbtype prot
     echo " ---> done database ${SPECIES1}"
@@ -42,7 +42,7 @@ done
 
 
 
-for SPECIES1 in $C_septempunctata_proteins # $A_obtectus_proteins $B_siliquastri_proteins $C_chinensis_proteins $C_maculatus_proteins $T_castaneum_proteins $T_freemani_proteins $C_magnifica_proteins
+for SPECIES1 in $C_maculatus_proteins # $A_obtectus_proteins $B_siliquastri_proteins $C_chinensis_proteins $C_septempunctata_proteins $T_castaneum_proteins $T_freemani_proteins $C_magnifica_proteins
 do  
 
     SPECIES1_name="${SPECIES1##*/}"
