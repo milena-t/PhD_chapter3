@@ -22,7 +22,7 @@ A_obtectus_proteins=/proj/naiss2023-6-65/Milena/chapter3/protein_data/A_obtectus
 B_siliquastri_proteins=/proj/naiss2023-6-65/Milena/chapter3/protein_data/B_siliquastri_original_header.faa
 C_chinensis_proteins=/proj/naiss2023-6-65/Milena/chapter3/protein_data/C_chinensis_original_header.faa
 C_maculatus_proteins=/proj/naiss2023-6-65/Milena/chapter3/protein_data/C_maculatus_superscaffolded_original_header.faa
-D_sublienata_proteins=/proj/naiss2023-6-65/Milena/chapter3/protein_data/D_sublienata_original_header.faa
+D_sublineata_proteins=/proj/naiss2023-6-65/Milena/chapter3/protein_data/D_sublineata_original_header.faa
 D_carinulata_proteins=/proj/naiss2023-6-65/Milena/chapter3/protein_data/D_carinulata_original_header.faa
 
 OUTDIR=/proj/naiss2023-6-65/Milena/chapter3/all_vs_all_blastp
@@ -30,7 +30,7 @@ OUTDIR=/proj/naiss2023-6-65/Milena/chapter3/all_vs_all_blastp
 ## --> re-run for new proteinfiles!
 
 ## make databases
-for SPECIES1 in $C_maculatus_proteins # $D_sublienata_proteins $D_carinulata_proteins # $A_obtectus_proteins $B_siliquastri_proteins $C_chinensis_proteins
+for SPECIES1 in $D_sublineata_proteins # $D_carinulata_proteins # $C_maculatus_proteins # $A_obtectus_proteins $B_siliquastri_proteins $C_chinensis_proteins
 do
     makeblastdb -in $SPECIES1 -dbtype prot
     echo " ---> done database ${SPECIES1}"
@@ -40,13 +40,13 @@ done
 
 
 
-for SPECIES1 in $C_maculatus_proteins # $A_obtectus_proteins $B_siliquastri_proteins $C_chinensis_proteins $D_sublienata_proteins $D_carinulata_proteins
+for SPECIES1 in $C_maculatus_proteins # $A_obtectus_proteins $B_siliquastri_proteins $C_chinensis_proteins $D_sublineata_proteins $D_carinulata_proteins
 do  
 
     SPECIES1_name="${SPECIES1##*/}"
     SPECIES1_name="${SPECIES1_name%.*}"
 
-    for SPECIES2 in $D_sublienata_proteins $D_carinulata_proteins # $A_obtectus_proteins $B_siliquastri_proteins $C_chinensis_proteins $C_maculatus_proteins $T_castaneum_proteins 
+    for SPECIES2 in $D_sublineata_proteins $D_carinulata_proteins # $A_obtectus_proteins $B_siliquastri_proteins $C_chinensis_proteins $C_maculatus_proteins $T_castaneum_proteins 
     do
 
         SPECIES2_name="${SPECIES2##*/}"
