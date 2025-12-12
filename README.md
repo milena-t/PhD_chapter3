@@ -223,3 +223,16 @@ In the original analysis with Lila we ran orthofinder and used the orthologs tha
 
 All comparisons of dNdS to identify fastX are always pairwise. Therefore it doesn't matter that a gene is 1-to-1 in all the species, only in the pair where i actually do the calculation. I will use the all-vs-all proteinblast that I made for the synteny with MCScanX (see chapter 2) to identify best reciprocal hits between pairs instead.
 
+<p float="left">
+  <img src="data/fastX_ortholog_ident/BRH_A_linked_counts_heatmap.png" width="45%" />
+  <img src="data/fastX_ortholog_ident/BRH_X_linked_counts_heatmap.png" width="45%" />
+</p>
+
+The within-species gametolog counts are unfortunately very low:
+
+* *A. obtectus* : 3
+* *B. siliquastri* : 4
+* *C. chinensis* : 1
+* *C. maculatus* : 4
+* *D. carinulata* : 3
+* *D. sublineata* : 0

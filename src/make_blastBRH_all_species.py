@@ -12,7 +12,7 @@ def outfiles_dict(username = "miltr339"):
             "C_chinensis" : f"{blast_outdir}A_obtectus_original_header_vs_C_chinensis_original_header.blast",
             "C_maculatus" : f"{blast_outdir}A_obtectus_original_header_vs_C_maculatus_superscaffolded_original_header.blast",
             "D_carinulata" : f"{blast_outdir}A_obtectus_original_header_vs_D_carinulata_original_header.blast",
-            "D_sublineata" : f"{blast_outdir}A_obtectus_original_header_vs_D_sublienata_original_header.blast",
+            "D_sublineata" : f"{blast_outdir}A_obtectus_original_header_vs_D_sublineata_original_header.blast",
         },
         "B_siliquastri" : {
             "A_obtectus" : f"{blast_outdir}B_siliquastri_original_header_vs_A_obtectus_original_header.blast",
@@ -20,7 +20,7 @@ def outfiles_dict(username = "miltr339"):
             "C_chinensis" : f"{blast_outdir}B_siliquastri_original_header_vs_C_chinensis_original_header.blast",
             "C_maculatus" : f"{blast_outdir}B_siliquastri_original_header_vs_C_maculatus_superscaffolded_original_header.blast",
             "D_carinulata" : f"{blast_outdir}B_siliquastri_original_header_vs_D_carinulata_original_header.blast",
-            "D_sublineata" : f"{blast_outdir}B_siliquastri_original_header_vs_D_sublienata_original_header.blast",
+            "D_sublineata" : f"{blast_outdir}B_siliquastri_original_header_vs_D_sublineata_original_header.blast",
         },
         "C_chinensis" : {
             "A_obtectus" : f"{blast_outdir}C_chinensis_original_header_vs_A_obtectus_original_header.blast",
@@ -28,7 +28,7 @@ def outfiles_dict(username = "miltr339"):
             "C_chinensis" : f"{blast_outdir}C_chinensis_original_header_vs_C_chinensis_original_header.blast",
             "C_maculatus" : f"{blast_outdir}C_chinensis_original_header_vs_C_maculatus_superscaffolded_original_header.blast",
             "D_carinulata" : f"{blast_outdir}C_chinensis_original_header_vs_D_carinulata_original_header.blast",
-            "D_sublineata" : f"{blast_outdir}C_chinensis_original_header_vs_D_sublienata_original_header.blast",
+            "D_sublineata" : f"{blast_outdir}C_chinensis_original_header_vs_D_sublineata_original_header.blast",
         },
         "C_maculatus" : {
             "A_obtectus" : f"{blast_outdir}C_maculatus_superscaffolded_original_header_vs_A_obtectus_original_header.blast",
@@ -36,7 +36,7 @@ def outfiles_dict(username = "miltr339"):
             "C_chinensis" : f"{blast_outdir}C_maculatus_superscaffolded_original_header_vs_C_chinensis_original_header.blast",
             "C_maculatus" : f"{blast_outdir}C_maculatus_superscaffolded_original_header_vs_C_maculatus_superscaffolded_original_header.blast",
             "D_carinulata" : f"{blast_outdir}C_maculatus_superscaffolded_original_header_vs_D_carinulata_original_header.blast",
-            "D_sublineata" : f"{blast_outdir}C_maculatus_superscaffolded_original_header_vs_D_sublienata_original_header.blast",
+            "D_sublineata" : f"{blast_outdir}C_maculatus_superscaffolded_original_header_vs_D_sublineata_original_header.blast",
         },
         "D_carinulata" : {
             "A_obtectus" : f"{blast_outdir}D_carinulata_original_header_vs_A_obtectus_original_header.blast",
@@ -44,15 +44,15 @@ def outfiles_dict(username = "miltr339"):
             "C_chinensis" : f"{blast_outdir}D_carinulata_original_header_vs_C_chinensis_original_header.blast",
             "C_maculatus" : f"{blast_outdir}D_carinulata_original_header_vs_C_maculatus_superscaffolded_original_header.blast",
             "D_carinulata" : f"{blast_outdir}D_carinulata_original_header_vs_D_carinulata_original_header.blast",
-            "D_sublineata" : f"{blast_outdir}D_carinulata_original_header_vs_D_sublienata_original_header.blast",
+            "D_sublineata" : f"{blast_outdir}D_carinulata_original_header_vs_D_sublineata_original_header.blast",
         },
         "D_sublineata" : {
-            "A_obtectus" : f"{blast_outdir}D_sublienata_original_header_vs_A_obtectus_original_header.blast",
-            "B_siliquastri" : f"{blast_outdir}D_sublienata_original_header_vs_B_siliquastri_original_header.blast",
-            "C_chinensis" : f"{blast_outdir}D_sublienata_original_header_vs_C_chinensis_original_header.blast",
-            "C_maculatus" : f"{blast_outdir}D_sublienata_original_header_vs_C_maculatus_superscaffolded_original_header.blast",
-            "D_carinulata" : f"{blast_outdir}D_sublienata_original_header_vs_D_carinulata_original_header.blast",
-            "D_sublineata" : f"{blast_outdir}D_sublienata_original_header_vs_D_sublienata_original_header.blast",
+            "A_obtectus" : f"{blast_outdir}D_sublineata_original_header_vs_A_obtectus_original_header.blast",
+            "B_siliquastri" : f"{blast_outdir}D_sublineata_original_header_vs_B_siliquastri_original_header.blast",
+            "C_chinensis" : f"{blast_outdir}D_sublineata_original_header_vs_C_chinensis_original_header.blast",
+            "C_maculatus" : f"{blast_outdir}D_sublineata_original_header_vs_C_maculatus_superscaffolded_original_header.blast",
+            "D_carinulata" : f"{blast_outdir}D_sublineata_original_header_vs_D_carinulata_original_header.blast",
+            "D_sublineata" : f"{blast_outdir}D_sublineata_original_header_vs_D_sublineata_original_header.blast",
         }
     }
 
@@ -100,7 +100,8 @@ if __name__ == "__main__":
             Y_list1 = sex_chromosomes_lists[species1]["Y"]
             Y_list2 = sex_chromosomes_lists[species2]["Y"]
 
-            outfile = f"{blast_infile_path1}_BRH.tsv"
+            blastdir = "/".join(blast_infile_path1.split("/")[:-1])
+            outfile = f"{blastdir}/brh_tables/{species1}_{species2}_BRH.tsv"
             besthits_infile1 = brh.read_best_hits(blast_infile_path1)
             besthits_infile2 = brh.read_best_hits(blast_infile_path2)
             
