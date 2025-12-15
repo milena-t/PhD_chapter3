@@ -228,7 +228,8 @@ All comparisons of dNdS to identify fastX are always pairwise. Therefore it does
   <img src="data/fastX_ortholog_ident/BRH_X_linked_counts_heatmap.png" width="45%" />
 </p>
 
-The within-species gametolog counts are unfortunately very low:
+
+I also check for gametologs (genes where there is a 1-to-1 homolog on the X and Y chromosome in the same species). the within-species gametolog counts are unfortunately very low:
 
 * *A. obtectus* : 3
 * *B. siliquastri* : 4
@@ -236,3 +237,9 @@ The within-species gametolog counts are unfortunately very low:
 * *C. maculatus* : 4
 * *D. carinulata* : 3
 * *D. sublineata* : 0
+
+## Conclusion
+
+I will continue with best reciprocal hits, becasue the orthofinder clustering is a bit more "relaxed", meaning that a transcript is more likely to be included in an orthogorup. Since I am only using pairwise comparisons, this method may make larger orthogroups that would not qualify as 1-to-1 orthologs, and therefore reduce the sample size for our dNdS analysis.
+
+
