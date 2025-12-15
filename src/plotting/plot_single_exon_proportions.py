@@ -358,17 +358,17 @@ if __name__ == '__main__':
     ## calculate all the numbers from input data
     try:
         username = "miltr339"
-        tree_path = "/Users/miltr339/work/PhD_code/PhD_chapter3/data/orthofinder_species_tree.nw"
+        tree_path = f"/Users/{username}/work/PhD_code/PhD_chapter3/data/orthofinder/species_tree.nw"
         species_names = make_species_order_from_tree(tree_path)
     except:
         username = "milena"
-        tree_path = "/Users/milena/work/PhD_code/PhD_chapter3/data/orthofinder_species_tree.nw"
+        tree_path = f"/Users/{username}/work/PhD_code/PhD_chapter3/data/orthofinder/species_tree.nw"
         species_names = make_species_order_from_tree(tree_path)
 
     if True:
         ## get the data about single-exon genes by running PhD_chapter3/bash/calculate_single_exon_stats.sh
         ## the resulting output files are evaluated by get_single_exon_genes
-        single_exon_stats_dir = f"/Users/{username}/work/chapter3/single_exon_stats"
+        single_exon_stats_dir = f"/Users/{username}/work/chapter2/single_exon_stats"
         single_exon_dict, num_single_exon_dict, num_transcripts_dict = get_single_exon_genes(single_exon_stats_dir, species_names, write_to_file=False, outfile_name="native_single_exon_transcripts_list_14_species.txt", include_total_gene_num = True)
 
         SE_numbers = {
