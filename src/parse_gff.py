@@ -500,7 +500,9 @@ def parse_gff3_for_attributes(filepath, feature_of_interest = FeatureCategory.Tr
     return genome_annotation
 
 
-# if __name__ == "__main__":
-#     print("1", "contig1", FeatureCategory.Gene, 1, 100, "+", ".", parent_id=None))
-#     obtectus_test_native = "/Users/milena/work/native_annot_gff/acanthoscelides_obtectus.gff.isoform_filtered"
-#     parse_gff3_general(obtectus_test_native)
+if __name__ == "__main__":
+    # print("1", "contig1", FeatureCategory.Gene, 1, 100, "+", ".", parent_id=None)
+    obtectus_test_native = "/Users/miltr339/work/chapter3/isoform_filtered_native_annotations/D_carinulata.gff"
+    gff_dict = parse_gff3_general(obtectus_test_native)
+    no_transcripts = {key : value for key, value in gff_dict.items() if value.category == FeatureCategory.Transcript}
+    print(len(no_transcripts))

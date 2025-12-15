@@ -12,7 +12,7 @@ module load bioinfo-tools python3
 
 # all orthoDB annotations
 
-for SPECIES in  A_obtectus B_siliquastri C_chinensis C_maculatus_superscaffolded C_magnifica C_septempunctata T_castaneum T_freemani
+for SPECIES in  A_obtectus B_siliquastri C_chinensis C_maculatus_superscaffolded D_carinulata D_sublineata # C_magnifica C_septempunctata T_castaneum T_freemani
 do
     python3 /Users/miltr339/work/PhD_code/PhD_chapter3/src/plotting/calculate_single_exon_stats.py \
     "/Users/miltr339/work/chapter3/isoform_filtered_native_annotations/${SPECIES}.gff" \

@@ -74,6 +74,7 @@ def get_single_exon_genes(dir_path, species_list, write_to_file = False, outfile
         with open(infile_path, "r") as infile:
             dict_elements = infile.readlines()
             for species_line in dict_elements:
+                species_line = species_line.strip()
                 try:
                     key = species_line.split(":")[0]
                     value = ":".join(species_line.split(":")[1:]) # some of the transcript names have ":" in them to spite me personally
@@ -108,7 +109,10 @@ def get_single_exon_genes(dir_path, species_list, write_to_file = False, outfile
         try:
             num_single_exon_genes[species] = int(infile_dict[num_key][0])
         except:
+            infile_dict_small = {key: value[0][:150] for key, value in infile_dict.items()}
+            print(infile_dict_small)
             print(f"{species} single-exon number did not work with {num_key}")
+            raise RuntimeError
 
         if include_total_gene_num:
             try:
@@ -266,7 +270,7 @@ def format_func(value, tick_number):
 
 def plot_single_exon_proportion(native_numbers, species_names = [], filename = "", transparent_bg = False):
 
-    print(f" plotting for these {len(species_names)} species: \n{species_names}")
+    print(f" plotting for these {len(species_names)} species: {species_names}")
 
     # X coordinates for the groups
     x = np.arange(len(species_names))
@@ -301,7 +305,9 @@ def plot_single_exon_proportion(native_numbers, species_names = [], filename = "
     num_total_genes = native_numbers["num_total_genes"]
 
     single_exon_genes = [num_single_exon_genes[species] for species in species_names]
+    print(f"number of single exon genes: {single_exon_genes}")
     multi_exon_genes = [num_total_genes[species]-num_single_exon_genes[species] for species in species_names]
+    print(f"number of multi exon genes: {multi_exon_genes}")
 
     color = [colors["native"], colors["native"]]
     hatching = ["//", "" ]
@@ -321,9 +327,10 @@ def plot_single_exon_proportion(native_numbers, species_names = [], filename = "
     ax.set_title('Proportion of single-exon genes', fontsize=fs+4)
     ax.set_xticks(x)
     ax.set_xlabel('', fontsize=fs+4)
+    ax.tick_params(axis='both', which='major', labelsize=fs)
     xtick_labels = [species.replace("_", ". ") for species in species_names]
     ax.set_xticklabels(xtick_labels, rotation=90, fontsize=fs)
-    ax.set_yticklabels([f'{int(tick)/1e3:.0f}k' for tick in ax.get_yticks()], fontsize=fs)
+    # ax.set_yticklabels([f'{int(tick)/1e3:.0f}k' for tick in ax.get_yticks()], fontsize=fs)
 
     # make custom legend patch for the dashed bars
     plt.rcParams.update({'hatch.color': "#3f3832ff"})
@@ -368,14 +375,18 @@ if __name__ == '__main__':
     if True:
         ## get the data about single-exon genes by running PhD_chapter3/bash/calculate_single_exon_stats.sh
         ## the resulting output files are evaluated by get_single_exon_genes
-        single_exon_stats_dir = f"/Users/{username}/work/chapter2/single_exon_stats"
+        single_exon_stats_dir = f"/Users/{username}/work/chapter3/single_exon_stats"
         single_exon_dict, num_single_exon_dict, num_transcripts_dict = get_single_exon_genes(single_exon_stats_dir, species_names, write_to_file=False, outfile_name="native_single_exon_transcripts_list_14_species.txt", include_total_gene_num = True)
 
         SE_numbers = {
             "num_single_exon_genes" : num_single_exon_dict,
             "num_total_genes" : num_transcripts_dict
         }
-        print(f"\t --> native_numbers = {SE_numbers}")
+        for key, species_num in SE_numbers.items():
+            print(f"{key}:")
+            for species, num in species_num.items():
+                print(f"\t{species}: {num}")
+        # print(f"\t --> gene_numbers = {SE_numbers}")
         print()
         
 
