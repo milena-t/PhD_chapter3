@@ -8,6 +8,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib as mpl
+from matplotlib.colors import LinearSegmentedColormap
 
 def ortholog_tables(username = "miltr339"):
     dir_path = f"/Users/{username}/work/pairwise_blast_chapter_2_3/brh_tables/"
@@ -121,7 +122,8 @@ def plot_heatmap(counts_array, species_list, filename = "BRH_orthologs_heatmap.p
     fig = plt.figure(figsize=(width_pixels / 100, height_pixels / 100), dpi=100)
     ax = fig.add_subplot(111)
 
-    cmap=mpl.colormaps["rainbow"]
+    # cmap=mpl.colormaps["rainbow"]
+    cmap = LinearSegmentedColormap.from_list("red_to_orange",["#b82946", "#F2933A"])
     # cbarlabel="number of pairwise 1-to-1 ortholgs"
     im = ax.imshow(counts_array, cmap=cmap)
 
