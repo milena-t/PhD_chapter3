@@ -85,7 +85,8 @@ if __name__ == "__main__":
         print(f"{species1}")
         for species2 in annotation_dict.keys():
 
-            # don't do bidirectional species iterations. e.g. if species1 = Cmac and species2 = Bsil, skip if Bsil, Cmac already generated
+            # don't do bidirectional species iterations. e.g. if species1 = Cmac and species2 = Bsil, skip if {Bsil, Cmac} already generated
+            # the blast search is already bidirectional I don't need to double up here
             curr_set = set([species1,species2])
             if curr_set in done_sets:
                 continue
@@ -108,4 +109,5 @@ if __name__ == "__main__":
             BRH_dict = brh.get_BRHs(besthits_infile1, besthits_infile2, annotation1=annotation1, annotation2=annotation2, x_list1=X_list1, x_list2=X_list2, y_list1=Y_list1, y_list2=Y_list2, species1=species1, species2=species2,outfile_path=outfile)
             
             done_sets.append(curr_set)
+            break
             
