@@ -114,7 +114,7 @@ I want to look at groups of sister-species to take into account the evolutionary
 I have annotated *T. freemani* with available RNAseq data from Whittle2020, but there was no RNAseq data for *C. septempunctata*. 
 
 <details>
-<summary>Annotation Evaluation -- old species selection</summary>
+<summary>Annotation Evaluation</summary>
 
 #### BUSCO scores
 
