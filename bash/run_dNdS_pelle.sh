@@ -22,8 +22,8 @@ python3 /proj/naiss2023-6-65/Milena/chapter3/PhD_chapter3/src/blast_BRH/calculat
     --codemlbin $PAML_UPPMAX \
     --clustalbin $CLUSTALO_UPPMAX \
     --verbose \
+    --overwrite
     
-    # --overwrite
     # --fasttreebin /Users/miltr339/Desktop/FastTree \
     # --yn00 \
     # --yn00bin /Users/miltr339/work/paml/src/yn00 \
