@@ -256,7 +256,7 @@ def calculate_dNdS(dN_filepath, dS_filepath, dNdS_filepath):
             species = dN_values[i][0]
             dN = [float(i) for i in dN_values[i][1:]]
             dS = [float(i) for i in dS_values[i][1:]]
-            dN_dS_ratio_line = "\t".join([str(dN[j]/dS[j]) for j in range(len(dN))])
+            dN_dS_ratio_line = "\t".join([str(dN[j]/dS[j]) if dS[j]!= 0.0 else "NaN" for j in range(len(dN)) ])
             dN_dS_ratio_line = "\t".join([species, dN_dS_ratio_line])
 
             if verbose:
