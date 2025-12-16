@@ -30,35 +30,45 @@ def make_nested_lists(dir_path):
 if __name__ == "__main__":
 
     # list files in dir
-    X_path = "/Users/miltr339/work/pairwise_blast_chapter_2_3/brh_tables/brh_sequences_X/"
-    outdir = "/Users/miltr339/work/pairwise_blast_chapter_2_3/brh_tables/brh_results_X/"
+    datadir = f"/Users/miltr339/work/pairwise_blast_chapter_2_3/brh_tables/"
+    bash_dir = f"/Users/miltr339/work/PhD_code/PhD_chapter3/bash"
+    dNdS_exec = f"bash {bash_dir}/run_batch_dNdS.sh"
+
+    if not os.path.isdir(datadir):
+        datadir = f"/proj/naiss2023-6-65/Milena/chapter3/dNdS_calculations/"
+        bash_dir = f"/proj/naiss2023-6-65/Milena/chapter3/PhD_chapter3/bash"
+        dNdS_exec = f"sbatch {bash_dir}/run_batch_dNdS.sh"
+    
+    X_path = f"{datadir}brh_sequences_X/"
+    outdir = f"{datadir}brh_results_X/"
+
     os.chdir(outdir)
     x_paths_nested_dict = make_nested_lists(X_path)
-    home_bash_dir = f"/Users/miltr339/work/PhD_code/PhD_chapter3/bash"
-    home_dNdS_exec = f"bash {home_bash_dir}/run_batch_dNdS.sh"
-    uppmax_bash_dir = f"/proj/naiss2023-6-65/Milena/chapter3/PhD_chapter3/bash"
-    uppmax_dNdS_exec = f"sbatch {uppmax_bash_dir}/run_batch_dNdS.sh"
+    
+    
+
+    ########
+    num_files = 3
+    ########
 
     for species1, subdict in x_paths_nested_dict.items():
         for species2, fasta_list in subdict.items():
+            if species1 == species2:
+                continue
             dirname = f"{species1}_{species2}_pairwise_dNdS"
+
             if not os.path.isdir(dirname):
                 os.mkdir(dirname)
             os.chdir(dirname)
-            wd = os.getcwd()
-            print(f"\n working in {wd}")
 
-            fasta_string = " ".join([f"{fasta}" for fasta in fasta_list[:3]])
+            fasta_string = " ".join([f"{fasta}" for fasta in fasta_list[:num_files]])
             print(f"created and working in {dirname}")
             
-            dNdS_command = f"{home_dNdS_exec} {fasta_string}"
-            print(dNdS_command)
-            print()
+            dNdS_command = f"{dNdS_exec} {fasta_string}"
+
             os.system(dNdS_command)
             os.chdir("..")
 
             wd = os.getcwd()
             print(f"\n working in {wd}")
             
-        break
-    # os.system(dNdS_command)
