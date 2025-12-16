@@ -244,7 +244,7 @@ def make_proteinfasta(cds_fasta_path, outdir, auto_modify_headers = False):
         for seq_record in SeqIO.parse(cds_fasta_path, "fasta"):
             headers.append(seq_record.id[:10])
             count_seqs+=1
-        print(headers)
+        # print(headers)
         unique_headers = len(list(set(headers)))
         if unique_headers != count_seqs:
             modify_headers = True
@@ -674,7 +674,8 @@ if __name__ == '__main__':
                 print(f"\n *  calcualte dN/dS ratio:")
 
             calculate_dNdS(dN_filepath, dS_filepath, dNdS_filepath)
-        print(f"outfile: {dNdS_filepath}")
+        filesize = os.path.getsize(dNdS_filepath)
+        print(f"outfile: {dNdS_filepath} ({filesize}B size)")
         
         os.chdir(topdir)
 

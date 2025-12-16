@@ -39,13 +39,11 @@ if __name__ == "__main__":
         bash_dir = f"/proj/naiss2023-6-65/Milena/chapter3/PhD_chapter3/bash"
         dNdS_exec = f"sbatch {bash_dir}/run_batch_dNdS.sh"
     
-    X_path = f"{datadir}brh_sequences_X/"
-    outdir = f"{datadir}brh_results_X/"
+    X_path = f"{datadir}brh_sequences_A/"
+    outdir = f"{datadir}brh_results_A/"
 
     os.chdir(outdir)
     x_paths_nested_dict = make_nested_lists(X_path)
-    
-    
 
     ########
     num_files = 30
