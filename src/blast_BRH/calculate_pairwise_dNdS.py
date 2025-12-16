@@ -412,6 +412,8 @@ if __name__ == '__main__':
     ############# run PAML (yn00) #############
     ###########################################
 
+    ########## make tree
+
     tree_outfile = f"{outdir_path}tree.tre"
     fasttree_command = f"{fasttree_bin} {clustal_outfile} > {tree_outfile}"
     result = subprocess.run(fasttree_command, shell = True, capture_output=True, text=True)
@@ -422,6 +424,8 @@ if __name__ == '__main__':
         raise RuntimeError(f"FastTree failed! command: \n{fasttree_command}")
     if os.path.getsize(tree_outfile) == 0:
         raise RuntimeError(f"{tree_outfile} is empty!")
+
+    ##########
 
     if run_yn00: 
         if verbose:
@@ -473,11 +477,10 @@ if __name__ == '__main__':
             print()
 
         ## set up paml run
+        ###!!
         os.chdir(outdir_path) 
-        
         ###!!
         wdir = os.getcwd()
-        ###!!
 
         # run paml from the output directory, since the files referenced in yn00.ctl don't have absolut paths and are just filenames
         paml_command = f"{yn00_bin} > yn00.log"
@@ -495,26 +498,25 @@ if __name__ == '__main__':
             raise RuntimeError(f"{yn00_outfile} is empty!")
 
         print(f"\ndone with yn00, outfile: {wdir}/yn00.out")
-        
-    raise RuntimeError
+    
+        ### calculate pairwise dNdS from 2YN.dN and 2YN.dS
+        # stay in the working directory for the orthogroup
 
-    ### calculate pairwise dNdS from 2YN.dN and 2YN.dS
-    # stay in the working directory for the orthogroup
+        dN_filepath = "2YN.dN"
+        dS_filepath = "2YN.dS"
+        dNdS_filepath = "2YN.dNdS"
 
-    dN_filepath = "2YN.dN"
-    dS_filepath = "2YN.dS"
-    dNdS_filepath = "2YN.dNdS"
+        if is_file_non_empty(dN_filepath) and is_file_non_empty(dS_filepath):
+            if verbose:
+                print(f"\t -  calcualte dN/dS ratio:")
 
+            calculate_dNdS(dN_filepath, dS_filepath, dNdS_filepath)
+        else:
+            # if it didn't work try codeml
+            print(f"\n==> yn00 did not produce {dN_filepath} or {dS_filepath}, try codeml!")
+            run_codeml = True
 
-
-    if is_file_non_empty(dN_filepath) and is_file_non_empty(dS_filepath):
-        if verbose:
-            print(f"\n *  calcualte dN/dS ratio:")
-
-        calculate_dNdS(dN_filepath, dS_filepath, dNdS_filepath)
-    else:
-        # if it didn't work try codeml
-        run_codeml = True
+    os.chdir(topdir)
 
 
     if run_codeml: # if the 2YN files are empty/nonexistent, either because it didn't work or because --codeml was specified and it wasn't run
@@ -528,20 +530,21 @@ if __name__ == '__main__':
         print(f"\n *  run codeml")
 
 
-        ## modify the newick tree to work with codeml
+        ######### modify the newick tree to work with codeml
+        tree_modified = tree_outfile.replace(".tre", "_10chr_leafnames.tre")
 
-        with open(f"{OG_id}_tree.txt", 'r') as f, open(f"{OG_id}_tree_modified.txt", 'w') as o:
+        with open(f"{tree_outfile}", 'r') as f, open(f"{tree_modified}", 'w') as o:
             if verbose:
-                print(f"\nmodify the newick tree {OG_id}_tree.txt so that each leaf consists only of a 10 character string")
+                print(f"\tmodify the newick tree {tree_modified} so that each leaf consists only of a 10 character string")
             newick_tree = f.read()
-            modified_tree, num_species = truncate_leaf_names(newick_tree)
+            mod_tree, num_species = truncate_leaf_names(newick_tree)
             o.write(f"\t{num_species} 1\n") # the numbers are first the number of species and then the number of trees
-            o.write(modified_tree)
+            o.write(mod_tree)
             
         if verbose:
-            print(f"Modified tree saved to {OG_id}_tree_modified.txt\n")
+            print(f"\t --> Modified tree saved to {tree_modified}\n")
 
-
+        #########
 
         ## try to run codeml properly with the tree.
 
@@ -623,6 +626,6 @@ if __name__ == '__main__':
 
             calculate_dNdS(dN_filepath, dS_filepath, dNdS_filepath)
         
-    os.chdir(topdir)
+        os.chdir(topdir)
 
 
