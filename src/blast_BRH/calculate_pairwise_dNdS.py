@@ -66,7 +66,7 @@ The individual steps consist of:
 
     # Add the arguments
     parser.add_argument('--cds', required=True, help="coding sequence (aminoacid) multifasta containing the two sequences between which you would like to calculate the dNdS ratio")
-    parser.add_argument('-o', '--outdir', type=str, help='Directory where the output_file is stored, default: filename from cds input truncated at last point to remove file extension')
+    parser.add_argument('-o', '--outdir', type=str, help='Directory where the output_file is stored, default: working directory, make new dir named like filename from cds input (truncated at last point to remove file extension)')
     
     parser.add_argument('--pal2nalbin', type=str, help="Absolute path to an executeable to run pal2nal, default: ./pal2nal.pl")
     parser.add_argument('--pal2naloptions', type=str, help="command line options for pal2nal, default: -output paml -nogap -nomismatch")
