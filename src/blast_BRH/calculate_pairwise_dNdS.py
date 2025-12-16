@@ -265,7 +265,6 @@ if __name__ == '__main__':
     ### define variables from command line input
 
     args=parse_args()
-    nucleotides_filename = "" # this is created below 
     outdir_path = args.outdir
     cds_path = args.cds
 
@@ -293,11 +292,13 @@ if __name__ == '__main__':
     if not os.path.exists(outdir_path):
         print(f"The specified output directory is created at: {outdir_path}")
         os.makedirs(outdir_path)
-    else:
-        print(f"The output directory {outdir_path} already exists, therefore existing output files are potentially overwritten")
+    elif overwrite:
+        print(f"The output directory {outdir_path} already exists and overwrite mode is enabled, therefore existing output files are overwritten")
+    elif overwrite:
+        print(f"The output directory {outdir_path} already exists, but overwrite mode is disabled so existing outfiles are used")
 
 
-    print(f"=========================== {outdir_path} ===========================")
+    print(f"\n====================== {outdir_path} ======================")
     print()
     
     ############################
@@ -331,7 +332,7 @@ if __name__ == '__main__':
     # check if an alignment file exists from a previous run
     if not os.path.exists(clustal_outfile) or overwrite:
         if verbose:
-            print("================ starting clustal-OMEGA:\n")
+            print("\n *  starting clustal-OMEGA:\n")
             if overwrite:
                 print(f"overwrite mode enabled --> overwriting existing file {clustal_outfile}")
     
@@ -352,54 +353,51 @@ if __name__ == '__main__':
         if result.returncode == 0 and verbose:
             print("clustal-OMEGA ran successfully.")
             print(result.stdout)
-        elif is_file_non_empty(clustal_outfile):
+        elif is_file_non_empty(clustal_outfile)==False:
             raise RuntimeError(f"{clustal_outfile} is empty")
         else:
             raise RuntimeError("clustal-OMEGA failed.")
 
     else:
         print(f"{clustal_outfile} exists already, using existing file for next steps.")
-    print()
 
 
     #####################################
     ############ run pal2nal ############
     #####################################
 
-    # pal2nal_command = f"{pal2nal_bin} {outdir_path}orthogroup.prot_aln.fasta {nucleotides_filename} {pal2nal_options} >{outdir_path}orthogroup.pal2nal.paml"
-    pal2nal_command = f"{pal2nal_bin} {outdir_path}orthogroup.prot_aln.fasta {nucleotides_filename} {pal2nal_options} > {outdir_path}orthogroup.pal2nal.paml"
+    pal2nal_alignment = f"{clustal_outfile}.paml"
+    pal2nal_command = f"{pal2nal_bin} {clustal_outfile} {cds_path} {pal2nal_options} > {pal2nal_alignment}"
 
-    # /proj/naiss2023-6-65/Lila/beetle_genomes/pal2nal.v14/pal2nal.pl OG0006976_dNdS/orthogroup.prot_aln.fasta OG0006976_dNdS/OG0006976.fa_extracted_cds.fna > OG0006976_dNdS/orthogroup.pal2nal.paml
     if verbose:
-        print("================ starting pal2nal\n")
+        print(" *  running pal2nal (codon based alignment)\n")
     print("command: "+pal2nal_command)
     result = subprocess.run(pal2nal_command, shell = True, capture_output=True, text=True)
     # Check if the command was successful
     if result.returncode == 0 and verbose:
-        print("pal2nal ran successfully.")
-        print(result.stdout)
+        print(f"pal2nal ran successfully, stdout: '{result.stdout}'")
+    elif os.path.getsize(pal2nal_alignment) == 0:
+        raise RuntimeError(f"pal2nal failed, {pal2nal_alignment} is empty")
     else:
-        print("pal2nal failed.")
-        print(result.stderr)
-
+        raise RuntimeError(f"pal2nal failed!\n{result.stderr}")
 
     # Read the Clustal file
-    alignment = AlignIO.read(f"{outdir_path}orthogroup.pal2nal.paml", "clustal")
+    alignment = AlignIO.read(f"{pal2nal_alignment}", "clustal")
 
     # Write the alignment in PHYLIP format
     # for details about sequential and interleaved phylip formats, see
     # paml documentation p. 11
-    AlignIO.write(alignment, f"{outdir_path}orthogroup.pal2nal.paml", "phylip-sequential")
+    AlignIO.write(alignment, f"{pal2nal_alignment}", "phylip-sequential")
 
     # adjust spacing 
-    adjust_phylip_spacing(f"{outdir_path}orthogroup.pal2nal.paml", f"{outdir_path}orthogroup.pal2nal.paml")
+    adjust_phylip_spacing(f"{pal2nal_alignment}", f"{pal2nal_alignment}")
 
     if verbose:
-        print(f"done, adjusted spacing in {outdir_path}orthogroup.pal2nal.paml")
+        print(f"done, adjusted spacing in {pal2nal_alignment}")
 
     print()
 
-
+    raise RuntimeError
     
 
     ###########################################
@@ -412,7 +410,7 @@ if __name__ == '__main__':
     if not run_codeml: #if --codeml is not specified, run yn00 by default
 
         if verbose:
-            print("================ set up and run paml (yn00)\n")
+            print(" *  set up and run paml (yn00)\n")
         
         treefile_name = proteins_filename.split("/")[:-2]
         OG_id = proteins_filename.split("/")[-1].split(".fa")[0]
@@ -498,7 +496,7 @@ if __name__ == '__main__':
 
     if is_file_non_empty(dN_filepath) and is_file_non_empty(dS_filepath):
         if verbose:
-            print(f"\n================ calcualte dN/dS ratio:")
+            print(f"\n *  calcualte dN/dS ratio:")
 
         calculate_dNdS(dN_filepath, dS_filepath, dNdS_filepath)
 
@@ -511,7 +509,7 @@ if __name__ == '__main__':
 
 
         print(f"\n{dN_filepath} or {dS_filepath} are empty, pairwise dN/dS could not be calculated, try to run codeml instead")
-        print(f"\n================ run codeml")
+        print(f"\n *  run codeml")
 
 
         ## modify the newick tree to work with codeml
@@ -605,7 +603,7 @@ if __name__ == '__main__':
         
         if is_file_non_empty(dN_filepath) and is_file_non_empty(dS_filepath):
             if verbose:
-                print(f"\n================ calcualte dN/dS ratio:")
+                print(f"\n *  calcualte dN/dS ratio:")
 
             calculate_dNdS(dN_filepath, dS_filepath, dNdS_filepath)
         
