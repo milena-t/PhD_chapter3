@@ -5,8 +5,8 @@
 #SBATCH --mem=6G
 #SBATCH -t 1-00:00:00
 #SBATCH --mail-type=ALL
-#SBATCH -J mummer_alignment
-#SBATCH -o mummer_alignment.log
+#SBATCH -J run_dNdS
+#SBATCH -o run_dNdS.log
 
 ml FastTree/2.2-GCCcore-13.3.0 Biopython/1.84-foss-2024a
 

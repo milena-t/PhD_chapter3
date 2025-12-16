@@ -570,7 +570,7 @@ if __name__ == '__main__':
         # copy the codeml config file into the folder
         # codeml_config_source = "/sw/bioinfo/paml/4.10.7/rackham/examples/codeml.ctl"
         codeml_config_source = codeml_bin.split("src")[0]
-        codeml_config_source = f"{codeml_config_source}examples/codeml.ctl"
+        codeml_config_source = f"{codeml_config_source}/examples/codeml.ctl"
         codeml_config = f"codeml.ctl"
         copy_command = f"cp {codeml_config_source} {codeml_config}"
 
