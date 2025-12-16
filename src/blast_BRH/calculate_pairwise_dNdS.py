@@ -366,7 +366,8 @@ if __name__ == '__main__':
         elif is_file_non_empty(clustal_outfile)==False:
             raise RuntimeError(f"{clustal_outfile} is empty")
         else:
-            raise RuntimeError("clustal-OMEGA failed.")
+            wd = os.getcwd()
+            raise RuntimeError(f"clustal-OMEGA failed in directory {wd}.")
 
     else:
         print(f"{clustal_outfile} exists already, using existing file for next steps.")
