@@ -57,18 +57,26 @@ A script to calculate the dN/dS ratio between two sequences in a fasta file.
 The individual steps consist of:
 (1) make a proteinfasta by translating the cds fasta
 (2) make a codon-based multi-sequence alignment 
-(3) run yn00 and calculate the pairwise dNdS ratio
+(3) run yn00 or codeml and calculate the pairwise dNdS ratio
+    NOTE: specify a path to either a codeml (--codemlbin) or yn00 (--yn00bin) executeable to specify which one the model should run. You have to give a path to where the actual executeable is so that the config file can be retrieved
 """
     parser = argparse.ArgumentParser(description=program_description)
 
     # Add the arguments
     parser.add_argument('--cds', required=True, help="coding sequence (aminoacid) multifasta containing the two sequences between which you would like to calculate the dNdS ratio")
-    parser.add_argument('-o', '--outdir', type=str, help='Directory where the output_file is stored, default: filename from orthogroup input')
+    parser.add_argument('-o', '--outdir', type=str, help='Directory where the output_file is stored, default: filename from cds input truncated at last point to remove file extension')
+    
     parser.add_argument('--pal2nalbin', type=str, help="Absolute path to an executeable to run pal2nal, default: ./pal2nal.pl")
     parser.add_argument('--pal2naloptions', type=str, help="command line options for pal2nal, default: -output paml -nogap -nomismatch")
+    
     parser.add_argument('--clustalbin', type=str, help="path to the clustal-omega executeable if it is not default clustalo. not necessary if the uppmax module is loaded with: module load clustalo/1.2.4")
     parser.add_argument('--alnoptions', type=str, help="optional alignment options, empty by default")
-    parser.add_argument('--codeml', action='store_true', help="run codeml instead of yn00 by default. codeml takes a few minutes and yn00 only a few seconds")
+    
+    paml = parser.add_mutually_exclusive_group(required=True)
+    paml.add_argument('--codemlbin', type=str, help="path to the codeml executeable")
+    paml.add_argument('--yn00bin', type=str, help="path to the yn00 executeable")
+    parser.add_argument('--codemlmodel', type=str, help="codeml model that should be run, default 1 ('model' in the config, see paml documentation for details")
+
     parser.add_argument('--verbose', action='store_true', help="enable verbose mode")
     parser.add_argument('--overwrite', action='store_true', help="overwrite existing output files with default names from previous runs")
 
@@ -77,7 +85,7 @@ The individual steps consist of:
 
     # set default values for non-obligatory arguments
     if not args.outdir:
-        args.outdir = args.orthogroup.split("/")[-1].split(".")[0]+"_dNdS"
+        args.outdir = args.cds.split("/")[-1].split(".")[0]+"_dNdS"
         # print(f"no output directory provided, default directory created: {args.outdir}")
     if not args.pal2nalbin:
         args.pal2nalbin = "./pal2nal.pl" # assumes pal2nal is in the current directory
@@ -87,8 +95,12 @@ The individual steps consist of:
         args.alnoptions = ""
     if not args.clustalbin:
         args.clustalbin = "clustalo"
-    if not args.pamlmodel:
-        args.pamlmodel = "1"
+    if not args.codemlbin:
+        args.codemlbin = "codeml"
+    if not args.yn00bin:
+        args.yn00bin = "yn00"
+    if not args.codemlmodel:
+        args.codemlmodel = "1"
     # if not args.verbose:
     #     args.verbose=False
 
@@ -211,6 +223,16 @@ def is_file_non_empty(file_path):
     return False
 
 
+def make_proteinfasta(cds_fasta_path):
+    """
+    make a proteinfasta file in the output directory that is translated from cds_Fasta_path
+    """
+
+    for seq_record in SeqIO.parse(cds_fasta_path, "fasta"):
+        print(seq_record.id)
+        print(repr(seq_record.seq))
+        print(len(seq_record))
+
 
 def calculate_dNdS(dN_filepath, dS_filepath, dNdS_filepath):
     with open(dN_filepath, "r") as dN_file, open(dS_filepath, "r") as dS_file, open(dNdS_filepath, "w") as dNdS_file:
@@ -243,17 +265,24 @@ if __name__ == '__main__':
     ### define variables from command line input
 
     args=parse_args()
-    proteins_filename = args.orthogroup
     nucleotides_filename = "" # this is created below 
     outdir_path = args.outdir
     cds_path = args.cds
+
     clustal_bin = args.clustalbin
     pal2nal_bin = args.pal2nalbin
     pal2nal_options = args.pal2naloptions
     aln_options = args.alnoptions
+
     verbose = args.verbose
-    run_codeml = args.codeml
     overwrite = args.overwrite
+
+    run_codeml =False
+    yn00_bin = args.yn00bin
+    codeml_bin = args.codemlbin
+    
+    if codeml_bin:    
+        run_codeml =True
 
     print()
     
@@ -270,7 +299,6 @@ if __name__ == '__main__':
 
     print(f"=========================== {outdir_path} ===========================")
     print()
-
     
     ############################
     ### make multifasta file ###
@@ -279,39 +307,38 @@ if __name__ == '__main__':
     # check if the cds input is a directory (contains cds fasta complete for all species of interest)
     # or a file (cds multifasta directly corresponding to the proteinfasta orthogroup input file)
 
-    if os.path.isdir(cds_path):
+    if os.path.isfile(cds_path) and os.path.getsize(cds_path) > 0:
         if verbose:
-            print(f"The path '{cds_path}' is a directory, \nit is supposed to contain multifasta files with all cds for the species included in the input proteinfasta.\nThe following files are in the directory:")
+            print(f"'{cds_path}' found!")
         # list and print files in directory
-        files = [cds_path+f for f in os.listdir(cds_path) if os.path.isfile(os.path.join(cds_path, f))]
-        if verbose:
-            for file in files:
-                print("\t"+file)
+    elif os.path.isfile(cds_path):
+        raise RuntimeError(f"'{cds_path}' not found!")
+    elif os.path.getsize(cds_path) == 0:
+        raise RuntimeError(f"'{cds_path}' is empty!")
 
+    ## make fasta of coding sequences that match the proteinfasta headers
+    
+    nucleotides_filename_unmodified = outdir_path+proteins_filename.split("/")[-1]+"_extracted_cds_unedited_header.fna"
+    nucleotides_filename = outdir_path+proteins_filename.split("/")[-1]+"_extracted_cds.fna"
 
-        ## make fasta of coding sequences that match the proteinfasta headers
+    # check if cds fasta already exists from a previous run, if so, skip
+    if not os.path.exists(nucleotides_filename) or overwrite:
 
-        nucleotides_filename_unmodified = outdir_path+proteins_filename.split("/")[-1]+"_extracted_cds_unedited_header.fna"
-        nucleotides_filename = outdir_path+proteins_filename.split("/")[-1]+"_extracted_cds.fna"
+        nucleotide_fasta = make_cds_fasta(proteinfasta=proteins_filename, cds_list=files, verbose=verbose)
 
-        # check if cds fasta already exists from a previous run, if so, skip
-        if not os.path.exists(nucleotides_filename) or overwrite:
+        with open(nucleotides_filename_unmodified, "w") as output_handle:
+            SeqIO.write(nucleotide_fasta, output_handle, "fasta")
+            print(f'Coding-sequences fasta file generated: {nucleotides_filename_unmodified}')
+        with open(nucleotides_filename_unmodified, "r") as nuc_fasta_unmodded, open(nucleotides_filename, "w") as nuc_fasta:
+            lines = nuc_fasta_unmodded.readlines()
+            for line in lines:
+                if ">" in line:
+                    line = line.split()[0]+"_1\n"
+                nuc_fasta.write(line)
+            print(f"modified fasta headers, new outfile here: {nucleotides_filename}")
 
-            nucleotide_fasta = make_cds_fasta(proteinfasta=proteins_filename, cds_list=files, verbose=verbose)
-
-            with open(nucleotides_filename_unmodified, "w") as output_handle:
-                SeqIO.write(nucleotide_fasta, output_handle, "fasta")
-                print(f'Coding-sequences fasta file generated: {nucleotides_filename_unmodified}')
-            with open(nucleotides_filename_unmodified, "r") as nuc_fasta_unmodded, open(nucleotides_filename, "w") as nuc_fasta:
-                lines = nuc_fasta_unmodded.readlines()
-                for line in lines:
-                    if ">" in line:
-                        line = line.split()[0]+"_1\n"
-                    nuc_fasta.write(line)
-                print(f"modified fasta headers, new outfile here: {nucleotides_filename}")
-
-        else:
-            print(f'\n{nucleotides_filename} already exists, will continue with pre-existing version')
+    else:
+        print(f'\n{nucleotides_filename} already exists, will continue with pre-existing version')
 
     elif os.path.isfile(cds_path):
         print(f"The path '{cds_path}' is a file. It is assumed that it is a cds file matching {proteins_filename}")
@@ -429,7 +456,9 @@ if __name__ == '__main__':
 
         # copy the yn00 config file 
 
-        yn00_config_source = "/sw/bioinfo/paml/4.10.7/rackham/examples/yn00.ctl"
+        # yn00_config_source = "/sw/bioinfo/paml/4.10.7/rackham/examples/yn00.ctl"
+        yn00_config_source = yn00_bin.split("src")[0]
+        yn00_config_source = f"{yn00_config_source}examples/yn00.ctl"
         yn00_config = f"{outdir_path}yn00.ctl"
         copy_command = f"cp {yn00_config_source} {yn00_config}"
         
@@ -549,7 +578,9 @@ if __name__ == '__main__':
 
         os.chdir(topdir)
         # copy the codeml config file into the folder
-        codeml_config_source = "/sw/bioinfo/paml/4.10.7/rackham/examples/codeml.ctl"
+        # codeml_config_source = "/sw/bioinfo/paml/4.10.7/rackham/examples/codeml.ctl"
+        codeml_config_source = codeml_bin.split("src")[0]
+        codeml_config_source = f"{codeml_config_source}examples/codeml.ctl"
         codeml_config = f"{outdir_path}codeml.ctl"
         copy_command = f"cp {codeml_config_source} {codeml_config}"
 
