@@ -44,6 +44,7 @@
 
 import argparse
 from Bio import SeqIO, AlignIO
+from Bio.SeqRecord import SeqRecord
 import os
 import subprocess
 import re
@@ -103,9 +104,6 @@ The individual steps consist of:
         args.codemlmodel = "1"
     # if not args.verbose:
     #     args.verbose=False
-
-    if args.cds[-1]!="/": # if cds is a directory and the user does not include a trailing "/", add it
-        args.cds=args.cds+"/"
     
     if args.outdir[-1]!="/": # if outdir does not include a trailing "/", add it
         args.outdir=args.outdir+"/"
@@ -223,15 +221,17 @@ def is_file_non_empty(file_path):
     return False
 
 
-def make_proteinfasta(cds_fasta_path):
+def make_proteinfasta(cds_fasta_path, outdir):
     """
     make a proteinfasta file in the output directory that is translated from cds_Fasta_path
     """
-
+    prot_name = f"{outdir}protein_sequences.faa"
+    prot_records = []
     for seq_record in SeqIO.parse(cds_fasta_path, "fasta"):
-        print(seq_record.id)
-        print(repr(seq_record.seq))
-        print(len(seq_record))
+        seq_record.seq = seq_record.seq.translate(cds=True)
+        prot_records.append(seq_record)
+    SeqIO.write(prot_records, prot_name, "fasta")
+    return prot_name
 
 
 def calculate_dNdS(dN_filepath, dS_filepath, dNdS_filepath):
@@ -316,57 +316,28 @@ if __name__ == '__main__':
     elif os.path.getsize(cds_path) == 0:
         raise RuntimeError(f"'{cds_path}' is empty!")
 
-    ## make fasta of coding sequences that match the proteinfasta headers
-    
-    nucleotides_filename_unmodified = outdir_path+proteins_filename.split("/")[-1]+"_extracted_cds_unedited_header.fna"
-    nucleotides_filename = outdir_path+proteins_filename.split("/")[-1]+"_extracted_cds.fna"
-
-    # check if cds fasta already exists from a previous run, if so, skip
-    if not os.path.exists(nucleotides_filename) or overwrite:
-
-        nucleotide_fasta = make_cds_fasta(proteinfasta=proteins_filename, cds_list=files, verbose=verbose)
-
-        with open(nucleotides_filename_unmodified, "w") as output_handle:
-            SeqIO.write(nucleotide_fasta, output_handle, "fasta")
-            print(f'Coding-sequences fasta file generated: {nucleotides_filename_unmodified}')
-        with open(nucleotides_filename_unmodified, "r") as nuc_fasta_unmodded, open(nucleotides_filename, "w") as nuc_fasta:
-            lines = nuc_fasta_unmodded.readlines()
-            for line in lines:
-                if ">" in line:
-                    line = line.split()[0]+"_1\n"
-                nuc_fasta.write(line)
-            print(f"modified fasta headers, new outfile here: {nucleotides_filename}")
-
-    else:
-        print(f'\n{nucleotides_filename} already exists, will continue with pre-existing version')
-
-    elif os.path.isfile(cds_path):
-        print(f"The path '{cds_path}' is a file. It is assumed that it is a cds file matching {proteins_filename}")
-        nucleotides_filename = cds_path
+    ## make proteinfasta
+    prot_path = make_proteinfasta(cds_path, outdir_path)
     if verbose:
-        print()
-
+        print(f"protein sequences translated: {prot_path}")
 
     
     ###########################################
     ### do the alignment with clustal-omega ###
     ###########################################
 
-    clustal_outfile = f"{outdir_path}orthogroup.prot_aln.fasta"
+    clustal_outfile = f"{outdir_path}prot_aln.fasta"
 
     # check if an alignment file exists from a previous run
     if not os.path.exists(clustal_outfile) or overwrite:
-        
         if verbose:
             print("================ starting clustal-OMEGA:\n")
             if overwrite:
-                print("overwrite mode enabled")
-        
-
-
-        clustal_omega_command = f"{clustal_bin} {aln_options} -i {proteins_filename} -o {clustal_outfile}"
+                print(f"overwrite mode enabled --> overwriting existing file {clustal_outfile}")
+    
+        clustal_omega_command = f"{clustal_bin} {aln_options} -i {prot_path} -o {clustal_outfile}"
         if overwrite:
-            clustal_omega_command = f"{clustal_bin} {aln_options} -i {proteins_filename} -o {clustal_outfile} --force"
+            clustal_omega_command = f"{clustal_bin} {aln_options} -i {prot_path} -o {clustal_outfile} --force"
 
         start_time = time.time()
         print("command: "+clustal_omega_command)
@@ -381,13 +352,14 @@ if __name__ == '__main__':
         if result.returncode == 0 and verbose:
             print("clustal-OMEGA ran successfully.")
             print(result.stdout)
+        elif is_file_non_empty(clustal_outfile):
+            raise RuntimeError(f"{clustal_outfile} is empty")
         else:
-            print("clustal-OMEGA failed.")
+            raise RuntimeError("clustal-OMEGA failed.")
 
     else:
-        print(f"{clustal_outfile} exists already.")
+        print(f"{clustal_outfile} exists already, using existing file for next steps.")
     print()
-
 
 
     #####################################
@@ -396,7 +368,6 @@ if __name__ == '__main__':
 
     # pal2nal_command = f"{pal2nal_bin} {outdir_path}orthogroup.prot_aln.fasta {nucleotides_filename} {pal2nal_options} >{outdir_path}orthogroup.pal2nal.paml"
     pal2nal_command = f"{pal2nal_bin} {outdir_path}orthogroup.prot_aln.fasta {nucleotides_filename} {pal2nal_options} > {outdir_path}orthogroup.pal2nal.paml"
-
 
     # /proj/naiss2023-6-65/Lila/beetle_genomes/pal2nal.v14/pal2nal.pl OG0006976_dNdS/orthogroup.prot_aln.fasta OG0006976_dNdS/OG0006976.fa_extracted_cds.fna > OG0006976_dNdS/orthogroup.pal2nal.paml
     if verbose:
