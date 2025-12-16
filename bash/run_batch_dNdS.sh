@@ -39,8 +39,8 @@ do
         --clustalbin $CLUSTALO \
         --fasttreebin $FASTTREE \
         --codemlbin $PAML \
-        --overwrite \
-        --verbose
+        --overwrite
 
+        # --verbose
     echo ">>> DONE ${FILE}"
 done

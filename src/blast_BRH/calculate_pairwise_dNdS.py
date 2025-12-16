@@ -498,7 +498,7 @@ if __name__ == '__main__':
         if verbose:
             print("running yn00 from this directory: ")
             print(wdir)
-            print(f"command: {paml_command}")
+        print(f"command: {paml_command}")
 
         # run paml and catch errors in case it goes wrong
         try:
@@ -507,8 +507,8 @@ if __name__ == '__main__':
             print(f"An error occurred while running yn00: {e}")
         if os.path.getsize("yn00.out") == 0:
             raise RuntimeError(f"{yn00_outfile} is empty!")
-
-        print(f"\ndone with yn00, outfile: {wdir}/yn00.out")
+        if verbose:
+            print(f"\ndone with yn00, outfile: {wdir}/yn00.out")
     
         ### calculate pairwise dNdS from 2YN.dN and 2YN.dS
         # stay in the working directory for the orthogroup
@@ -535,8 +535,8 @@ if __name__ == '__main__':
     ###########################################
     ############ run PAML (codeml) ############
     ###########################################
-
-        print(f"\n *  run codeml")
+        if verbose:
+            print(f"\n *  run codeml")
 
         ######### modify the newick tree to work with codeml
         tree_modified = tree_outfile.replace(".tre", "_10chr_leafnames.tre")
@@ -623,13 +623,14 @@ if __name__ == '__main__':
         start_time = time.time()
         os.system(codeml_command) ## this does not run on the login node on uppmax! Nothing happens, you have to run it as sbatch even for testing
         end_time = time.time()
-
+        
         if verbose:
             print("\t\tdone with codeml!")
             passed_time = end_time - start_time
             if verbose:
                 print(f"\t - codeml took {passed_time:.2f} seconds, or {passed_time/60.0:.2f} minutes")
-
+        else:
+            print(f"command: {codeml_command}")
 
         #### done with codeml, calculate dNdS based on that:
 
@@ -643,6 +644,7 @@ if __name__ == '__main__':
                 print(f"\n *  calcualte dN/dS ratio:")
 
             calculate_dNdS(dN_filepath, dS_filepath, dNdS_filepath)
+        print(f"outfile: {dNdS_filepath}")
         
         os.chdir(topdir)
 
