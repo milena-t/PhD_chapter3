@@ -360,14 +360,16 @@ if __name__ == '__main__':
                 
         result = subprocess.run(clustal_omega_command, shell = True, capture_output=True, text=True)
         # Check if the command was successful
-        if result.returncode == 0 and verbose:
-            print("clustal-OMEGA ran successfully.")
-            print(result.stdout)
+        if result.returncode == 0:
+            if verbose:
+                print("clustal-OMEGA ran successfully.")
+                print(result.stdout)
         elif is_file_non_empty(clustal_outfile)==False:
-            raise RuntimeError(f"{clustal_outfile} is empty")
+            raise RuntimeError(f"clustal-OMEGA outfile: {clustal_outfile} is empty")
         else:
             wd = os.getcwd()
-            raise RuntimeError(f"clustal-OMEGA failed in directory {wd}.")
+            filesize = os.path.getsize(clustal_outfile)
+            raise RuntimeError(f"clustal-OMEGA failed in directory {wd}")
 
     else:
         print(f"{clustal_outfile} exists already, using existing file for next steps.")
@@ -385,8 +387,9 @@ if __name__ == '__main__':
     print("command: "+pal2nal_command)
     result = subprocess.run(pal2nal_command, shell = True, capture_output=True, text=True)
     # Check if the command was successful
-    if result.returncode == 0 and verbose:
-        print(f"pal2nal ran successfully")
+    if result.returncode == 0:
+        if verbose:
+            print(f"pal2nal ran successfully")
     else:
         raise RuntimeError(f"pal2nal failed!\n{result.stderr}")
     if os.path.getsize(pal2nal_alignment) == 0:
@@ -419,8 +422,9 @@ if __name__ == '__main__':
     fasttree_command = f"{fasttree_bin} {clustal_outfile} > {tree_outfile}"
     result = subprocess.run(fasttree_command, shell = True, capture_output=True, text=True)
     # Check if the command was successful
-    if result.returncode == 0 and verbose:
-        print(f" *  FastTree ran successfully")
+    if result.returncode == 0:
+        if verbose:
+            print(f" *  FastTree ran successfully")
     else:
         raise RuntimeError(f"FastTree failed! command: \n{fasttree_command}")
     if os.path.getsize(tree_outfile) == 0:
