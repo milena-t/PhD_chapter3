@@ -525,24 +525,21 @@ if __name__ == '__main__':
     ############ run PAML (codeml) ############
     ###########################################
 
-
-        print(f"\n{dN_filepath} or {dS_filepath} are empty, pairwise dN/dS could not be calculated, try to run codeml instead")
         print(f"\n *  run codeml")
-
 
         ######### modify the newick tree to work with codeml
         tree_modified = tree_outfile.replace(".tre", "_10chr_leafnames.tre")
 
         with open(f"{tree_outfile}", 'r') as f, open(f"{tree_modified}", 'w') as o:
             if verbose:
-                print(f"\tmodify the newick tree {tree_modified} so that each leaf consists only of a 10 character string")
+                print(f"\t - modify the newick tree {tree_modified} so that each leaf consists only of a 10 character string")
             newick_tree = f.read()
             mod_tree, num_species = truncate_leaf_names(newick_tree)
-            o.write(f"\t{num_species} 1\n") # the numbers are first the number of species and then the number of trees
+            o.write(f"\t{num_species} 1\n") # the numbers are first the number of species and then the number of trees (which is a format specification but i hardcoded 1 since i always have only one tree)
             o.write(mod_tree)
             
         if verbose:
-            print(f"\t --> Modified tree saved to {tree_modified}\n")
+            print(f"\t\t--> Modified tree saved to {tree_modified}\n")
 
         #########
 
@@ -553,10 +550,12 @@ if __name__ == '__main__':
         #         as much as possible even for pairwise sequence comparison. "
         #   since we have a tree, I will still use runmode 0, since 2 is automatic (and does not require a tree)
 
-        codeml_settings_dict = {"seqfile" : "orthogroup.pal2nal.paml", 
-                        "treefile" : f"{OG_id}_tree_modified.txt",  ## TODO the treefile has one more iteration of the species name than the seqfile? not sure if that's a problem, it still runs but maybe it does some stuff?
+        tree_loc = tree_modified.split("/")[-1]
+        pal2nal_loc = pal2nal_alignment.split("/")[-1]
+        codeml_settings_dict = {"seqfile" : f"{pal2nal_loc}", 
+                        "treefile" : f"{tree_loc}",  ## TODO the treefile has one more iteration of the species name than the seqfile? not sure if that's a problem, it still runs but maybe it does some stuff?
                         "outfile" : "codeml.out", 
-                        "model" : args.pamlmodel, # default paml model is 1
+                        "model" : args.codemlmodel, # default model is 1
                         "verbose" : "1",
                         "seqtype" : "1",
                         #"runmode" : "2", # 2 is an automatic run mode, the default is 0 which is a user generated tree
@@ -564,17 +563,20 @@ if __name__ == '__main__':
                         } 
         
 
-        os.chdir(topdir)
+        # os.chdir(topdir)
+        ###!!
+        os.chdir(outdir_path) 
+        ###!!
         # copy the codeml config file into the folder
         # codeml_config_source = "/sw/bioinfo/paml/4.10.7/rackham/examples/codeml.ctl"
         codeml_config_source = codeml_bin.split("src")[0]
         codeml_config_source = f"{codeml_config_source}examples/codeml.ctl"
-        codeml_config = f"{outdir_path}codeml.ctl"
+        codeml_config = f"codeml.ctl"
         copy_command = f"cp {codeml_config_source} {codeml_config}"
 
         os.system(copy_command)
         if verbose:
-            print(f"get config file: {copy_command}\nmodify config file:")
+            print(f"\t - setup config file\n\t\tcopy from source: {copy_command}\n\t\tmodify config file:")
         
 
         ## modify the codeml config file:
@@ -594,23 +596,22 @@ if __name__ == '__main__':
             yn00.writelines(modified_lines)
 
         if verbose:
-            print(f"done modifying {codeml_config}")
+            print(f"\t\t--> done modifying {codeml_config}")
             print()
 
-        os.chdir(outdir_path)
-        codeml_command = "codeml > codeml.log"
+        codeml_command = f"{codeml_bin} > codeml.log"
         if verbose:
-            print(f"running: {codeml_command}")
+            print(f"\t - running: {codeml_command}")
         
         start_time = time.time()
         os.system(codeml_command) ## this does not run on the login node on uppmax! Nothing happens, you have to run it as sbatch even for testing
         end_time = time.time()
 
         if verbose:
-            print("done with codeml")
+            print("\t\tdone with codeml!")
             passed_time = end_time - start_time
             if verbose:
-                print(f"codeml took {passed_time:.2f} seconds, or {passed_time/60.0:.2f} minutes")
+                print(f"\t - codeml took {passed_time:.2f} seconds, or {passed_time/60.0:.2f} minutes")
 
 
         #### done with codeml, calculate dNdS based on that:
