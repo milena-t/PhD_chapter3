@@ -77,8 +77,12 @@ The individual steps consist of:
     parser.add_argument('--fasttreebin', type=str, help="Absolute path to an executeable to run fasttree, default: FastTree")
 
     paml = parser.add_mutually_exclusive_group(required=True)
-    paml.add_argument('--codemlbin', type=str, help="path to the codeml executeable")
-    paml.add_argument('--yn00bin', type=str, help="path to the yn00 executeable")
+    paml.add_argument('--codeml', action='store_true', help="run codeml (specify path to executeable in --codemlbin)")
+    paml.add_argument('--yn00', action='store_true', help="run yn00 (specify path to executeable in --yn00bin)")
+
+    paml_bin = parser.add_mutually_exclusive_group(required=False)
+    paml_bin.add_argument('--codemlbin', type=str, help="path to the codeml executeable")
+    paml_bin.add_argument('--yn00bin', type=str, help="path to the yn00 executeable")
     parser.add_argument('--codemlmodel', type=str, help="codeml model that should be run, default 1 ('model' in the config, see paml documentation for details")
 
     parser.add_argument('--verbose', action='store_true', help="enable verbose mode")
@@ -283,12 +287,11 @@ if __name__ == '__main__':
     verbose = args.verbose
     overwrite = args.overwrite
 
-    run_codeml =False
+    run_yn00 = args.yn00
     yn00_bin = args.yn00bin
+    run_codeml =args.codeml
     codeml_bin = args.codemlbin
     
-    if codeml_bin:    
-        run_codeml =True
 
     print()
     
@@ -382,7 +385,7 @@ if __name__ == '__main__':
     result = subprocess.run(pal2nal_command, shell = True, capture_output=True, text=True)
     # Check if the command was successful
     if result.returncode == 0 and verbose:
-        print(f"pal2nal ran successfully, stdout: '{result.stdout}'")
+        print(f"pal2nal ran successfully")
     else:
         raise RuntimeError(f"pal2nal failed!\n{result.stderr}")
     if os.path.getsize(pal2nal_alignment) == 0:
@@ -414,42 +417,37 @@ if __name__ == '__main__':
     result = subprocess.run(fasttree_command, shell = True, capture_output=True, text=True)
     # Check if the command was successful
     if result.returncode == 0 and verbose:
-        print(f"pal2nal ran successfully, stdout: '{result.stdout}'")
+        print(f" *  FastTree ran successfully")
+    else:
+        raise RuntimeError(f"FastTree failed! command: \n{fasttree_command}")
+    if os.path.getsize(tree_outfile) == 0:
+        raise RuntimeError(f"{tree_outfile} is empty!")
 
-    if not run_codeml: 
-
+    if run_yn00: 
         if verbose:
             print(" *  set up and run paml (yn00)\n")
         
-        treefile_name = proteins_filename.split("/")[:-2]
-        OG_id = proteins_filename.split("/")[-1].split(".fa")[0]
-        treefile_name = "/".join(treefile_name)+"/Gene_Trees/"+OG_id+"_tree.txt"
-
-        if not os.path.exists(outdir_path+OG_id+"_tree.txt"):
-            os.symlink(treefile_name, outdir_path+OG_id+"_tree.txt")
-            if verbose:
-                print(f"ln -s {treefile_name} {outdir_path}{OG_id}_tree.txt")
-                print()
-
-
         # copy the yn00 config file 
 
-        # yn00_config_source = "/sw/bioinfo/paml/4.10.7/rackham/examples/yn00.ctl"
+        # on UPPMAX: yn00_config_source = "/sw/bioinfo/paml/4.10.7/rackham/examples/yn00.ctl"
         yn00_config_source = yn00_bin.split("src")[0]
         yn00_config_source = f"{yn00_config_source}examples/yn00.ctl"
         yn00_config = f"{outdir_path}yn00.ctl"
         copy_command = f"cp {yn00_config_source} {yn00_config}"
-        
         os.system(copy_command)
         if verbose:
             print(copy_command)
         
-
         ## modify the config file
         # The files are all in the same output folder as the config which is also used in the rest of this, 
         # therefore I will not use absolute filepaths
 
-        yn00_settings_dict = {"seqfile" : "orthogroup.pal2nal.paml", # "orthogroup.pal2nal.phy",
+        #!! careful with the paths here, they are relative to the contig file and not the working directory!
+        # -> variables that exclude the directory
+        pal2nal_filename = pal2nal_alignment.split("/")[-1]
+        yn00_outfile = f"{outdir_path}yn00.out"
+
+        yn00_settings_dict = {"seqfile" : f"{pal2nal_filename}",
                             "outfile" : "yn00.out"}
 
         if verbose:
@@ -476,9 +474,13 @@ if __name__ == '__main__':
 
         ## set up paml run
         os.chdir(outdir_path) 
+        
+        ###!!
         wdir = os.getcwd()
+        ###!!
+
         # run paml from the output directory, since the files referenced in yn00.ctl don't have absolut paths and are just filenames
-        paml_command = "yn00 > yn00.log"
+        paml_command = f"{yn00_bin} > yn00.log"
         if verbose:
             print("running yn00 from this directory: ")
             print(wdir)
@@ -489,10 +491,12 @@ if __name__ == '__main__':
             os.system(paml_command)
         except Exception as e:
             print(f"An error occurred while running yn00: {e}")
+        if os.path.getsize("yn00.out") == 0:
+            raise RuntimeError(f"{yn00_outfile} is empty!")
 
         print(f"\ndone with yn00, outfile: {wdir}/yn00.out")
         
-    
+    raise RuntimeError
 
     ### calculate pairwise dNdS from 2YN.dN and 2YN.dS
     # stay in the working directory for the orthogroup
@@ -508,9 +512,12 @@ if __name__ == '__main__':
             print(f"\n *  calcualte dN/dS ratio:")
 
         calculate_dNdS(dN_filepath, dS_filepath, dNdS_filepath)
+    else:
+        # if it didn't work try codeml
+        run_codeml = True
 
 
-    else: # if the 2YN files are empty/nonexistent, either because it didn't work or because --codeml was specified and it wasn't run
+    if run_codeml: # if the 2YN files are empty/nonexistent, either because it didn't work or because --codeml was specified and it wasn't run
 
     ###########################################
     ############ run PAML (codeml) ############
