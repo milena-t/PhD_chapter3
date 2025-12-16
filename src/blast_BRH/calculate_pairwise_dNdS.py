@@ -436,6 +436,12 @@ if __name__ == '__main__':
         # on UPPMAX: yn00_config_source = "/sw/bioinfo/paml/4.10.7/rackham/examples/yn00.ctl"
         yn00_config_source = yn00_bin.split("src")[0]
         yn00_config_source = f"{yn00_config_source}examples/yn00.ctl"
+        if not os.path.isfile(yn00_config_source):
+            yn00_config_source = yn00_bin.split("bin")[0]
+            yn00_config_source = f"{yn00_config_source}examples/yn00.ctl"
+        if not os.path.isfile(yn00_config_source):
+            raise RuntimeError(f"yn00 config file not found in expected location {yn00_config_source}!")
+
         yn00_config = f"{outdir_path}yn00.ctl"
         copy_command = f"cp {yn00_config_source} {yn00_config}"
         os.system(copy_command)
@@ -574,6 +580,8 @@ if __name__ == '__main__':
         if not os.path.isfile(codeml_config_source):
             codeml_config_source = codeml_bin.split("src")[0]
             codeml_config_source = f"{codeml_config_source}examples/codeml.ctl"
+        if not os.path.isfile(codeml_config_source):
+            raise RuntimeError(f"codeml config file not found in expected location {codeml_config_source}!")
 
         codeml_config = f"codeml.ctl"
         copy_command = f"cp {codeml_config_source} {codeml_config}"
