@@ -24,6 +24,7 @@
 #       (+) BioPython       | (The original script uses BioPerl since it's in perl), can be loaded as uppmax module
 #       (+) CLUSTAL-Omega   | (For multiple-sequence alignments), can be loaded as uppmax module
 #       (+) PAML            | can be loaded as uppmax module
+#       (+) FastTree        | uppmax module FastTree/2.2-GCCcore-13.3.0
 #   (+) stuff not on uppmax:
 #       (+) pal2nal         | (not available on uppmax, get from github and set binary path with command line flag)
 #                           | /proj/naiss2023-6-65/Lila/beetle_genomes/pal2nal.v14/pal2nal.pl
@@ -73,6 +74,8 @@ The individual steps consist of:
     parser.add_argument('--clustalbin', type=str, help="path to the clustal-omega executeable if it is not default clustalo. not necessary if the uppmax module is loaded with: module load clustalo/1.2.4")
     parser.add_argument('--alnoptions', type=str, help="optional alignment options, empty by default")
     
+    parser.add_argument('--fasttreebin', type=str, help="Absolute path to an executeable to run fasttree, default: FastTree")
+
     paml = parser.add_mutually_exclusive_group(required=True)
     paml.add_argument('--codemlbin', type=str, help="path to the codeml executeable")
     paml.add_argument('--yn00bin', type=str, help="path to the yn00 executeable")
@@ -96,6 +99,8 @@ The individual steps consist of:
         args.alnoptions = ""
     if not args.clustalbin:
         args.clustalbin = "clustalo"
+    if not args.fasttreebin:
+        args.fasttreebin = "FastTree"
     if not args.codemlbin:
         args.codemlbin = "codeml"
     if not args.yn00bin:
@@ -273,6 +278,8 @@ if __name__ == '__main__':
     pal2nal_options = args.pal2naloptions
     aln_options = args.alnoptions
 
+    fasttree_bin = args.fasttreebin
+
     verbose = args.verbose
     overwrite = args.overwrite
 
@@ -376,10 +383,10 @@ if __name__ == '__main__':
     # Check if the command was successful
     if result.returncode == 0 and verbose:
         print(f"pal2nal ran successfully, stdout: '{result.stdout}'")
-    elif os.path.getsize(pal2nal_alignment) == 0:
-        raise RuntimeError(f"pal2nal failed, {pal2nal_alignment} is empty")
     else:
         raise RuntimeError(f"pal2nal failed!\n{result.stderr}")
+    if os.path.getsize(pal2nal_alignment) == 0:
+        raise RuntimeError(f"pal2nal failed, {pal2nal_alignment} is empty")
 
     # Read the Clustal file
     alignment = AlignIO.read(f"{pal2nal_alignment}", "clustal")
@@ -396,18 +403,20 @@ if __name__ == '__main__':
         print(f"done, adjusted spacing in {pal2nal_alignment}")
 
     print()
-
-    raise RuntimeError
     
 
     ###########################################
     ############# run PAML (yn00) #############
     ###########################################
 
-    # in preparation to run paml, create a symlink of the treefile
-    # parse treefile name from orthogroup file
+    tree_outfile = f"{outdir_path}tree.tre"
+    fasttree_command = f"{fasttree_bin} {clustal_outfile} > {tree_outfile}"
+    result = subprocess.run(fasttree_command, shell = True, capture_output=True, text=True)
+    # Check if the command was successful
+    if result.returncode == 0 and verbose:
+        print(f"pal2nal ran successfully, stdout: '{result.stdout}'")
 
-    if not run_codeml: #if --codeml is not specified, run yn00 by default
+    if not run_codeml: 
 
         if verbose:
             print(" *  set up and run paml (yn00)\n")
