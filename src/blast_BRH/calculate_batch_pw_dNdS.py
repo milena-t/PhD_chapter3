@@ -59,6 +59,6 @@ if __name__ == "__main__":
 
             wd = os.getcwd()
             print(f"\n working in {wd}")
-            break
+            
         break
     # os.system(dNdS_command)
