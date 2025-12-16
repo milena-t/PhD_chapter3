@@ -48,7 +48,7 @@ if __name__ == "__main__":
     
 
     ########
-    num_files = 3
+    num_files = 30
     ########
 
     for species1, subdict in x_paths_nested_dict.items():
