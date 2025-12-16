@@ -230,16 +230,46 @@ def is_file_non_empty(file_path):
     return False
 
 
-def make_proteinfasta(cds_fasta_path, outdir):
+def make_proteinfasta(cds_fasta_path, outdir, auto_modify_headers = False):
     """
     make a proteinfasta file in the output directory that is translated from cds_Fasta_path
     """
     prot_name = f"{outdir}protein_sequences.faa"
     prot_records = []
-    for seq_record in SeqIO.parse(cds_fasta_path, "fasta"):
-        seq_record.seq = seq_record.seq.translate(cds=True)
-        prot_records.append(seq_record)
+
+    modify_headers = False
+    if auto_modify_headers:
+        headers = []
+        count_seqs = 0
+        for seq_record in SeqIO.parse(cds_fasta_path, "fasta"):
+            headers.append(seq_record.id[:10])
+            count_seqs+=1
+        print(headers)
+        unique_headers = len(list(set(headers)))
+        if unique_headers != count_seqs:
+            modify_headers = True
+
+    if modify_headers:
+        if verbose:
+            print(f"non-unique headers detected! {headers} --> add prefix")
+        nuc_records = []
+    
+    for i, seq_record in enumerate(SeqIO.parse(cds_fasta_path, "fasta")):
+        prot_record = seq_record
+        try:
+            prot_record.seq = seq_record.seq.translate(cds=True)
+        except Exception as e:
+            raise RuntimeError(f"error in sequence translation: {e}")
+        
+        if modify_headers:
+            prot_record.id = f"{i}_{prot_record.id}"
+            seq_record.id = f"{i}_{seq_record.id}"
+            nuc_records.append(seq_record)
+        prot_records.append(prot_record)
+    
     SeqIO.write(prot_records, prot_name, "fasta")
+    if modify_headers:
+        SeqIO.write(nuc_records, cds_fasta_path, "fasta")
     return prot_name
 
 
@@ -297,6 +327,7 @@ if __name__ == '__main__':
     
     topdir = os.getcwd() # working directory above all the output directories
 
+    print(f"\n====================== {outdir_path} ======================")
     # take care of output directory
 
     if not os.path.exists(outdir_path):
@@ -307,8 +338,6 @@ if __name__ == '__main__':
     elif overwrite:
         print(f"The output directory {outdir_path} already exists, but overwrite mode is disabled so existing outfiles are used")
 
-
-    print(f"\n====================== {outdir_path} ======================")
     print()
     
     ############################
@@ -328,7 +357,7 @@ if __name__ == '__main__':
         raise RuntimeError(f"'{cds_path}' is empty!")
 
     ## make proteinfasta
-    prot_path = make_proteinfasta(cds_path, outdir_path)
+    prot_path = make_proteinfasta(cds_path, outdir_path, auto_modify_headers = True)
     if verbose:
         print(f"protein sequences translated: {prot_path}")
 

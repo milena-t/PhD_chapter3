@@ -27,7 +27,7 @@ else
     FASTTREE=/Users/miltr339/Desktop/FastTree
 fi
 
-for FILE in $IN_LIST
+for FILE in $IN_LIST # D_carinulata_D_sublineata_X-linked_ortholog_2.fasta #  
 do
     # bash run_dNdS_pelle.sh $FILE
 
@@ -39,8 +39,9 @@ do
         --clustalbin $CLUSTALO \
         --fasttreebin $FASTTREE \
         --codemlbin $PAML \
-        --overwrite
-
-        # --verbose
+        --overwrite \
+        --verbose
+        
     echo ">>> DONE ${FILE}"
+
 done
