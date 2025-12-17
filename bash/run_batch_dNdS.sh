@@ -42,8 +42,8 @@ do
         --fasttreebin $FASTTREE \
         --codemlbin $PAML \
         --overwrite \
+        --verbose
         
-        #--verbose
     echo ">>> DONE ${FILE}"
 
 done
