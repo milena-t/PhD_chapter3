@@ -52,6 +52,7 @@ if __name__ == "__main__":
 
     os.chdir(outdir)
     x_paths_nested_dict = make_nested_lists(X_path)
+    print(f"{len(x_paths_nested_dict)} pairs")
 
     ########
     num_files = 0
@@ -62,7 +63,7 @@ if __name__ == "__main__":
             if species1 == species2:
                 continue
             dirname = f"{species1}_{species2}_pairwise_dNdS"
-
+            print(f">>>> {dirname}\n")
             if not os.path.isdir(dirname):
                 os.mkdir(dirname)
             os.chdir(dirname)
