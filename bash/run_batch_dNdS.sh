@@ -34,7 +34,7 @@ for FILE in $IN_LIST # D_carinulata_D_sublineata_X-linked_ortholog_2.fasta #
 do
     # bash run_dNdS_pelle.sh $FILE
     cd  $cwd
-    
+
     python3 "${RUN_DIR}calculate_pairwise_dNdS.py" \
         --cds "${IN_DIR}${FILE}" \
         --pal2nalbin $PAL2NAL \
@@ -44,6 +44,7 @@ do
         --fasttreebin $FASTTREE \
         --codemlbin $PAML \
         --overwrite \
+        --verbose
         
     echo ">>> DONE ${FILE}"
 
