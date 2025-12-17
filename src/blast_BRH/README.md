@@ -1,6 +1,6 @@
 ### running the batch mode for `calcualte_pairwise_dNdS.py`
 
-This is a bit complicated, because I am splitting it so that each comparison is it's own job on the cluster. I don't want to run separate jobs for each ortholog because the HPC won't like that, and running all in the same job would take forever. hope the diagram makes it clear.
+This is a bit complicated, because I am splitting it so that each comparison is it's own job on the cluster. I don't want to run separate jobs for each ortholog because the HPC won't like that, and running all in the same job would take forever. hope the diagram makes it clear. Tne files contain checks to detect whether they are run on my work iMac or pelle, but no other options.
 
 
 ```mermaid
