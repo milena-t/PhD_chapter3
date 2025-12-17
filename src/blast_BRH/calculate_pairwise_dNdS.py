@@ -337,14 +337,21 @@ if __name__ == '__main__':
         print(f"\n====================== {outdir_path} ======================")
         # take care of output directory
 
-        if not os.path.exists(outdir_path):
-            print(f"The specified output directory is created at: {outdir_path}")
+        try:
             os.makedirs(outdir_path)
-        elif overwrite:
-            print(f"The output directory {outdir_path} already exists and overwrite mode is enabled, therefore existing output files are overwritten")
-        elif overwrite:
-            print(f"The output directory {outdir_path} already exists, but overwrite mode is disabled so existing outfiles are used")
+            print(f"The specified output directory is created at: {outdir_path}")
+        except Exception as e:
+            if os.path.exists(outdir_path):
+                if overwrite:
+                    print(f"The output directory {outdir_path} already exists and overwrite mode is enabled, therefore existing output files are overwritten")
+                else:
+                    print(f"The output directory {outdir_path} already exists, but overwrite mode is disabled so existing outfiles are used")
 
+            else:
+                wd = os.getcwd()
+                print(f"{outdir_path} could not be created in {wd}.\nERROR:\n{e}")
+
+        
         print()
     
     ############################
