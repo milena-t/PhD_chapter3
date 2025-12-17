@@ -323,23 +323,24 @@ if __name__ == '__main__':
     run_codeml =args.codeml
     codeml_bin = args.codemlbin
     
-
-    print()
+    if verbose:
+        print()
     
     topdir = os.getcwd() # working directory above all the output directories
+    
+    if verbose:
+        print(f"\n====================== {outdir_path} ======================")
+        # take care of output directory
 
-    print(f"\n====================== {outdir_path} ======================")
-    # take care of output directory
+        if not os.path.exists(outdir_path):
+            print(f"The specified output directory is created at: {outdir_path}")
+            os.makedirs(outdir_path)
+        elif overwrite:
+            print(f"The output directory {outdir_path} already exists and overwrite mode is enabled, therefore existing output files are overwritten")
+        elif overwrite:
+            print(f"The output directory {outdir_path} already exists, but overwrite mode is disabled so existing outfiles are used")
 
-    if not os.path.exists(outdir_path):
-        print(f"The specified output directory is created at: {outdir_path}")
-        os.makedirs(outdir_path)
-    elif overwrite:
-        print(f"The output directory {outdir_path} already exists and overwrite mode is enabled, therefore existing output files are overwritten")
-    elif overwrite:
-        print(f"The output directory {outdir_path} already exists, but overwrite mode is disabled so existing outfiles are used")
-
-    print()
+        print()
     
     ############################
     ### make multifasta file ###
@@ -381,7 +382,8 @@ if __name__ == '__main__':
             clustal_omega_command = f"{clustal_bin} {aln_options} -i {prot_path} -o {clustal_outfile} --force"
 
         start_time = time.time()
-        print("command: "+clustal_omega_command)
+        if verbose:
+            print("command: "+clustal_omega_command)
         end_time = time.time()
         if verbose:
             passed_time = end_time - start_time
@@ -402,7 +404,8 @@ if __name__ == '__main__':
             raise RuntimeError(f"clustal-OMEGA failed in directory {wd}")
 
     else:
-        print(f"{clustal_outfile} exists already, using existing file for next steps.")
+        if verbose:
+            print(f"{clustal_outfile} exists already, using existing file for next steps.")
 
 
     #####################################
@@ -414,7 +417,7 @@ if __name__ == '__main__':
 
     if verbose:
         print(" *  running pal2nal (codon based alignment)\n")
-    print("command: "+pal2nal_command)
+        print("command: "+pal2nal_command)
     result = subprocess.run(pal2nal_command, shell = True, capture_output=True, text=True)
     # Check if the command was successful
     if result.returncode == 0:
@@ -438,8 +441,7 @@ if __name__ == '__main__':
 
     if verbose:
         print(f"done, adjusted spacing in {pal2nal_alignment}")
-
-    print()
+        print()
     
 
     ###########################################
@@ -528,7 +530,7 @@ if __name__ == '__main__':
         if verbose:
             print("running yn00 from this directory: ")
             print(wdir)
-        print(f"command: {paml_command}")
+            print(f"command: {paml_command}")
 
         # run paml and catch errors in case it goes wrong
         try:
@@ -675,7 +677,8 @@ if __name__ == '__main__':
 
             calculate_dNdS(dN_filepath, dS_filepath, dNdS_filepath)
         filesize = os.path.getsize(dNdS_filepath)
-        print(f"outfile: {dNdS_filepath} ({filesize}B size)")
+        if verbose:
+            print(f"outfile: {dNdS_filepath} ({filesize}B size)")
         
         os.chdir(topdir)
 
