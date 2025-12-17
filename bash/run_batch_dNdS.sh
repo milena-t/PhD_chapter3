@@ -10,7 +10,7 @@
 
 IN_LIST=$@ # space separated list of filenames, do like 100 at a time
 
-CHR_TYPE=X
+CHR_TYPE=A
 
 RUN_DIR=/proj/naiss2023-6-65/Milena/chapter3/PhD_chapter3/src/blast_BRH/
 if [ -d "$RUN_DIR" ]; then
@@ -45,7 +45,7 @@ do
         --codemlbin $PAML \
         --overwrite \
         --verbose
-        
+
     echo ">>> DONE ${FILE}"
 
 done

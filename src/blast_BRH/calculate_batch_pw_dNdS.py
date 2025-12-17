@@ -43,7 +43,10 @@ if __name__ == "__main__":
         script_path = f"{bash_dir}/run_batch_dNdS.sh"
         pelle = True
     
-    chr_type = "X"
+    #######
+    chr_type = "A"
+    #######
+
     X_path = f"{datadir}brh_sequences_{chr_type}/"
     outdir = f"{datadir}brh_results_{chr_type}/"
 
