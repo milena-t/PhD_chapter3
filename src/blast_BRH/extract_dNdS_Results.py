@@ -28,7 +28,10 @@ def dNdS_list_of_pair(pair_dir, results_dir):
     """
     give the dir that contains all the results for the dNdS of the orthologs generated with calculate_pairwise_dNdS.py
     """
-    subdirectories = [f"{results_dir}{pair_dir}/{d}/2NG.dNdS" for d in os.listdir(pair_dir)]
+    try:
+        subdirectories = [f"{results_dir}{pair_dir}/{d}/2NG.dNdS" for d in os.listdir(pair_dir)]
+    except:
+        raise RuntimeError(f"pair directory not found! {results_dir}{pair_dir}")
     dNdS_list = [extract_dNdS_file(f) for f in subdirectories]
     return dNdS_list
 
