@@ -9,6 +9,6 @@
 
 module load Biopython/1.84-foss-2024a
 
-echo "python3 /proj/naiss2023-6-65/Milena/chapter3/PhD_chapter3/src/blast_BRH/extract_dNdS_results.py" 
+echo "python3 /proj/naiss2023-6-65/Milena/chapter3/PhD_chapter3/src/blast_BRH/extract_dNdS_Results.py" 
 echo 
-python3 /proj/naiss2023-6-65/Milena/chapter3/PhD_chapter3/src/blast_BRH/extract_dNdS_results.py
+python3 /proj/naiss2023-6-65/Milena/chapter3/PhD_chapter3/src/blast_BRH/extract_dNdS_Results.py
