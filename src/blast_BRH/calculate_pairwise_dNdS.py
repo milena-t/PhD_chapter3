@@ -233,6 +233,8 @@ def is_file_non_empty(file_path):
 def make_proteinfasta(cds_fasta_path, outdir, auto_modify_headers = False):
     """
     make a proteinfasta file in the output directory that is translated from cds_Fasta_path
+    later for phylip sequential headers get truncated to 10 bp, so when auto_modify_headers is on, 
+    check if the first 10 characters are identical add a prefix to the ID to make sure this does not cause problems later
     """
     prot_name = f"{outdir}protein_sequences.faa"
     prot_records = []
@@ -267,8 +269,11 @@ def make_proteinfasta(cds_fasta_path, outdir, auto_modify_headers = False):
             seq_record.id = f"{i}_{seq_record.id}"
             nuc_records.append(seq_record)
         prot_records.append(prot_record)
-    
-    SeqIO.write(prot_records, prot_name, "fasta")
+    try:
+        SeqIO.write(prot_records, prot_name, "fasta")
+    except Exception as e:
+        wd = os.getcwd()
+        raise RuntimeError(f"writing to file did not work:\n{e}\n--> failing to write {prot_name} in {wd}")
     if modify_headers:
         SeqIO.write(nuc_records, cds_fasta_path, "fasta")
     return prot_name
