@@ -51,7 +51,7 @@ if __name__ == "__main__":
     x_paths_nested_dict = make_nested_lists(X_path)
 
     ########
-    num_files = 1
+    num_files = 0
     ########
 
     for species1, subdict in x_paths_nested_dict.items():
