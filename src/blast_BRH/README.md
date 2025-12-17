@@ -18,6 +18,8 @@ graph TD;
 !! run from the top directory of the results. this makes a nested directory structure that's like:
 
 ```
+run_dir
+│
 ├── B_siliquastri_D_carinulata_pairwise_dNdS
 │   ├── B_siliquastri_D_carinulata_X-linked_ortholog_0_dNdS
 │   │   ├── 2NG.dN
@@ -38,9 +40,11 @@ graph TD;
 │   │   ├── tree.tre
 │   │   └── tree_10chr_leafnames.tre
 │   └── ...
+│
 ├── B_siliquastri_D_sublineata_pairwise_dNdS
 │   ├── B_siliquastri_D_sublineata_X-linked_ortholog_0_dNdS
 │   └── ...
+│
 └── C_chinensis_C_maculatus_pairwise_dNdS
     ├── C_chinensis_C_maculatus_X-linked_ortholog_105_dNdS
     └── ...
