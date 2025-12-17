@@ -75,6 +75,7 @@ if __name__ == "__main__":
                 dNdS_command = f"{dNdS_exec} {fasta_string}"
 
             os.system(dNdS_command)
+            print(f"{dNdS_command}")
             os.chdir("..")
 
             wd = os.getcwd()
