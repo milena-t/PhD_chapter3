@@ -10,17 +10,19 @@
 
 IN_LIST=$@ # space separated list of filenames, do like 100 at a time
 
+CHR_TYPE=X
+
 RUN_DIR=/proj/naiss2023-6-65/Milena/chapter3/PhD_chapter3/src/blast_BRH/
 if [ -d "$RUN_DIR" ]; then
     module load FastTree/2.2-GCCcore-13.3.0
-    IN_DIR=/proj/naiss2023-6-65/Milena/chapter3/dNdS_calculations/brh_sequences_A/
+    IN_DIR=/proj/naiss2023-6-65/Milena/chapter3/dNdS_calculations/brh_sequences_${CHR_TYPE}/
     PAL2NAL=/proj/naiss2023-6-65/Lila/beetle_genomes/pal2nal.v14/pal2nal.pl
     CLUSTALO=/proj/naiss2023-6-65/Milena/software_install/clustal_omega/clustal-omega-1.2.4/bin/clustalo
     PAML=/sw/bioinfo/paml/4.10.7/rackham/bin/codeml
     FASTTREE=FastTree
 else
     RUN_DIR=/Users/miltr339/work/PhD_code/PhD_chapter3/src/blast_BRH/
-    IN_DIR=/Users/miltr339/work/pairwise_blast_chapter_2_3/brh_tables/brh_sequences_A/
+    IN_DIR=/Users/miltr339/work/pairwise_blast_chapter_2_3/brh_tables/brh_sequences_${CHR_TYPE}/
     PAL2NAL=/Users/miltr339/work/pal2nal.v14/pal2nal.pl
     CLUSTALO=/Users/miltr339/work/clustal-omega-1.2.4/src/clustalo
     PAML=/Users/miltr339/work/paml/src/codeml
