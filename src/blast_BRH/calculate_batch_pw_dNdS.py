@@ -63,16 +63,17 @@ if __name__ == "__main__":
             if not os.path.isdir(dirname):
                 os.mkdir(dirname)
             os.chdir(dirname)
+            wd = os.getcwd()
 
             if num_files == 0:
                 fasta_string = " ".join([f"{fasta}" for fasta in fasta_list])
             else:
                 fasta_string = " ".join([f"{fasta}" for fasta in fasta_list[:num_files]])
-            # print(f"created and working in {dirname}")
+            print(f"\t--> working in {wd}")
             
             if pelle:
                 jobname = f"dNdS_{chr_type}-linked_{species1}_{species2}"
-                dNdS_command = f"{dNdS_exec} -J {jobname} -O {jobname}.out {script_path} {fasta_string}"
+                dNdS_command = f"{dNdS_exec} -J {jobname} -o {jobname}.out {script_path} {fasta_string}"
             else:
                 dNdS_command = f"{dNdS_exec} {script_path} {fasta_string}"
 
