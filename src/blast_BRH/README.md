@@ -2,6 +2,7 @@
 
 This is a bit complicated, because I am splitting it so that each comparison is it's own job on the cluster. I don't want to run separate jobs for each ortholog because the HPC won't like that, and running all in the same job would take forever. hope the diagram makes it clear. Tne files contain checks to detect whether they are run on my work iMac or pelle, but no other options.
 
+When you run on the autosomes where there's lots of orthologs in all pairs, the script struggles to submit a sbtach job with like a 5k long list in the command line, so those are split further down into multiple jobs
 
 ```mermaid
 graph TD;
