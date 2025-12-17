@@ -12,7 +12,7 @@ IN_LIST=$@ # space separated list of filenames, do like 100 at a time
 
 RUN_DIR=/proj/naiss2023-6-65/Milena/chapter3/PhD_chapter3/src/blast_BRH/
 if [ -d "$RUN_DIR" ]; then
-    echo ""
+    module load FastTree/2.2-GCCcore-13.3.0
     IN_DIR=/proj/naiss2023-6-65/Milena/chapter3/dNdS_calculations/brh_sequences_A/
     PAL2NAL=/proj/naiss2023-6-65/Lila/beetle_genomes/pal2nal.v14/pal2nal.pl
     CLUSTALO=/proj/naiss2023-6-65/Milena/software_install/clustal_omega/clustal-omega-1.2.4/bin/clustalo
