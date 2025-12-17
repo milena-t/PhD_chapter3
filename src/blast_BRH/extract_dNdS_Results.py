@@ -20,6 +20,11 @@ def extract_dNdS_file(dNdS_path):
         return(float(value))
 
 
+def mean_dNdS_of_pair(results_dir):
+    """
+    give the dir that contains all the results for the dNdS of the orthologs generated with calculate_pairwise_dNdS.py
+    """
+
 
 if __name__ == "__main__":
     
