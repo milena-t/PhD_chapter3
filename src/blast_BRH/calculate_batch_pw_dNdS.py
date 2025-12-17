@@ -82,7 +82,8 @@ if __name__ == "__main__":
                 dNdS_command = f"{dNdS_exec} {script_path} {fasta_string}"
 
             os.system(dNdS_command)
-            print(f"{dNdS_command[:200]} ...")
+            
+            print(f"{dNdS_command[:1000]} ...")
             os.chdir("..")
 
             wd = os.getcwd()
