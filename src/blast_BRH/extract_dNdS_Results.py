@@ -53,6 +53,8 @@ def get_dNdS_pairs_dict(results_dir, outfile_name = ""):
     pair_lists = {f"{d}":[] for d in pair_dirs}
     if outfile_name == "":
         for pair_dir in pair_lists.keys():
+            if not os.path.isdir(f"{results_dir}{pair_dir}"):
+                raise RuntimeError(f"parsed dir {results_dir}{pair_dir} does not exist!")
             pair_lists[pair_dir] = dNdS_list_of_pair(pair_dir, results_dir)
             print(f"{pair_dir} : {pair_lists[pair_dir]}")
         return pair_lists
