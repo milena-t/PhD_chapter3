@@ -15,6 +15,7 @@ CHR_TYPE=A
 RUN_DIR=/proj/naiss2023-6-65/Milena/chapter3/PhD_chapter3/src/blast_BRH/
 if [ -d "$RUN_DIR" ]; then
     module load FastTree/2.2-GCCcore-13.3.0
+    module load Biopython/1.76-foss-2024a-Python-2.7.18
     IN_DIR=/proj/naiss2023-6-65/Milena/chapter3/dNdS_calculations/brh_sequences_${CHR_TYPE}/
     PAL2NAL=/proj/naiss2023-6-65/Lila/beetle_genomes/pal2nal.v14/pal2nal.pl
     CLUSTALO=/proj/naiss2023-6-65/Milena/software_install/clustal_omega/clustal-omega-1.2.4/bin/clustalo

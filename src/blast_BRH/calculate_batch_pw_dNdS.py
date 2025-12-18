@@ -64,6 +64,8 @@ if __name__ == "__main__":
     ########
 
     for species1, subdict in x_paths_nested_dict.items():
+        if species1 != "D_carinulata":
+            continue
         for species2, fasta_list in subdict.items():
             if species1 == species2:
                 continue
@@ -105,6 +107,7 @@ if __name__ == "__main__":
                         dNdS_command = f"{dNdS_exec} {script_path} {fasta_string}"
 
                     os.system(dNdS_command)
+                    os.system("sleep .5") # wait a little bit after each command so that the job manager can keep up
                     print(f"{dNdS_command[:1000]} ...")
                     i +=1
 
