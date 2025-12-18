@@ -259,7 +259,7 @@ def make_proteinfasta(cds_fasta_path, outdir, auto_modify_headers = False):
     for i, seq_record in enumerate(SeqIO.parse(cds_fasta_path, "fasta")):
         prot_record = seq_record
         try:
-            prot_record.seq = seq_record.seq.translate(cds=True)
+            prot_record.seq = prot_record.seq.translate(cds=True)
         except Exception as e:
             os._exit(f"no translation possible: {e}")
             raise RuntimeError(f"error in sequence translation: {e}")
