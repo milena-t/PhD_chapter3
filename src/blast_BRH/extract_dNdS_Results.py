@@ -65,7 +65,7 @@ def get_dNdS_pairs_dict(results_dir, outfile_name = ""):
         with open(outfile_name, "w") as outfile:
             for pair_dir in pair_lists.keys():
                 if not os.path.isdir(pair_dir):
-                    print(f"{pair_dir} ---> not a directory, skip! ")
+                    print(f"{results_dir}{pair_dir} ---> not a directory, skip! ")
                     continue
                 pair_list = dNdS_list_of_pair(pair_dir, results_dir)
                 pair_list = ",".join([str(dNdS) for dNdS in pair_list])
