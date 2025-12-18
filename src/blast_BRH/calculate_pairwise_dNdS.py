@@ -257,9 +257,13 @@ def make_proteinfasta(cds_fasta_path, outdir, auto_modify_headers = False):
         nuc_records = []
     
     for i, seq_record in enumerate(SeqIO.parse(cds_fasta_path, "fasta")):
-        prot_record = seq_record
+        prot_record = SeqRecord("")
+        # prot_record = seq_record
         try:
-            prot_record.seq = prot_record.seq.translate(cds=True)
+            nuc_seq = seq_record.seq
+            prot_record.seq =nuc_seq.translate(cds=True)
+            print(f"nucleotide: {nuc_seq}")
+            print(f"protein: {prot_record.seq}")
         except Exception as e:
             os._exit(f"no translation possible: {e}")
             raise RuntimeError(f"error in sequence translation: {e}")

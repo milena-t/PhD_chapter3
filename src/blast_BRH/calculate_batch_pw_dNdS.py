@@ -5,11 +5,14 @@ Make batches of dNdS to calculate  at once
 import os
 
 
-def make_nested_lists(dir_path):
+def make_nested_lists(dir_path, include_only = ""):
     """
     make dictionary of by-species nested lists for the pairwise fasta files
     """
-    fastas = [f for f in os.listdir(dir_path) if os.path.isfile(os.path.join(dir_path, f))]
+    if include_only != "":
+        fastas = [f for f in os.listdir(dir_path) if os.path.isfile(os.path.join(dir_path, f)) and include_only in f]
+    else:
+        fastas = [f for f in os.listdir(dir_path) if os.path.isfile(os.path.join(dir_path, f))]
     nested_dict = {}
     print(fastas[:10])
     for fasta_name in fastas:
@@ -56,7 +59,7 @@ if __name__ == "__main__":
     outdir = f"{datadir}brh_results_{chr_type}/"
 
     os.chdir(outdir)
-    x_paths_nested_dict = make_nested_lists(X_path)
+    x_paths_nested_dict = make_nested_lists(X_path, include_only="D_carinulata_D_sublineata")
     print(f"{len(x_paths_nested_dict)} pairs")
 
     ########
