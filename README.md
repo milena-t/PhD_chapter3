@@ -74,11 +74,9 @@ graph TD;
     mcscanx_plot .-> conf_X(confirm X-chromosome identification)
 
     species_Ass -- NCBI and SATC --> XY_chr(identify X and Y chromosmes);
-    protfiles --> orthofinder{{run orthofinder}};
     
     blast --> XY_paralogs(identify species with XY gametologs with blast BRH);
     dNdS_groups(make orthogroups to compare dNdS);
-    orthofinder --> dNdS_groups;
     XY_paralogs --> dNdS_groups;
 
     rearrangeA(dNdS for A depending on if A is rearranged between pairs or not)
