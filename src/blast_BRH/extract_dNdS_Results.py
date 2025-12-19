@@ -77,9 +77,9 @@ def get_dNdS_pairs_dict(results_dir, outfile_name = ""):
                     continue
                 if not os.path.isdir(f"{results_dir}{pair_dir}"):
                     raise RuntimeError(f"parsed dir {results_dir}{pair_dir} does not exist!")
-                    pair_list = dNdS_list_of_pair(pair_dir, results_dir)
-                    pair_list = ",".join([str(dNdS) for dNdS in pair_list])
-                    outfile.write(f"{pair_dir} : {pair_list}\n")
+                pair_list = dNdS_list_of_pair(pair_dir, results_dir)
+                pair_list = ",".join([str(dNdS) for dNdS in pair_list])
+                outfile.write(f"{pair_dir} : {pair_list}\n")
         print(f"outfile saved to: {outfile_name}\nin {results_dir}")
 
 
