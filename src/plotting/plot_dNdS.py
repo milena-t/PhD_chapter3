@@ -234,8 +234,8 @@ def plot_dNdS_violins(A_dict:dict, X_dict:dict, filename = "dNdS_ratios_A_X.png"
             axes[col, row].set_title(f'{species2}\n{species1}', fontsize = fs*0.85)
 
             print(f"{row}, {col} : {species1} vs. {species2} --> mean dNdS A: {mean_A:.3f}, mean dNdS X: {mean_X:.3f}")
-            if species1 == "D_carinulata" or species2 == "D_carinulata":
-                print(f"sample sizes, n_A = {n_A}, n_X = {n_X}, data X  = {data_X}")
+            # if species1 == "D_carinulata" or species2 == "D_carinulata":
+            #     print(f"sample sizes, n_A = {n_A}, n_X = {n_X}, data X  = {data_X}")
     
     # fig.text(0.5, 0.04, x_label, ha='center', va='center', fontsize=fs)
     # Adjust layout to prevent overlap
@@ -243,7 +243,7 @@ def plot_dNdS_violins(A_dict:dict, X_dict:dict, filename = "dNdS_ratios_A_X.png"
 
     if dark_mode:
         filename = filename.replace(".png", "_darkmode.png")
-    plt.savefig(filename, dpi = 300, transparent = True)
+    plt.savefig(filename, dpi = 300, transparent = False)
     print(f"plot saved in current working directory as: {filename}")
 
 
