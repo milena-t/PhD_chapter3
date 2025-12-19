@@ -243,6 +243,6 @@ I will continue with best reciprocal hits, becasue the orthofinder clustering is
 ## dNdS 
 
 <p float="left">
-  <img src="data/fastX_ortholog_ident/dNdS_violin_plot.png" width="100%" />
+  <img src="data/fastX_ortholog_ident/dNdS_violin_plot_white_bg.png" width="100%" />
 </p>
 
