@@ -240,4 +240,9 @@ I also check for gametologs (genes where there is a 1-to-1 homolog on the X and 
 
 I will continue with best reciprocal hits, becasue the orthofinder clustering is a bit more "relaxed", meaning that a transcript is more likely to be included in an orthogorup. Since I am only using pairwise comparisons, this method may make larger orthogroups that would not qualify as 1-to-1 orthologs, and therefore reduce the sample size for our dNdS analysis.
 
+## dNdS 
+
+<p float="left">
+  <img src="data/fastX_ortholog_ident/dNdS_violin_plot.png" width="100%" />
+</p>
 
