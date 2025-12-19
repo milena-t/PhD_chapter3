@@ -90,8 +90,10 @@ if __name__ == "__main__":
     chr_types = ["A","X"]
     for chr_type in chr_types:
         # results_path = f"/Users/miltr339/work/pairwise_blast_chapter_2_3/brh_tables/brh_results_{chr_type}/"
+        print(chr_type)
         results_path = f"/proj/naiss2023-6-65/Milena/chapter3/dNdS_calculations/brh_results_{chr_type}/"
         print(f"\n//////////////////// {chr_type} ////////////////////\n")
+
         get_dNdS_pairs_dict(results_path, f"dNdS_summary_{chr_type}-linked.txt")
 
 #     [f"{dirpath}{d}/2NG.dNdS" for d in os.listdir(results_path)]
