@@ -73,7 +73,9 @@ def get_dNdS_pairs_dict(results_dir, outfile_name = ""):
         outfile_name = f"{results_dir}{outfile_name}"
         with open(outfile_name, "w") as outfile:
             for pair_dir in pair_lists.keys():
+                print(f" --> {pair_dir}")
                 if ".out" in pair_dir or ".log" in pair_dir:
+                    print(f"\tlog file ignired")
                     continue
                 if not os.path.isdir(f"{results_dir}{pair_dir}"):
                     raise RuntimeError(f"parsed dir {results_dir}{pair_dir} does not exist!")
