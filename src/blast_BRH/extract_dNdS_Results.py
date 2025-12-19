@@ -31,7 +31,9 @@ def dNdS_list_of_pair(pair_dir, results_dir):
     try:
         os.listdir(f"{results_dir}{pair_dir}")
     except Exception as e:
-        raise RuntimeError(f"{results_dir}{pair_dir} ---> something didn't work! \n{e}")
+        # raise RuntimeError(f"{results_dir}{pair_dir} ---> something didn't work! \n{e}")
+        print(f"{results_dir}{pair_dir} ---> something didn't work! \n{e}")
+
 
     try:
         subdirectories = [f"{results_dir}{pair_dir}/{d}/2NG.dNdS" for d in os.listdir(f"{results_dir}{pair_dir}")]
@@ -71,12 +73,13 @@ def get_dNdS_pairs_dict(results_dir, outfile_name = ""):
         outfile_name = f"{results_dir}{outfile_name}"
         with open(outfile_name, "w") as outfile:
             for pair_dir in pair_lists.keys():
-                # if not os.path.isdir(pair_dir):
-                #     print(f"{results_dir}{pair_dir} ---> not a directory, skip! ")
-                #     continue
-                pair_list = dNdS_list_of_pair(pair_dir, results_dir)
-                pair_list = ",".join([str(dNdS) for dNdS in pair_list])
-                outfile.write(f"{pair_dir} : {pair_list}\n")
+                if ".out" in pair_dir or ".log" in pair_dir:
+                    continue
+                if not os.path.isdir(f"{results_dir}{pair_dir}"):
+                    raise RuntimeError(f"parsed dir {results_dir}{pair_dir} does not exist!")
+                    pair_list = dNdS_list_of_pair(pair_dir, results_dir)
+                    pair_list = ",".join([str(dNdS) for dNdS in pair_list])
+                    outfile.write(f"{pair_dir} : {pair_list}\n")
         print(f"outfile saved to: {outfile_name}\nin {results_dir}")
 
 
