@@ -24,7 +24,7 @@ def read_dNdS_summary_file(summary_path):
             except:
                 raise RuntimeError(f"could not parse line: \n{line[:500]} ...")
             pair = pair_ident.split("_pairwise")[0]
-            dNdS_list = [float(dNdS) for dNdS in dNdS_vals.split(",")]
+            dNdS_list = [float(dNdS) if dNdS != 0.0 else np.NaN for dNdS in dNdS_vals.split(",")]
             out_dict[pair] = dNdS_list
 
     return out_dict
@@ -64,7 +64,7 @@ def make_means_array_from_dict(dNdS_dict, verbose = True):
     species_count = len(species_list)
     species_index = {species : i for i, species in enumerate(species_list)}
 
-
+    # initialize array of np.NaN
     pairwise_dNdS = np.full((species_count,species_count), np.NaN)
 
     ## fill the initalized table with the counts
@@ -160,7 +160,8 @@ def plot_dNdS_violins(A_dict:dict, X_dict:dict, filename = "dNdS_ratios_A_X.png"
     fs = 25
 
     colors_dict = {
-        "A" : "#4d7298", # uniform_unfiltered blue
+        # "A" : "#4d7298", # uniform_unfiltered blue
+        "A" : "#F2933A", # uniform_filtered orange
         "X" : "#b82946", # native red
     }
     colors = [colors_dict["A"], colors_dict["X"]]
@@ -168,23 +169,29 @@ def plot_dNdS_violins(A_dict:dict, X_dict:dict, filename = "dNdS_ratios_A_X.png"
     def violinplot_pair(data_A_X, row, col, n_A, n_X, mean_A, mean_X, xticks = ["A", "X"]):
         ## make general function so i can repeat it easily for the "mirror" species where row and col are switched
         violins = axes[row,col].violinplot(data_A_X, showmeans = True, showextrema = False)
-        for pc in violins['bodies']:
-            pc.set_facecolor(colors)
-            pc.set_edgecolor('black')
-            pc.set_alpha(0.8)
+        for body, color in zip(violins['bodies'], colors):
+            body.set_facecolor(color)
+            body.set_edgecolor(color)
+            body.set_alpha(0.7)
         
+        max_dNdS_add = 0.3
+
         axes[row, col].set_xlabel('')
-        axes[row, col].set_ylabel('')
+        if col-row == 1:
+            axes[row, col].set_ylabel('dN/dS', fontsize = fs*0.8)
+        else:
+            axes[row, col].set_ylabel('')
         axes[row, col].tick_params(axis='x', labelsize=fs*0.8)
         axes[row, col].tick_params(axis='y', labelsize=fs*0.8)
-        axes[row, col].set_ylim([0,1])
+        axes[row, col].set_ylim([0,1+max_dNdS_add])
         axes[row, col].set_xticks([1,2])
         axes[row, col].set_xticklabels(xticks)
         
-        axes[row, col].text(1-0.2, 0.78, f"n={n_A}", fontsize = fs*0.8)
-        axes[row, col].text(2-0.2, 0.78, f"n={n_X}", fontsize = fs*0.8)
+        axes[row, col].text(1-0.2, 0.78+max_dNdS_add, f"n={n_A}", fontsize = fs*0.8, color = colors_dict["A"])
+        axes[row, col].text(2-0.2, 0.78+max_dNdS_add, f"n={n_X}", fontsize = fs*0.8, color = colors_dict["X"])
         axes[row, col].hlines(y=mean_A, xmin=0.5, xmax=2.5, linewidth=2, color=colors_dict["A"])
         axes[row, col].hlines(y=mean_X, xmin=0.5, xmax=2.5, linewidth=2, color=colors_dict["X"])
+        axes[row, col].hlines(y=1, xmin=0.5, xmax=2.5, linewidth=2, linestyle = ":", color="#818181")
 
         return violins
 
@@ -200,6 +207,11 @@ def plot_dNdS_violins(A_dict:dict, X_dict:dict, filename = "dNdS_ratios_A_X.png"
         species2 = f"{gen2}_{spec2}"
         col = species_index[species2]
 
+        # only do top right matrix
+        if row>col:
+            col_temp = col
+            col = row
+            row = col_temp
 
         ## empty on diagonals
         if species1 == species2:
@@ -217,8 +229,8 @@ def plot_dNdS_violins(A_dict:dict, X_dict:dict, filename = "dNdS_ratios_A_X.png"
             if len(data_A)==0 or len(data_X)==0:
                 axes[row,col].axis('off')
                 axes[row, col].set_title(f'{species1}\n{species2}', fontsize = fs*0.85)
-                axes[col,row].axis('off')
-                axes[col, row].set_title(f'{species2}\n{species1}', fontsize = fs*0.85)
+                # axes[col,row].axis('off')
+                # axes[col, row].set_title(f'{species2}\n{species1}', fontsize = fs*0.85)
                 continue
 
             n_A = len(data_A)
@@ -230,8 +242,11 @@ def plot_dNdS_violins(A_dict:dict, X_dict:dict, filename = "dNdS_ratios_A_X.png"
             # plot mirror
             violinplot_pair(data_A_X=data_AX, row=row, col=col, n_A=n_A, n_X=n_X, mean_A=mean_A, mean_X=mean_X)
             axes[row, col].set_title(f'{species1}\n{species2}', fontsize = fs*0.85)
-            violinplot_pair(data_A_X=data_AX, row=col, col=row, n_A=n_A, n_X=n_X, mean_A=mean_A, mean_X=mean_X)
-            axes[col, row].set_title(f'{species2}\n{species1}', fontsize = fs*0.85)
+            # violinplot_pair(data_A_X=data_AX, row=col, col=row, n_A=n_A, n_X=n_X, mean_A=mean_A, mean_X=mean_X)
+            # axes[col, row].set_title(f'{species2}\n{species1}', fontsize = fs*0.85)
+            axes[col,row].axis('off')
+            axes[row,row].axis('off')
+            axes[col,col].axis('off')
 
             print(f"{row}, {col} : {species1} vs. {species2} --> mean dNdS A: {mean_A:.3f}, mean dNdS X: {mean_X:.3f}")
             # if species1 == "D_carinulata" or species2 == "D_carinulata":
