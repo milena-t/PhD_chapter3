@@ -195,6 +195,7 @@ def plot_dNdS_violins(A_dict:dict, X_dict:dict, filename = "dNdS_ratios_A_X.png"
 
         return violins
 
+    diagonals_done = []
 
     for pair in A_dict.keys():
         ### get pair indices for species pair
@@ -212,45 +213,47 @@ def plot_dNdS_violins(A_dict:dict, X_dict:dict, filename = "dNdS_ratios_A_X.png"
             col_temp = col
             col = row
             row = col_temp
+            species2_temp = species2
+            species2 = species1
+            species1 = species2_temp
 
-        ## empty on diagonals
-        if species1 == species2:
-            axes[row, col].axis('off')
-            axes[col, row].clear()
-            axes[col, row].set_visible(False)
+        ## plot species name on diagonals
+        if row not in diagonals_done:
+            axes[row,row].text(0.8,0.2,f"{species1}", rotation = 90, fontsize = fs)
+            diagonals_done.append(row)
             
-        else:
-            ## exclude all the NaNs because violinplot can't handle them
-            data_A_nan = np.array(A_dict[pair], dtype=float)
-            data_X_nan = np.array(X_dict[pair], dtype=float)
-            data_A = [dNdS_A for dNdS_A in data_A_nan if not np.isnan(dNdS_A) ]
-            data_X = [dNdS_X for dNdS_X in data_X_nan if not np.isnan(dNdS_X) ]
-        
-            if len(data_A)==0 or len(data_X)==0:
-                axes[row,col].axis('off')
-                axes[row, col].set_title(f'{species1}\n{species2}', fontsize = fs*0.85)
-                # axes[col,row].axis('off')
-                # axes[col, row].set_title(f'{species2}\n{species1}', fontsize = fs*0.85)
-                continue
-
-            n_A = len(data_A)
-            n_X = len(data_X)
-            mean_A = np.nanmean(data_A)
-            mean_X = np.nanmean(data_X)
-
-            data_AX = [data_A, data_X]
-            # plot mirror
-            violinplot_pair(data_A_X=data_AX, row=row, col=col, n_A=n_A, n_X=n_X, mean_A=mean_A, mean_X=mean_X)
+        ## exclude all the NaNs because violinplot can't handle them
+        data_A_nan = np.array(A_dict[pair], dtype=float)
+        data_X_nan = np.array(X_dict[pair], dtype=float)
+        data_A = [dNdS_A for dNdS_A in data_A_nan if not np.isnan(dNdS_A) ]
+        data_X = [dNdS_X for dNdS_X in data_X_nan if not np.isnan(dNdS_X) ]
+    
+        if len(data_A)==0 or len(data_X)==0:
+            axes[row,col].axis('off')
             axes[row, col].set_title(f'{species1}\n{species2}', fontsize = fs*0.85)
-            # violinplot_pair(data_A_X=data_AX, row=col, col=row, n_A=n_A, n_X=n_X, mean_A=mean_A, mean_X=mean_X)
+            # axes[col,row].axis('off')
             # axes[col, row].set_title(f'{species2}\n{species1}', fontsize = fs*0.85)
-            axes[col,row].axis('off')
-            axes[row,row].axis('off')
-            axes[col,col].axis('off')
+            continue
 
-            print(f"{row}, {col} : {species1} vs. {species2} --> mean dNdS A: {mean_A:.3f}, mean dNdS X: {mean_X:.3f}")
-            # if species1 == "D_carinulata" or species2 == "D_carinulata":
-            #     print(f"sample sizes, n_A = {n_A}, n_X = {n_X}, data X  = {data_X}")
+        n_A = len(data_A)
+        n_X = len(data_X)
+        mean_A = np.nanmean(data_A)
+        mean_X = np.nanmean(data_X)
+
+        data_AX = [data_A, data_X]
+        # plot mirror
+        violinplot_pair(data_A_X=data_AX, row=row, col=col, n_A=n_A, n_X=n_X, mean_A=mean_A, mean_X=mean_X)
+        # axes[row, col].set_title(f'{species1}\n{species2}', fontsize = fs*0.85)
+        axes[row, col].set_title(f'{species2}', fontsize = fs)
+        # violinplot_pair(data_A_X=data_AX, row=col, col=row, n_A=n_A, n_X=n_X, mean_A=mean_A, mean_X=mean_X)
+        # axes[col, row].set_title(f'{species2}\n{species1}', fontsize = fs*0.85)
+        axes[col,row].axis('off')
+        axes[row,row].axis('off')
+        axes[col,col].axis('off')
+
+        print(f"{row}, {col} : {species1} vs. {species2} --> mean dNdS A: {mean_A:.3f}, mean dNdS X: {mean_X:.3f}")
+        # if species1 == "D_carinulata" or species2 == "D_carinulata":
+        #     print(f"sample sizes, n_A = {n_A}, n_X = {n_X}, data X  = {data_X}")
     
     # fig.text(0.5, 0.04, x_label, ha='center', va='center', fontsize=fs)
     # Adjust layout to prevent overlap
