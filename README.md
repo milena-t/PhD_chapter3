@@ -268,7 +268,9 @@ I will continue with best reciprocal hits, becasue the orthofinder clustering is
 
 ## dNdS 
 
-The dNdS is calculated between all pairwise comparisons for A-linked and X-linked genes identified with BRH above. I am doing unique comparisons only below, so (Cmac,Aobt) is the same as (Aobt,Cmac) which is why only one of them is shown. Also, self-comparisons make no sense here so I am excluding them as well.
+The dNdS is calculated between all pairwise comparisons for A-linked and X-linked genes identified with BRH above. I am doing unique comparisons only below, so (Cmac,Aobt) is the same as (Aobt,Cmac) which is why only one of them is shown. Also, self-comparisons make no sense here so I am excluding them as well. I show horizontal lines of the mean dNdS for A and X in matching colors to the violin plot to clearly show the mean difference in dNdS. 
+
+Most species are slowX, except the *D. carinulata* comparisons, but those have such a low sample size for X-linked genes that the mean is not reliable. 
 
 <p float="left">
   <img src="data/fastX_ortholog_ident/dNdS_violin_plot_white_bg.png" width="100%" />
