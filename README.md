@@ -207,6 +207,23 @@ C:98.7%[S:72.2%,D:26.5%],F:0.6%,M:0.7%,n:1013
   * There is also Diabrotica undecimpunctata but it does not have sex chromosomes identified, but it does have a giant genome at 1.7Gb
 
 
+
+# Riparian plot for synteny
+
+I use MCscanX to plot synteny, and [SynVisio](https://synvisio.github.io/) to visualize the riparian plot. *C. chinensis* is not superscaffolded and therefore not included in the plot.
+
+<p float="left">
+  <img src="data/synteny_plots/synvisio_all_riparian.png" width="100%" />
+</p>
+
+The X chromosomes are (in order top to bottom in the plot):
+* ao1950
+* bs9
+* cm124
+* dc35
+* ds21
+
+
 # ortholog identification
 
 ## orthofinder
