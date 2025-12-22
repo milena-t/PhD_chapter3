@@ -268,6 +268,8 @@ I will continue with best reciprocal hits, becasue the orthofinder clustering is
 
 ## dNdS 
 
+The dNdS is calculated between all pairwise comparisons for A-linked and X-linked genes identified with BRH above. I am doing unique comparisons only below, so (Cmac,Aobt) is the same as (Aobt,Cmac) which is why only one of them is shown. Also, self-comparisons make no sense here so I am excluding them as well.
+
 <p float="left">
   <img src="data/fastX_ortholog_ident/dNdS_violin_plot_white_bg.png" width="100%" />
 </p>
