@@ -216,13 +216,18 @@ I use MCscanX to plot synteny, and [SynVisio](https://synvisio.github.io/) to vi
   <img src="data/synteny_plots/synvisio_all_riparian.png" width="100%" />
 </p>
 
-The X chromosomes are (in order top to bottom in the plot):
+The X chromosomes are all shown at the right-most side of the plot except *D. carinulata*:
 * ao1950
 * bs9
 * cm124
-* dc35
+* dc35 (!) (on the left in the plot)
 * ds21
 
+Synteny is conserved within *Bruchini* and within *Diorhabda*, but not between them.
+
+## No syntenic X in *Diorhabda carinulata*
+
+Despite the broken-down synteny of the autosomes between *Bruchini* and *Diorhabda*, the X chromosomes are all syntenic except *D. carinulata* (dc 35), which is in agreement with the identified 1-to-1 orthologs below, where most pairwise comparisons have 300-400 X-linked orthologs, except any pair involving *D. carinulata*. The "old" syntenic chromosome in *D. carinulata* is `NC_079460.1` (dc13). A part of the *D. carinulata* X is syntenic to *D. sublineata* `NC_079475.1` (ds5).
 
 # ortholog identification
 
