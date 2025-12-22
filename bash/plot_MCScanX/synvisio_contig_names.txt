@@ -1,0 +1,65 @@
+ao195
+ao554
+ao876
+ao1024
+ao1189
+ao1707
+ao1935
+ao1950  --> X
+ao2050
+ao2213
+ao2951
+ao3694
+bs1
+bs2
+bs3
+bs4
+bs5
+bs6
+bs7
+bs8
+bs9     --> X
+bs10
+bs11
+cm7
+cm38
+cm44
+cm49
+cm83
+cm98
+cm119
+cm123
+cm124   --> X
+cm125
+cm130
+cm141
+cm145
+cm147
+cm163
+dc1
+dc2
+dc8
+dc11
+dc12
+dc13
+dc19
+dc20
+dc22
+dc23
+dc26
+dc32
+dc35    --> X
+dc37
+ds75
+ds2
+ds5
+ds14
+ds18
+ds21    --> X
+ds22
+ds33
+ds43
+ds46
+ds49
+ds59
+ds68
