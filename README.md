@@ -144,6 +144,9 @@ C:98.7%[S:72.2%,D:26.5%],F:0.6%,M:0.7%,n:1013
     ```python
     { X : ['utg000057l_1','utg000114l_1','utg000139l_1','utg000191l_1','utg000326l_1','utg000359l_1','utg000532l_1','utg000602l_1'],
       Y : ['utg000322l_1','utg 000312c_1','utg 000610l_1','utg 001235l_1']}
+    ## superscaffolded
+    { X : ['scaffold_10','scaffold_14','scaffold_23','scaffold_31','scaffold_34','scaffold_83'],
+      Y : ['scaffold_26','scaffold_48','scaffold_103','scaffold_112','scaffold_164']}
     ``` 
   
   * *C. chinensis:*
