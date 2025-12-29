@@ -100,16 +100,16 @@ def make_karyotype_file(assembly, outfile_name = "", min_contig_length = 0, X_li
         }
         for record in SeqIO.parse(assembly, "fasta"):
             if len(record.seq) > min_contig_length:
-                label = record.id.split()
+                label = record.id.split(":")[0]
 
                 # match for X_contig in label (so if X = scaffold_10  then scaffold_100 etc. are also mtched)
                 # if any(record.id in X_contig for X_contig in X_list):
 
                 # match X names exactly
                 if label in X_list:
-                    entry = ["chr - "+record.id.split(":")[0], label, "0", str(len(record.seq)), colors["X"]] # split the record.id at ":" because that confuses circos
+                    entry = [f"chr - {label}", record.id, "0", str(len(record.seq)), colors["X"]] # split the record.id at ":" because that confuses circos
                 else:
-                    entry = ["chr - "+record.id.split(":")[0], label, "0", str(len(record.seq)), colors["A"]] # split the record.id at ":" because that confuses circos
+                    entry = [f"chr - {label}", record.id, "0", str(len(record.seq)), colors["A"]] # split the record.id at ":" because that confuses circos
                 karyotype_entries.append(entry)
                 circos_outfile.write(" ".join(entry)+"\n")
 
