@@ -125,5 +125,6 @@ if __name__ == "__main__":
     
     for species, assembly in assemblies_dict.items():
         outfile_name = f"{outdir}/{species}_karyotype.txt"
+        print(outfile_name)
         make_karyotype_file(assembly=assembly, outfile_name=outfile_name,min_contig_length=minlen, X_list=X_lists_dict[species])
-        
+        print(f"\t--> done!")
