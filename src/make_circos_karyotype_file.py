@@ -1,8 +1,9 @@
 ### make circos karyotype file
 
-## load these modules to run on uppmax:
+## load these modules to run on rackham:
 # module load bioinfo-tools python3 biopython/1.80-py3.10.8
-
+## pelle:
+# module load Biopython/1.84-foss-2024a
 
 ## Formatting:
 
@@ -13,6 +14,7 @@
 # chr - hs2 2 0 243199373 chr2
 # chr - hs3 3 0 198022430 chr3
 
+# The ID is the identifier used in data files whereas the LABEL is the text that will appear next to the ideogram on the image
 
 ## Summary:
 
@@ -122,6 +124,8 @@ def make_karyotype_file(assembly, species = "", outfile_name = "", min_contig_le
 
 if __name__ == "__main__":
 
+    #!!!! module load Biopython/1.84-foss-2024a
+
     minlen = 5e6
     assemblies_dict = assemblies()
     X_lists_dict = X_lists()    
@@ -130,5 +134,5 @@ if __name__ == "__main__":
     for species, assembly in assemblies_dict.items():
         outfile_name = f"{outdir}/{species}_karyotype.txt"
         print(outfile_name)
-        make_karyotype_file(assembly=assembly, outfile_name=outfile_name,min_contig_length=minlen, X_list=X_lists_dict[species])
+        make_karyotype_file(assembly=assembly, species=species, outfile_name=outfile_name,min_contig_length=minlen, X_list=X_lists_dict[species])
         print(f"\t--> done!")
