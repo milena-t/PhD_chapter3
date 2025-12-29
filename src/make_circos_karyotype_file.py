@@ -104,7 +104,7 @@ def make_karyotype_file(assembly, species = "", outfile_name = "", min_contig_le
             if len(record.seq) > min_contig_length:
                 label = record.id.split(":")[0]
                 if species != "":
-                    label = f"{species} {label}"
+                    label = f"{species}_{label}"
                 con_length = str(len(record.seq))
 
                 # match for X_contig in label (so if X = scaffold_10  then scaffold_100 etc. are also mtched)
