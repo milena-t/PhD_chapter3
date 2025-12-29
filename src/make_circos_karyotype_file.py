@@ -88,7 +88,7 @@ def X_lists():
     }
     return lists_dict
 
-def make_karyotype_file(assembly, outfile_name = "", min_contig_length = 0, X_list = []):
+def make_karyotype_file(assembly, species = "", outfile_name = "", min_contig_length = 0, X_list = []):
     if outfile_name == "":
         outfile_prefix = assembly.split(".fna")[0].split("/")[-1]
         outfile_name = f"{outfile_prefix}_karyotype.txt"
@@ -101,6 +101,7 @@ def make_karyotype_file(assembly, outfile_name = "", min_contig_length = 0, X_li
         for record in SeqIO.parse(assembly, "fasta"):
             if len(record.seq) > min_contig_length:
                 label = record.id.split(":")[0]
+                label = f"{species} {label}"
                 con_length = str(len(record.seq))
 
                 # match for X_contig in label (so if X = scaffold_10  then scaffold_100 etc. are also mtched)
