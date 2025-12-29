@@ -115,7 +115,7 @@ def make_karyotype_file(assembly, outfile_name = "", min_contig_length = 0, X_li
                 print(entry)
                 circos_outfile.write(" ".join(entry)+"\n")
 
-    print(f"karyotype saved in current working directory as: {outfile_prefix}_karyotype.txt")
+    print(f"karyotype saved in current working directory as: {outfile_name}")
 
 
 if __name__ == "__main__":
