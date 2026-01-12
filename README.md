@@ -289,7 +289,7 @@ Generally, all species pairs seem to show slowX, but I will do a permutation tes
 3. **Normal distribution:** Compute a normal distribution from all median(A) - median(X) values, find 95% confidence intervals
 4. **Plot:** Histrogram and normal distribution, compare original observed dNdS_A - dNdS_X to 95% confidence intervals of the permutations
 
-I have chosen 5000 permutations for now, this takes less than 10 mins. Green is the distributions from the permutation test, and pink is the actual observed dNdS differences.
+I have chosen 5000 permutations for now, this takes less than 10 mins. Green is the distributions from the permutation test, and pink is the actual observed dNdS differences. Since I am plotting dNdS_A - dNdS_X, dNdS_A - dNdS_X > 0 means dNdS_A > dNdS_X, which indicates slowX
 
 <p float="left">
   <img src="data/fastX_ortholog_ident/fastX_permutation_white_bg.png" width="100%" />
