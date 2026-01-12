@@ -135,6 +135,36 @@ def plot_heatmap(counts_array, species_list, filename = "mean_dNdS.png", title =
     print(f"figure saved here: {filename}")
 
 
+def violinplot_pair(data_A_X, row, col, n_A, n_X, mean_A, mean_X, axes, colors_dict,fs, xticks = ["A", "X"]):
+    ## make general function so i can repeat it easily for the "mirror" species where row and col are switched
+    violins = axes[row,col].violinplot(data_A_X, showmeans = True, showextrema = False)
+    colors = [colors_dict["A"], colors_dict["X"]]
+    for body, color in zip(violins['bodies'], colors):
+        body.set_facecolor(color)
+        body.set_edgecolor(color)
+        body.set_alpha(0.7)
+    
+    max_dNdS_add = 0.3
+
+    axes[row, col].set_xlabel('')
+    if col-row == 1:
+        axes[row, col].set_ylabel('dN/dS', fontsize = fs*0.8)
+    else:
+        axes[row, col].set_ylabel('')
+    axes[row, col].tick_params(axis='x', labelsize=fs*0.8)
+    axes[row, col].tick_params(axis='y', labelsize=fs*0.8)
+    axes[row, col].set_ylim([0,1+max_dNdS_add])
+    axes[row, col].set_xticks([1,2])
+    axes[row, col].set_xticklabels(xticks)
+    
+    axes[row, col].text(1-0.2, 0.78+max_dNdS_add, f"n={n_A}", fontsize = fs*0.8, color = colors_dict["A"])
+    axes[row, col].text(2-0.2, 0.78+max_dNdS_add, f"n={n_X}", fontsize = fs*0.8, color = colors_dict["X"])
+    axes[row, col].hlines(y=mean_A, xmin=0.5, xmax=2.5, linewidth=2, color=colors_dict["A"])
+    axes[row, col].hlines(y=mean_X, xmin=0.5, xmax=2.5, linewidth=2, color=colors_dict["X"])
+    axes[row, col].hlines(y=1, xmin=0.5, xmax=2.5, linewidth=2, linestyle = ":", color="#818181")
+
+    return violins
+
 def plot_dNdS_violins(A_dict:dict, X_dict:dict, filename = "dNdS_ratios_A_X.png", legend_in_last = True, dark_mode=False):
     """
     plot a grid of violin plots for all pairwise comparisons
@@ -166,36 +196,6 @@ def plot_dNdS_violins(A_dict:dict, X_dict:dict, filename = "dNdS_ratios_A_X.png"
         "A" : "#F2933A", # uniform_filtered orange
         "X" : "#b82946", # native red
     }
-    colors = [colors_dict["A"], colors_dict["X"]]
-
-    def violinplot_pair(data_A_X, row, col, n_A, n_X, mean_A, mean_X, xticks = ["A", "X"]):
-        ## make general function so i can repeat it easily for the "mirror" species where row and col are switched
-        violins = axes[row,col].violinplot(data_A_X, showmeans = True, showextrema = False)
-        for body, color in zip(violins['bodies'], colors):
-            body.set_facecolor(color)
-            body.set_edgecolor(color)
-            body.set_alpha(0.7)
-        
-        max_dNdS_add = 0.3
-
-        axes[row, col].set_xlabel('')
-        if col-row == 1:
-            axes[row, col].set_ylabel('dN/dS', fontsize = fs*0.8)
-        else:
-            axes[row, col].set_ylabel('')
-        axes[row, col].tick_params(axis='x', labelsize=fs*0.8)
-        axes[row, col].tick_params(axis='y', labelsize=fs*0.8)
-        axes[row, col].set_ylim([0,1+max_dNdS_add])
-        axes[row, col].set_xticks([1,2])
-        axes[row, col].set_xticklabels(xticks)
-        
-        axes[row, col].text(1-0.2, 0.78+max_dNdS_add, f"n={n_A}", fontsize = fs*0.8, color = colors_dict["A"])
-        axes[row, col].text(2-0.2, 0.78+max_dNdS_add, f"n={n_X}", fontsize = fs*0.8, color = colors_dict["X"])
-        axes[row, col].hlines(y=mean_A, xmin=0.5, xmax=2.5, linewidth=2, color=colors_dict["A"])
-        axes[row, col].hlines(y=mean_X, xmin=0.5, xmax=2.5, linewidth=2, color=colors_dict["X"])
-        axes[row, col].hlines(y=1, xmin=0.5, xmax=2.5, linewidth=2, linestyle = ":", color="#818181")
-
-        return violins
 
     diagonals_done = []
 
@@ -244,7 +244,7 @@ def plot_dNdS_violins(A_dict:dict, X_dict:dict, filename = "dNdS_ratios_A_X.png"
 
         data_AX = [data_A, data_X]
         # plot mirror
-        violinplot_pair(data_A_X=data_AX, row=row, col=col, n_A=n_A, n_X=n_X, mean_A=mean_A, mean_X=mean_X)
+        violinplot_pair(data_A_X=data_AX, row=row, col=col, n_A=n_A, n_X=n_X, mean_A=mean_A, mean_X=mean_X, axes = axes, colors_dict=colors_dict, fs=fs)
         # axes[row, col].set_title(f'{species1}\n{species2}', fontsize = fs*0.85)
         axes[row, col].set_title(f'{species2}', fontsize = fs)
         # violinplot_pair(data_A_X=data_AX, row=col, col=row, n_A=n_A, n_X=n_X, mean_A=mean_A, mean_X=mean_X)
