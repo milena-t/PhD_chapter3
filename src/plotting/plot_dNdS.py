@@ -8,11 +8,13 @@ from math import sqrt, isnan
 import matplotlib.pyplot as plt
 from matplotlib.colors import LinearSegmentedColormap
 
-username = "miltr339"
-summary_paths = {
-    "A" : f"/Users/{username}/work/pairwise_blast_chapter_2_3/brh_tables/brh_results_A/dNdS_summary_A-linked.txt",
-    "X" : f"/Users/{username}/work/pairwise_blast_chapter_2_3/brh_tables/brh_results_X/dNdS_summary_X-linked.txt",
-}
+
+def get_summary_paths(username = "miltr339"):
+    summary_paths = {
+        "A" : f"/Users/{username}/work/pairwise_blast_chapter_2_3/brh_tables/brh_results_A/dNdS_summary_A-linked.txt",
+        "X" : f"/Users/{username}/work/pairwise_blast_chapter_2_3/brh_tables/brh_results_X/dNdS_summary_X-linked.txt",
+    }
+    return summary_paths
 
 
 def read_dNdS_summary_file(summary_path):
@@ -237,8 +239,8 @@ def plot_dNdS_violins(A_dict:dict, X_dict:dict, filename = "dNdS_ratios_A_X.png"
 
         n_A = len(data_A)
         n_X = len(data_X)
-        mean_A = np.nanmean(data_A)
-        mean_X = np.nanmean(data_X)
+        mean_A = np.nanmedian(data_A)
+        mean_X = np.nanmedian(data_X)
 
         data_AX = [data_A, data_X]
         # plot mirror
@@ -269,7 +271,7 @@ def plot_dNdS_violins(A_dict:dict, X_dict:dict, filename = "dNdS_ratios_A_X.png"
 if __name__ == "__main__":
     username = "miltr339"
     chromosome = "A"
-
+    summary_paths = get_summary_paths
     dNdS_dict_A = read_dNdS_summary_file(summary_paths["A"])
     dNdS_dict_X = read_dNdS_summary_file(summary_paths["X"])
     species = get_species_list(dNdS_dict_A)
