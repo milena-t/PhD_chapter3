@@ -156,7 +156,7 @@ def plot_dNdS_permutations(boot_diff:dict, measure_diff:dict, filename = "dNdS_p
 
     if dark_mode:
         filename = filename.replace(".png", "_darkmode.png")
-    plt.savefig(filename, dpi = 300, transparent = False)
+    plt.savefig(filename, dpi = 300, transparent = True)
     print(f"plot saved in current working directory as: {filename}")
 
 
@@ -184,4 +184,4 @@ if __name__ == """__main__""":
         mean_boot = np.mean(bootstraps[pair])
         print(f" *  {pair} median(dNdS_A)-median(dNdS_X)  --> \t{median_diffs[pair]:.3f}, mean bootstrap diff {mean_boot:.5f}")
 
-    plot_dNdS_permutations(boot_diff=bootstraps,measure_diff=median_diffs, filename=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident")
+    plot_dNdS_permutations(boot_diff=bootstraps,measure_diff=median_diffs, filename=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/fastX_permutation.png")
