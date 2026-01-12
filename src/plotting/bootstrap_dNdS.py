@@ -34,7 +34,7 @@ def permutate_dNdS(dNdS_A, dNdS_X, num_permut = 1000):
 
 
 
-def calculate_list_CI(values_list:list, cl = 0.95):
+def calculate_list_CI(values_list:list, cl = 0.95, verbose = False):
     """
     calculate 95% confidence interval of a list of float values
     """
@@ -44,8 +44,8 @@ def calculate_list_CI(values_list:list, cl = 0.95):
     # Sample statistics
     lower, upper = sts.norm.interval(cl, loc = mean_coeff, scale = std_coeff) 
     norm_coeffs = [mean_coeff,std_coeff, lower, upper]
-
-    print(f"\t\tmean correlation coefficient: {mean_coeff:.3f}, standard deviation {std_coeff:.3f}, 95% confidence interval: [{lower:.3f}, {upper:.3f}]")
+    if verbose:
+        print(f"\t\tmean correlation coefficient: {mean_coeff:.3f}, standard deviation {std_coeff:.3f}, 95% confidence interval: [{lower:.3f}, {upper:.3f}]")
     # ci = sts.t.interval(cl, df=len(values_list)-1, loc=np.mean(values_list), scale=np.std(values_list, ddof=1) / np.sqrt(len(values_list)))
     return(norm_coeffs)
 
@@ -59,7 +59,7 @@ def plot_dNdS_permutations(boot_diff:dict, measure_diff:dict, A_dict:dict, X_dic
         plt.style.use('dark_background')
 
     species_list = get_species_list(boot_diff)
-    print(f"{len(species_list)} species included")
+    print(f"... plotting {len(species_list)} species")
 
     species_count = len(species_list)
     species_index = {species : i for i, species in enumerate(species_list)}
@@ -86,7 +86,9 @@ def plot_dNdS_permutations(boot_diff:dict, measure_diff:dict, A_dict:dict, X_dic
 
     diagonals_done = []
 
-    for pair in boot_diff.keys():
+    # sort so that the order stays the same every time. otherwise it changes
+    pairs_sorted = sorted(list(boot_diff.keys()))
+    for pair in pairs_sorted:
         ### get pair indices for species pair
         try:
             gen1, spec1, gen2, spec2 =pair.split("_")
