@@ -153,8 +153,8 @@ def violinplot_pair(data_A_X, row, col, n_A, n_X, mean_A, mean_X, axes, colors_d
         axes[row, col].set_ylabel(xlab, fontsize = fs)
     else:
         axes[row, col].set_ylabel('')
-    axes[row, col].tick_params(axis='x', labelsize=fs*0.8)
-    axes[row, col].tick_params(axis='y', labelsize=fs*0.8)
+    axes[row, col].tick_params(axis='x', labelsize=fs)
+    axes[row, col].tick_params(axis='y', labelsize=fs)
     axes[row, col].set_ylim([0,1+max_dNdS_add])
     axes[row, col].set_xticks([1,2])
     axes[row, col].set_xticklabels(xticks)
