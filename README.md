@@ -272,13 +272,9 @@ I will continue with best reciprocal hits, becasue the orthofinder clustering is
 
 ## dNdS 
 
-The dNdS is calculated between all pairwise comparisons for A-linked and X-linked genes identified with BRH above. I am doing unique comparisons only below, so (Cmac,Aobt) is the same as (Aobt,Cmac) which is why only one of them is shown. Also, self-comparisons make no sense here so I am excluding them as well. I show horizontal lines of the mean dNdS for A and X in matching colors to the violin plot to clearly show the mean difference in dNdS. 
+The dNdS is calculated between all pairwise comparisons for A-linked and X-linked genes identified with BRH above. I am doing unique comparisons only below, so (Cmac,Aobt) is the same as (Aobt,Cmac) which is why only one of them is shown. Also, self-comparisons make no sense here so I am excluding them as well. I show horizontal lines of the median dNdS for A and X in matching colors to the violin plot to clearly show the mean difference in dNdS. 
 
 Most species are slowX, except the *D. carinulata* comparisons, but those have such a low sample size for X-linked genes that the mean is not reliable. 
-
-<p float="left">
-  <img src="data/fastX_ortholog_ident/dNdS_violin_plot_white_bg.png" width="100%" />
-</p>
 
 ### Statistical analysis via permutation test
 
@@ -291,8 +287,12 @@ Generally, all species pairs seem to show slowX, but I will do a permutation tes
 
 I have chosen 5000 permutations for now, this takes less than 10 mins. 
 
-The top right is all the permutation tests. the pink line is the measured `dNdS_A - dNdS_X`, while green is the distributions from the permutation test. Since I am plotting `dNdS_A - dNdS_X`, and I mostly observe `dNdS_A - dNdS_X > 0`, which means `dNdS_A > dNdS_X`, which indicates slowX. the bottom right is the same violin plot as above. Note the low sample sizes for *D. carinulata* X, which are "hidden" in the permutation test.
+The top right is all the permutation tests. the pink line is the measured `dNdS_A - dNdS_X`, while green is the distributions from the permutation test. Since I am plotting `dNdS_A - dNdS_X`, and I mostly observe `dNdS_A - dNdS_X > 0`, which means `dNdS_A > dNdS_X`, this indicates slowX. the bottom right is the same violin plot as above. Note the low sample sizes for *D. carinulata* X, which are "hidden" in the permutation test.
 
 <p float="left">
   <img src="data/fastX_ortholog_ident/fastX_permutation_white_bg.png" width="100%" />
 </p>
+
+### X chromosome turnover in *D. carinulata*
+
+As seen in the synteny plot, the X of *D. carinulata* is not syntenic with any of the other species. However, the chromosome dc13 (`NC_079460.1`) is syntenic with the remaining X chromosomes. I hypothesize that (if the X chromosome is identified correctly) this is the result of a recent sex-chromosome turnover in *D. carinulata* where the sex determining locus has moved from the X-syntenic dc13 to dc35. I will repeat the above analysis with the dc13 chromosome for *D. carinulata* instead of the dc35 one which is the actual X, and if the sex chromosome turnover is true I would expect that this still shows slowX since the turnover is much more recent than the long-term evolutionary forces that shape slowX evolution in *Chrysomelidae* (and probably *Coleoptera* in general).
