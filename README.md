@@ -280,3 +280,15 @@ Most species are slowX, except the *D. carinulata* comparisons, but those have s
   <img src="data/fastX_ortholog_ident/dNdS_violin_plot_white_bg.png" width="100%" />
 </p>
 
+### Statistical analysis via bootstrap
+
+Generally, all species pairs seem to show slowX, but I will do a permutation test for each species pair like this:
+
+1. **Sample without replacement:** Merge A and X dNdS values into one list, sample new A and new X lists with original sample sizes without replacement
+2. **Calculate median:** Calculate median A and median X from resampled lists, use difference A - X
+3. **Normal distribution:** Compute a normal distribution from all median(A) - median(X) values, find 95% confidence intervals
+4. **Plot:** Histrogram and normal distribution, compare original observed dNdS_A - dNdS_X to 95% confidence intervals of the permutations
+
+<p float="left">
+  <img src="data/fastX_ortholog_ident/fastX_permutation.png" width="100%" />
+</p>
