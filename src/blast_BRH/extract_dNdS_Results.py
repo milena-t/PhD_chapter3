@@ -13,10 +13,12 @@ import numpy as np
 def extract_dNdS_file(dNdS_path, dS_file = False):
     if not os.path.exists(dNdS_path):
         # print(f"{dNdS_path} does not exist")
-        return(np.NaN)
+        # return(np.NaN)
+        return(np.nan)
     if os.path.getsize(dNdS_path) == 0:
         print(f"{dNdS_path} has size 0")
-        return(np.NaN)
+        # return(np.NaN)
+        return(np.nan)
     with open(dNdS_path, "r") as dNdS_file:
         lines = dNdS_file.readlines()
 
