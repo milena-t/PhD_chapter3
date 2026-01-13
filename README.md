@@ -324,10 +324,14 @@ I run (web)blast searches for all of them to see the function:
   * self-hit [LOC130450603 putative nuclease HARBI1 Dsub](https://www.ncbi.nlm.nih.gov/gene?term=XM_056789079[Nucleotide%20Accession]&RID=PCNGPR16014&log$=genealign&blast_rank=1) and two splice variants
   * the same putative nuclease in a [dipteran](https://www.ncbi.nlm.nih.gov/gene?term=XM_056066771[Nucleotide%20Accession]&RID=PCN67JP7014&log$=genealign&blast_rank=8)
   * the same putative nuclease in a [hemipteran](https://www.ncbi.nlm.nih.gov/gene?term=XM_046831227[Nucleotide%20Accession]&RID=PCNGPR16014&log$=genealign&blast_rank=9)
+  * In the orthofinder analysis, it is part of orthogroup `N0.HOG0000735` which has four members, including the two BRH genes, `rna-AOBTE_LOCUS11149` in Aobt and `rna-XM_056780903.1` in Dsub.
 * **Ortholog 1:**
   * uncharacterized hits only, but also some in other insect orders
+  * orthogroup `N0.HOG0010332`, which has 6 total members, 3 in Dcar `rna-XM_057809920.1, rna-XM_057815284.1, rna-XM_057812128.1` and 3 in Dsub `rna-XM_056782109.1, rna-XM_056781820.1, rna-XM_056790472.1`
 * **Ortholog 2:**
   * uncharacterized hits only, no other insect hits except *D. carinulata* and *D. sublineata*
+  * orthogroup `N0.HOG0000356` which has members in all species that I can't be bothered to list right now, see `/proj/naiss2023-6-65/Milena/chapter3/orthofinder/Results_Nov25/Phylogenetic_Hierarchical_Orthogroups/N0.tsv`
+
 
 ## X chromosome turnover in *D. carinulata*
 
