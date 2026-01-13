@@ -313,9 +313,17 @@ The Ancestral *D. carinulata* X follows the expectation and has a decent number 
   <img src="data/fastX_ortholog_ident/BRH_X_linked_counts_heatmap_ancestra_Dcar_X.png" width="45%" />
 </p>
 
+Next steps when uppmax project is back: 
+
+* upload new 1-to-1 fasta files to uppmax, currently here: `/Users/miltr339/work/pairwise_blast_chapter_2_3/brh_tables/brh_sequences_A_Dcar_X_syntenic` and `brh_sequences_X_Dcar_X_syntenic`
+* adapt `src/blast_BRH/calculate_batch_pw_dNdS.py` to rerun with the new fasta files (`bash/run_python_wrapper_for_batch_dNdS.sh`)
+* extract results with `bash/run_extract_dNdS_results.sh`
+* repeat pairwise comparison matrix plot from above
+
 # dS: is slowX caused by elevated mutation rate in the male germline?
 
 The male germline has an elevated mutation rate compared to somatic tissue. Taken together with the fact that the X chromosome spends only 1/3 of its time in males, this leads to the conclusion that the X chromosome has a lower overall mutation rate compared to the autosomes who spend 1/2 of their time in the males. The relative difference in mutation rate can be assessed via the proxy of the synonymous substitution rate `dS`, and an elevated `dS` in the `dN/dS` ratio would result in a lower `dN/dS` in the X chromosomes compared to the autosomes, which we observe as slowX. I want to test this hypothesis with two analyses:
 
 * Plot `dS` of X and A genes, see if elevated on A.
 * Plot `dS` vs. `dNdS`, fit linear regression line (or non-linear regression depending on what it looks like?), see if there is a difference of X-linked or A-linked orthologs.
+

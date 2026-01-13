@@ -55,8 +55,13 @@ if __name__ == "__main__":
     chr_type = "X"
     #######
 
-    X_path = f"{datadir}brh_sequences_{chr_type}/"
-    outdir = f"{datadir}brh_results_{chr_type}/"
+    ### original
+    # X_path = f"{datadir}brh_sequences_{chr_type}/"
+    # outdir = f"{datadir}brh_results_{chr_type}/"
+
+    ### second run for the ancestral X-syntenic chromosome in Dcar as X
+    X_path = f"{datadir}brh_sequences_{chr_type}_Dcar_X_syntenic/"
+    outdir = f"{datadir}brh_results_{chr_type}_Dcar_X_syntenic/"
 
     os.chdir(outdir)
     x_paths_nested_dict = make_nested_lists(X_path, include_only="D_carinulata_D_sublineata")
