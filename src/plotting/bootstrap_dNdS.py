@@ -214,7 +214,7 @@ if __name__ == """__main__""":
     median_diffs = {pair : np.NaN for pair in pairs_list}
     
     ### test with 100, takes a bit of time otherwise
-    num_permutations = 5000
+    num_permutations = 10000
 
     for pair in pairs_list:
         
