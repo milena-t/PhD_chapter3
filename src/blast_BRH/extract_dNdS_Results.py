@@ -59,6 +59,9 @@ def dNdS_list_of_pair(pair_dir, results_dir, only_dNdS = True):
 
 
 def get_dNdS_pairs_dict(results_dir, outfile_name = "", only_dNdS = True):
+    """
+    Extracts either only dNdS values as a list, or corresponding dS values of the same ortholog as well, in a list of the same order
+    """
     pair_dirs = []
     for d in os.listdir(results_dir):
         if os.path.isfile(d):
@@ -112,8 +115,9 @@ if __name__ == "__main__":
     
     chr_types = ["A","X"]
     for chr_type in chr_types:
-        results_path = f"/Users/miltr339/work/pairwise_blast_chapter_2_3/brh_tables/brh_results_{chr_type}/"
-        # results_path = f"/proj/naiss2023-6-65/Milena/chapter3/dNdS_calculations/brh_results_{chr_type}/"
+
+        # results_path = f"/Users/miltr339/work/pairwise_blast_chapter_2_3/brh_tables/brh_results_{chr_type}/"
+        results_path = f"/proj/naiss2023-6-65/Milena/chapter3/dNdS_calculations/brh_results_{chr_type}/"
         print(chr_type)
         print(f"\n//////////////////// {chr_type} ////////////////////\n")
 
