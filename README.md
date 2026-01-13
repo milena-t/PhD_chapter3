@@ -355,7 +355,7 @@ The male germline has an elevated mutation rate compared to somatic tissue. Take
 
 ## dS comparison between A and X
 
-these are the preliminary results of the dS values of what I have available locally, the rest has to wait until the compute project is back
+these are the preliminary results of the dS values of what I have available locally, the rest has to wait until the compute project is back. Points to the hypothesis being correct that dS is slightly lower on the X.
 
 <p float="left">
   <img src="data/fastX_ortholog_ident/dS_violin_plot.png" width="100%" />
