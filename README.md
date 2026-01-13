@@ -298,3 +298,12 @@ The top right is all the permutation tests. the pink line is the measured `dNdS_
 ### X chromosome turnover in *D. carinulata*
 
 As seen in the synteny plot, the X of *D. carinulata* is not syntenic with any of the other species. However, the chromosome dc13 (`NC_079460.1`) is syntenic with the remaining X chromosomes. I hypothesize that this is the result of a recent sex-chromosome turnover in *D. carinulata* where the sex determining locus has moved from the X-syntenic dc13 to dc35 (if the X chromosome is identified correctly). I will repeat the above analysis with the dc13 chromosome for *D. carinulata* instead of the dc35 one which is the actual X, and if the sex chromosome turnover is true I would expect that this still shows slowX since the turnover is much more recent than the long-term evolutionary forces that shape slowX evolution in *Chrysomelidae* (and probably *Coleoptera* in general).
+
+#### Heatmaps
+
+The Ancestral *D. carinulata* X follows the expectation and has a decent number of X-linked 1-to-1 orthologs with all its comparisons. Notably there are many with its direct sister species, *D. sublineata*, many more than the other pair of sister species *C. maculatus* and *C. chinensis*.
+
+<p float="left">
+  <img src="data/fastX_ortholog_ident/BRH_A_linked_counts_heatmap_ancestra_Dcar_X.png" width="45%" />
+  <img src="data/fastX_ortholog_ident/BRH_X_linked_counts_heatmap_ancestra_Dcar_X.png" width="45%" />
+</p>
