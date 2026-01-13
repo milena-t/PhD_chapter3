@@ -64,7 +64,8 @@ def sex_chromosome_names():
             "Y" : ['scaffold_26','scaffold_48','scaffold_103','scaffold_112','scaffold_164']
         },
         "D_carinulata" : {
-            "X" : ['NC_079472.1'],
+            "X" : ['NC_079460.1'], ## syntenic to other X chromosomes
+            # "X" : ['NC_079472.1'], ## originally identified
             "Y" : ['NC_079473.1']
         },
         "D_sublineata" : {

@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 import matplotlib as mpl
 from matplotlib.colors import LinearSegmentedColormap
 
-def ortholog_tables(username = "miltr339"):
+def ortholog_tables(username = "miltr339", x_syntenic = False):
     dir_path = f"/Users/{username}/work/pairwise_blast_chapter_2_3/brh_tables/"
     dirs_list = [
         f"{dir_path}A_obtectus_A_obtectus_BRH.tsv",
@@ -35,7 +35,33 @@ def ortholog_tables(username = "miltr339"):
         f"{dir_path}D_carinulata_D_sublineata_BRH.tsv",
         f"{dir_path}D_sublineata_D_sublineata_BRH.tsv",
     ]
-    return dirs_list, dir_path
+    dirs_list_x_syntenic = [
+        f"{dir_path}A_obtectus_A_obtectus_BRH.tsv",
+        f"{dir_path}A_obtectus_B_siliquastri_BRH.tsv",
+        f"{dir_path}A_obtectus_C_chinensis_BRH.tsv",
+        f"{dir_path}A_obtectus_C_maculatus_BRH.tsv",
+        f"{dir_path}A_obtectus_D_carinulata_BRH_X_syntenic.tsv",
+        f"{dir_path}A_obtectus_D_sublineata_BRH.tsv",
+        f"{dir_path}B_siliquastri_B_siliquastri_BRH.tsv",
+        f"{dir_path}B_siliquastri_C_chinensis_BRH.tsv",
+        f"{dir_path}B_siliquastri_C_maculatus_BRH.tsv",
+        f"{dir_path}B_siliquastri_D_carinulata_BRH_X_syntenic.tsv",
+        f"{dir_path}B_siliquastri_D_sublineata_BRH.tsv",
+        f"{dir_path}C_chinensis_C_chinensis_BRH.tsv",
+        f"{dir_path}C_chinensis_C_maculatus_BRH.tsv",
+        f"{dir_path}C_chinensis_D_carinulata_BRH_X_syntenic.tsv",
+        f"{dir_path}C_chinensis_D_sublineata_BRH.tsv",
+        f"{dir_path}C_maculatus_C_maculatus_BRH.tsv",
+        f"{dir_path}C_maculatus_D_carinulata_BRH_X_syntenic.tsv",
+        f"{dir_path}C_maculatus_D_sublineata_BRH.tsv",
+        f"{dir_path}D_carinulata_D_carinulata_BRH.tsv",
+        f"{dir_path}D_carinulata_D_sublineata_BRH_X_syntenic.tsv",
+        f"{dir_path}D_sublineata_D_sublineata_BRH.tsv",
+    ]
+    if not x_syntenic:
+        return dirs_list, dir_path
+    else:
+        return dirs_list_x_syntenic, dir_path
 
 def count_orthologs(brh_table_path:str, chr_type:str = "A", verbose = False) -> int:
     """
@@ -88,6 +114,7 @@ def make_array_for_heatmap(brh_tables_list:list, chr_type:str = "A", verbose = F
     for brh_table_path in brh_tables_list:
         brh_table = brh_table_path.split("/")[-1]
         brh_table = brh_table.replace("_BRH.tsv", "")
+        brh_table = brh_table.replace("_BRH_X_syntenic.tsv", "")
         try:
             gen1, spec1, gen2, spec2 =brh_table.split("_")
         except:
@@ -193,7 +220,7 @@ def count_all_gametologs(brh_tables_list:list, verbose = False)->dict:
 
 if __name__ == "__main__":
     username = "miltr339"
-    all_tables_list, dir_path = ortholog_tables(username=username)
+    all_tables_list, dir_path = ortholog_tables(username=username, x_syntenic=True)
 
     # count_A = count_orthologs(all_tables_list[1], chr_type="A", verbose=True)
     # count_X = count_orthologs(all_tables_list[1], chr_type="X", verbose=True)
