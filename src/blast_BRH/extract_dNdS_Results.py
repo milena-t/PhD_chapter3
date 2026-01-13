@@ -34,11 +34,9 @@ def dNdS_list_of_pair(pair_dir, results_dir):
         # raise RuntimeError(f"{results_dir}{pair_dir} ---> something didn't work! \n{e}")
         print(f"{results_dir}{pair_dir} ---> something didn't work! \n{e}")
 
-
     try:
         subdirectories = [f"{results_dir}{pair_dir}/{d}/2NG.dNdS" for d in os.listdir(f"{results_dir}{pair_dir}")]
     except:
-        ### TODO the error gi
         raise RuntimeError(f"pair directory not found! {results_dir}{pair_dir}")
     dNdS_list = [extract_dNdS_file(f) for f in subdirectories]
     return dNdS_list

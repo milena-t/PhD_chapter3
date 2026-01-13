@@ -295,6 +295,28 @@ The top right is all the permutation tests. the pink line is the measured `dNdS_
   <img src="data/fastX_ortholog_ident/fastX_permutation_white_bg.png" width="100%" />
 </p>
 
+### investigating the three X-lined orthologs in the *D. carinulata* vs. *D. sublineata* comparison
+
+The sequences are these:
+
+```text
+D_carinulata_D_sublineata_X-linked_ortholog_0.fasta
+  >rna-XM_057814188.1_D_carinulata_X rna-XM_057814188.1
+  >rna-XM_056789079.1_D_sublineata_X rna-XM_056789079.1
+D_carinulata_D_sublineata_X-linked_ortholog_1.fasta
+  >rna-XM_057812128.1_D_carinulata_X rna-XM_057812128.1
+  >rna-XM_056790472.1_D_sublineata_X rna-XM_056790472.1
+D_carinulata_D_sublineata_X-linked_ortholog_2.fasta
+  >rna-XM_057811214.1_D_carinulata_X rna-XM_057811214.1
+  >rna-XM_056789848.1_D_sublineata_X rna-XM_056789848.1
+```
+
+| ortholog number       | *D. carinulata*     | *D. sublineata*     | `dNdS`            |
+| --------------------- | ------------------- | ------------------- | ----------------- |
+| X-linked_ortholog_0   | rna-XM_057814188.1  | rna-XM_056789079.1  | 1.202247191011236 |
+| X-linked_ortholog_1   | rna-XM_057812128.1  | rna-XM_056790472.1  | 0.484848484848484 |
+| X-linked_ortholog_2   | rna-XM_057811214.1  | rna-XM_056789848.1  | 0.564102564102564 |
+
 ## X chromosome turnover in *D. carinulata*
 
 * **Hypothesis about molecular rate on ancestral Dcar X-syntenic chromosome:** As seen in the synteny plot, the X of *D. carinulata* is not syntenic with any of the other species. However, the chromosome dc13 (`NC_079460.1`) is syntenic with the remaining X chromosomes. I hypothesize that this is the result of a recent sex-chromosome turnover in *D. carinulata* where the sex determining locus has moved from the X-syntenic dc13 to dc35 (if the X chromosome is identified correctly). I will repeat the above analysis with the dc13 chromosome for *D. carinulata* instead of the dc35 one which is the actual X, and if the sex chromosome turnover is true I would expect that this still shows slowX since the turnover is much more recent than the long-term evolutionary forces that shape slowX evolution in *Chrysomelidae* (and probably *Coleoptera* in general). 
