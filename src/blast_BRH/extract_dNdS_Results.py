@@ -10,7 +10,7 @@ from statistics import mean
 import numpy as np
 
 
-def extract_dNdS_file(dNdS_path):
+def extract_dNdS_file(dNdS_path, dS_file = False):
     if not os.path.exists(dNdS_path):
         # print(f"{dNdS_path} does not exist")
         return(np.NaN)
@@ -19,12 +19,18 @@ def extract_dNdS_file(dNdS_path):
         return(np.NaN)
     with open(dNdS_path, "r") as dNdS_file:
         lines = dNdS_file.readlines()
-        # only look at second line
-        value= lines[1].strip().split("\t")[-1]
-        return(float(value))
+
+        if dS_file:
+            # only look at third line for dS file
+            value= lines[2].strip().split()[-1]
+        else:
+            # only look at second line for dNdS file
+            value= lines[1].strip().split("\t")[-1]
+
+    return(float(value))
 
 
-def dNdS_list_of_pair(pair_dir, results_dir):
+def dNdS_list_of_pair(pair_dir, results_dir, only_dNdS = True):
     """
     give the dir that contains all the results for the dNdS of the orthologs generated with calculate_pairwise_dNdS.py
     """
@@ -35,13 +41,24 @@ def dNdS_list_of_pair(pair_dir, results_dir):
         print(f"{results_dir}{pair_dir} ---> something didn't work! \n{e}")
 
     try:
-        subdirectories = [f"{results_dir}{pair_dir}/{d}/2NG.dNdS" for d in os.listdir(f"{results_dir}{pair_dir}")]
+        subdirectories = [f"{results_dir}{pair_dir}/{d}" for d in os.listdir(f"{results_dir}{pair_dir}")]
+        subdirectories_dNdS = [f"{d}/2NG.dNdS" for d in subdirectories]
+        subdirectories_dS = [f"{d}/2NG.dS" for d in subdirectories]
     except:
         raise RuntimeError(f"pair directory not found! {results_dir}{pair_dir}")
-    dNdS_list = [extract_dNdS_file(f) for f in subdirectories]
-    return dNdS_list
+    
+    assert len(subdirectories_dS) == len(subdirectories)
+    assert len(subdirectories_dNdS) == len(subdirectories)
 
-def get_dNdS_pairs_dict(results_dir, outfile_name = ""):
+    if only_dNdS:
+        dNdS_list = [extract_dNdS_file(f) for f in subdirectories_dNdS]
+        return dNdS_list
+    else:
+        dNdS_dS_pairs = { subdirectories[i] : [extract_dNdS_file(subdirectories_dNdS[i]), extract_dNdS_file(subdirectories_dS[i], dS_file=True)] for i in range(len(subdirectories)) }
+        return dNdS_dS_pairs
+
+
+def get_dNdS_pairs_dict(results_dir, outfile_name = "", only_dNdS = True):
     pair_dirs = []
     for d in os.listdir(results_dir):
         if os.path.isfile(d):
@@ -59,11 +76,11 @@ def get_dNdS_pairs_dict(results_dir, outfile_name = ""):
     pair_lists = {f"{d}":[] for d in pair_dirs}
     if outfile_name == "":
         for pair_dir in pair_lists.keys():
-            if ".out" in pair_dir or ".log" in pair_dir:
+            if ".out" in pair_dir or ".log" in pair_dir or ".txt" in pair_dir:
                 continue
             if not os.path.isdir(f"{results_dir}{pair_dir}"):
                 raise RuntimeError(f"parsed dir {results_dir}{pair_dir} does not exist!")
-            pair_lists[pair_dir] = dNdS_list_of_pair(pair_dir, results_dir)
+            pair_lists[pair_dir] = dNdS_list_of_pair(pair_dir, results_dir, only_dNdS=only_dNdS)
             print(f"{pair_dir} : {pair_lists[pair_dir]}")
         return pair_lists
 
@@ -72,14 +89,22 @@ def get_dNdS_pairs_dict(results_dir, outfile_name = ""):
         with open(outfile_name, "w") as outfile:
             for pair_dir in pair_lists.keys():
                 print(f" --> {pair_dir}")
-                if ".out" in pair_dir or ".log" in pair_dir:
-                    print(f"\tlog file ignired")
+                if ".out" in pair_dir or ".log" in pair_dir or ".txt" in pair_dir:
+                    print(f"\t! log file ignired")
                     continue
                 if not os.path.isdir(f"{results_dir}{pair_dir}"):
                     raise RuntimeError(f"parsed dir {results_dir}{pair_dir} does not exist!")
-                pair_list = dNdS_list_of_pair(pair_dir, results_dir)
-                pair_list = ",".join([str(dNdS) for dNdS in pair_list])
-                outfile.write(f"{pair_dir} : {pair_list}\n")
+                pair_list = dNdS_list_of_pair(pair_dir, results_dir, only_dNdS=only_dNdS)
+                if only_dNdS:
+                    pair_list = ",".join([str(dNdS) for dNdS in pair_list])
+                    outfile.write(f"{pair_dir} : {pair_list}\n")
+                else:
+                    pairs_names = list(pair_list.keys())
+                    pair_list_dNdS = ",".join([str(pair_list[pair][0]) for pair in pairs_names])
+                    pair_list_dS = ",".join([str(pair_list[pair][1]) for pair in pairs_names])
+                    pair_name = pair_dir.replace("_pairwise_dNdS", "")
+                    outfile.write(f"{pair_name}_dNdS : {pair_list_dNdS}\n")
+                    outfile.write(f"{pair_name}_dS : {pair_list_dS}\n")
         print(f"outfile saved to: {outfile_name}\nin {results_dir}")
 
 
@@ -87,12 +112,12 @@ if __name__ == "__main__":
     
     chr_types = ["A","X"]
     for chr_type in chr_types:
-        # results_path = f"/Users/miltr339/work/pairwise_blast_chapter_2_3/brh_tables/brh_results_{chr_type}/"
+        results_path = f"/Users/miltr339/work/pairwise_blast_chapter_2_3/brh_tables/brh_results_{chr_type}/"
+        # results_path = f"/proj/naiss2023-6-65/Milena/chapter3/dNdS_calculations/brh_results_{chr_type}/"
         print(chr_type)
-        results_path = f"/proj/naiss2023-6-65/Milena/chapter3/dNdS_calculations/brh_results_{chr_type}/"
         print(f"\n//////////////////// {chr_type} ////////////////////\n")
 
-        get_dNdS_pairs_dict(results_path, f"dNdS_summary_{chr_type}-linked.txt")
+        get_dNdS_pairs_dict(results_path, outfile_name= f"dNdS_dS_summary_{chr_type}-linked.txt", only_dNdS=False)
 
 #     [f"{dirpath}{d}/2NG.dNdS" for d in os.listdir(results_path)]
 

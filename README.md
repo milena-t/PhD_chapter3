@@ -305,7 +305,7 @@ The sequences are these:
 | X-linked_ortholog_1   | rna-XM_057812128.1  | rna-XM_056790472.1  | 0.484848484848484 |
 | X-linked_ortholog_2   | rna-XM_057811214.1  | rna-XM_056789848.1  | 0.564102564102564 |
 
-I run (web)blast searches for all of them to see the function:
+I run (web)blast searches for all of them to see if they have a function and check orthofinder output:
 
 * **Ortholog 0:**
   * self-hit [LOC130902232 putative nuclease HARBI1 Dcar](https://www.ncbi.nlm.nih.gov/gene?term=XM_057814188[Nucleotide%20Accession]&RID=PCN67JP7014&log$=genealign&blast_rank=1) and two splice variants
