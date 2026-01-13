@@ -58,10 +58,10 @@ def ortholog_tables(username = "miltr339", x_syntenic = False):
         f"{dir_path}D_carinulata_D_sublineata_BRH_X_syntenic.tsv",
         f"{dir_path}D_sublineata_D_sublineata_BRH.tsv",
     ]
-    if not x_syntenic:
-        return dirs_list, dir_path
-    else:
+    if x_syntenic:
         return dirs_list_x_syntenic, dir_path
+    else:
+        return dirs_list, dir_path
 
 def count_orthologs(brh_table_path:str, chr_type:str = "A", verbose = False) -> int:
     """
@@ -70,8 +70,12 @@ def count_orthologs(brh_table_path:str, chr_type:str = "A", verbose = False) -> 
     """
     # brh_table = pl.read_csv(brh_table_path, separator="\t")
     brh_table = pd.read_csv(brh_table_path, sep="\t")
-    brh_filtered = brh_table[brh_table["chromosome"] == chr_type]
-    brh_filtered = brh_filtered[brh_filtered["chromosome.1"] == chr_type]
+    try:
+        brh_filtered = brh_table[brh_table["chromosome"] == chr_type]
+        brh_filtered = brh_filtered[brh_filtered["chromosome.1"] == chr_type]
+    except:
+        print(brh_table)
+        raise RuntimeError(f"{brh_table_path} could not be parsed by column name")
     rows_after = brh_filtered.shape[0]
     if verbose:
         rows_before = brh_table.shape[0]
@@ -95,6 +99,7 @@ def make_array_for_heatmap(brh_tables_list:list, chr_type:str = "A", verbose = F
     for brh_table in brh_tables_list:
         brh_table = brh_table.split("/")[-1]
         brh_table = brh_table.replace("_BRH.tsv", "")
+        brh_table = brh_table.replace("_BRH_X_syntenic.tsv", "")
         try:
             gen1, spec1, gen2, spec2 =brh_table.split("_")
         except:
@@ -206,6 +211,7 @@ def count_all_gametologs(brh_tables_list:list, verbose = False)->dict:
     for brh_table_path in brh_tables_list:
         brh_table = brh_table_path.split("/")[-1]
         brh_table = brh_table.replace("_BRH.tsv", "")
+        brh_table = brh_table.replace("_BRH_X_syntenic.tsv", "")
         try:
             gen1, spec1, gen2, spec2 =brh_table.split("_")
         except:
@@ -220,7 +226,11 @@ def count_all_gametologs(brh_tables_list:list, verbose = False)->dict:
 
 if __name__ == "__main__":
     username = "miltr339"
-    all_tables_list, dir_path = ortholog_tables(username=username, x_syntenic=True)
+
+    ## use the Dcar autosome that is syntenic with the other X chromosomes
+    Dcar_anc_X = True
+
+    all_tables_list, dir_path = ortholog_tables(username=username, x_syntenic=Dcar_anc_X)
 
     # count_A = count_orthologs(all_tables_list[1], chr_type="A", verbose=True)
     # count_X = count_orthologs(all_tables_list[1], chr_type="X", verbose=True)
@@ -229,7 +239,10 @@ if __name__ == "__main__":
     if True:
         for chromosome in ["A", "X"]:
             ortholog_counts_array,species_list = make_array_for_heatmap(all_tables_list, chr_type=chromosome, verbose=False)
-            plot_heatmap(ortholog_counts_array,species_list, filename=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/BRH_{chromosome}_linked_counts_heatmap.png", title = f"{chromosome}-linked pairwise orthologs counts")
+            if Dcar_anc_X:
+                plot_heatmap(ortholog_counts_array,species_list, filename=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/BRH_{chromosome}_linked_counts_heatmap_ancestra_Dcar_X.png", title = f"{chromosome}-linked pairwise orthologs counts\n(using the D. carinulata ancestral\nX-syntenic chromosome)")
+            else:
+                plot_heatmap(ortholog_counts_array,species_list, filename=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/BRH_{chromosome}_linked_counts_heatmap.png", title = f"{chromosome}-linked pairwise orthologs counts")
     
     ## count gametologs
     print(f"--> count within-species gametologs")
