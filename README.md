@@ -358,5 +358,5 @@ The male germline has an elevated mutation rate compared to somatic tissue. Take
 these are the preliminary results of the dS values of what I have available locally, the rest has to wait until the compute project is back
 
 <p float="left">
-  <img src="PhD_chapter3/data/fastX_ortholog_ident/dS_violin_plot.png" width="100%" />
+  <img src="data/fastX_ortholog_ident/dS_violin_plot.png" width="100%" />
 </p>
