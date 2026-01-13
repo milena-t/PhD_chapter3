@@ -190,7 +190,7 @@ def plot_dNdS_permutations(boot_diff:dict, measure_diff:dict, A_dict:dict, X_dic
         # axes[col,row].set_title(f'{species2}\n{species1}', fontsize = fs*0.85)
         # axes[col,row].set_title(f'{species2}', fontsize = fs)
 
-        print(f"{row}, {col} : {species1_lab} vs. {species2_lab} --> mean(dNdS_A)-mean(dNdS_X) bootstrap: {mean_boot:.3f}, measured: {measure_diff[pair]:.3f}")
+        print(f"{row}, {col} : {species1_lab} vs. {species2_lab} --> mean(dNdS_A)-mean(dNdS_X) bootstrap: {mean_boot:.5f}, measured: {measure_diff[pair]:.3f}")
 
     # Adjust layout to prevent overlap
     plt.tight_layout(rect=[0, 0.05, 1, 1])
