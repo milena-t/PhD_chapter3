@@ -353,3 +353,10 @@ The male germline has an elevated mutation rate compared to somatic tissue. Take
 * Plot `dS` of X and A genes, see if elevated on A.
 * Plot `dS` vs. `dNdS`, fit linear regression line (or non-linear regression depending on what it looks like?), see if there is a difference of X-linked or A-linked orthologs.
 
+## dS comparison between A and X
+
+these are the preliminary results of the dS values of what I have available locally, the rest has to wait until the compute project is back
+
+<p float="left">
+  <img src="PhD_chapter3/data/fastX_ortholog_ident/dS_violin_plot.png" width="100%" />
+</p>
