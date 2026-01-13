@@ -299,18 +299,6 @@ The top right is all the permutation tests. the pink line is the measured `dNdS_
 
 The sequences are these:
 
-```text
-D_carinulata_D_sublineata_X-linked_ortholog_0.fasta
-  >rna-XM_057814188.1_D_carinulata_X rna-XM_057814188.1
-  >rna-XM_056789079.1_D_sublineata_X rna-XM_056789079.1
-D_carinulata_D_sublineata_X-linked_ortholog_1.fasta
-  >rna-XM_057812128.1_D_carinulata_X rna-XM_057812128.1
-  >rna-XM_056790472.1_D_sublineata_X rna-XM_056790472.1
-D_carinulata_D_sublineata_X-linked_ortholog_2.fasta
-  >rna-XM_057811214.1_D_carinulata_X rna-XM_057811214.1
-  >rna-XM_056789848.1_D_sublineata_X rna-XM_056789848.1
-```
-
 | ortholog number       | *D. carinulata*     | *D. sublineata*     | `dNdS`            |
 | --------------------- | ------------------- | ------------------- | ----------------- |
 | X-linked_ortholog_0   | rna-XM_057814188.1  | rna-XM_056789079.1  | 1.202247191011236 |
