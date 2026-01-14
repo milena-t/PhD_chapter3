@@ -289,7 +289,7 @@ def plot_dS_vs_dNdS(A_dict:dict, X_dict:dict, filename = "dS_vs_dNdS.png", dark_
         fig, axes = plt.subplots(rows, cols, figsize=(27, 25)) # for more than three rows
         fs = 25
     else:
-        fig, axes = plt.subplots(rows, cols, figsize=(20, 20)) # for more than three rows
+        fig, axes = plt.subplots(rows, cols, figsize=(20, 18)) # for more than three rows
         fs = 25
     
 
