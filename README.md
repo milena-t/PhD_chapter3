@@ -390,7 +390,7 @@ not available in preliminary data
     * since the point is that I want to see a difference in slope, maybe do ANCOVA for the actual analysis of significant difference?
 
 <p float="left">
-    <img src="data/fastX_ortholog_ident/dS_vs_dNdS_scatterplot.png" width="100%" />
+    <img src="data/fastX_ortholog_ident/dS_vs_dNdS_scatterplot.png" width="80%" />
 </p>
 
 <details open>
