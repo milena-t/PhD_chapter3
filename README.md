@@ -395,7 +395,9 @@ not available in preliminary data
 
 <details open>
   <summary>plot of all species pairs, including D. carinulata and D. sublineata</summary>
-  **many occurences of dS=3:** dS is the substitution rate *per codon*, and since a codon has only three nucleic acids 
+  
+  **Many occurences of dS=3:** dS is the substitution rate *per codon*, and since a codon has only three nucleic acids 
+  
   <p float="left">
     <img src="data/fastX_ortholog_ident/dS_vs_dNdS_scatterplot_all_pairs.png" width="100%" />
   </p>
