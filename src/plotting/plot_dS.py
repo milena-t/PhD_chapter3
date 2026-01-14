@@ -1,12 +1,12 @@
 """
-plot results from dNdS analysis summaries
+plot results from dNdS analysis summaries, use dS also as a proxy for baseline mutation rate
 """
 
 import numpy as np
 import pandas as pd
 from math import sqrt, isnan
 import matplotlib.pyplot as plt
-from matplotlib.colors import LinearSegmentedColormap
+import scipy.stats
 
 
 def get_summary_paths(username = "miltr339"):
@@ -82,82 +82,6 @@ def get_species_list(dNdS_dict):
     return(species)
 
 
-def make_means_array_from_dict(dNdS_dict, verbose = True):
-    """
-    make an array to plot as a heatmap
-    """
-    species_list = get_species_list(dNdS_dict)
-    species_count = len(species_list)
-    species_index = {species : i for i, species in enumerate(species_list)}
-
-    # initialize array of np.NaN
-    pairwise_dNdS = np.full((species_count,species_count), np.NaN)
-
-    ## fill the initalized table with the counts
-    for pair, dNdS_list in dNdS_dict.items():
-        try:
-            gen1, spec1, gen2, spec2 =pair.split("_")
-        except:
-            raise RuntimeError(f"{pair} could not be parsed")
-        species1 = f"{gen1}_{spec1}"
-        index1 = species_index[species1]
-        species2 = f"{gen2}_{spec2}"
-        index2 = species_index[species2]
-        if species1 == species2:
-            pairwise_dNdS[index1, index2] = np.NaN
-        else:
-            if not np.isnan(dNdS_list).all():
-                mean_dNdS = np.nanmean(dNdS_list)
-            else:
-                mean_dNdS = np.NaN
-            pairwise_dNdS[index1, index2] = mean_dNdS
-            pairwise_dNdS[index2, index1] = mean_dNdS
-
-    if verbose:
-        print(pairwise_dNdS)
-        print(type(pairwise_dNdS))
-
-    return pairwise_dNdS, species_list
-
-
-def plot_heatmap(counts_array, species_list, filename = "mean_dNdS.png", title = f"mean dNdS"):
-    """
-    plot the heatmap created in make_means_array_from_dict()
-    """
-
-    fs = 40
-    aspect_ratio = 15 / 15
-    height_pixels = 2000  # Height in pixels
-    width_pixels = int(height_pixels * aspect_ratio)  # Width in pixels
-    fig = plt.figure(figsize=(width_pixels / 100, height_pixels / 100), dpi=100)
-    ax = fig.add_subplot(111)
-
-    # cmap=mpl.colormaps["rainbow"]
-    cmap = LinearSegmentedColormap.from_list("red_to_orange",["#b82946", "#F2933A"])
-    # cbarlabel="number of pairwise 1-to-1 ortholgs"
-    im = ax.imshow(counts_array, cmap=cmap)
-
-    # create text annotations
-    for i in range(len(species_list)):
-        for j in range(len(species_list)):
-            try:
-                # count = counts_array[i, j]
-                count = f"{counts_array[i, j]:.3}"
-                text = ax.text(j, i, count,ha="center", va="center", color="w", fontsize = fs)
-            except:
-                continue
-
-    species_list = [species.replace("_", ". ") for species in species_list]
-    # Show all ticks and label them with the respective list entries
-    ax.set_xticks(range(len(species_list)), labels=species_list,rotation=45, ha="right", rotation_mode="anchor", fontsize = fs)
-    ax.set_yticks(range(len(species_list)), labels=species_list, fontsize = fs)
-    plt.title(label=title, fontsize = fs*1.3)
-    
-    plt.tight_layout()
-    # plt.show()
-    plt.savefig(filename, dpi = 300, transparent = False)
-    print(f"figure saved here: {filename}")
-
 
 def violinplot_pair(data_A_X, row, col, n_A, n_X, mean_A, mean_X, axes, colors_dict,fs, xticks = ["A", "X"], xlab = ""):
     ## make general function so i can repeat it easily for the "mirror" species where row and col are switched
@@ -172,7 +96,7 @@ def violinplot_pair(data_A_X, row, col, n_A, n_X, mean_A, mean_X, axes, colors_d
 
     axes[row, col].set_xlabel('')
     if col-row == 1:
-        axes[row, col].set_ylabel('dN/dS', fontsize = fs*0.8)
+        axes[row, col].set_ylabel('dS', fontsize = fs)
     elif xlab != "" and col == 0:
         axes[row, col].set_ylabel(xlab, fontsize = fs)
     else:
@@ -191,7 +115,7 @@ def violinplot_pair(data_A_X, row, col, n_A, n_X, mean_A, mean_X, axes, colors_d
 
     return violins
 
-def plot_dNdS_violins(A_dict:dict, X_dict:dict, filename = "dNdS_ratios_A_X.png", legend_in_last = True, dark_mode=False):
+def plot_dS_violins(A_dict:dict, X_dict:dict, filename = "dNdS_ratios_A_X.png", legend_in_last = True, dark_mode=False):
     """
     plot a grid of violin plots for all pairwise comparisons
     """
@@ -236,7 +160,12 @@ def plot_dNdS_violins(A_dict:dict, X_dict:dict, filename = "dNdS_ratios_A_X.png"
         species2 = f"{gen2}_{spec2}"
         col = species_index[species2]
 
-        # only do top right matrix
+        # put this here before otherwise the last row/col label never gets reached
+        if row == len(species_list)-1:
+            species1_lab = species1.replace("_", ". ")
+            axes[row,row].text(0.1,0.4,f"{species1_lab}", fontsize = fs*1.4)
+
+        # separate top right matrix from bottom left matrix
         if row>col:
             col_temp = col
             col = row
@@ -253,8 +182,8 @@ def plot_dNdS_violins(A_dict:dict, X_dict:dict, filename = "dNdS_ratios_A_X.png"
         ## exclude all the NaNs because violinplot can't handle them
         data_A_nan = np.array(A_dict[pair], dtype=float)
         data_X_nan = np.array(X_dict[pair], dtype=float)
-        data_A = [dNdS_A for dNdS_A in data_A_nan if not np.isnan(dNdS_A) ]
-        data_X = [dNdS_X for dNdS_X in data_X_nan if not np.isnan(dNdS_X) ]
+        data_A = [dS_A for dS_A in data_A_nan if not np.isnan(dS_A) ]
+        data_X = [dS_X for dS_X in data_X_nan if not np.isnan(dS_X) ]
     
         if len(data_A)==0 or len(data_X)==0:
             axes[row,col].axis('off')
@@ -294,23 +223,183 @@ def plot_dNdS_violins(A_dict:dict, X_dict:dict, filename = "dNdS_ratios_A_X.png"
 
 
 
+
+def calculate_dS_dNdS_lin_reg(dS_list:list, dNdS_list:list, species_pair:str):
+    """
+    Calculate the linear regression of dS vs. dNdS values of a set of genes
+    """
+    
+    result = scipy.stats.linregress(dS_list, dNdS_list)
+    
+
+    ## test normality of residuals
+    def predict(x):
+        pred_PIC = x*result.slope + result.intercept
+        return(pred_PIC)
+
+    residuals = [dNdS_list[i] - predict(dS_list[i]) for i in range(len(dS_list))]
+    stat, p_value = scipy.stats.shapiro(residuals)
+    
+    if p_value < 0.05:
+        print(f"non-normal residuals in species pair: {species_pair}")
+        return np.nan, np.nan 
+
+    else:
+        return result.slope, result.intercept
+
+
+
+def plot_dS_vs_dNdS(A_dict:dict, X_dict:dict, filename = "dS_vs_dNdS.png", dark_mode=False):
+    """
+    plot a grid of scatterplots of dS vs. dNdS in X and autosomes for each pair
+    """
+
+    if dark_mode:
+        plt.style.use('dark_background')
+
+    species_list = get_species_list(A_dict)
+    
+    ### check that A and X are about the same species set
+    assert species_list == get_species_list(A_dict)
+    assert list(A_dict.keys()) == list(X_dict.keys())
+
+    species_count = len(species_list)
+    species_index = {species : i for i, species in enumerate(species_list)}
+
+    cols = species_count
+    rows = cols
+    if rows>2:
+        fig, axes = plt.subplots(rows, cols, figsize=(27, 25)) # for more than three rows
+    else:
+        fig, axes = plt.subplots(rows, cols, figsize=(15, 10)) # for more than three rows
+    
+    fs = 25
+
+    colors_dict = {
+        # "A" : "#4d7298", # uniform_unfiltered blue
+        "A" : "#F2933A", # uniform_filtered orange
+        "X" : "#b82946", # native red
+    }
+
+    diagonals_done = []
+
+    for pair in A_dict.keys():
+        ### get pair indices for species pair
+        try:
+            gen1, spec1, gen2, spec2 =pair.split("_")
+        except:
+            raise RuntimeError(f"{pair} could not be parsed")
+        species1 = f"{gen1}_{spec1}"
+        row = species_index[species1]
+        species2 = f"{gen2}_{spec2}"
+        col = species_index[species2]
+
+        # put this here before otherwise the last row/col label never gets reached
+        if row == len(species_list)-1:
+            species1_lab = species1.replace("_", ". ")
+            axes[row,row].text(0.1,0.4,f"{species1_lab}", fontsize = fs*1.2)
+
+        # separate top right matrix from bottom left matrix
+        if row>col:
+            col_temp = col
+            col = row
+            row = col_temp
+            species2_temp = species2
+            species2 = species1
+            species1 = species2_temp
+
+        ## plot species name on diagonals
+        if row not in diagonals_done:
+            species1_lab = species1.replace("_", ". ")
+            axes[row,row].text(0.1,0.4,f"{species1_lab}", fontsize = fs*1.2)
+            diagonals_done.append(row)
+            
+        # Extract dS and dNdS
+        ## exclude all the NaNs because violinplot can't handle them
+        dS_A_nan = np.array(A_dict[pair]["dS"], dtype=float)
+        dS_X_nan = np.array(X_dict[pair]["dS"], dtype=float)
+        dS_A = [dS_A for dS_A in dS_A_nan if not np.isnan(dS_A) ]
+        dS_X = [dS_X for dS_X in dS_X_nan if not np.isnan(dS_X) ]
+
+        dNdS_A_nan = np.array(A_dict[pair]["dNdS"], dtype=float)
+        dNdS_X_nan = np.array(X_dict[pair]["dNdS"], dtype=float)
+        dNdS_A = [dNdS_A for dNdS_A in dNdS_A_nan if not np.isnan(dNdS_A) ]
+        dNdS_X = [dNdS_X for dNdS_X in dNdS_X_nan if not np.isnan(dNdS_X) ]
+    
+        if len(dS_A)==0 or len(dS_X)==0 or len(dNdS_A)==0 or len(dNdS_X)==0:
+            axes[row,col].axis('off')
+            axes[row,col].text(0.1,0.4,f"{species1}\n{species2}:\nmissing data", fontsize = fs*0.75)
+            axes[col,row].axis('off')
+            axes[col,row].text(0.1,0.4,f"{species1}\n{species2}:\nmissing data", fontsize = fs*0.75)
+            continue
+
+        n_A = len(dS_A)
+        n_X = len(dS_X)
+        mean_A = np.nanmedian(dS_A)
+        mean_X = np.nanmedian(dS_X)
+
+        dS_AX = [dS_A, dS_X]
+
+        # plot dS violins
+        violinplot_pair(data_A_X=dS_AX, row=row, col=col, n_A=n_A, n_X=n_X, mean_A=mean_A, mean_X=mean_X, axes = axes, colors_dict=colors_dict, fs=fs)
+
+        # plot dNdS scatters
+        axes[col,row].scatter(dS_A, dNdS_A, color = colors_dict["A"], s=20)
+        axes[col,row].scatter(dS_X, dNdS_X, color = colors_dict["X"], s=20)
+        axes[col,row].tick_params(axis='x', labelsize=fs)
+        axes[col,row].tick_params(axis='y', labelsize=fs)
+        axes[species_count-1,row].set_xlabel("dS", fontsize = fs)
+        axes[col,0].set_ylabel("dNdS", fontsize = fs)
+        ## linear regression
+        slope_A, intercept_A = calculate_dS_dNdS_lin_reg(dS_list = dS_A, dNdS_list = dNdS_A, species_pair= pair)
+        slope_X, intercept_X = calculate_dS_dNdS_lin_reg(dS_list = dS_X, dNdS_list = dNdS_X, species_pair= pair)
+
+        axes[row,row].axis('off')
+        axes[col,col].axis('off')
+
+        print(f"{row}, {col} : {species1} vs. {species2}")
+        # if species1 == "D_carinulata" or species2 == "D_carinulata":
+        #     print(f"sample sizes, n_A = {n_A}, n_X = {n_X}, data X  = {data_X}")
+    
+    # fig.text(0.5, 0.04, x_label, ha='center', va='center', fontsize=fs)
+    # Adjust layout to prevent overlap
+    plt.tight_layout(rect=[0, 0.05, 1, 1])
+
+    if dark_mode:
+        filename = filename.replace(".png", "_darkmode.png")
+    plt.savefig(filename, dpi = 300, transparent = False)
+    print(f"plot saved in current working directory as: {filename}")
+
+
+
 if __name__ == "__main__":
     username = "miltr339"
     chromosome = "A"
     summary_paths = get_summary_paths()
     
-    print(f"/////////////// A ///////////////")
-    dS_dict_A = read_dNdS_summary_file(summary_paths["A"], only_dS = True)
-    # print(dS_dict_A)
-
-    print(f"/////////////// X ///////////////")
-    dS_dict_X = read_dNdS_summary_file(summary_paths["X"], only_dS = True)
-    # print(dS_dict_X)
-    
-    species = get_species_list(dS_dict_A)
-    plot_dNdS_violins(A_dict=dS_dict_A, X_dict=dS_dict_X,filename=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/dS_violin_plot.png")
-
-    ### HEATMAP
+    ## make the violinplots of only dS for each pair
     if False:
-        dNdS_array, species_list = make_means_array_from_dict(dNdS_dict)
-        plot_heatmap(counts_array= dNdS_array, species_list=species, filename=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/mean_dNdS_{chromosome}_linked_heatmap.png", title = f"{chromosome}-linked orthologs mean pairwise dNdS")
+        print(f"/////////////// A ///////////////")
+        dS_dict_A = read_dNdS_summary_file(summary_paths["A"], only_dS = True)
+        # print(dS_dict_A)
+
+        print(f"/////////////// X ///////////////")
+        dS_dict_X = read_dNdS_summary_file(summary_paths["X"], only_dS = True)
+        # print(dS_dict_X)
+        
+        species = get_species_list(dS_dict_A)
+        plot_dS_violins(A_dict=dS_dict_A, X_dict=dS_dict_X,filename=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/dS_violin_plot.png")
+    
+    ## make the scatterplots
+    if True:
+        print(f"/////////////// A ///////////////")
+        dS_dict_A = read_dNdS_summary_file(summary_paths["A"], only_dS = False)
+        # print(dS_dict_A)
+
+        print(f"/////////////// X ///////////////")
+        dS_dict_X = read_dNdS_summary_file(summary_paths["X"], only_dS = False)
+        # print(dS_dict_X)
+        
+        species = get_species_list(dS_dict_A)
+        plot_dS_vs_dNdS(A_dict=dS_dict_A, X_dict=dS_dict_X,filename=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/dS_vs_dNdS_scatterplot.png")
+    
