@@ -231,7 +231,6 @@ def calculate_dS_dNdS_lin_reg(dS_list:list, dNdS_list:list, species_pair:str):
     
     result = scipy.stats.linregress(dS_list, dNdS_list)
     
-
     ## test normality of residuals
     def predict(x):
         pred_PIC = x*result.slope + result.intercept
@@ -241,12 +240,23 @@ def calculate_dS_dNdS_lin_reg(dS_list:list, dNdS_list:list, species_pair:str):
     stat, p_value = scipy.stats.shapiro(residuals)
     
     if p_value < 0.05:
-        print(f"non-normal residuals in species pair: {species_pair}")
-        return np.nan, np.nan 
-
+        print(f"\t * non-normal residuals in species pair: {species_pair}")
+        # return np.nan, np.nan 
+        return result.slope, result.intercept, False
     else:
-        return result.slope, result.intercept
+        return result.slope, result.intercept, True
 
+
+def make_line_vectors(slope, intercept, x_data, y_data):
+    """
+    return two vectors to plot slope and intercept of x_data and y_data. the data is needed to correctly set the limits
+    """
+    low = min([min(x_data), min(y_data)])
+    high = max([max(x_data), max(y_data)])
+    x = np.linspace(low,high,100)
+    y = slope*x + intercept
+
+    return x,y
 
 
 def plot_dS_vs_dNdS(A_dict:dict, X_dict:dict, filename = "dS_vs_dNdS.png", dark_mode=False):
@@ -344,20 +354,34 @@ def plot_dS_vs_dNdS(A_dict:dict, X_dict:dict, filename = "dS_vs_dNdS.png", dark_
         violinplot_pair(data_A_X=dS_AX, row=row, col=col, n_A=n_A, n_X=n_X, mean_A=mean_A, mean_X=mean_X, axes = axes, colors_dict=colors_dict, fs=fs)
 
         # plot dNdS scatters
-        axes[col,row].scatter(dS_A, dNdS_A, color = colors_dict["A"], s=20)
-        axes[col,row].scatter(dS_X, dNdS_X, color = colors_dict["X"], s=20)
+        axes[col,row].scatter(dS_A, dNdS_A, color = colors_dict["A"], s=35)
+        axes[col,row].scatter(dS_X, dNdS_X, color = colors_dict["X"], s=35)
         axes[col,row].tick_params(axis='x', labelsize=fs)
         axes[col,row].tick_params(axis='y', labelsize=fs)
         axes[species_count-1,row].set_xlabel("dS", fontsize = fs)
         axes[col,0].set_ylabel("dNdS", fontsize = fs)
         ## linear regression
-        slope_A, intercept_A = calculate_dS_dNdS_lin_reg(dS_list = dS_A, dNdS_list = dNdS_A, species_pair= pair)
-        slope_X, intercept_X = calculate_dS_dNdS_lin_reg(dS_list = dS_X, dNdS_list = dNdS_X, species_pair= pair)
+        slope_A, intercept_A, normal_residuals_A = calculate_dS_dNdS_lin_reg(dS_list = dS_A, dNdS_list = dNdS_A, species_pair= pair)
+        slope_X, intercept_X, normal_residuals_X = calculate_dS_dNdS_lin_reg(dS_list = dS_X, dNdS_list = dNdS_X, species_pair= pair)
+        linreg_x_A, linreg_y_A = make_line_vectors(slope=slope_A, intercept=intercept_A, x_data=dS_A, y_data=dNdS_A)
+        linreg_x_X, linreg_y_X = make_line_vectors(slope=slope_X, intercept=intercept_X, x_data=dS_X, y_data=dNdS_X)
+        if normal_residuals_A:
+            linestyle_A = "-"
+        else:
+            linestyle_A = ":"
+        if normal_residuals_X:
+            linestyle_X = "-"
+        else:
+            linestyle_X = ":"
+
+        axes[col,row].plot(linreg_x_A, linreg_y_A, color = colors_dict["A"], linewidth=2, label=f"slope: {slope_A:.3f}", linestyle=linestyle_A)    
+        axes[col,row].plot(linreg_x_X, linreg_y_X, color = colors_dict["X"], linewidth=2, label=f"slope: {slope_X:.3f}", linestyle=linestyle_X)
+        axes[col,row].legend(fontsize=fs*0.75)
 
         axes[row,row].axis('off')
         axes[col,col].axis('off')
 
-        print(f"{row}, {col} : {species1} vs. {species2}")
+        print(f"{row}, {col} : {species1} vs. {species2}, slope A: {slope_A:.2f}, slope X: {slope_X:.2f}")
         # if species1 == "D_carinulata" or species2 == "D_carinulata":
         #     print(f"sample sizes, n_A = {n_A}, n_X = {n_X}, data X  = {data_X}")
     
