@@ -119,7 +119,6 @@ I want to look at groups of sister-species to take into account the evolutionary
   * *Pseudozyma brasiliensis* [here](https://www.ebi.ac.uk/ena/browser/view/GCA_000497045.1?show=assembly-stats). 
     * no X identified
     * can't find an annotation, but in the associated [publication](https://journals.asm.org/doi/10.1128/genomea.00920-13#sec-1) it says that "*A total of 5,768 protein-encoding genes were identified, which is similar to the gene content of other Pseudozyma spp*", which seems weird? very few genes
-  * 
 
 I have annotated *T. freemani* with available RNAseq data from Whittle2020, but there was no RNAseq data for *C. septempunctata*. 
 
