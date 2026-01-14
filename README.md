@@ -355,8 +355,16 @@ The male germline has an elevated mutation rate compared to somatic tissue. Take
 
 ## dS comparison between A and X
 
-these are the preliminary results of the dS values of what I have available locally, the rest has to wait until the compute project is back. Points to the hypothesis being correct that dS is slightly lower on the X.
+these are the preliminary results of the dS vs. dNdS values of what I have available locally, the rest has to wait until the compute project is back.
+
+* **Top right:** violin plots with median lines, point to dS being slightly lower in X-lined orthologs (median lines often identical in pairs where there's lots of occurences of `dS=3`)
+* **Bottom left:** scatterplots of dS vs. dNdS, linear regression calculated with `scipy.stats.linregress`
+  * wtf is up with `ds = 3` so often??
+  * Not a super clear linear function, but also not really anything else. may be better with more datapoints?
+    * not really a consistent difference in slope where A or X is lower?
+  * line is dotted when residuals are not normally distributed (unsure how problematic that is?)
+    * since the point is that I want to see a difference in slope, maybe do ANCOVA for the actual analysis of significant difference?
 
 <p float="left">
-  <img src="data/fastX_ortholog_ident/dS_violin_plot.png" width="100%" />
+  <img src="data/fastX_ortholog_ident/dS_vs_dNdS_scatterplot.png" width="100%" />
 </p>
