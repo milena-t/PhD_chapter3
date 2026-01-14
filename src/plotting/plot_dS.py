@@ -163,7 +163,7 @@ def plot_dS_violins(A_dict:dict, X_dict:dict, filename = "dNdS_ratios_A_X.png", 
         # put this here before otherwise the last row/col label never gets reached
         if row == len(species_list)-1:
             species1_lab = species1.replace("_", ". ")
-            axes[row,row].text(0.1,0.4,f"{species1_lab}", fontsize = fs*1.4)
+            axes[row,row].text(0.1,0.4,f"{species1_lab}", fontsize = fs*1.2)
 
         # separate top right matrix from bottom left matrix
         if row>col:
@@ -176,7 +176,8 @@ def plot_dS_violins(A_dict:dict, X_dict:dict, filename = "dNdS_ratios_A_X.png", 
 
         ## plot species name on diagonals
         if row not in diagonals_done:
-            axes[row,row].text(0.8,0.2,f"{species1}", rotation = 90, fontsize = fs)
+            species1_lab = species1.replace("_", ". ")
+            axes[row,row].text(0.1,0.4,f"{species1_lab}", fontsize = fs*1.2)
             diagonals_done.append(row)
             
         ## exclude all the NaNs because violinplot can't handle them
@@ -187,28 +188,30 @@ def plot_dS_violins(A_dict:dict, X_dict:dict, filename = "dNdS_ratios_A_X.png", 
     
         if len(data_A)==0 or len(data_X)==0:
             axes[row,col].axis('off')
-            axes[row,col].set_title(f'{species1}\n{species2}', fontsize = fs*0.85)
+            axes[row,col].text(0.1,0.4,f"{species1}\n{species2}:\nmissing data", fontsize = fs*0.75)
             axes[col,row].axis('off')
             # axes[col, row].set_title(f'{species2}\n{species1}', fontsize = fs*0.85)
             continue
 
         n_A = len(data_A)
         n_X = len(data_X)
-        mean_A = np.nanmedian(data_A)
-        mean_X = np.nanmedian(data_X)
+        median_A = np.nanmedian(data_A)
+        mean_A = np.nanmean(data_A)
+        median_X = np.nanmedian(data_X)
+        mean_X = np.nanmean(data_X)
 
         data_AX = [data_A, data_X]
         # plot mirror
         violinplot_pair(data_A_X=data_AX, row=row, col=col, n_A=n_A, n_X=n_X, mean_A=mean_A, mean_X=mean_X, axes = axes, colors_dict=colors_dict, fs=fs)
         # axes[row, col].set_title(f'{species1}\n{species2}', fontsize = fs*0.85)
-        axes[row, col].set_title(f'{species2}', fontsize = fs)
+        # axes[row, col].set_title(f'{species2}', fontsize = fs)
         # violinplot_pair(data_A_X=data_AX, row=col, col=row, n_A=n_A, n_X=n_X, mean_A=mean_A, mean_X=mean_X)
         # axes[col, row].set_title(f'{species2}\n{species1}', fontsize = fs*0.85)
         axes[col,row].axis('off')
         axes[row,row].axis('off')
         axes[col,col].axis('off')
 
-        print(f"{row}, {col} : {species1} vs. {species2} --> mean dS A: {mean_A:.3f}, mean dS X: {mean_X:.3f}")
+        print(f"{row}, {col} : {species1} vs. {species2} --> mean/median dS A: {mean_A:.3f}/{median_A:.3f}, mean/median dS X: {mean_X:.3f}/{median_X:.3f}")
         # if species1 == "D_carinulata" or species2 == "D_carinulata":
         #     print(f"sample sizes, n_A = {n_A}, n_X = {n_X}, data X  = {data_X}")
     
@@ -402,7 +405,7 @@ if __name__ == "__main__":
     summary_paths = get_summary_paths()
     
     ## make the violinplots of only dS for each pair
-    if False:
+    if True:
         print(f"/////////////// A ///////////////")
         dS_dict_A = read_dNdS_summary_file(summary_paths["A"], only_dS = True)
         # print(dS_dict_A)
@@ -415,7 +418,7 @@ if __name__ == "__main__":
         plot_dS_violins(A_dict=dS_dict_A, X_dict=dS_dict_X,filename=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/dS_violin_plot.png")
     
     ## make the scatterplots
-    if True:
+    if False:
         print(f"/////////////// A ///////////////")
         dS_dict_A = read_dNdS_summary_file(summary_paths["A"], only_dS = False)
         # print(dS_dict_A)

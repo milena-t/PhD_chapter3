@@ -357,13 +357,38 @@ The male germline has an elevated mutation rate compared to somatic tissue. Take
 
 these are the preliminary results of the dS vs. dNdS values of what I have available locally, the rest has to wait until the compute project is back.
 
+```text
+# Bruchini
+0, 1 : A_obtectus   vs. C_maculatus     --> mean/median dS A: 1.218/1.113,  mean/median dS X: 1.011/0.924
+0, 3 : A_obtectus   vs. C_chinensis     --> mean/median dS A: 1.202/1.100,  mean/median dS X: 1.190/0.983
+0, 5 : A_obtectus   vs. B_siliquastri   --> mean/median dS A: 1.113/1.007,  mean/median dS X: 1.059/0.963
+1, 5 : C_maculatus  vs. B_siliquastri   --> mean/median dS A: 0.790/0.722,  mean/median dS X: 0.686/0.680
+1, 3 : C_maculatus  vs. C_chinensis     --> mean/median dS A: 0.468/0.422,  mean/median dS X: 0.407/0.371
+3, 5 : C_chinensis  vs. B_siliquastri   --> mean/median dS A: 0.833/0.797,  mean/median dS X: 0.815/0.718
+
+# comparison bruchini vs. Diorhabda
+0, 4 : A_obtectus   vs. D_sublineata    --> mean/median dS A: 2.836/3.000,  mean/median dS X: 2.869/3.000
+0, 2 : A_obtectus   vs. D_carinulata    --> mean/median dS A: 2.985/3.000,  mean/median dS X: 2.894/3.000
+1, 2 : C_maculatus  vs. D_carinulata    --> mean/median dS A: 2.841/3.000,  mean/median dS X: 2.738/3.000
+1, 4 : C_maculatus  vs. D_sublineata    --> mean/median dS A: 2.897/3.000,  mean/median dS X: 2.932/3.000
+3, 4 : C_chinensis  vs. D_sublineata    --> mean/median dS A: 2.835/3.000,  mean/median dS X: 2.804/3.000
+2, 3 : D_carinulata vs. C_chinensis     --> mean/median dS A: 2.915/3.000,  mean/median dS X: 2.564/3.000
+2, 5 : D_carinulata vs. B_siliquastri   --> mean/median dS A: 2.996/3.000,  mean/median dS X: 2.857/3.000
+4, 5 : D_sublineata vs. B_siliquastri   --> mean/median dS A: 2.872/3.000,  mean/median dS X: 2.899/3.000
+
+# Diorhabda
+not available in preliminary data
+```
+
+## dS vs. dNdS correlation
+
 * **Top right:** violin plots with median lines, point to dS being slightly lower in X-lined orthologs (median lines often identical in pairs where there's lots of occurences of `dS=3`)
 * **Bottom left:** scatterplots of dS vs. dNdS, linear regression calculated with `scipy.stats.linregress`
-  * wtf is up with `ds = 3` so often??
   * Not a super clear linear function, but also not really anything else. may be better with more datapoints?
     * not really a consistent difference in slope where A or X is lower?
   * line is dotted when residuals are not normally distributed (unsure how problematic that is?)
     * since the point is that I want to see a difference in slope, maybe do ANCOVA for the actual analysis of significant difference?
+* **many occurences of dS=3:** dS is the substitution rate *per codon*, and since a codon has only three nucleic acids 
 
 <p float="left">
   <img src="data/fastX_ortholog_ident/dS_vs_dNdS_scatterplot.png" width="100%" />
