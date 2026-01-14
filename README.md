@@ -388,8 +388,15 @@ not available in preliminary data
     * not really a consistent difference in slope where A or X is lower?
   * line is dotted when residuals are not normally distributed (unsure how problematic that is?)
     * since the point is that I want to see a difference in slope, maybe do ANCOVA for the actual analysis of significant difference?
-* **many occurences of dS=3:** dS is the substitution rate *per codon*, and since a codon has only three nucleic acids 
 
 <p float="left">
-  <img src="data/fastX_ortholog_ident/dS_vs_dNdS_scatterplot.png" width="100%" />
+    <img src="data/fastX_ortholog_ident/dS_vs_dNdS_scatterplot.png" width="100%" />
 </p>
+
+<details open>
+  <summary>plot of all species pairs, including D. carinulata and D. sublineata</summary>
+  **many occurences of dS=3:** dS is the substitution rate *per codon*, and since a codon has only three nucleic acids 
+  <p float="left">
+    <img src="data/fastX_ortholog_ident/dS_vs_dNdS_scatterplot_all_pairs.png" width="100%" />
+  </p>
+</details>

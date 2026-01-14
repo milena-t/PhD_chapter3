@@ -17,7 +17,7 @@ def get_summary_paths(username = "miltr339"):
     return summary_paths
 
 
-def read_dNdS_summary_file(summary_path, only_dS):
+def read_dNdS_summary_file(summary_path, only_dS, exclude_list = []):
     out_dict = {}
     pairs_done = []
     with open(summary_path, "r") as summary:
@@ -36,6 +36,10 @@ def read_dNdS_summary_file(summary_path, only_dS):
             if d_sp[-1] != "dS" and d_sp[-1] != "dNdS":
                 raise RuntimeError(f"{pair_ident} cannot be parsed as dNdS or dS values")
             
+            # skip when species pair contains one excluded species
+            if species1 in exclude_list or species2 in exclude_list:
+                continue
+
             pair = f"{species1}_{species2}"
             if pair not in pairs_done and only_dS == False:
                 out_dict[pair] = {
@@ -281,12 +285,13 @@ def plot_dS_vs_dNdS(A_dict:dict, X_dict:dict, filename = "dS_vs_dNdS.png", dark_
 
     cols = species_count
     rows = cols
-    if rows>2:
+    if species_count>4:
         fig, axes = plt.subplots(rows, cols, figsize=(27, 25)) # for more than three rows
+        fs = 25
     else:
-        fig, axes = plt.subplots(rows, cols, figsize=(15, 10)) # for more than three rows
+        fig, axes = plt.subplots(rows, cols, figsize=(20, 20)) # for more than three rows
+        fs = 25
     
-    fs = 25
 
     colors_dict = {
         # "A" : "#4d7298", # uniform_unfiltered blue
@@ -405,7 +410,7 @@ if __name__ == "__main__":
     summary_paths = get_summary_paths()
     
     ## make the violinplots of only dS for each pair
-    if True:
+    if False:
         print(f"/////////////// A ///////////////")
         dS_dict_A = read_dNdS_summary_file(summary_paths["A"], only_dS = True)
         # print(dS_dict_A)
@@ -418,13 +423,13 @@ if __name__ == "__main__":
         plot_dS_violins(A_dict=dS_dict_A, X_dict=dS_dict_X,filename=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/dS_violin_plot.png")
     
     ## make the scatterplots
-    if False:
+    if True:
         print(f"/////////////// A ///////////////")
-        dS_dict_A = read_dNdS_summary_file(summary_paths["A"], only_dS = False)
+        dS_dict_A = read_dNdS_summary_file(summary_paths["A"], only_dS = False, exclude_list=["D_carinulata", "D_sublineata"])
         # print(dS_dict_A)
 
         print(f"/////////////// X ///////////////")
-        dS_dict_X = read_dNdS_summary_file(summary_paths["X"], only_dS = False)
+        dS_dict_X = read_dNdS_summary_file(summary_paths["X"], only_dS = False, exclude_list=["D_carinulata", "D_sublineata"])
         # print(dS_dict_X)
         
         species = get_species_list(dS_dict_A)
