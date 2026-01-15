@@ -109,6 +109,16 @@ I want to look at groups of sister-species to take into account the evolutionary
 * include *Coccinella magnifica* (darwin tree of life project, [here](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/965/644/565/GCA_965644565.1_icCocMagn1.hap1.1/)) as sister species to *Coccinella septempunctata*
   * no annotation available
   * Timetree says that they are "tne same species" so unclear what that means for their phylogenetic distance
+* other *Chrysomelidae*
+  * *D. virgifera virgifera* [here](https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_917563875.1/) with no identified X chromosome
+  * *Phyllotreata striolata* [here](https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_918026865.1/) with no identified X chromosome
+  * *Diabrotica undecimpunctata* [here](https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_040954645.1/) with no identified X chromosome
+  * *Diabrotica balteata* [here](https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_918026665.1/) with no identified X chromosome
+  * *Phaedon cochleariae* [here](https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_918026855.4/) with no identified X chromosome
+  * *Psylliodes chrysocephalus* [here](https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_927349885.1/) (probably not this one? has a lot of chromosomes so identifying the X via synteny is not super viable) 
+  * *Pseudozyma brasiliensis* [here](https://www.ebi.ac.uk/ena/browser/view/GCA_000497045.1?show=assembly-stats). 
+    * no X identified
+    * can't find an annotation, but in the associated [publication](https://journals.asm.org/doi/10.1128/genomea.00920-13#sec-1) it says that "*A total of 5,768 protein-encoding genes were identified, which is similar to the gene content of other Pseudozyma spp*", which seems weird? very few genes
 
 I have annotated *T. freemani* with available RNAseq data from Whittle2020, but there was no RNAseq data for *C. septempunctata*. 
 
