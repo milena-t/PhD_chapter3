@@ -31,6 +31,21 @@ DTOL open data release policy [here](https://www.darwintreeoflife.org/wp-content
 * Retrotransposition of male-biased genes from X to A ([Ellegren 2011](https://www.nature.com/articles/nrg2948.pdf))
 * Ampliconic regions on both X and Y, expansion of intergenic regions
 
+### FastX papers from Lila's thesis
+
+* Faster-X in mammals
+  * primates and rodents (Torgerson 2003, Lu J & Wu 2005, Khaitovich et al. 2005, Torgerson & Singh 2006, Stevenson et al. 2007, Baines & Harr 2007, Kousathanas et al. 2014)
+  * birds (Borge et al. 2005, Mank et al. 2007a, Mank et al. 2007b, Mank et al. 2010a, Wright AE et al. 2015)
+  * snakes (Vicoso et al. 2013)
+  * teleostei fish (Darolti et al. 2013)
+  * arthropods
+    * aphids (Jaquiéry et al. 2018)
+    * spiders (Bechsgaard et al. 2019), and 
+    * stick insects (Parker et al. 2022)
+* Slower-X or ambiguous
+  * fruit flies (Counterman et al. 2004, Thornton et al. 2006, Connallon 2007, Begun et al. 2007, Baines et al. 2008, Vicoso et al. 2008, Mank et al. 2010b, Meisel & Connallon 2013, Ávila et al. 2014, Charlesworth et al. 2018)
+  * lepidoptera (Sackton et al. 2014, Rousselle et al. 2016, Pinharanda et al. 2019, Mongue et al. 2022, Höök et al. 2023).
+
 ### Results
 
 * TODO read: [Vicoso & Bachtrog 2006](https://www.nature.com/articles/nrg1914) Big early paper that everyone cites about the different evolutionary forces that act differently on the X vs the autosomes
@@ -47,6 +62,7 @@ DTOL open data release policy [here](https://www.darwintreeoflife.org/wp-content
     * Vibranovski, M. D., Zhang, Y. & Long, M. General gene movement off the X chromosome in the Drosophila genus. Genome Res. 19, 897–903
   (2009)
 * [Yu 2026](https://www.pnas.org/doi/full/10.1073/pnas.2522417123) super conserved noncoding sex determining locus in (haplodiploid) hymenoptera
+
 
 ## Workflow
 
