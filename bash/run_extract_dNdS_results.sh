@@ -1,5 +1,5 @@
 #!/bin/bash -l
-#SBATCH -A uppmax2026-1-8
+#SBATCH -A uppmax2025-2-148
 #SBATCH -c 1
 #SBATCH --mem=20G
 #SBATCH -t 10:00:00
