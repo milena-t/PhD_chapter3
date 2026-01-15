@@ -207,6 +207,7 @@ C:98.7%[S:72.2%,D:26.5%],F:0.6%,M:0.7%,n:1013
     ```
     </details>
 
+
 * **Diorhabada** 
   * [Diorhabda sublineata](https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_026230105.1/)
   ```python
@@ -220,6 +221,29 @@ C:98.7%[S:72.2%,D:26.5%],F:0.6%,M:0.7%,n:1013
   ``` 
   * There is also Diabrotica undecimpunctata but it does not have sex chromosomes identified, but it does have a giant genome at 1.7Gb
 
+* **Tribolium**
+  * [Tribolium castaneum](https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_031307605.1/)
+  ```python
+  { X : ['NC_087403.1'], # I think based on synteny, not identified on the NCBI
+    Y : ['unidentified']}
+  ```
+  * [Tribolium freemani](https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_022388455.1/)
+  ```python
+  { X : ['CM039461.1'], # identified as linkage group X (LGX) on the NCBI
+    Y : ['unidentified']}
+  ```
+
+* **Coccinella**
+  * [Coccinella septempunctata](https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_907165205.1/)
+  ```python
+  { X : ['NC_058198.1'],
+    Y : ['unidentified']}
+  ```
+  * [Coccinella magnifica](https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_965644565.1/)
+  ```python
+  { X : ['	OZ286750.1'],
+    Y : ['unidentified']}
+  ```
 
 
 # Riparian plot for synteny
