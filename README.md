@@ -30,11 +30,19 @@ DTOL open data release policy [here](https://www.darwintreeoflife.org/wp-content
 
 * Retrotransposition of male-biased genes from X to A ([Ellegren 2011](https://www.nature.com/articles/nrg2948.pdf))
 * Ampliconic regions on both X and Y, expansion of intergenic regions
+* Lower dS on X vs. autosomes, because selection purges deleterious mutations more effectively on the hemizygous X [McVean 1997](https://www.nature.com/articles/386388a0)
 
 ### FastX papers from Lila's thesis
 
 * Faster-X in mammals
-  * primates and rodents (Torgerson 2003, Lu J & Wu 2005, Khaitovich et al. 2005, Torgerson & Singh 2006, Stevenson et al. 2007, Baines & Harr 2007, Kousathanas et al. 2014)
+  * primates and rodents 
+    * [Torgerson 2003](https://academic.oup.com/mbe/article/20/10/1705/1164324): split by function, fastX in sperm proteins which are rapidly positively selected through sexual selection. Also high proportion of sperm proteins on the X compared to proteins of other funcitons
+    * [Lu J & Wu 2005](https://www.pnas.org/doi/abs/10.1073/pnas.0500436102):
+    * Khaitovich et al. 2005
+    * Torgerson & Singh 2006
+    * Stevenson et al. 2007
+    * Baines & Harr 2007
+    * Kousathanas et al. 2014
   * birds (Borge et al. 2005, Mank et al. 2007a, Mank et al. 2007b, Mank et al. 2010a, Wright AE et al. 2015)
   * snakes (Vicoso et al. 2013)
   * teleostei fish (Darolti et al. 2013)
