@@ -32,15 +32,24 @@ DTOL open data release policy [here](https://www.darwintreeoflife.org/wp-content
 * Ampliconic regions on both X and Y, expansion of intergenic regions
 * Lower dS on X vs. autosomes, because selection purges deleterious mutations more effectively on the hemizygous X [McVean 1997](https://www.nature.com/articles/386388a0)
 
+### Ka/Ks theory
+
+* Original `Ka/Ks` publication [Li 1993](https://link.springer.com/article/10.1007/BF02407308), very clear explanations with examples.
+* comparison of different estimation methods [Tzeng 2004](https://academic.oup.com/mbe/article/21/12/2290/1071055?login=true)
+
 ### FastX papers from Lila's thesis
 
 * Faster-X in mammals
   * primates and rodents 
-    * [Torgerson 2003](https://academic.oup.com/mbe/article/20/10/1705/1164324): split by function, fastX in sperm proteins which are rapidly positively selected through sexual selection. Also high proportion of sperm proteins on the X compared to proteins of other funcitons
-    * [Lu J & Wu 2005](https://www.pnas.org/doi/abs/10.1073/pnas.0500436102):
-    * Khaitovich et al. 2005
-    * Torgerson & Singh 2006
-    * Stevenson et al. 2007
+    * Human and mouse ([Torgerson 2003](https://academic.oup.com/mbe/article/20/10/1705/1164324)): split by function, fastX in sperm proteins which are rapidly positively selected through sexual selection. Also high proportion of sperm proteins on the X compared to proteins of other funcitons
+    * Human and chimpanzee ([Lu J & Wu 2005](https://www.pnas.org/doi/abs/10.1073/pnas.0500436102)): lower dS on X, they conclude (from this and other metrics) that  there is weak selection against synonymous substitutions and the X is more constrained.
+    * Human and chimpanzee ([Khaitovich et al. 2005](https://www.science.org/doi/full/10.1126/science.1108296)): FastX for testis-expressed genes, and also more differentially expressed than genes on other chromosomes.
+    * **!!** Mammals ([**Torgerson & Singh 2006**](https://www.nature.com/articles/6800749)): Faster X in sperm-expressed genes.
+      * PAML, with LRT sites-model comparison between model 7 and 8 (M7 and M8)
+      * report site class w>1 and the proportion of that site class for every gene.
+      * use [Yang 2005](https://academic.oup.com/mbe/article/22/4/1107/1083468) to determine positive selection with less false positives in small datasets when the data is site-class specific.
+      * statistical tests then both between categorical variables of positively selected vs. not and numerical variables of proportion positively selected sites. Also categorical separation of X/A linked as well as sperm-related and not.
+    * Chimpanzee ([Stevenson et al. 2007](https://link.springer.com/article/10.1186/1471-2164-8-129)): 
     * Baines & Harr 2007
     * Kousathanas et al. 2014
   * birds (Borge et al. 2005, Mank et al. 2007a, Mank et al. 2007b, Mank et al. 2010a, Wright AE et al. 2015)
