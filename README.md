@@ -37,6 +37,10 @@ DTOL open data release policy [here](https://www.darwintreeoflife.org/wp-content
 * Original `Ka/Ks` publication [Li 1993](https://link.springer.com/article/10.1007/BF02407308), very clear explanations with examples.
 * comparison of different estimation methods [Tzeng 2004](https://academic.oup.com/mbe/article/21/12/2290/1071055?login=true)
 
+### X evolution
+* original FastX [Charlesworth 1986](https://www.journals.uchicago.edu/doi/abs/10.1086/284701)
+* general X evolution review [Vicoso & Charlesworth 2006](https://www.nature.com/articles/nrg1914)
+
 ### FastX papers from Lila's thesis
 
 * Faster-X in mammals
@@ -44,15 +48,20 @@ DTOL open data release policy [here](https://www.darwintreeoflife.org/wp-content
     * Human and mouse ([Torgerson 2003](https://academic.oup.com/mbe/article/20/10/1705/1164324)): split by function, fastX in sperm proteins which are rapidly positively selected through sexual selection. Also high proportion of sperm proteins on the X compared to proteins of other funcitons
     * Human and chimpanzee ([Lu J & Wu 2005](https://www.pnas.org/doi/abs/10.1073/pnas.0500436102)): lower dS on X, they conclude (from this and other metrics) that  there is weak selection against synonymous substitutions and the X is more constrained.
     * Human and chimpanzee ([Khaitovich et al. 2005](https://www.science.org/doi/full/10.1126/science.1108296)): FastX for testis-expressed genes, and also more differentially expressed than genes on other chromosomes.
-    * **!good methods!** Mammals ([**Torgerson & Singh 2006**](https://www.nature.com/articles/6800749)): Faster X in sperm-expressed genes.
+    * **!good methods!** Mammals ([Torgerson & Singh 2006](https://www.nature.com/articles/6800749)): Faster X in sperm-expressed genes.
       * PAML, with LRT sites-model comparison between model 7 and 8 (M7 and M8)
       * report site class w>1 and the proportion of that site class for every gene.
       * use [Yang 2005](https://academic.oup.com/mbe/article/22/4/1107/1083468) to determine positive selection with less false positives in small datasets when the data is site-class specific.
       * statistical tests then both between categorical variables of positively selected vs. not and numerical variables of proportion positively selected sites. Also categorical separation of X/A linked as well as sperm-related and not.
     * Chimpanzee ([Stevenson et al. 2007](https://link.springer.com/article/10.1186/1471-2164-8-129)): more support for functional aspect that sperm-related genes are positively selected and drive FastX
     * Mouse ([Baines & Harr 2007](https://academic.oup.com/genetics/article/175/4/1911/6061202)): lower overall diversity on X, but elevated Ka/Ks ratio.
-    * Mouse ([Kousathanas et al. 2014](https://academic.oup.com/genetics/article/196/4/1131/5935629)):
-  * birds (Borge et al. 2005, Mank et al. 2007a, Mank et al. 2007b, Mank et al. 2010a, Wright AE et al. 2015)
+    * Mouse ([Kousathanas et al. 2014](https://academic.oup.com/genetics/article/196/4/1131/5935629)): again fastX for X-linked genes expressed in male-specific tissues and during spermatogenesis. MK-test.
+  * birds 
+    * [Borge et al. 2005](https://academic.oup.com/genetics/article/171/4/1861/6061046): looks at introns, significantly reduced Z-linked variation.
+    * [Mank et al. 2007a](https://genome.cshlp.org/content/17/5/618.short):
+    * Mank et al. 2007b
+    * Mank et al. 2010a
+    * Wright AE et al. 2015
   * snakes (Vicoso et al. 2013)
   * teleostei fish (Darolti et al. 2013)
   * arthropods
