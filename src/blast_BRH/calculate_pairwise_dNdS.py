@@ -262,6 +262,7 @@ def make_proteinfasta(cds_fasta_path, outdir, auto_modify_headers = False):
         try:
             nuc_seq = seq_record.seq
             prot_record.seq =nuc_seq.translate(cds=True)
+            prot_record.id = seq_record.id
             # print(f"nucleotide: {nuc_seq}")
             # print(f"protein: {prot_record.seq}")
         except Exception as e:
@@ -269,10 +270,14 @@ def make_proteinfasta(cds_fasta_path, outdir, auto_modify_headers = False):
             raise RuntimeError(f"error in sequence translation: {e}")
         
         if modify_headers:
-            prot_record.id = f"{i}_{prot_record.id}"
-            seq_record.id = f"{i}_{seq_record.id}"
+            prot_record_name = prot_record.id.replace(">", "")
+            seq_record_name = seq_record.id.replace(">", "")
+            prot_record.id = f">{i}_{prot_record_name}"
+            seq_record.id = f">{i}_{seq_record_name}"
             nuc_records.append(seq_record)
+            # print(nuc_records)
         prot_records.append(prot_record)
+        # print(prot_records)
     try:
         SeqIO.write(prot_records, prot_name, "fasta")
     except Exception as e:
@@ -307,6 +312,28 @@ def calculate_dNdS(dN_filepath, dS_filepath, dNdS_filepath):
             print(f"dN/dS values were written to file {outdir_path}{dNdS_filepath}")
 
 
+
+def modify_paml_config(codeml_settings_dict, codeml_config_path, verbose):
+    """
+    modify the codeml config file
+    """
+    modified_lines = []        
+    with open(codeml_config_path, "r") as codeml:
+        lines = codeml.readlines()
+        for line in lines: # go through all lines
+            for key, value in codeml_settings_dict.items():
+                if key+" = " in line: # check if to-modify variable is in line
+                #if key in line: # check if to-modify variable is in line
+                    line = key+" = "+value+"\n" # make new line and overwrite the old one
+                    if verbose:
+                        print("\t"+line.split("\n")[0]) # remove the newline character for printing so it looks nicer
+            modified_lines.append(line)
+    with open(codeml_config_path, "w") as config:
+        config.writelines(modified_lines)
+
+    if verbose:
+        print(f"\t\t--> done modifying {codeml_config_path}")
+        print()
 
 
 if __name__ == '__main__':
@@ -374,7 +401,11 @@ if __name__ == '__main__':
     elif os.path.getsize(cds_path) == 0:
         raise RuntimeError(f"'{cds_path}' is empty!")
 
-    ## make proteinfasta
+
+    ###########################################
+    ######## translate to proteinfasta ########
+    ###########################################
+
     prot_path = make_proteinfasta(cds_path, outdir_path, auto_modify_headers = True)
     if verbose:
         print(f"protein sequences translated: {prot_path}")
@@ -463,6 +494,12 @@ if __name__ == '__main__':
     ###########################################
     ############# run PAML (yn00) #############
     ###########################################
+
+    #   from the paml documentation in the yn00 section p. 41:
+    #       " We recommend that you use the ML method (runmode= 2, CodonFreq = 2 in codeml.ctl)
+    #         as much as possible even for pairwise sequence comparison. "
+    #   --> recommend codeml not yn00
+
 
     ########## make tree
 
@@ -583,6 +620,8 @@ if __name__ == '__main__':
     ###########################################
     ############ run PAML (codeml) ############
     ###########################################
+
+
         if verbose:
             print(f"\n *  run codeml")
 
@@ -602,24 +641,28 @@ if __name__ == '__main__':
 
         #########
 
-        ## try to run codeml properly with the tree.
-
-        #   from the paml documentation in the yn00 section p. 41:
-        #       " We recommend that you use the ML method (runmode= 2, CodonFreq = 2 in codeml.ctl)
-        #         as much as possible even for pairwise sequence comparison. "
-        #   since we have a tree, I will still use runmode 0, since 2 is automatic (and does not require a tree)
-
         tree_loc = tree_modified.split("/")[-1]
         pal2nal_loc = pal2nal_alignment.split("/")[-1]
-        codeml_settings_dict = {"seqfile" : f"{pal2nal_loc}", 
-                        "treefile" : f"{tree_loc}",  ## TODO the treefile has one more iteration of the species name than the seqfile? not sure if that's a problem, it still runs but maybe it does some stuff?
-                        "outfile" : "codeml.out", 
-                        "model" : args.codemlmodel, # default model is 1
+        codeml_settings_dict_M1a = {"seqfile" : f"{pal2nal_loc}", 
+                        "treefile" : f"{tree_loc}",  
+                        "outfile" : "codeml_M1a.out", 
+                        "model" : "0", # args.codemlmodel, # default model is 1, site models is 0
+                        "NSsites" : "1", # 1 for M1a and 2 for M2a
                         "verbose" : "1",
                         "seqtype" : "1",
-                        #"runmode" : "2", # 2 is an automatic run mode, the default is 0 which is a user generated tree
+                        # "runmode" : "2", # 2 is an automatic run mode, the default is 0 which is a user generated tree. paml documentation p. 15: "The tree search options do not work well, and so use runmode = 0 as much as you can." :D
                         "CodonFreq" : "2" 
                         } 
+        codeml_settings_dict_M2a = {"seqfile" : f"{pal2nal_loc}", 
+                        "treefile" : f"{tree_loc}",  
+                        "outfile" : "codeml_M2a.out", 
+                        "model" : "0", # args.codemlmodel, # default model is 1, site models is 0
+                        "NSsites" : "2", # 1 for M1a and 2 for M2a
+                        "verbose" : "1",
+                        "seqtype" : "1",
+                        # "runmode" : "2", # 2 is an automatic run mode, the default is 0 which is a user generated tree. paml documentation p. 15: "The tree search options do not work well, and so use runmode = 0 as much as you can." :D
+                        "CodonFreq" : "2" 
+                        }
         
 
         # os.chdir(topdir)
@@ -644,34 +687,29 @@ if __name__ == '__main__':
             print(f"\t - setup config file\n\t\tcopy from source: {copy_command}\n\t\tmodify config file:")
         
 
-        ## modify the codeml config file:
+        ## modify the codeml config file for M1a:
+        modify_paml_config(codeml_settings_dict=codeml_settings_dict_M1a, codeml_config_path=codeml_config, verbose=verbose)
 
-        modified_lines = []        
-        with open(codeml_config, "r") as codeml:
-            lines = codeml.readlines()
-            for line in lines: # go through all lines
-                for key, value in codeml_settings_dict.items():
-                    if key+" = " in line: # check if to-modify variable is in line
-                    #if key in line: # check if to-modify variable is in line
-                        line = key+" = "+value+"\n" # make new line and overwrite the old one
-                        if verbose:
-                            print("\t"+line.split("\n")[0]) # remove the newline character for printing so it looks nicer
-                modified_lines.append(line)
-        with open(codeml_config, "w") as yn00:
-            yn00.writelines(modified_lines)
-
-        if verbose:
-            print(f"\t\t--> done modifying {codeml_config}")
-            print()
-
-        codeml_command = f"{codeml_bin} > codeml.log"
+        codeml_command = f"{codeml_bin} > codeml_M1a.log"
         if verbose:
             print(f"\t - running: {codeml_command}")
         
         start_time = time.time()
         os.system(codeml_command) ## this does not run on the login node on uppmax! Nothing happens, you have to run it as sbatch even for testing
+
+        ## modify the codeml config file for M2a:
+        modify_paml_config(codeml_settings_dict=codeml_settings_dict_M2a, codeml_config_path=codeml_config, verbose=verbose)
+
+        odeml_command = f"{codeml_bin} > codeml_M2a.log"
+        if verbose:
+            print(f"\t - running: {codeml_command}")
+
+        os.system(codeml_command) ## this does not run on the login node on uppmax! Nothing happens, you have to run it as sbatch even for testing
         end_time = time.time()
         
+        ### likelihood_ratio_test
+        ## TODO here
+
         if verbose:
             print("\t\tdone with codeml!")
             passed_time = end_time - start_time
