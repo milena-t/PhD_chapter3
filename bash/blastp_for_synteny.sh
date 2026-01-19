@@ -5,7 +5,6 @@
 #SBATCH -J blastp_for_synteny
 #SBATCH -o blastp_for_synteny.log
 #SBATCH --mail-type=ALL
-#SBATCH --mail-user milena.trabert@ebc.uu.se
 
 # module load bioinfo-tools blast/2.15.0+
 module load BLAST+/2.17.0-gompi-2024a
