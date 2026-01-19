@@ -5,19 +5,23 @@ Make batches of dNdS to calculate  at once
 import os
 
 
-def make_nested_lists(dir_path, include_only = ""):
+def make_nested_lists(dir_path):
     """
     make dictionary of by-species nested lists for the pairwise fasta files
     include_only is an optional string of a pair like "A_obtectus_C_maculatus" that results in only this pair being in the output
     """
-    if include_only != "":
-        fastas = [f for f in os.listdir(dir_path) if os.path.isfile(os.path.join(dir_path, f)) and include_only in f]
-    else:
-        fastas = [f for f in os.listdir(dir_path) if os.path.isfile(os.path.join(dir_path, f))]
+    subdirs = [f"{dir_path}{f}/" for f in os.listdir(dir_path) if os.path.isdir(os.path.join(dir_path, f))]
+
+    fastas = []
+    for pairdir in subdirs:
+        print(pairdir)
+        fastas.extend([f"{pairdir}{f}" for f in os.listdir(pairdir) if os.path.isfile(os.path.join(pairdir, f))])
+    
     nested_dict = {}
-    print(fastas[:10])
+    print(f"{len(fastas)} orthologs: {fastas[:10]}")
+        
     for fasta_name in fastas:
-        fasta_components = fasta_name.split("_")
+        fasta_components = fasta_name.split("/")[-1].split("_")
         species1 = f"{fasta_components[0]}_{fasta_components[1]}"
         species2 = f"{fasta_components[2]}_{fasta_components[3]}"
         if species1 in nested_dict:
@@ -30,6 +34,7 @@ def make_nested_lists(dir_path, include_only = ""):
             nested_dict[species1][species2] = [fasta_name]
 
     return nested_dict
+
 
 def chunks(lst, n):
     """Yield successive n-sized chunks from lst."""
@@ -65,16 +70,17 @@ if __name__ == "__main__":
     # outdir = f"{datadir}brh_results_{chr_type}_Dcar_X_syntenic/"
 
     os.chdir(outdir)
-    x_paths_nested_dict = make_nested_lists(X_path, include_only="D_carinulata_D_sublineata")
-    print(f"{len(x_paths_nested_dict)} pairs")
+    x_paths_nested_dict = make_nested_lists(X_path) #, include_only="D_carinulata_D_sublineata")
+    sp1_list=list(x_paths_nested_dict.keys())
 
     ########
-    num_files = 0
+    ## for testing purposes only do a few files of each pair
+    num_files = 2
     ########
 
     for species1, subdict in x_paths_nested_dict.items():
-        if species1 != "D_carinulata":
-            continue
+        # if species1 != "D_carinulata":
+        #     continue
         for species2, fasta_list in subdict.items():
             if species1 == species2:
                 continue

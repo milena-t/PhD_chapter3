@@ -37,7 +37,7 @@ do
     cd  $cwd
 
     python3 "${RUN_DIR}calculate_pairwise_dNdS.py" \
-        --cds "${IN_DIR}${FILE}" \
+        --cds "${FILE}" \
         --pal2nalbin $PAL2NAL \
         --codeml \
         --codemlbin $PAML \
