@@ -359,6 +359,20 @@ def calculate_LRT(lnL0:float, lnL1:float, df:int):
     return p_val
 
 
+def extract_site_classes(outfile_path:str):
+    """
+    extract the site classes table from codeml.out
+    """
+    site_class_path = outfile_path.replace(".out", "_site_class_table.out")
+    with open(outfile_path, "r") as outfile, open(site_class_path, "w") as site_class_file:
+        lines = outfile.readlines()
+        for line in lines:
+            if line[:2] == "p:" or line[:2] == "w:" :
+                site_class_file.write(line)
+            else:
+                pass
+
+
 if __name__ == '__main__':
     
     ### define variables from command line input
@@ -729,21 +743,21 @@ if __name__ == '__main__':
             ## modify the codeml config file for M1a:
             modify_paml_config(codeml_settings_dict=codeml_settings_dict_M1a, codeml_config_path=codeml_config, verbose=False)
 
-            codeml_command = f"{codeml_bin} > codeml_M1a.log"
+            codeml_command_M1a = f"{codeml_bin} > codeml_M1a.log"
             if verbose:
-                print(f"\t - running: {codeml_command}")
+                print(f"\t - running sites-model M1a: {codeml_command_M1a}")
             
             start_time = time.time()
-            os.system(codeml_command) ## this does not run on the login node on uppmax! Nothing happens, you have to run it as sbatch even for testing
+            os.system(codeml_command_M1a) ## this does not run on the login node on uppmax! Nothing happens, you have to run it as sbatch even for testing
 
             ## modify the codeml config file for M2a:
             modify_paml_config(codeml_settings_dict=codeml_settings_dict_M2a, codeml_config_path=codeml_config, verbose=False)
 
-            codeml_command = f"{codeml_bin} > codeml_M2a.log"
+            codeml_command_M2a = f"{codeml_bin} > codeml_M2a.log"
             if verbose:
-                print(f"\t - running: {codeml_command}")
+                print(f"\t - running sites-model M2a: {codeml_command_M2a}")
 
-            os.system(codeml_command) ## this does not run on the login node on uppmax! Nothing happens, you have to run it as sbatch even for testing
+            os.system(codeml_command_M2a) ## this does not run on the login node on uppmax! Nothing happens, you have to run it as sbatch even for testing
             end_time = time.time()
         
         ## fit both at once and get a combined output file
@@ -769,8 +783,8 @@ if __name__ == '__main__':
         M1a_out = codeml_settings_dict_M1a["outfile"]
         M2a_out = codeml_settings_dict_M2a["outfile"]
 
-        M1a_np, M1a_lnL = extract_np_lnL(M1a_out, verbose=verbose)
-        M2a_np, M2a_lnL = extract_np_lnL(M2a_out, verbose=verbose)
+        M1a_np, M1a_lnL = extract_np_lnL(M1a_out, verbose=False)
+        M2a_np, M2a_lnL = extract_np_lnL(M2a_out, verbose=False)
         df = M2a_np-M1a_np
         
         pval = calculate_LRT(lnL0=M1a_lnL, lnL1=M2a_lnL, df=df)
@@ -783,13 +797,19 @@ if __name__ == '__main__':
 
         ###################
 
-        if verbose:
-            print("\t\tdone with codeml!")
-            passed_time = end_time - start_time
-            if verbose:
-                print(f"\t - codeml took {passed_time:.2f} seconds, or {passed_time/60.0:.2f} minutes")
+        ### extract site classes table
+
+        if sig_positive_selection:
+            site_class_dict_M2a = extract_site_classes(M2a_out)
         else:
-            print(f"command: {codeml_command}")
+            site_class_dict_M1a = extract_site_classes(M1a_out)
+
+        if verbose:
+            passed_time = end_time - start_time
+            print(f"\t\tdone! codeml took {passed_time:.2f} seconds, or {passed_time/60.0:.2f} minutes")
+        else:
+            print(f"command sites-model M1a: {codeml_command_M1a}")
+            print(f"command sites-model M2a: {codeml_command_M2a}")
 
 
         #### done with codeml, calculate dNdS based on that:
