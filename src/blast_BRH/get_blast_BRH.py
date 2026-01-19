@@ -85,7 +85,7 @@ def sex_chromosome_names():
             "Y" : ['unidentified']
         },
         "C_magnifica" :  { 
-            "X" : ['	OZ286750.1'],
+            "X" : ['OZ286750.1'],
             "Y" : ['unidentified']
         },
     }
