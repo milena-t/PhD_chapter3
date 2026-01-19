@@ -8,6 +8,7 @@ import os
 def make_nested_lists(dir_path, include_only = ""):
     """
     make dictionary of by-species nested lists for the pairwise fasta files
+    include_only is an optional string of a pair like "A_obtectus_C_maculatus" that results in only this pair being in the output
     """
     if include_only != "":
         fastas = [f for f in os.listdir(dir_path) if os.path.isfile(os.path.join(dir_path, f)) and include_only in f]
@@ -56,12 +57,12 @@ if __name__ == "__main__":
     #######
 
     ### original
-    # X_path = f"{datadir}brh_sequences_{chr_type}/"
-    # outdir = f"{datadir}brh_results_{chr_type}/"
+    X_path = f"{datadir}brh_sequences_{chr_type}/"
+    outdir = f"{datadir}brh_results_{chr_type}/"
 
     ### second run for the ancestral X-syntenic chromosome in Dcar as X
-    X_path = f"{datadir}brh_sequences_{chr_type}_Dcar_X_syntenic/"
-    outdir = f"{datadir}brh_results_{chr_type}_Dcar_X_syntenic/"
+    # X_path = f"{datadir}brh_sequences_{chr_type}_Dcar_X_syntenic/"
+    # outdir = f"{datadir}brh_results_{chr_type}_Dcar_X_syntenic/"
 
     os.chdir(outdir)
     x_paths_nested_dict = make_nested_lists(X_path, include_only="D_carinulata_D_sublineata")
