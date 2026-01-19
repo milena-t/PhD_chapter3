@@ -144,7 +144,7 @@ def truncate_leaf_names(newick_tree):
     the treefile also needs to be a tree structure file (see page 15 of the paml documentation)
     """
     # Regular expression to match leaf names
-    pattern = re.compile(r'([a-zA-Z_@0-9.->]+):')
+    pattern = re.compile(r'([a-zA-Z_@0-9.>-]+):')
     
     def truncate_match(match):
         leaf_name = match.group(1)
@@ -156,7 +156,6 @@ def truncate_leaf_names(newick_tree):
     
     # Substitute each leaf name with its truncated version
     modified_tree = pattern.sub(truncate_match, newick_tree)
-
     # get the number of species in the tree (number of matches to the pattern)
     num_species = len(list(pattern.finditer(newick_tree)))
     return modified_tree, num_species
@@ -337,8 +336,10 @@ def extract_np_lnL(path, verbose = False):
     """
     with open(path, "r") as outfile:
         lines = outfile.readlines()
+        not_found = True
         for line in lines:
             if line[:3] == "lnL":
+                not_found=False
                 line = line.strip()
                 np_unparsed,lnL_unparsed = line.split("):")
                 np = int(np_unparsed.split("np: ")[-1])
@@ -348,6 +349,9 @@ def extract_np_lnL(path, verbose = False):
                 return np, lnL
             else:
                 pass
+        if not_found:
+            raise RuntimeError(f"no lnL value found in {path}")
+        
 
 
 def calculate_LRT(lnL0:float, lnL1:float, df:int):
