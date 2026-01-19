@@ -155,7 +155,7 @@ def truncate_leaf_names(newick_tree):
     
     def truncate_match(match):
         leaf_name = match.group(1)
-        leaf_name = leaf_name.replace(">", "")
+        leaf_name = leaf_name.replace(">", "") # remove the ">" that is included in the leaf name, because the parser for the alignment also removes ">" in the fasta format before the ID. otherwise they don't match, because the tree ID is read as ">seq_id" and the alignment id is read as "seq_id"
         # leaf_name = split_at_second_occurrence(leaf_name) # split the first iteration of the species name that orthofiner adds (i think? no idea where else it would come from) to be sure that everything matches
         truncated_name = f"{leaf_name[:9]}"
         print(f"{leaf_name} --> {truncated_name}")
