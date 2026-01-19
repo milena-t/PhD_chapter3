@@ -52,6 +52,8 @@ DTOL open data release policy [here](https://www.darwintreeoflife.org/wp-content
       * PAML, with LRT sites-model comparison between model 7 and 8 (M7 and M8)
       * report site class w>1 and the proportion of that site class for every gene.
       * use [Yang 2005](https://academic.oup.com/mbe/article/22/4/1107/1083468) to determine positive selection with less false positives in small datasets when the data is site-class specific.
+        * use M1a (negative) and M2a (positive) as models, df=2 see site models section in [paml documentation](https://web.mit.edu/6.891/www/lab/pamlDOC.pdf).
+        * check output to find the BEB calculations and don't use NEB
       * statistical tests then both between categorical variables of positively selected vs. not and numerical variables of proportion positively selected sites. Also categorical separation of X/A linked as well as sperm-related and not.
     * Chimpanzee ([Stevenson et al. 2007](https://link.springer.com/article/10.1186/1471-2164-8-129)): more support for functional aspect that sperm-related genes are positively selected and drive FastX
     * Mouse ([Baines & Harr 2007](https://academic.oup.com/genetics/article/175/4/1911/6061202)): lower overall diversity on X, but elevated Ka/Ks ratio.
