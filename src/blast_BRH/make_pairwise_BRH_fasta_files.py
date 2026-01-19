@@ -6,6 +6,7 @@ to calculate the dNdS ratio
 from Bio import SeqIO
 import pandas as pd
 from tqdm import tqdm
+import os 
 
 def nucleotides_paths(username = "miltr339"):
     nuc_dir = f"/Users/{username}/work/native_nucleotides/"
@@ -114,6 +115,9 @@ def make_ortholog_fasta_files(brh_tables, nucleotides_dict, chr_type = "X", outd
     with chromosome type you can restrict the orthologs to X-exclusive or A-exclusive by setting "X" or "A"
     """
 
+    if not os.path.isdir(outdir):
+        os.mkdir(outdir)
+
     print(f"\nmaking nucleotide fasta files for {chr_type}-linked orthologs")
     nucleotides_seqs_dict = {}
     print(f"reading nucleotide files...")
@@ -127,12 +131,18 @@ def make_ortholog_fasta_files(brh_tables, nucleotides_dict, chr_type = "X", outd
     for species in brh_tables.keys():
         print(f">>>>>> {species}")
         not_found_partners_dict = {sp:0 for sp in brh_tables[species].keys()}
-        for species_partner, brh_path in tqdm(brh_tables[species].items()):
+        for species_partner, brh_path in brh_tables[species].items(): # tqdm(brh_tables[species].items()):
             count_pairs = 0
             ## read and filter to only include hits on chr_type
             brh_table = pd.read_csv(brh_path, sep="\t")
             brh_filtered = brh_table[brh_table["chromosome"] == chr_type]
             brh_filtered = brh_filtered[brh_filtered["chromosome.1"] == chr_type]
+            print(f"\t{species_partner} : {len(brh_filtered)} orthologs ")
+            
+            pair_dirname = f"{outdir}{species}_{species_partner}/"
+            if not os.path.isdir(pair_dirname):
+                os.mkdir(pair_dirname)
+
             for brh_pair in brh_filtered.itertuples():
                 # print(f"ID1 = {brh_pair[1]} , ID2 = {brh_pair[3]}")
                 try:
@@ -149,7 +159,7 @@ def make_ortholog_fasta_files(brh_tables, nucleotides_dict, chr_type = "X", outd
                     # raise RuntimeError(f"{brh_pair[3]} not found in {nucleotides_dict[species_partner]}")
                 
                 brh_seq_records = [record1,record2]
-                fasta_name = f"{outdir}{species}_{species_partner}_{chr_type}-linked_ortholog_{count_pairs}.fasta"
+                fasta_name = f"{pair_dirname}{species}_{species_partner}_{chr_type}-linked_ortholog_{count_pairs}.fasta"
                 SeqIO.write(sequences=brh_seq_records, handle=fasta_name, format="fasta")
                 # print(f"{record1}\n{record2}")
                 # print()
@@ -157,7 +167,7 @@ def make_ortholog_fasta_files(brh_tables, nucleotides_dict, chr_type = "X", outd
                 count_pairs += 1
 
             # print(f"\t* {species_partner}: {count_pairs} orthologs")
-            print(f"\t* {species_partner}: {not_found_partners_dict[species_partner]} transcripts not found")
+            print(f"\t\t{count_pairs} counted, {not_found_partners_dict[species_partner]} transcripts not found")
     print(f"\ndone! all outfiles written to \n{outdir}")
 
 
