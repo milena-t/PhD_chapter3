@@ -50,6 +50,7 @@ import os
 import subprocess
 import re
 import time
+import scipy
 
 
 def parse_args():
@@ -333,7 +334,7 @@ def modify_paml_config(codeml_settings_dict, codeml_config_path, verbose):
         print()
 
 
-def extract_np_lnL(path):
+def extract_np_lnL(path, verbose = False):
     """
     extract the lnL value from the codeml.out file
     """
@@ -345,16 +346,20 @@ def extract_np_lnL(path):
                 np_unparsed,lnL_unparsed = line.split("):")
                 np = int(np_unparsed.split("np: ")[-1])
                 lnL = float(lnL_unparsed.split()[0])
-                print(f"np: {np}, lnL: {lnL}")
+                if verbose:
+                    print(f"\t\tnp: {np}, lnL: {lnL}")
+                return np, lnL
             else:
                 pass
-        return np, lnL
 
 
 def calculate_LRT(lnL0:float, lnL1:float, df:int):
     """
     calculate the likelihood ratio test from paml analysis
     """
+    LR_statistic = -2 * (lnL0 - lnL1)
+    p_val = scipy.stats.chi2.sf(LR_statistic, df)
+    return p_val
 
 
 if __name__ == '__main__':
@@ -760,16 +765,24 @@ if __name__ == '__main__':
         ####################
 
         ### likelihood_ratio_test
+        
         if verbose:
             print(f"\t - calculating likelihood ratio test")
 
         M1a_out = codeml_settings_dict_M1a["outfile"]
         M2a_out = codeml_settings_dict_M2a["outfile"]
 
-        M1a_np, M1a_lnL = extract_np_lnL(M1a_out)
-        M2a_np, M2a_lnL = extract_np_lnL(M2a_out)
+        M1a_np, M1a_lnL = extract_np_lnL(M1a_out, verbose=verbose)
+        M2a_np, M2a_lnL = extract_np_lnL(M2a_out, verbose=verbose)
         df = M2a_np-M1a_np
         
+        pval = calculate_LRT(lnL0=M1a_lnL, lnL1=M2a_lnL, df=df)
+        
+        sig_positive_selection = False
+        if pval<0.05:
+            sig_positive_selection = True
+        if verbose:
+            print(f"\t\tp-value: {pval:.5f} --> positive selection {sig_positive_selection}")
 
         ###################
 
