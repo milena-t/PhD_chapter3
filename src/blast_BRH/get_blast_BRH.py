@@ -72,7 +72,24 @@ def sex_chromosome_names():
             "X" : ['NC_079485.1'],
             "Y" : ['NC_079486.1']
         },
+        "T_castaneum" :  { 
+            "X" : ['NC_087403.1'], # I think based on synteny, not identified on the NCBI
+            "Y" : ['unidentified']
+        },
+        "T_freemani" :  { 
+            "X" : ['CM039461.1'], # identified as linkage group X (LGX) on the NCBI
+            "Y" : ['unidentified']
+        },
+        "C_septempunctata" :  { 
+            "X" : ['NC_058198.1'],
+            "Y" : ['unidentified']
+        },
+        "C_magnifica" :  { 
+            "X" : ['	OZ286750.1'],
+            "Y" : ['unidentified']
+        },
     }
+
     return contig_names_dict
 
 class BestHit:
