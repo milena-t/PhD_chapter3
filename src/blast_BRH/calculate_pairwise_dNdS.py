@@ -811,25 +811,3 @@ if __name__ == '__main__':
             print(f"command sites-model M1a: {codeml_command_M1a}")
             print(f"command sites-model M2a: {codeml_command_M2a}")
 
-
-        #### done with codeml, calculate dNdS based on that:
-        ## --> don't do this for the M1a M2a LRT comparison!
-        if False:
-
-            dN_filepath = "2NG.dN"
-            dS_filepath = "2NG.dS"
-            dNdS_filepath = "2NG.dNdS"
-
-            
-            if is_file_non_empty(dN_filepath) and is_file_non_empty(dS_filepath):
-                if verbose:
-                    print(f"\n *  calcualte dN/dS ratio:")
-
-                calculate_dNdS(dN_filepath, dS_filepath, dNdS_filepath)
-            filesize = os.path.getsize(dNdS_filepath)
-            if verbose:
-                print(f"outfile: {dNdS_filepath} ({filesize}B size)")
-            
-            os.chdir(topdir)
-
-
