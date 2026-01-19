@@ -84,7 +84,6 @@ The individual steps consist of:
     paml_bin = parser.add_mutually_exclusive_group(required=False)
     paml_bin.add_argument('--codemlbin', type=str, help="path to the codeml executeable")
     paml_bin.add_argument('--yn00bin', type=str, help="path to the yn00 executeable")
-    parser.add_argument('--codemlmodel', type=str, help="codeml model that should be run, default 1 ('model' in the config, see paml documentation for details")
 
     parser.add_argument('--verbose', action='store_true', help="enable verbose mode")
     parser.add_argument('--overwrite', action='store_true', help="overwrite existing output files with default names from previous runs")
@@ -110,8 +109,6 @@ The individual steps consist of:
         args.codemlbin = "codeml"
     if not args.yn00bin:
         args.yn00bin = "yn00"
-    if not args.codemlmodel:
-        args.codemlmodel = "1"
     # if not args.verbose:
     #     args.verbose=False
     
@@ -675,7 +672,7 @@ if __name__ == '__main__':
         codeml_settings_dict_M1a = {"seqfile" : f"{pal2nal_loc}", 
                         "treefile" : f"{tree_loc}",  
                         "outfile" : "codeml_M1a.out", 
-                        "model" : "0", # args.codemlmodel, # default model is 1, site models is 0
+                        "model" : "0", 
                         "NSsites" : "1", # 1 for M1a and 2 for M2a
                         "verbose" : "1",
                         "seqtype" : "1",
@@ -685,7 +682,7 @@ if __name__ == '__main__':
         codeml_settings_dict_M2a = {"seqfile" : f"{pal2nal_loc}", 
                         "treefile" : f"{tree_loc}",  
                         "outfile" : "codeml_M2a.out", 
-                        "model" : "0", # args.codemlmodel, # default model is 1, site models is 0
+                        "model" : "0", 
                         "NSsites" : "2", # 1 for M1a and 2 for M2a
                         "verbose" : "1",
                         "seqtype" : "1",
@@ -695,7 +692,7 @@ if __name__ == '__main__':
         codeml_settings_dict_both = {"seqfile" : f"{pal2nal_loc}", 
                         "treefile" : f"{tree_loc}",  
                         "outfile" : "codeml_M1a_M2a.out", 
-                        "model" : "0", # args.codemlmodel, # default model is 1, site models is 0
+                        "model" : "0", 
                         "NSsites" : "1 2", # 1 for M1a and 2 for M2a
                         "verbose" : "1",
                         "seqtype" : "1",
@@ -794,22 +791,25 @@ if __name__ == '__main__':
         else:
             print(f"command: {codeml_command}")
 
+
         #### done with codeml, calculate dNdS based on that:
+        ## --> don't do this for the M1a M2a LRT comparison!
+        if False:
 
-        dN_filepath = "2NG.dN"
-        dS_filepath = "2NG.dS"
-        dNdS_filepath = "2NG.dNdS"
+            dN_filepath = "2NG.dN"
+            dS_filepath = "2NG.dS"
+            dNdS_filepath = "2NG.dNdS"
 
-        
-        if is_file_non_empty(dN_filepath) and is_file_non_empty(dS_filepath):
+            
+            if is_file_non_empty(dN_filepath) and is_file_non_empty(dS_filepath):
+                if verbose:
+                    print(f"\n *  calcualte dN/dS ratio:")
+
+                calculate_dNdS(dN_filepath, dS_filepath, dNdS_filepath)
+            filesize = os.path.getsize(dNdS_filepath)
             if verbose:
-                print(f"\n *  calcualte dN/dS ratio:")
-
-            calculate_dNdS(dN_filepath, dS_filepath, dNdS_filepath)
-        filesize = os.path.getsize(dNdS_filepath)
-        if verbose:
-            print(f"outfile: {dNdS_filepath} ({filesize}B size)")
-        
-        os.chdir(topdir)
+                print(f"outfile: {dNdS_filepath} ({filesize}B size)")
+            
+            os.chdir(topdir)
 
 
