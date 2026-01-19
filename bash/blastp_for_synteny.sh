@@ -1,7 +1,6 @@
 #!/bin/bash -l
 #SBATCH -A uppmax2026-1-8
 #SBATCH -n 5
-#SBATCH -p core
 #SBATCH -t 1-00:00:00
 #SBATCH -J blastp_for_synteny
 #SBATCH -o blastp_for_synteny.log
