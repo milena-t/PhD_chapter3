@@ -146,7 +146,7 @@ def truncate_leaf_names(newick_tree):
     the treefile also needs to be a tree structure file (see page 15 of the paml documentation)
     """
     # Regular expression to match leaf names
-    pattern = re.compile(r'([a-zA-Z_@0-9.-]+):')
+    pattern = re.compile(r'([a-zA-Z_@0-9.->]+):')
 
     def split_at_second_occurrence(s, char="_"): # split the gene string at the second occurence of "_" to get only the species name
         second_occurrence = s.find(char, 2) # start after the first occurence of "_"
@@ -155,8 +155,10 @@ def truncate_leaf_names(newick_tree):
     
     def truncate_match(match):
         leaf_name = match.group(1)
-        leaf_name = split_at_second_occurrence(leaf_name) # split the first iteration of the species name that orthofiner adds (i think? no idea where else it would come from) to be sure that everything matches
-        truncated_name = leaf_name[:10]
+        leaf_name = leaf_name.replace(">", "")
+        # leaf_name = split_at_second_occurrence(leaf_name) # split the first iteration of the species name that orthofiner adds (i think? no idea where else it would come from) to be sure that everything matches
+        truncated_name = f"{leaf_name[:9]}"
+        print(f"{leaf_name} --> {truncated_name}")
         return truncated_name + ':'
     
     # Substitute each leaf name with its truncated version
@@ -505,11 +507,14 @@ if __name__ == '__main__':
 
     tree_outfile = f"{outdir_path}tree.tre"
     fasttree_command = f"{fasttree_bin} {clustal_outfile} > {tree_outfile}"
+    if verbose:
+        print(" *  running FastTree\n")
     result = subprocess.run(fasttree_command, shell = True, capture_output=True, text=True)
     # Check if the command was successful
     if result.returncode == 0:
         if verbose:
-            print(f" *  FastTree ran successfully")
+            print(fasttree_command)
+            print(f"FastTree ran successfully")
     else:
         raise RuntimeError(f"FastTree failed! command: \n{fasttree_command}")
     if os.path.getsize(tree_outfile) == 0:
@@ -688,7 +693,7 @@ if __name__ == '__main__':
         
 
         ## modify the codeml config file for M1a:
-        modify_paml_config(codeml_settings_dict=codeml_settings_dict_M1a, codeml_config_path=codeml_config, verbose=verbose)
+        modify_paml_config(codeml_settings_dict=codeml_settings_dict_M1a, codeml_config_path=codeml_config, verbose=False)
 
         codeml_command = f"{codeml_bin} > codeml_M1a.log"
         if verbose:
@@ -698,9 +703,9 @@ if __name__ == '__main__':
         os.system(codeml_command) ## this does not run on the login node on uppmax! Nothing happens, you have to run it as sbatch even for testing
 
         ## modify the codeml config file for M2a:
-        modify_paml_config(codeml_settings_dict=codeml_settings_dict_M2a, codeml_config_path=codeml_config, verbose=verbose)
+        modify_paml_config(codeml_settings_dict=codeml_settings_dict_M2a, codeml_config_path=codeml_config, verbose=False)
 
-        odeml_command = f"{codeml_bin} > codeml_M2a.log"
+        codeml_command = f"{codeml_bin} > codeml_M2a.log"
         if verbose:
             print(f"\t - running: {codeml_command}")
 
@@ -708,7 +713,8 @@ if __name__ == '__main__':
         end_time = time.time()
         
         ### likelihood_ratio_test
-        ## TODO here
+        M1a_out = codeml_settings_dict_M1a["outfile"]
+        M2a_out = codeml_settings_dict_M2a["outfile"]
 
         if verbose:
             print("\t\tdone with codeml!")
