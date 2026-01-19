@@ -147,11 +147,6 @@ def truncate_leaf_names(newick_tree):
     """
     # Regular expression to match leaf names
     pattern = re.compile(r'([a-zA-Z_@0-9.->]+):')
-
-    def split_at_second_occurrence(s, char="_"): # split the gene string at the second occurence of "_" to get only the species name
-        second_occurrence = s.find(char, 2) # start after the first occurence of "_"
-        string = s[second_occurrence+1:]
-        return string
     
     def truncate_match(match):
         leaf_name = match.group(1)
@@ -336,6 +331,30 @@ def modify_paml_config(codeml_settings_dict, codeml_config_path, verbose):
     if verbose:
         print(f"\t\t--> done modifying {codeml_config_path}")
         print()
+
+
+def extract_np_lnL(path):
+    """
+    extract the lnL value from the codeml.out file
+    """
+    with open(path, "r") as outfile:
+        lines = outfile.readlines()
+        for line in lines:
+            if line[:3] == "lnL":
+                line = line.strip()
+                np_unparsed,lnL_unparsed = line.split("):")
+                np = int(np_unparsed.split("np: ")[-1])
+                lnL = float(lnL_unparsed.split()[0])
+                print(f"np: {np}, lnL: {lnL}")
+            else:
+                pass
+        return np, lnL
+
+
+def calculate_LRT(lnL0:float, lnL1:float, df:int):
+    """
+    calculate the likelihood ratio test from paml analysis
+    """
 
 
 if __name__ == '__main__':
@@ -668,6 +687,16 @@ if __name__ == '__main__':
                         # "runmode" : "2", # 2 is an automatic run mode, the default is 0 which is a user generated tree. paml documentation p. 15: "The tree search options do not work well, and so use runmode = 0 as much as you can." :D
                         "CodonFreq" : "2" 
                         }
+        codeml_settings_dict_both = {"seqfile" : f"{pal2nal_loc}", 
+                        "treefile" : f"{tree_loc}",  
+                        "outfile" : "codeml_M1a_M2a.out", 
+                        "model" : "0", # args.codemlmodel, # default model is 1, site models is 0
+                        "NSsites" : "1 2", # 1 for M1a and 2 for M2a
+                        "verbose" : "1",
+                        "seqtype" : "1",
+                        # "runmode" : "2", # 2 is an automatic run mode, the default is 0 which is a user generated tree. paml documentation p. 15: "The tree search options do not work well, and so use runmode = 0 as much as you can." :D
+                        "CodonFreq" : "2" 
+                        }
         
 
         # os.chdir(topdir)
@@ -690,31 +719,59 @@ if __name__ == '__main__':
         os.system(copy_command)
         if verbose:
             print(f"\t - setup config file\n\t\tcopy from source: {copy_command}\n\t\tmodify config file:")
+    
+
+        ## fit M1a and M2a separately
+        ## --> do this and not combined outfile because this makes it easier to extract lnL and df for LRT
+        if True:
+            ## modify the codeml config file for M1a:
+            modify_paml_config(codeml_settings_dict=codeml_settings_dict_M1a, codeml_config_path=codeml_config, verbose=False)
+
+            codeml_command = f"{codeml_bin} > codeml_M1a.log"
+            if verbose:
+                print(f"\t - running: {codeml_command}")
+            
+            start_time = time.time()
+            os.system(codeml_command) ## this does not run on the login node on uppmax! Nothing happens, you have to run it as sbatch even for testing
+
+            ## modify the codeml config file for M2a:
+            modify_paml_config(codeml_settings_dict=codeml_settings_dict_M2a, codeml_config_path=codeml_config, verbose=False)
+
+            codeml_command = f"{codeml_bin} > codeml_M2a.log"
+            if verbose:
+                print(f"\t - running: {codeml_command}")
+
+            os.system(codeml_command) ## this does not run on the login node on uppmax! Nothing happens, you have to run it as sbatch even for testing
+            end_time = time.time()
         
+        ## fit both at once and get a combined output file
+        else: 
+            ## modify the codeml config file for M1a and M2a:
+            modify_paml_config(codeml_settings_dict=codeml_settings_dict_both, codeml_config_path=codeml_config, verbose=False)
 
-        ## modify the codeml config file for M1a:
-        modify_paml_config(codeml_settings_dict=codeml_settings_dict_M1a, codeml_config_path=codeml_config, verbose=False)
+            codeml_command = f"{codeml_bin} > codeml_M1a_M2a_combined.log"
+            if verbose:
+                print(f"\t - running: {codeml_command}")
+            
+            start_time = time.time()
+            os.system(codeml_command) ## this does not run on the login node on uppmax! Nothing happens, you have to run it as sbatch even for testing
+            end_time = time.time()
 
-        codeml_command = f"{codeml_bin} > codeml_M1a.log"
-        if verbose:
-            print(f"\t - running: {codeml_command}")
-        
-        start_time = time.time()
-        os.system(codeml_command) ## this does not run on the login node on uppmax! Nothing happens, you have to run it as sbatch even for testing
+        ####################
 
-        ## modify the codeml config file for M2a:
-        modify_paml_config(codeml_settings_dict=codeml_settings_dict_M2a, codeml_config_path=codeml_config, verbose=False)
-
-        codeml_command = f"{codeml_bin} > codeml_M2a.log"
-        if verbose:
-            print(f"\t - running: {codeml_command}")
-
-        os.system(codeml_command) ## this does not run on the login node on uppmax! Nothing happens, you have to run it as sbatch even for testing
-        end_time = time.time()
-        
         ### likelihood_ratio_test
+        if verbose:
+            print(f"\t - calculating likelihood ratio test")
+
         M1a_out = codeml_settings_dict_M1a["outfile"]
         M2a_out = codeml_settings_dict_M2a["outfile"]
+
+        M1a_np, M1a_lnL = extract_np_lnL(M1a_out)
+        M2a_np, M2a_lnL = extract_np_lnL(M2a_out)
+        df = M2a_np-M1a_np
+        
+
+        ###################
 
         if verbose:
             print("\t\tdone with codeml!")
