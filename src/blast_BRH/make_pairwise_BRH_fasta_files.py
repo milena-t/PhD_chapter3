@@ -38,26 +38,26 @@ def brh_results(username = "miltr339", X_syntenic = False):
             "B_siliquastri" : f"{brh_dir}A_obtectus_B_siliquastri_BRH.tsv",
             "C_chinensis" : f"{brh_dir}A_obtectus_C_chinensis_BRH.tsv",
             "C_maculatus" : f"{brh_dir}A_obtectus_C_maculatus_BRH.tsv",
-            "D_carinulata" : f"{brh_dir}A_obtectus_D_carinulata_BRH_X_syntenic.tsv",
-            "D_sublineata" : f"{brh_dir}A_obtectus_D_sublineata_BRH.tsv",
+            # "D_carinulata" : f"{brh_dir}A_obtectus_D_carinulata_BRH_X_syntenic.tsv",
+            # "D_sublineata" : f"{brh_dir}A_obtectus_D_sublineata_BRH.tsv",
         },
         "B_siliquastri" : {
             "B_siliquastri" : f"{brh_dir}B_siliquastri_B_siliquastri_BRH.tsv",
             "C_chinensis" : f"{brh_dir}B_siliquastri_C_chinensis_BRH.tsv",
             "C_maculatus" : f"{brh_dir}B_siliquastri_C_maculatus_BRH.tsv",
-            "D_carinulata" : f"{brh_dir}B_siliquastri_D_carinulata_BRH_X_syntenic.tsv",
-            "D_sublineata" : f"{brh_dir}B_siliquastri_D_sublineata_BRH.tsv",
+            # "D_carinulata" : f"{brh_dir}B_siliquastri_D_carinulata_BRH_X_syntenic.tsv",
+            # "D_sublineata" : f"{brh_dir}B_siliquastri_D_sublineata_BRH.tsv",
         },
         "C_chinensis" : {
             "C_chinensis" : f"{brh_dir}C_chinensis_C_chinensis_BRH.tsv",
             "C_maculatus" : f"{brh_dir}C_chinensis_C_maculatus_BRH.tsv",
-            "D_carinulata" : f"{brh_dir}C_chinensis_D_carinulata_BRH_X_syntenic.tsv",
-            "D_sublineata" : f"{brh_dir}C_chinensis_D_sublineata_BRH.tsv",
+            # "D_carinulata" : f"{brh_dir}C_chinensis_D_carinulata_BRH_X_syntenic.tsv",
+            # "D_sublineata" : f"{brh_dir}C_chinensis_D_sublineata_BRH.tsv",
         },
         "C_maculatus" : {
             "C_maculatus" : f"{brh_dir}C_maculatus_C_maculatus_BRH.tsv",
-            "D_carinulata" : f"{brh_dir}C_maculatus_D_carinulata_BRH_X_syntenic.tsv",
-            "D_sublineata" : f"{brh_dir}C_maculatus_D_sublineata_BRH.tsv",
+            # "D_carinulata" : f"{brh_dir}C_maculatus_D_carinulata_BRH_X_syntenic.tsv",
+            # "D_sublineata" : f"{brh_dir}C_maculatus_D_sublineata_BRH.tsv",
         },
         "D_carinulata" : {
             "D_carinulata" : f"{brh_dir}D_carinulata_D_carinulata_BRH.tsv",
@@ -73,26 +73,26 @@ def brh_results(username = "miltr339", X_syntenic = False):
             "B_siliquastri" : f"{brh_dir}A_obtectus_B_siliquastri_BRH.tsv",
             "C_chinensis" : f"{brh_dir}A_obtectus_C_chinensis_BRH.tsv",
             "C_maculatus" : f"{brh_dir}A_obtectus_C_maculatus_BRH.tsv",
-            "D_carinulata" : f"{brh_dir}A_obtectus_D_carinulata_BRH.tsv",
-            "D_sublineata" : f"{brh_dir}A_obtectus_D_sublineata_BRH.tsv",
+            # "D_carinulata" : f"{brh_dir}A_obtectus_D_carinulata_BRH.tsv",
+            # "D_sublineata" : f"{brh_dir}A_obtectus_D_sublineata_BRH.tsv",
         },
         "B_siliquastri" : {
             "B_siliquastri" : f"{brh_dir}B_siliquastri_B_siliquastri_BRH.tsv",
             "C_chinensis" : f"{brh_dir}B_siliquastri_C_chinensis_BRH.tsv",
             "C_maculatus" : f"{brh_dir}B_siliquastri_C_maculatus_BRH.tsv",
-            "D_carinulata" : f"{brh_dir}B_siliquastri_D_carinulata_BRH.tsv",
-            "D_sublineata" : f"{brh_dir}B_siliquastri_D_sublineata_BRH.tsv",
+            # "D_carinulata" : f"{brh_dir}B_siliquastri_D_carinulata_BRH.tsv",
+            # "D_sublineata" : f"{brh_dir}B_siliquastri_D_sublineata_BRH.tsv",
         },
         "C_chinensis" : {
             "C_chinensis" : f"{brh_dir}C_chinensis_C_chinensis_BRH.tsv",
             "C_maculatus" : f"{brh_dir}C_chinensis_C_maculatus_BRH.tsv",
-            "D_carinulata" : f"{brh_dir}C_chinensis_D_carinulata_BRH.tsv",
-            "D_sublineata" : f"{brh_dir}C_chinensis_D_sublineata_BRH.tsv",
+            # "D_carinulata" : f"{brh_dir}C_chinensis_D_carinulata_BRH.tsv",
+            # "D_sublineata" : f"{brh_dir}C_chinensis_D_sublineata_BRH.tsv",
         },
         "C_maculatus" : {
             "C_maculatus" : f"{brh_dir}C_maculatus_C_maculatus_BRH.tsv",
-            "D_carinulata" : f"{brh_dir}C_maculatus_D_carinulata_BRH.tsv",
-            "D_sublineata" : f"{brh_dir}C_maculatus_D_sublineata_BRH.tsv",
+            # "D_carinulata" : f"{brh_dir}C_maculatus_D_carinulata_BRH.tsv",
+            # "D_sublineata" : f"{brh_dir}C_maculatus_D_sublineata_BRH.tsv",
         },
         "D_carinulata" : {
             "D_carinulata" : f"{brh_dir}D_carinulata_D_carinulata_BRH.tsv",
@@ -167,7 +167,7 @@ def make_ortholog_fasta_files(brh_tables, nucleotides_dict, chr_type = "X", outd
 
 if __name__ == "__main__":
     username = "miltr339"
-    Dcar_X_syntenic = True
+    Dcar_X_syntenic = False
     brh_tables = brh_results(username, X_syntenic=Dcar_X_syntenic)
     nucleotides_dict = nucleotides_paths(username)
     
