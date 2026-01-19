@@ -1,5 +1,5 @@
 #!/bin/bash -l
-#SBATCH -A uppmax2025-2-148
+#SBATCH -A uppmax2026-1-8
 #SBATCH -n 5
 #SBATCH -p core
 #SBATCH -t 1-00:00:00
