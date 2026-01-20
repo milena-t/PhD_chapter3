@@ -77,7 +77,7 @@ def sex_chromosome_names():
             "Y" : ['unidentified']
         },
         "T_freemani" :  { 
-            "X" : ['CM039461.1'], # identified as linkage group X (LGX) on the NCBI
+            "X" : ['ENA_CM039461_CM039461.1_Tribolium_freemani_isolate_YK'],# ['CM039461.1'], # identified as linkage group X (LGX) on the NCBI
             "Y" : ['unidentified']
         },
         "C_septempunctata" :  { 
@@ -85,7 +85,7 @@ def sex_chromosome_names():
             "Y" : ['unidentified']
         },
         "C_magnifica" :  { 
-            "X" : ['OZ286750.1'],
+            "X" : ['OZ286750.1_Coccinella_magnifica_genome_assembly,_chromosome:_X'],
             "Y" : ['unidentified']
         },
     }
