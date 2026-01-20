@@ -1,5 +1,5 @@
 """
-Make batches of dNdS to calculate  at once
+Make batches of dNdS to calculate at once. splits it into several jobs of orthologs
 """
 
 import os
@@ -75,7 +75,8 @@ if __name__ == "__main__":
 
     ########
     ## for testing purposes only do a few files of each pair
-    num_files = 2
+    ## if 0 then it takes all files, for a normal run
+    num_files = 0
     ########
 
     for species1, subdict in x_paths_nested_dict.items():
