@@ -127,6 +127,8 @@ def make_ortholog_fasta_files(brh_tables, nucleotides_dict, chr_type = "X", outd
     if not os.path.isdir(outdir):
         os.mkdir(outdir)
 
+    ### make dictionary of { species : { transcriptID : SeqIO_record } }
+    ### to quickly access all the sequences when making fasta files
     print(f"\nmaking nucleotide fasta files for {chr_type}-linked orthologs")
     nucleotides_seqs_dict = {}
     print(f"reading nucleotide files...")
@@ -137,18 +139,18 @@ def make_ortholog_fasta_files(brh_tables, nucleotides_dict, chr_type = "X", outd
             nucleotides_seqs_dict[species] = {}
             for cds_record in SeqIO.parse(nucleotides_dict[species], "fasta"):
                 nucleotides_seqs_dict[species][cds_record.id] = cds_record                
-            print(f"> {species} ({nucleotides_dict[species]}, {len(nucleotides_seqs_dict[species])} transcripts)")
+            # print(f"> {species} ({nucleotides_dict[species]}, {len(nucleotides_seqs_dict[species])} transcripts)")
         
         for species_partner in species_partners:
             if species_partner not in nucleotides_seqs_dict.keys():
                 nucleotides_seqs_dict[species_partner] = {}
                 for cds_record in SeqIO.parse(nucleotides_dict[species_partner], "fasta"):
                     nucleotides_seqs_dict[species_partner][cds_record.id] = cds_record
-            print(f"> {species_partner} ({nucleotides_dict[species_partner]}, {len(nucleotides_seqs_dict[species_partner])} transcripts)")
+            # print(f"> {species_partner} ({nucleotides_dict[species_partner]}, {len(nucleotides_seqs_dict[species_partner])} transcripts)")
     
     for species in brh_tables.keys():
         print(f">>>>>> {species}")
-        not_found_partners_dict = {sp:0 for sp in brh_tables[species].keys()}
+        not_found_partners_dict = {sp:0 for sp in nucleotides_seqs_dict.keys()}
         for species_partner, brh_path in brh_tables[species].items(): # tqdm(brh_tables[species].items()):
             count_pairs = 0
             ## read and filter to only include hits on chr_type
@@ -162,17 +164,18 @@ def make_ortholog_fasta_files(brh_tables, nucleotides_dict, chr_type = "X", outd
                 os.mkdir(pair_dirname)
 
             for brh_pair in brh_filtered.itertuples():
-                print(f"ID1 = {brh_pair[1]}, ID2 = {brh_pair[3]}")
+                # print(f"ID1 = {brh_pair[1]}, ID2 = {brh_pair[3]}")
                 try:
                     record1 = nucleotides_seqs_dict[species][brh_pair[1]]
                     record1.id=f">{brh_pair[1]}_{species}_{chr_type}"
                 except:
                     not_found_partners_dict[species]+=1
                     try:
-                        transcripts_fasta = nucleotides_seqs_dict[species]
+                        transcripts_fasta = nucleotides_dict[species]
                     except:
                         raise RuntimeError(f"{species} does not have a transcripts file in 'nucleotides_dict'.")
-                    raise RuntimeError(f"{brh_pair[1]} not found in {transcripts_fasta}")
+                    # raise RuntimeError(f"{brh_pair[1]} not found in {transcripts_fasta}")
+                    pass
                 
                 try:
                     record2 = nucleotides_seqs_dict[species_partner][brh_pair[3]]
@@ -180,10 +183,11 @@ def make_ortholog_fasta_files(brh_tables, nucleotides_dict, chr_type = "X", outd
                 except:
                     not_found_partners_dict[species_partner]+=1
                     try:
-                        transcripts_fasta = nucleotides_seqs_dict[species_partner]
+                        transcripts_fasta = nucleotides_dict[species_partner]
                     except:
                         raise RuntimeError(f"{species_partner} does not have a transcripts file in 'nucleotides_dict'.")
-                    raise RuntimeError(f"{brh_pair[3]} not found in {transcripts_fasta}")
+                    # raise RuntimeError(f"{brh_pair[3]} not found in {transcripts_fasta}")
+                    pass
                 
                 brh_seq_records = [record1,record2]
                 fasta_name = f"{pair_dirname}{species}_{species_partner}_{chr_type}-linked_ortholog_{count_pairs}.fasta"
@@ -194,7 +198,7 @@ def make_ortholog_fasta_files(brh_tables, nucleotides_dict, chr_type = "X", outd
                 count_pairs += 1
 
             # print(f"\t* {species_partner}: {count_pairs} orthologs")
-            print(f"\t\t{count_pairs} counted, {not_found_partners_dict[species_partner]} transcripts not found")
+            print(f"\t\t{count_pairs} counted, {not_found_partners_dict[species]} {species} transcripts not found; {not_found_partners_dict[species_partner]} {species_partner} transcripts not found")
     print(f"\ndone! all outfiles written to \n{outdir}")
 
 
@@ -216,4 +220,4 @@ if __name__ == "__main__":
         outdir_A = f"/Users/{username}/work/pairwise_blast_chapter_2_3/brh_tables/brh_sequences_A/"
     
     make_ortholog_fasta_files(brh_tables, nucleotides_dict, chr_type="X", outdir= outdir_X)
-    # make_ortholog_fasta_files(brh_tables, nucleotides_dict, chr_type="A", outdir= outdir_A)
+    make_ortholog_fasta_files(brh_tables, nucleotides_dict, chr_type="A", outdir= outdir_A)
