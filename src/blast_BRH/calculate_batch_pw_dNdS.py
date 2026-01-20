@@ -8,7 +8,6 @@ import os
 def make_nested_lists(dir_path):
     """
     make dictionary of by-species nested lists for the pairwise fasta files
-    include_only is an optional string of a pair like "A_obtectus_C_maculatus" that results in only this pair being in the output
     """
     subdirs = [f"{dir_path}{f}/" for f in os.listdir(dir_path) if os.path.isdir(os.path.join(dir_path, f))]
 
@@ -58,7 +57,7 @@ if __name__ == "__main__":
         pelle = True
     
     #######
-    chr_type = "A"
+    chr_type = "X"
     #######
 
     ### original
@@ -70,7 +69,7 @@ if __name__ == "__main__":
     # outdir = f"{datadir}brh_results_{chr_type}_Dcar_X_syntenic/"
 
     os.chdir(outdir)
-    x_paths_nested_dict = make_nested_lists(X_path) #, include_only="D_carinulata_D_sublineata")
+    x_paths_nested_dict = make_nested_lists(X_path)
     sp1_list=list(x_paths_nested_dict.keys())
 
     ########
