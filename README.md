@@ -356,11 +356,16 @@ I will continue with best reciprocal hits, becasue the orthofinder clustering is
 
 # dNdS: slow X or fast X?
 
+## paml site models
+
+I have decided to go with the paml site model, since I am only doing a pairwise comparison, and the branch model is not reliable for a tree of only two species. I compute M1a and M2a models (nearly neutral and positive selection respectively, see paml documentation), do the likelihood ratio test, and then return the site-class table of M2a if the test is significant, and M1a if it is not. This can then be used to either compute an average dNdS for the entire gene (weighted by proportions) or to do some other independent statistical analysis based on the proportion of positively selected sites in A vs. X genes.
+
+## Statistical analysis via permutation test
+
 The dNdS is calculated between all pairwise comparisons for A-linked and X-linked genes identified with BRH above. I am doing unique comparisons only below, so (Cmac,Aobt) is the same as (Aobt,Cmac) which is why only one of them is shown. Also, self-comparisons make no sense here so I am excluding them as well. I show horizontal lines of the median dNdS for A and X in matching colors to the violin plot to clearly show the mean difference in dNdS. 
 
 Most species are slowX, except the *D. carinulata* comparisons, but those have such a low sample size for X-linked genes that the mean is not reliable. 
 
-## Statistical analysis via permutation test
 
 Generally, all species pairs seem to show slowX, but I will do a permutation test for each species pair like this:
 
