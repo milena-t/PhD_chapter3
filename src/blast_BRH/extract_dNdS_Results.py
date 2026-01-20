@@ -204,7 +204,7 @@ def get_site_classes(results_dir, outfile_name = ""):
 
 if __name__ == "__main__":
     
-    chr_types = ["A","X"]
+    chr_types = ["X","A"]
     for chr_type in chr_types:
 
         # results_path = f"/Users/miltr339/work/pairwise_blast_chapter_2_3/brh_tables/brh_results_{chr_type}/"
