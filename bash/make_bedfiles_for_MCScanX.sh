@@ -18,19 +18,20 @@ module load bioinfo-tools biopython/1.80-py3.10.8
 # echo "done C_chinensis.gff"
 # python3 /proj/snic2021-6-30/Milena/chapter2/PhD_chapter2/src/make_bedfile_for_MCScanX.py /proj/naiss2023-6-65/Milena/chapter2/native_annotations/C_maculatus_superscaffolded.gff cm
 # echo "done C_maculatus_superscaffolded.gff"
-# python3 /proj/snic2021-6-30/Milena/chapter2/PhD_chapter2/src/make_bedfile_for_MCScanX.py /proj/naiss2023-6-65/Milena/chapter2/native_annotations/T_castaneum.gff tc
-# echo "done T_castaneum.gff"
-# python3 /proj/snic2021-6-30/Milena/chapter2/PhD_chapter2/src/make_bedfile_for_MCScanX.py /proj/naiss2023-6-65/Milena/chapter2/native_annotations/C_septempunctata.gff cs
-# echo "done C_septempunctata.gff"
-# python3 /proj/snic2021-6-30/Milena/chapter2/PhD_chapter2/src/make_bedfile_for_MCScanX.py /proj/naiss2023-6-65/Milena/chapter3/species_annotations/C_magnifica/braker_isoform_filtered.gff mc #unsure if it gets fucked if i have cm twice
-# echo "done C_magnifica.gff"
-# python3 /proj/snic2021-6-30/Milena/chapter2/PhD_chapter2/src/make_bedfile_for_MCScanX.py /proj/naiss2023-6-65/Milena/chapter3/species_annotations/T_freemani/braker_isoform_filtered.gff tf
-# echo "done C_freemani.gff"
 
-python3 /proj/snic2021-6-30/Milena/chapter2/PhD_chapter2/src/make_bedfile_for_MCScanX.py /proj/naiss2023-6-65/Milena/coleoptera_sequences/d_carinulata/GCF_026250575.1_icDioCari1.1_genomic_isoform_filtered.gff dc
-echo "done D_carinulata.gff"
-python3 /proj/snic2021-6-30/Milena/chapter2/PhD_chapter2/src/make_bedfile_for_MCScanX.py /proj/naiss2023-6-65/Milena/coleoptera_sequences/d_sublineata/GCF_026230105.1_icDioSubl1.1_genomic_isoform_filtered.gff ds
-echo "done D_sublineata.gff"
+python3 /proj/snic2021-6-30/Milena/chapter2/PhD_chapter2/src/make_bedfile_for_MCScanX.py /proj/naiss2023-6-65/Milena/chapter2/native_annotations/T_castaneum.gff tc
+echo "done T_castaneum.gff"
+python3 /proj/snic2021-6-30/Milena/chapter2/PhD_chapter2/src/make_bedfile_for_MCScanX.py /proj/naiss2023-6-65/Milena/chapter2/native_annotations/C_septempunctata.gff cs
+echo "done C_septempunctata.gff"
+python3 /proj/snic2021-6-30/Milena/chapter2/PhD_chapter2/src/make_bedfile_for_MCScanX.py /proj/naiss2023-6-65/Milena/chapter3/species_annotations/C_magnifica/braker_isoform_filtered.gff mc #unsure if it gets fucked if i have cm twice
+echo "done C_magnifica.gff"
+python3 /proj/snic2021-6-30/Milena/chapter2/PhD_chapter2/src/make_bedfile_for_MCScanX.py /proj/naiss2023-6-65/Milena/chapter3/species_annotations/T_freemani/braker_isoform_filtered.gff tf
+echo "done C_freemani.gff"
+
+# python3 /proj/snic2021-6-30/Milena/chapter2/PhD_chapter2/src/make_bedfile_for_MCScanX.py /proj/naiss2023-6-65/Milena/coleoptera_sequences/d_carinulata/GCF_026250575.1_icDioCari1.1_genomic_isoform_filtered.gff dc
+# echo "done D_carinulata.gff"
+# python3 /proj/snic2021-6-30/Milena/chapter2/PhD_chapter2/src/make_bedfile_for_MCScanX.py /proj/naiss2023-6-65/Milena/coleoptera_sequences/d_sublineata/GCF_026230105.1_icDioSubl1.1_genomic_isoform_filtered.gff ds
+# echo "done D_sublineata.gff"
 
 ### merge for run
 
