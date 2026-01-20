@@ -213,7 +213,7 @@ if __name__ == "__main__":
         print(f"\n//////////////////// {chr_type} ////////////////////\n")
 
         # get_dNdS_pairs_dict(results_path, outfile_name= f"dNdS_dS_summary_{chr_type}-linked.txt", only_dNdS=False)
-        get_site_classes(results_path, outfile_name= f"dNdS_dS_summary_{chr_type}-linked.txt", only_dNdS=False)
+        get_site_classes(results_path, outfile_name= f"site_classes_summary_{chr_type}-linked.txt")
 
 #     [f"{dirpath}{d}/2NG.dNdS" for d in os.listdir(results_path)]
 
