@@ -313,6 +313,9 @@ Notably, there is one autosome missing in *A. obtectus*. Since the SynVisio webs
 
 Despite the broken-down synteny of the autosomes between *Bruchini* and *Diorhabda*, the X chromosomes are all syntenic except *D. carinulata* (dc 35), which is in agreement with the identified 1-to-1 orthologs below, where most pairwise comparisons have 300-400 X-linked orthologs, except any pair involving *D. carinulata*. The "old" syntenic chromosome in *D. carinulata* is `NC_079460.1` (dc13). A part of the *D. carinulata* X is syntenic to *D. sublineata* `NC_079475.1` (ds5).
 
+### Sex chromosome identification methods
+
+Since this is strange, I checked the methods for sex chromosome identification. The assemblys are part of a large effort by the USDA, called USDA-ARS Ag100Pest Initiative and  published [here](https://www.mdpi.com/2075-4450/12/7/626). This does not say anything about the sex chromosomes?? No methods of identification, not even short-read sequencing for coverage analyses
 
 ## X synteny in Tribolium and Coccinella
 
@@ -324,7 +327,7 @@ X chromosome names in the MCScanX synteny plots
 * *C. septempunctata*: NC_058198.1 = cs7
 
 <details>
-<summary>T. castaneum and T. freemani</summary>
+<summary>synteny plot: T. castaneum and T. freemani</summary>
 X chromosome on the bottom. tc36 and tf4
 
 <p float="left">
@@ -334,7 +337,7 @@ X chromosome on the bottom. tc36 and tf4
 </details>
 
 <details>
-<summary>C. septempunctata and C. magnifica</summary>
+<summary>synteny plot: C. septempunctata and C. magnifica</summary>
 X chromosome second to last, mc64 and cs7
 
 <p float="left">
@@ -343,9 +346,7 @@ X chromosome second to last, mc64 and cs7
 
 </details>
 
-### Sex chromosome identification methods
 
-Since this is strange, I checked the methods for sex chromosome identification. The assemblys are part of a large effort by the USDA, called USDA-ARS Ag100Pest Initiative and  published [here](https://www.mdpi.com/2075-4450/12/7/626). This does not say anything about the sex chromosomes?? No methods of identification, not even short-read sequencing for coverage analyses
 
 # ortholog identification
 
