@@ -218,3 +218,4 @@ if __name__ == "__main__":
 #     [f"{dirpath}{d}/2NG.dNdS" for d in os.listdir(results_path)]
 
 # interactive -A uppmax2026-1-8 -t 5:00:00
+# module load Biopython/1.86-gfbf-2025b
