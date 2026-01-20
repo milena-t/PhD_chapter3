@@ -24,5 +24,5 @@ python3 $SCRIPT_PATH/get_blast_BRH.py \
 --annotation2 $ANN_DIR/C_septempunctata.gff \
 --X_contigs1 OZ286750.1 \
 --X_contigs2 NC_058198.1 \
---Y_contigs1 none
+--Y_contigs1 none \
 --Y_contigs2 none
