@@ -113,6 +113,95 @@ def get_dNdS_pairs_dict(results_dir, outfile_name = "", only_dNdS = True):
         print(f"outfile saved to: {outfile_name}\nin {results_dir}")
 
 
+def extract_site_classes(site_classes_path):
+    if not os.path.exists(site_classes_path):
+        # print(f"{dNdS_path} does not exist")
+        # return(np.NaN)
+        return("no_file")
+    if os.path.getsize(site_classes_path) == 0:
+        print(f"{site_classes_path} has size 0")
+        # return(np.NaN)
+        return("empty_file")
+    with open(site_classes_path, "r") as dNdS_file:
+        try:
+            p_line, w_line = dNdS_file.readlines()
+        except:
+            lines = [line.strip() for line in dNdS_file.readlines()]
+            lines_str = ";".join(lines)
+            return f"parsing_error:{lines_str}"
+        
+        lines_str = f"{p_line.strip()};{w_line.strip()}"
+
+    return(lines_str)
+
+
+def site_classes_list_of_pair(pair_dir, results_dir):
+    """
+    give the dir that contains all the results for the site class tables of the orthologs generated with calculate_pairwise_dNdS.py
+    """
+    try:
+        os.listdir(f"{results_dir}{pair_dir}")
+    except Exception as e:
+        # raise RuntimeError(f"{results_dir}{pair_dir} ---> something didn't work! \n{e}")
+        print(f"{results_dir}{pair_dir} ---> something didn't work! \n{e}")
+
+    try:
+        subdirectories = [f"{results_dir}{pair_dir}/{d}" for d in os.listdir(f"{results_dir}{pair_dir}")]
+        subdirectories_site_classes = [f"{d}/codeml_M1a_site_class_table.out"  if os.path.exists(f"{d}/codeml_M1a_site_class_table.out") else f"{d}/codeml_M2a_site_class_table.out" for d in subdirectories]
+    except:
+        raise RuntimeError(f"pair directory not found! {results_dir}{pair_dir}")
+    
+    # assert len(subdirectories_site_classes) == len(subdirectories)
+
+    site_classes = [f"{f} : {extract_site_classes(f)}" for f in subdirectories_site_classes]
+    return site_classes
+
+def get_site_classes(results_dir, outfile_name = ""):
+    """
+    Extracts either only dNdS values as a list, or corresponding dS values of the same ortholog as well, in a list of the same order
+    """
+    pair_dirs = []
+    for d in os.listdir(results_dir):
+        if os.path.isfile(d):
+            continue
+        d_sp = d.split("_")
+        try:
+            species1 = f"{d_sp[0]}_{d_sp[1]}"
+            species2 = f"{d_sp[2]}_{d_sp[3]}"
+        except:
+            print(f"{d} cannot be parsed as species")
+            continue
+        if species1 != species2:
+            pair_dirs.append(d)
+
+    pair_lists = {f"{d}":[] for d in pair_dirs}
+    if outfile_name == "":
+        for pair_dir in pair_lists.keys():
+            if ".out" in pair_dir or ".log" in pair_dir or ".txt" in pair_dir:
+                continue
+            if not os.path.isdir(f"{results_dir}{pair_dir}"):
+                raise RuntimeError(f"parsed dir {results_dir}{pair_dir} does not exist!")
+            pair_lists[pair_dir] = site_classes_list_of_pair(pair_dir, results_dir)
+            print(f"{pair_dir} : {pair_lists[pair_dir]}")
+        return pair_lists
+
+    else:
+        outfile_name = f"{results_dir}{outfile_name}"
+        with open(outfile_name, "w") as outfile:
+            for pair_dir in pair_lists.keys():
+                print(f" --> {pair_dir}")
+                if ".out" in pair_dir or ".log" in pair_dir or ".txt" in pair_dir:
+                    print(f"\t! log file ignired")
+                    continue
+                if not os.path.isdir(f"{results_dir}{pair_dir}"):
+                    raise RuntimeError(f"parsed dir {results_dir}{pair_dir} does not exist!")
+                pair_list = site_classes_list_of_pair(pair_dir, results_dir)
+                
+                pair_list = "\n".join([str(dNdS) for dNdS in pair_list])
+                outfile.write(f"{pair_list}")
+
+        print(f"outfile saved to: {outfile_name}\nin {results_dir}")
+
 if __name__ == "__main__":
     
     chr_types = ["A","X"]
@@ -123,7 +212,9 @@ if __name__ == "__main__":
         print(chr_type)
         print(f"\n//////////////////// {chr_type} ////////////////////\n")
 
-        get_dNdS_pairs_dict(results_path, outfile_name= f"dNdS_dS_summary_{chr_type}-linked.txt", only_dNdS=False)
+        # get_dNdS_pairs_dict(results_path, outfile_name= f"dNdS_dS_summary_{chr_type}-linked.txt", only_dNdS=False)
+        get_site_classes(results_path, outfile_name= f"dNdS_dS_summary_{chr_type}-linked.txt", only_dNdS=False)
 
 #     [f"{dirpath}{d}/2NG.dNdS" for d in os.listdir(results_path)]
 
+# interactive -A uppmax2026-1-8 -t 5:00:00
