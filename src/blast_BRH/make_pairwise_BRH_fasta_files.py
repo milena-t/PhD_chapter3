@@ -145,6 +145,8 @@ def make_ortholog_fasta_files(brh_tables, nucleotides_dict, chr_type = "X", outd
             brh_table = pd.read_csv(brh_path, sep="\t")
             print(brh_table)
             brh_filtered = brh_table[brh_table["chromosome"] == chr_type]
+            print(f"after filtering {species} for {chr_type}...")
+            print(brh_filtered)
             brh_filtered = brh_filtered[brh_filtered["chromosome.1"] == chr_type]
             print(f"\t{species_partner} : {len(brh_filtered)} orthologs on {chr_type} ({brh_path})")
             
