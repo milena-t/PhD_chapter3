@@ -58,7 +58,7 @@ if __name__ == "__main__":
         pelle = True
     
     #######
-    chr_type = "X"
+    chr_type = "A"
     #######
 
     ### original
