@@ -26,6 +26,7 @@ def nucleotides_paths(username = "miltr339"):
         "P_pyralis" : f"{nuc_dir}P_pyralis_transcripts.fna",
         "R_ferrugineus" : f"{nuc_dir}R_ferrugineus_transcripts.fna",
         "T_castaneum" : f"{nuc_dir}T_castaneum_transcripts.fna",
+        "T_freemani" : f"{nuc_dir}T_freemani_transcripts.fna",
         "T_molitor" : f"{nuc_dir}T_molitor_transcripts.fna",
         "Z_morio" : f"{nuc_dir}Z_morio_transcripts.fna",
     }
@@ -130,11 +131,20 @@ def make_ortholog_fasta_files(brh_tables, nucleotides_dict, chr_type = "X", outd
     nucleotides_seqs_dict = {}
     print(f"reading nucleotide files...")
     for species in brh_tables.keys():
-        print(f"> {species} ({nucleotides_dict[species]})")
+        species_partners = list(brh_tables[species].keys())
         # make dict from the nucleotide files
-        nucleotides_seqs_dict[species] = {}
-        for cds_record in SeqIO.parse(nucleotides_dict[species], "fasta"):
-            nucleotides_seqs_dict[species][cds_record.id] = cds_record
+        if species not in nucleotides_seqs_dict.keys():
+            nucleotides_seqs_dict[species] = {}
+            for cds_record in SeqIO.parse(nucleotides_dict[species], "fasta"):
+                nucleotides_seqs_dict[species][cds_record.id] = cds_record                
+            print(f"> {species} ({nucleotides_dict[species]}, {len(nucleotides_seqs_dict[species])} transcripts)")
+        
+        for species_partner in species_partners:
+            if species_partner not in nucleotides_seqs_dict.keys():
+                nucleotides_seqs_dict[species_partner] = {}
+                for cds_record in SeqIO.parse(nucleotides_dict[species_partner], "fasta"):
+                    nucleotides_seqs_dict[species_partner][cds_record.id] = cds_record
+            print(f"> {species_partner} ({nucleotides_dict[species_partner]}, {len(nucleotides_seqs_dict[species_partner])} transcripts)")
     
     for species in brh_tables.keys():
         print(f">>>>>> {species}")
@@ -143,10 +153,7 @@ def make_ortholog_fasta_files(brh_tables, nucleotides_dict, chr_type = "X", outd
             count_pairs = 0
             ## read and filter to only include hits on chr_type
             brh_table = pd.read_csv(brh_path, sep="\t")
-            print(brh_table)
             brh_filtered = brh_table[brh_table["chromosome"] == chr_type]
-            print(f"after filtering {species} for {chr_type}...")
-            print(brh_filtered)
             brh_filtered = brh_filtered[brh_filtered["chromosome.1"] == chr_type]
             print(f"\t{species_partner} : {len(brh_filtered)} orthologs on {chr_type} ({brh_path})")
             
@@ -155,19 +162,28 @@ def make_ortholog_fasta_files(brh_tables, nucleotides_dict, chr_type = "X", outd
                 os.mkdir(pair_dirname)
 
             for brh_pair in brh_filtered.itertuples():
-                # print(f"ID1 = {brh_pair[1]} , ID2 = {brh_pair[3]}")
+                print(f"ID1 = {brh_pair[1]}, ID2 = {brh_pair[3]}")
                 try:
                     record1 = nucleotides_seqs_dict[species][brh_pair[1]]
                     record1.id=f">{brh_pair[1]}_{species}_{chr_type}"
                 except:
                     not_found_partners_dict[species]+=1
-                    # raise RuntimeError(f"{brh_pair[1]} not found in {nucleotides_dict[species]}")
+                    try:
+                        transcripts_fasta = nucleotides_seqs_dict[species]
+                    except:
+                        raise RuntimeError(f"{species} does not have a transcripts file in 'nucleotides_dict'.")
+                    raise RuntimeError(f"{brh_pair[1]} not found in {transcripts_fasta}")
+                
                 try:
                     record2 = nucleotides_seqs_dict[species_partner][brh_pair[3]]
                     record2.id=f">{brh_pair[3]}_{species_partner}_{chr_type}"
                 except:
                     not_found_partners_dict[species_partner]+=1
-                    # raise RuntimeError(f"{brh_pair[3]} not found in {nucleotides_dict[species_partner]}")
+                    try:
+                        transcripts_fasta = nucleotides_seqs_dict[species_partner]
+                    except:
+                        raise RuntimeError(f"{species_partner} does not have a transcripts file in 'nucleotides_dict'.")
+                    raise RuntimeError(f"{brh_pair[3]} not found in {transcripts_fasta}")
                 
                 brh_seq_records = [record1,record2]
                 fasta_name = f"{pair_dirname}{species}_{species_partner}_{chr_type}-linked_ortholog_{count_pairs}.fasta"
