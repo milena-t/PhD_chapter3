@@ -34,6 +34,12 @@ def ortholog_tables(username = "miltr339", x_syntenic = False):
         f"{dir_path}D_carinulata_D_carinulata_BRH.tsv",
         f"{dir_path}D_carinulata_D_sublineata_BRH.tsv",
         f"{dir_path}D_sublineata_D_sublineata_BRH.tsv",
+        f"{dir_path}T_castaneum_T_freemani_BRH.tsv",
+        f"{dir_path}T_castaneum_T_castaneum_BRH.tsv",
+        f"{dir_path}T_freemani_T_freemani_BRH.tsv",
+        f"{dir_path}C_magnifica_C_septempunctata_BRH.tsv",
+        f"{dir_path}C_magnifica_C_magnifica_BRH.tsv",
+        f"{dir_path}C_septempunctata_C_septempunctata_BRH.tsv",
     ]
     dirs_list_x_syntenic = [
         f"{dir_path}A_obtectus_A_obtectus_BRH.tsv",
@@ -113,7 +119,9 @@ def make_array_for_heatmap(brh_tables_list:list, chr_type:str = "A", verbose = F
     if verbose:
         print(f"{species_count} species: {species_index}")
     
-    ortholog_counts = np.zeros((species_count,species_count), dtype=float)
+    # ortholog_counts = np.zeros((species_count,species_count), dtype=float)
+    ortholog_counts = np.empty((species_count,species_count))
+    ortholog_counts[:] = np.nan
 
     ## fill the initalized table with the counts
     for brh_table_path in brh_tables_list:
@@ -129,11 +137,14 @@ def make_array_for_heatmap(brh_tables_list:list, chr_type:str = "A", verbose = F
         species2 = f"{gen2}_{spec2}"
         index2 = species_index[species2]
         if species1 == species2:
-            ortholog_counts[index1, index2] = np.NaN
+            ortholog_counts[index1, index2] = np.nan
         else:
             count_brh = count_orthologs(brh_table_path, chr_type=chr_type, verbose=False)
-            ortholog_counts[index1, index2] = count_brh
-            ortholog_counts[index2, index1] = count_brh
+            if count_brh > 0:
+                ortholog_counts[index1, index2] = count_brh
+                ortholog_counts[index2, index1] = count_brh
+            print(f"{species1}, {species2}: {count_brh}")
+
 
     if verbose:
         print(ortholog_counts)
@@ -148,7 +159,7 @@ def plot_heatmap(counts_array, species_list, filename = "BRH_orthologs_heatmap.p
     """
 
     fs = 40
-    aspect_ratio = 15 / 15
+    aspect_ratio = 18 / 18
     height_pixels = 2000  # Height in pixels
     width_pixels = int(height_pixels * aspect_ratio)  # Width in pixels
     fig = plt.figure(figsize=(width_pixels / 100, height_pixels / 100), dpi=100)
@@ -164,7 +175,7 @@ def plot_heatmap(counts_array, species_list, filename = "BRH_orthologs_heatmap.p
         for j in range(len(species_list)):
             try:
                 count = int(counts_array[i, j])
-                text = ax.text(j, i, count,ha="center", va="center", color="w", fontsize = fs)
+                text = ax.text(j, i, count,ha="center", va="center", color="w", fontsize = fs*0.75)
             except:
                 continue
 
@@ -228,7 +239,7 @@ if __name__ == "__main__":
     username = "miltr339"
 
     ## use the Dcar autosome that is syntenic with the other X chromosomes
-    Dcar_anc_X = True
+    Dcar_anc_X = False
 
     all_tables_list, dir_path = ortholog_tables(username=username, x_syntenic=Dcar_anc_X)
 
