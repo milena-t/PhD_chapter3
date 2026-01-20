@@ -17,6 +17,7 @@ def nucleotides_paths(username = "miltr339"):
         "C_chinensis" : f"{nuc_dir}C_chinensis_transcripts.fna",
         "C_maculatus" : f"{nuc_dir}C_maculatus_transcripts.fna",
         "C_septempunctata" : f"{nuc_dir}C_septempunctata_transcripts.fna",
+        "C_magnifica" : f"{nuc_dir}C_magnifica_transcripts.fna",
         "D_carinulata" : f"{nuc_dir}D_carinulata_transcripts.fna",
         "D_melanogaster" : f"{nuc_dir}D_melanogaster_transcripts.fna",
         "D_ponderosae" : f"{nuc_dir}D_ponderosae_transcripts.fna",
@@ -69,39 +70,46 @@ def brh_results(username = "miltr339", X_syntenic = False):
         }
     }
     brh_tables = {
-        "A_obtectus" : {
-            "A_obtectus" : f"{brh_dir}A_obtectus_A_obtectus_BRH.tsv",
-            "B_siliquastri" : f"{brh_dir}A_obtectus_B_siliquastri_BRH.tsv",
-            "C_chinensis" : f"{brh_dir}A_obtectus_C_chinensis_BRH.tsv",
-            "C_maculatus" : f"{brh_dir}A_obtectus_C_maculatus_BRH.tsv",
-            # "D_carinulata" : f"{brh_dir}A_obtectus_D_carinulata_BRH.tsv",
-            # "D_sublineata" : f"{brh_dir}A_obtectus_D_sublineata_BRH.tsv",
+        # "A_obtectus" : {
+        #     "A_obtectus" : f"{brh_dir}A_obtectus_A_obtectus_BRH.tsv",
+        #     "B_siliquastri" : f"{brh_dir}A_obtectus_B_siliquastri_BRH.tsv",
+        #     "C_chinensis" : f"{brh_dir}A_obtectus_C_chinensis_BRH.tsv",
+        #     "C_maculatus" : f"{brh_dir}A_obtectus_C_maculatus_BRH.tsv",
+        #     # "D_carinulata" : f"{brh_dir}A_obtectus_D_carinulata_BRH.tsv",
+        #     # "D_sublineata" : f"{brh_dir}A_obtectus_D_sublineata_BRH.tsv",
+        # },
+        # "B_siliquastri" : {
+        #     "B_siliquastri" : f"{brh_dir}B_siliquastri_B_siliquastri_BRH.tsv",
+        #     "C_chinensis" : f"{brh_dir}B_siliquastri_C_chinensis_BRH.tsv",
+        #     "C_maculatus" : f"{brh_dir}B_siliquastri_C_maculatus_BRH.tsv",
+        #     # "D_carinulata" : f"{brh_dir}B_siliquastri_D_carinulata_BRH.tsv",
+        #     # "D_sublineata" : f"{brh_dir}B_siliquastri_D_sublineata_BRH.tsv",
+        # },
+        # "C_chinensis" : {
+        #     "C_chinensis" : f"{brh_dir}C_chinensis_C_chinensis_BRH.tsv",
+        #     "C_maculatus" : f"{brh_dir}C_chinensis_C_maculatus_BRH.tsv",
+        #     # "D_carinulata" : f"{brh_dir}C_chinensis_D_carinulata_BRH.tsv",
+        #     # "D_sublineata" : f"{brh_dir}C_chinensis_D_sublineata_BRH.tsv",
+        # },
+        # "C_maculatus" : {
+        #     "C_maculatus" : f"{brh_dir}C_maculatus_C_maculatus_BRH.tsv",
+        #     # "D_carinulata" : f"{brh_dir}C_maculatus_D_carinulata_BRH.tsv",
+        #     # "D_sublineata" : f"{brh_dir}C_maculatus_D_sublineata_BRH.tsv",
+        # },
+        # "D_carinulata" : {
+        #     "D_carinulata" : f"{brh_dir}D_carinulata_D_carinulata_BRH.tsv",
+        #     "D_sublineata" : f"{brh_dir}D_carinulata_D_sublineata_BRH.tsv",
+        # },
+        # "D_sublineata" : {
+        #     "D_sublineata" : f"{brh_dir}D_sublineata_D_sublineata_BRH.tsv",
+        # },
+        "T_castaneum" : {
+            "T_freemani" : f"{brh_dir}T_castaneum_T_freemani_BRH.tsv",
         },
-        "B_siliquastri" : {
-            "B_siliquastri" : f"{brh_dir}B_siliquastri_B_siliquastri_BRH.tsv",
-            "C_chinensis" : f"{brh_dir}B_siliquastri_C_chinensis_BRH.tsv",
-            "C_maculatus" : f"{brh_dir}B_siliquastri_C_maculatus_BRH.tsv",
-            # "D_carinulata" : f"{brh_dir}B_siliquastri_D_carinulata_BRH.tsv",
-            # "D_sublineata" : f"{brh_dir}B_siliquastri_D_sublineata_BRH.tsv",
-        },
-        "C_chinensis" : {
-            "C_chinensis" : f"{brh_dir}C_chinensis_C_chinensis_BRH.tsv",
-            "C_maculatus" : f"{brh_dir}C_chinensis_C_maculatus_BRH.tsv",
-            # "D_carinulata" : f"{brh_dir}C_chinensis_D_carinulata_BRH.tsv",
-            # "D_sublineata" : f"{brh_dir}C_chinensis_D_sublineata_BRH.tsv",
-        },
-        "C_maculatus" : {
-            "C_maculatus" : f"{brh_dir}C_maculatus_C_maculatus_BRH.tsv",
-            # "D_carinulata" : f"{brh_dir}C_maculatus_D_carinulata_BRH.tsv",
-            # "D_sublineata" : f"{brh_dir}C_maculatus_D_sublineata_BRH.tsv",
-        },
-        "D_carinulata" : {
-            "D_carinulata" : f"{brh_dir}D_carinulata_D_carinulata_BRH.tsv",
-            "D_sublineata" : f"{brh_dir}D_carinulata_D_sublineata_BRH.tsv",
-        },
-        "D_sublineata" : {
-            "D_sublineata" : f"{brh_dir}D_sublineata_D_sublineata_BRH.tsv",
+        "C_magnifica" : {
+            "C_septempunctata" : f"{brh_dir}C_magnifica_C_septempunctata_BRH.tsv",
         }
+
     }
     if X_syntenic:
         return brh_tables_X_syntenic
@@ -135,9 +143,10 @@ def make_ortholog_fasta_files(brh_tables, nucleotides_dict, chr_type = "X", outd
             count_pairs = 0
             ## read and filter to only include hits on chr_type
             brh_table = pd.read_csv(brh_path, sep="\t")
+            print(brh_table)
             brh_filtered = brh_table[brh_table["chromosome"] == chr_type]
             brh_filtered = brh_filtered[brh_filtered["chromosome.1"] == chr_type]
-            print(f"\t{species_partner} : {len(brh_filtered)} orthologs ")
+            print(f"\t{species_partner} : {len(brh_filtered)} orthologs on {chr_type} ({brh_path})")
             
             pair_dirname = f"{outdir}{species}_{species_partner}/"
             if not os.path.isdir(pair_dirname):
@@ -189,4 +198,4 @@ if __name__ == "__main__":
         outdir_A = f"/Users/{username}/work/pairwise_blast_chapter_2_3/brh_tables/brh_sequences_A/"
     
     make_ortholog_fasta_files(brh_tables, nucleotides_dict, chr_type="X", outdir= outdir_X)
-    make_ortholog_fasta_files(brh_tables, nucleotides_dict, chr_type="A", outdir= outdir_A)
+    # make_ortholog_fasta_files(brh_tables, nucleotides_dict, chr_type="A", outdir= outdir_A)
