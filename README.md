@@ -171,16 +171,39 @@ I have annotated *T. freemani* with available RNAseq data from Whittle2020, but 
 
 #### BUSCO scores
 
-```text
-C. maculatus superscaffolded (adult LOME RNAseq but no larval)
-(19022 genes)
+*C. maculatus* superscaffolded (adult LOME RNAseq but no larval), 19022 genes
 
+```text
 C:98.7%[S:72.2%,D:26.5%],F:0.6%,M:0.7%,n:1013	   
 999	Complete BUSCOs (C)			   
 731	Complete and single-copy BUSCOs (S)	   
 268	Complete and duplicated BUSCOs (D)	   
 6	Fragmented BUSCOs (F)			   
 8	Missing BUSCOs (M)			   
+1013	Total BUSCO groups searched
+```
+
+*C. magnifica* (no RNA available), 18978 genes
+
+```text
+C:96.0%[S:86.6%,D:9.4%],F:0.9%,M:3.1%,n:1013	   
+972	Complete BUSCOs (C)			   
+877	Complete and single-copy BUSCOs (S)	   
+95	Complete and duplicated BUSCOs (D)	   
+9	Fragmented BUSCOs (F)			   
+32	Missing BUSCOs (M)			   
+1013	Total BUSCO groups searched
+```
+
+*T. freemani* (includes RNAseq data), 18028 genes
+
+```text
+C:96.6%[S:88.5%,D:8.1%],F:1.4%,M:2.0%,n:1013	   
+978	Complete BUSCOs (C)			   
+896	Complete and single-copy BUSCOs (S)	   
+82	Complete and duplicated BUSCOs (D)	   
+14	Fragmented BUSCOs (F)			   
+21	Missing BUSCOs (M)			   
 1013	Total BUSCO groups searched
 ```
 
