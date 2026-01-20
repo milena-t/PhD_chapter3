@@ -213,7 +213,11 @@ if __name__ == "__main__":
     annotation_path1 = args.annotation1
     annotation_path2 = args.annotation2
     verbose = args.verbose
+    ###
+    # the C. magnifica contigs contain a comma because God is trying to test me. don't split in this case
+    # X_list1 = [args.X_contigs1.strip()]
     X_list1 = args.X_contigs1.strip().split(",")
+    ###
     X_list2 = args.X_contigs2.strip().split(",")
     if args.Y_contigs1 and args.Y_contigs2:
         Y_list1 = args.Y_contigs1.strip().split(",")
