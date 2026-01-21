@@ -419,6 +419,18 @@ I will continue with best reciprocal hits, becasue the orthofinder clustering is
 
 I have decided to go with the paml site model, since I am only doing a pairwise comparison, and the branch model is not reliable for a tree of only two species. I compute M1a and M2a models (nearly neutral and positive selection respectively, see paml documentation), do the likelihood ratio test, and then return the site-class table of M2a if the test is significant, and M1a if it is not. This can then be used to either compute an average dNdS for the entire gene (weighted by proportions) or to do some other independent statistical analysis based on the proportion of positively selected sites in A vs. X genes. I use two degrees of freedom for the LRT as specified in the paml documentation.
 
+## w values from site classes
+
+I use as an example here a gene under positive selection: Dcar_Dsub ortholog no. 0.
+
+```text 
+p:   0.93938  0.00000  0.06061
+w:   0.04346  1.00000 27.41259
+```
+when I use `p` as weights, the weighted average w is 0.0437239804. Accodring to the `dN & dS for each branch` table, the dNdS is  1.7024, but even with the normal, non-weighted mean I only get 0.33893, so no clue what is happening here. Since I specify a site model and not a branch model, I will ignore this.
+
+Additionally, 27.4 seems crazy high for w, so I am not using the actual numerical value, but rather the proportion.
+
 # dNdS: paml branch model
 
 The paml branch model takes multiple sequence alignments and fits dNdS values to every branch. This approach worked when using MSAs of phylogeny-wide 1-to-1 orthologs, since those have more species in them. For the pairwise test we use now this is not a good approach because the "tree" here is only two species, which is not recommended. Therefore we decided to switch to site-models instead, see above. I keep these results here just in case I need them again for some reason.
