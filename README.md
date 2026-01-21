@@ -458,9 +458,9 @@ Everything is 10000 permutations, and A-X, therefore:
 
 ### Coccinella
 
-**Binary** (left): FastX in all comparison except *B. siliquastri*
+**Binary** (left): Significantly slowX
 
-**Proportional** (right): no difference between X and A
+**Proportional** (right): Significantly slowX
 
 <p float="left">
   <img src="data/fastX_ortholog_ident/fastX_bin_pos_sites_permutation_Csep_Cmag_white_bg.png" width="45%" />
@@ -469,9 +469,9 @@ Everything is 10000 permutations, and A-X, therefore:
 
 ### Tribolium
 
-**Binary** (left): FastX in all comparison except *B. siliquastri*
+**Binary** (left): not significant
 
-**Proportional** (right): no difference between X and A
+**Proportional** (right): not significant
 
 <p float="left">
   <img src="data/fastX_ortholog_ident/fastX_bin_pos_sites_permutation_Tcas_Tfre_white_bg.png" width="45%" />
