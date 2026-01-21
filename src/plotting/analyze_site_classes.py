@@ -84,6 +84,30 @@ def species_names_from_pair(pair_string):
     return f"{g1}_{s1}", f"{g2}_{s2}"
 
 
+def get_pairs_from_summary(summary_path):
+    """
+    get a list of species pair sets from the summary path
+    """
+    if not os.path.isfile(summary_path):
+        raise RuntimeError(f"FILE: {summary_path} does not exist!")
+    
+
+    with open(summary_path, "r") as summary_file:
+        lines = summary_file.readlines()
+        pairs_list = ['']*len(lines)
+        for i, line in enumerate(lines):
+            filepath = line.strip().split(" : ")[0]
+            filepath = filepath.split("/")
+            pair_name = filepath[-3]
+            species1,species2=species_names_from_pair(pair_name)
+            if "-" in species1 or "-" in species2:
+                raise RuntimeError(f"wrong parsing!\n {line} \n-> {filepath} \n-> {pair_name}")
+            pairs_list[i] = f"{species1}_{species2}"
+        pairs_list_unique = list(set(pairs_list))
+    
+    return pairs_list_unique
+
+
 def read_site_classes(summary_path):
     """
     read the site classes summary file into a data structure
@@ -100,8 +124,8 @@ def read_site_classes(summary_path):
             try:
                 filepath_str, site_classes_string = line.strip().split(" : ")
             except:
-                continue
                 raise RuntimeError(f"line cannot be parsed! \n{line}")
+                # continue
             filepath = filepath_str.split("/")
             
             pair_name,site_class_name = filepath[-2:]
@@ -137,36 +161,34 @@ def read_site_classes(summary_path):
     return out_dict, no_dNdS
 
 
-def get_pairs_from_summary(summary_path):
+def count_pos_sel_genes(summary_dict):
     """
-    get a list of species pair sets from the summary path
+    takes a summary dict created by read_site_classes and returns the total number of genes investigated 
+    and the number of genes with positively selected sites according to the LRT
     """
-    if not os.path.isfile(summary_path):
-        raise RuntimeError(f"FILE: {summary_path} does not exist!")
-    
+    out_dict = {pair : [np.nan, np.nan] for pair in summary_dict.keys}
 
-    with open(summary_path, "r") as summary_file:
-        lines = summary_file.readlines()
-        pairs_list = ['']*len(lines)
-        for i, line in enumerate(lines):
-            filepath = line.strip().split(" : ")[0]
-            filepath = filepath.split("/")
-            pair_name = filepath[-3]
-            species1,species2=species_names_from_pair(pair_name)
-            if "-" in species1 or "-" in species2:
-                raise RuntimeError(f"wrong parsing!\n {line} \n-> {filepath} \n-> {pair_name}")
-            pairs_list[i] = f"{species1}_{species2}"
-        pairs_list_unique = list(set(pairs_list))
+    for pair, orthologs_list in summary_dict.items():
+        count_all = 0
+        count_pos = 0
+        for ortholog in orthologs_list:
+            count_all+=1
+            if ortholog.site_classes.sig_pos_selection:
+                count_pos+=1
+
+        out_dict[pair][0] = count_all
+        out_dict[pair][1] = count_pos
     
-    return pairs_list_unique
+    return out_dict
 
 
 if __name__ == "__main__":
 
+    chr_types = ["X"]
 
-    summary_dict_X, no_dNdS_X = read_site_classes(site_classes_files["X"])
-    pairs = list(summary_dict_X.keys())
-    example_og = summary_dict_X[pairs[0]][0]
-    print(example_og)
-    print()
-    print(print(example_og.site_classes))
+    for chr_type in chr_types:
+        summary_dict_X, no_dNdS_X = read_site_classes(site_classes_files[chr_type])
+        pairs = list(summary_dict_X.keys())
+        
+        for pair, absent_list in no_dNdS_X.items():
+            print(f"{pair} : \t {len(absent_list)} genes could not be computed")
