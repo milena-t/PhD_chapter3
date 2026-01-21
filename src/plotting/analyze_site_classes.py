@@ -214,7 +214,7 @@ def avg_prop_pos_sel_sites(summary_dict, full_list = False):
 if __name__ == "__main__":
 
     chr_types = ["X", "A"]
-    username = f"miltr339"
+    username = "milena" # f"miltr339"
 
     if False:
         ## compute statistics to terminal
@@ -281,10 +281,12 @@ if __name__ == "__main__":
         
     if type_plot == "prop":
         violin_ymax=0.2
+        binary=False
     else:
         violin_ymax=0
+        binary=True
 
     bootstrap_dNdS.plot_dNdS_permutations(boot_diff=bootstraps,measure_diff=mean_num_pos_sel, A_dict=pos_list_A, X_dict=pos_list_X, 
                                             filename=plot_name, hist_label = f"mean({type_plot}_A)-mean({type_plot}_X)", violin_label=f"{type_plot}. pos. sel.", 
-                                            violin_ymax=violin_ymax, transparent=False)
+                                            violin_ymax=violin_ymax, transparent=False, binary=binary)
     

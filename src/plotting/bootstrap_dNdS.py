@@ -57,7 +57,7 @@ def calculate_list_CI(values_list:list, cl = 0.95, verbose = False):
     return(norm_coeffs)
 
 
-def plot_dNdS_permutations(boot_diff:dict, measure_diff:dict, A_dict:dict, X_dict:dict, filename = "dNdS_permutations.png", dark_mode=False, hist_label = r"$\text{dNdS}_A - \text{dNdS}_X$", violin_label="dNdS", violin_ymax = 0, transparent=True):
+def plot_dNdS_permutations(boot_diff:dict, measure_diff:dict, A_dict:dict, X_dict:dict, filename = "dNdS_permutations.png", dark_mode=False, hist_label = r"$\text{dNdS}_A - \text{dNdS}_X$", violin_label="dNdS", violin_ymax = 0, transparent=True, binary = False):
     """
     plot a grid of histogram distribution plots for all pairwise comparisons
     """
@@ -175,7 +175,7 @@ def plot_dNdS_permutations(boot_diff:dict, measure_diff:dict, A_dict:dict, X_dic
         axes[col,col].axis('off')
 
         
-        ### plot violins
+        ### plot violins or binary bar charts
 
         ## exclude all the NaNs because violinplot can't handle them
         data_A_nan = np.array(A_dict[pair], dtype=float)
@@ -195,7 +195,18 @@ def plot_dNdS_permutations(boot_diff:dict, measure_diff:dict, A_dict:dict, X_dic
 
         data_AX = [data_A, data_X]
         # plot mirror
-        violinplot_pair(data_A_X=data_AX, row=col, col=row, n_A=n_A, n_X=n_X, mean_A=mean_A, mean_X=mean_X, axes = axes, colors_dict=colors_dict, fs = fs, xlab = violin_label, ymax = violin_ymax)
+
+        if binary:
+            A_nonsig = len([val for val in data_A if val == 0.0])
+            X_nonsig = len([val for val in data_X if val == 0.0])
+            nonsig = [A_nonsig/len(data_A), X_nonsig/len(data_X)]
+            A_sig = len([val for val in data_A if val == 1.0])
+            X_sig = len([val for val in data_X if val == 1.0])
+            sig = [A_sig/len(data_A), X_sig/len(data_X)]
+            axes[col,row].bar([1,2], nonsig, width = 0.75, label='M1a', color=[colors_dict["A"], colors_dict["X"]], hatch="")
+            axes[col,row].bar([1,2], sig, width = 0.75, bottom=nonsig, label='M2a', color= [colors_dict["A"], colors_dict["X"]], hatch="//")
+        else:
+            violinplot_pair(data_A_X=data_AX, row=col, col=row, n_A=n_A, n_X=n_X, mean_A=mean_A, mean_X=mean_X, axes = axes, colors_dict=colors_dict, fs = fs, xlab = violin_label, ymax = violin_ymax)
         # axes[col,row].set_title(f'{species2}\n{species1}', fontsize = fs*0.85)
         # axes[col,row].set_title(f'{species2}', fontsize = fs)
 
