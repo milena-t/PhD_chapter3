@@ -198,7 +198,7 @@ def get_site_classes(results_dir, outfile_name = ""):
                 pair_list = site_classes_list_of_pair(pair_dir, results_dir)
                 
                 pair_list = "\n".join([str(dNdS) for dNdS in pair_list])
-                outfile.write(f"{pair_list}\n")
+                outfile.write(f"{pair_list}\n") ## !! do not forget fucking tailing newline !!
 
         print(f"outfile saved to: {outfile_name}\nin {results_dir}")
 
