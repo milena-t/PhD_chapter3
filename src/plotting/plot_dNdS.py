@@ -36,7 +36,7 @@ def calculate_num_species(dNdS_dict):
     """
     rearrange the binomial coefficient (multiplicative formula, k = 2)
     to get the original number of species from the number of unique unordered pairwise comparisons (excl. self comparison)
-    
+    !! this does only work when there's a complete set of comparisons of every species against every other species
     """
     pairs = len(dNdS_dict)
     num_ind = (1+sqrt(1+8*pairs))/2
@@ -54,7 +54,8 @@ def get_species_list(dNdS_dict):
         sp2 = f"{split_names[2]}_{split_names[3]}"
         species.append(sp2)
     species = list(set(species))
-    assert len(species) == calculate_num_species(dNdS_dict)
+    # assert len(species) == calculate_num_species(dNdS_dict)
+    # the assertion doesn't hold any more with new species selection because I don't do complete comparisons of every species vs. every other species any more
     return(species)
 
 
