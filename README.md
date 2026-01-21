@@ -417,7 +417,7 @@ I will continue with best reciprocal hits, becasue the orthofinder clustering is
 
 # dNdS: paml site models and LRT
 
-I have decided to go with the paml site model, since I am only doing a pairwise comparison, and the branch model is not reliable for a tree of only two species. I compute M1a and M2a models (nearly neutral and positive selection respectively, see paml documentation), do the likelihood ratio test, and then return the site-class table of M2a if the test is significant, and M1a if it is not. This can then be used to either compute an average dNdS for the entire gene (weighted by proportions) or to do some other independent statistical analysis based on the proportion of positively selected sites in A vs. X genes.
+I have decided to go with the paml site model, since I am only doing a pairwise comparison, and the branch model is not reliable for a tree of only two species. I compute M1a and M2a models (nearly neutral and positive selection respectively, see paml documentation), do the likelihood ratio test, and then return the site-class table of M2a if the test is significant, and M1a if it is not. This can then be used to either compute an average dNdS for the entire gene (weighted by proportions) or to do some other independent statistical analysis based on the proportion of positively selected sites in A vs. X genes. I use two degrees of freedom for the LRT as specified in the paml documentation.
 
 # dNdS: paml branch model
 
