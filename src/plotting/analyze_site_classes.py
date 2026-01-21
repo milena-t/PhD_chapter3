@@ -7,6 +7,7 @@ and then p and w from the site classes table. Either two or three site classes, 
 
 import os
 import numpy as np
+import bootstrap_dNdS 
 
 site_classes_files = {
     "A" : "/Users/miltr339/work/chapter3/dNdS/site_classes_summary_A-linked.txt",
@@ -161,28 +162,36 @@ def read_site_classes(summary_path):
     return out_dict, no_dNdS
 
 
-def count_pos_sel_genes(summary_dict):
+def count_pos_sel_genes(summary_dict, full_list = False):
     """
     takes a summary dict created by read_site_classes and returns the total number of genes investigated 
     and the number of genes with positively selected sites according to the LRT
+    if full_list, it doesn't return counts but a binary list of 1 and 0 depending on if a gene is positively selected or not
     """
     out_dict = {pair : [np.nan, np.nan] for pair in summary_dict.keys()}
 
     for pair, orthologs_list in summary_dict.items():
+        binary_list = [np.nan]*len(orthologs_list)
         count_all = 0
         count_pos = 0
-        for ortholog in orthologs_list:
+        for i, ortholog in enumerate(orthologs_list):
             count_all+=1
             if ortholog.site_classes.sig_pos_selection:
                 count_pos+=1
+                binary_list[i]=1
+            else:
+                binary_list[i]=0
 
-        out_dict[pair][0] = count_all
-        out_dict[pair][1] = count_pos
+        if full_list:
+            out_dict[pair] = binary_list
+        else:    
+            out_dict[pair][0] = count_all
+            out_dict[pair][1] = count_pos
     
     return out_dict
 
 
-def avg_prop_pos_sel_sites(summary_dict):
+def avg_prop_pos_sel_sites(summary_dict, full_list = False):
     """
     takes a summary dict created by read_site_classes and returns the average proportion of positively selected sites 
     """
@@ -194,7 +203,10 @@ def avg_prop_pos_sel_sites(summary_dict):
         for i, ortholog in enumerate(orthologs_list):
             proportion_list[i] = ortholog.site_classes.p_pos
 
-        out_dict[pair] = np.nanmean(proportion_list)
+        if full_list:
+            out_dict[pair] = proportion_list
+        else:
+            out_dict[pair] = np.nanmean(proportion_list)
     
     return out_dict
 
@@ -202,22 +214,54 @@ def avg_prop_pos_sel_sites(summary_dict):
 if __name__ == "__main__":
 
     chr_types = ["X", "A"]
+    username = f"miltr339"
 
-    for chr_type in chr_types:
-        print(f"\n//////////////////// {chr_type} ////////////////////\n")
+    if False:
+        ## compute statistics to terminal
+        for chr_type in chr_types:
+            print(f"\n//////////////////// {chr_type} ////////////////////\n")
 
-        summary_dict_X, no_dNdS_X = read_site_classes(site_classes_files[chr_type])
-        pos_counts = count_pos_sel_genes(summary_dict_X)
-        mean_pos_prop = avg_prop_pos_sel_sites(summary_dict_X)
-        print(f"number of positively selected genes")
-        for pair, counts_list in pos_counts.items():
-            avg_prop = mean_pos_prop[pair]
-            try:
-                ratio = counts_list[1]*100.0/counts_list[0]
-                print(f"\t{pair} : \t {counts_list[1]} of {counts_list[0]} ({ratio:.2f} %) genes have positively selected sites, avg. {avg_prop:.3}")
-            except:
-                print(f"\t{pair} : \t {counts_list[1]} of {counts_list[0]} genes have positively selected sites")
+            summary_dict_X, no_dNdS_X = read_site_classes(site_classes_files[chr_type])
+            pos_counts = count_pos_sel_genes(summary_dict_X)
+            mean_pos_prop = avg_prop_pos_sel_sites(summary_dict_X)
+            print(f" *  number of positively selected genes")
+            for pair, counts_list in pos_counts.items():
+                avg_prop = mean_pos_prop[pair]
+                try:
+                    ratio = counts_list[1]*100.0/counts_list[0]
+                    print(f"\t{pair} : \t {counts_list[1]} of {counts_list[0]} ({ratio:.2f} %) genes have positively selected sites, avg. {avg_prop:.3}")
+                except:
+                    print(f"\t{pair} : \t {counts_list[1]} of {counts_list[0]} genes have positively selected sites")
 
-        print(f"\nmissing data:")
-        for pair, absent_list in no_dNdS_X.items():
-            print(f"\t{pair} : \t {len(absent_list)} genes could not be computed, {counts_list[pair][0]} are computed")
+            print(f"\n *  missing data:")
+            for pair, absent_list in no_dNdS_X.items():
+                print(f"\t{pair} : \t {len(absent_list)} genes could not be computed, {pos_counts[pair][0]} are computed")
+
+    ## plot 
+
+    summary_dict_A, no_dNdS_A = read_site_classes(site_classes_files["A"])
+    summary_dict_X, no_dNdS_X = read_site_classes(site_classes_files["X"])
+    pos_bin_list_A = count_pos_sel_genes(summary_dict_A, full_list=True)
+    pos_bin_list_X = count_pos_sel_genes(summary_dict_X, full_list=True)
+    pos_prop_list_A = avg_prop_pos_sel_sites(summary_dict_A, full_list=True)
+    pos_prop_list_X = avg_prop_pos_sel_sites(summary_dict_X, full_list=True)
+
+    pairs_list = list(summary_dict_X.keys())
+
+    bootstraps = {pair : [] for pair in pairs_list}
+    mean_num_pos_sel = {pair : np.NaN for pair in pairs_list}
+    
+    ### test with 100, takes a bit of time otherwise
+    num_permutations = 10000
+
+    for pair in pairs_list:
+        
+        pos_props_A = pos_prop_list_A[pair]
+        pos_props_X = pos_prop_list_X[pair]
+        mean_num_pos_sel[pair] = np.nanmean(pos_props_A) - np.nanmean(pos_props_X)
+        bootstraps[pair] = bootstrap_dNdS.permutate_dNdS(dNdS_A=pos_props_A, dNdS_X=pos_props_X, num_permut=num_permutations)
+        mean_boot = np.mean(bootstraps[pair])
+        print(f" *  {pair} median(prop_A)-median(prop_X)  --> \t{mean_num_pos_sel[pair]:.3f}, mean bootstrap diff {mean_boot:.5f}")
+
+    bootstrap_dNdS.plot_dNdS_permutations(boot_diff=bootstraps,measure_diff=mean_num_pos_sel, A_dict=pos_prop_list_A, X_dict=pos_prop_list_X, filename=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/fastX_prop_pos_sites_permutation.png")
+    
