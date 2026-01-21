@@ -241,12 +241,29 @@ if __name__ == "__main__":
 
     summary_dict_A, no_dNdS_A = read_site_classes(site_classes_files["A"])
     summary_dict_X, no_dNdS_X = read_site_classes(site_classes_files["X"])
-    pos_bin_list_A = count_pos_sel_genes(summary_dict_A, full_list=True)
-    pos_bin_list_X = count_pos_sel_genes(summary_dict_X, full_list=True)
-    pos_prop_list_A = avg_prop_pos_sel_sites(summary_dict_A, full_list=True)
-    pos_prop_list_X = avg_prop_pos_sel_sites(summary_dict_X, full_list=True)
+
+
+    type_plot = "bin" # bin for binary or prop for proportion of sites
+
+    if type_plot == "bin":
+        pos_list_A = count_pos_sel_genes(summary_dict_A, full_list=True)
+        pos_list_X = count_pos_sel_genes(summary_dict_X, full_list=True)
+    elif type_plot == "prop":
+        pos_list_A = avg_prop_pos_sel_sites(summary_dict_A, full_list=True)
+        pos_list_X = avg_prop_pos_sel_sites(summary_dict_X, full_list=True)
 
     pairs_list = list(summary_dict_X.keys())
+
+### specify species subsets
+    # pairs_list = [pair for pair in pairs_list if "T_castaneum" in pair]
+    # plot_name = f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/fastX_{type_plot}_pos_sites_permutation_Tcas_Tfre.png"
+
+    # pairs_list = [pair for pair in pairs_list if "C_magnifica" in pair]
+    # plot_name = f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/fastX_{type_plot}_pos_sites_permutation_Csep_Cmag.png"
+
+    pairs_list = [pair for pair in pairs_list if "C_maculatus" in pair or "C_chinensis" in pair or "A_obtectus" in pair or "B_siliquastri" in pair]
+    plot_name = f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/fastX_{type_plot}_pos_sites_permutation_Bruchini.png"
+###
 
     bootstraps = {pair : [] for pair in pairs_list}
     mean_num_pos_sel = {pair : np.NaN for pair in pairs_list}
@@ -255,13 +272,19 @@ if __name__ == "__main__":
     num_permutations = 10000
 
     for pair in pairs_list:
-        
-        pos_props_A = pos_prop_list_A[pair]
-        pos_props_X = pos_prop_list_X[pair]
+        pos_props_A = pos_list_A[pair]
+        pos_props_X = pos_list_X[pair]
         mean_num_pos_sel[pair] = np.nanmean(pos_props_A) - np.nanmean(pos_props_X)
         bootstraps[pair] = bootstrap_dNdS.permutate_dNdS(dNdS_A=pos_props_A, dNdS_X=pos_props_X, num_permut=num_permutations)
         mean_boot = np.mean(bootstraps[pair])
-        print(f" *  {pair} median(prop_A)-median(prop_X)  --> \t{mean_num_pos_sel[pair]:.3f}, mean bootstrap diff {mean_boot:.5f}")
+        print(f" *  {pair} mean({type_plot}_A)-mean({type_plot}_X)  --> \t{mean_num_pos_sel[pair]:.4f}, mean bootstrap diff {mean_boot:.6f}")
+        
+    if type_plot == "prop":
+        violin_ymax=0.2
+    else:
+        violin_ymax=0
 
-    bootstrap_dNdS.plot_dNdS_permutations(boot_diff=bootstraps,measure_diff=mean_num_pos_sel, A_dict=pos_prop_list_A, X_dict=pos_prop_list_X, filename=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/fastX_prop_pos_sites_permutation.png")
+    bootstrap_dNdS.plot_dNdS_permutations(boot_diff=bootstraps,measure_diff=mean_num_pos_sel, A_dict=pos_list_A, X_dict=pos_list_X, 
+                                            filename=plot_name, hist_label = f"mean({type_plot}_A)-mean({type_plot}_X)", violin_label=f"{type_plot}. pos. sel.", 
+                                            violin_ymax=violin_ymax, transparent=False)
     

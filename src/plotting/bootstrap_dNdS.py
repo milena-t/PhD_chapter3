@@ -23,7 +23,7 @@ def permutate_dNdS(dNdS_A, dNdS_X, num_permut = 1000, mean=False):
     permutate n times and calculate the differences of median between all pairs
     """
     medians_diff_list = [np.NaN] * num_permut
-    # for i in tqdm(range(num_permut)):
+    print(f"... running {num_permut} permutations ...")
     if mean:
         for i in range(num_permut):
             new_A, new_X = permute_dNdS(dNdS_A=dNdS_A, dNdS_X=dNdS_X)
@@ -57,7 +57,7 @@ def calculate_list_CI(values_list:list, cl = 0.95, verbose = False):
     return(norm_coeffs)
 
 
-def plot_dNdS_permutations(boot_diff:dict, measure_diff:dict, A_dict:dict, X_dict:dict, filename = "dNdS_permutations.png", dark_mode=False):
+def plot_dNdS_permutations(boot_diff:dict, measure_diff:dict, A_dict:dict, X_dict:dict, filename = "dNdS_permutations.png", dark_mode=False, hist_label = r"$\text{dNdS}_A - \text{dNdS}_X$", violin_label="dNdS", violin_ymax = 0, transparent=True):
     """
     plot a grid of histogram distribution plots for all pairwise comparisons
     """
@@ -80,7 +80,6 @@ def plot_dNdS_permutations(boot_diff:dict, measure_diff:dict, A_dict:dict, X_dic
     
     fs = 25
     plt.rcParams['text.usetex'] = True
-    xlab = r"$\text{dNdS}_A - \text{dNdS}_X$"
 
     colors_dict = {
         "grey" : "#3A4040", 
@@ -111,6 +110,9 @@ def plot_dNdS_permutations(boot_diff:dict, measure_diff:dict, A_dict:dict, X_dic
         if row == len(species_list)-1:
             species1_lab = species1.replace("_", ". ")
             axes[row,row].text(0.1,0.4,f"{species1_lab}", fontsize = fs*1.4)
+        if col == len(species_list)-1:
+            species2_lab = species2.replace("_", ". ")
+            axes[col,col].text(0.1,0.4,f"{species2_lab}", fontsize = fs*1.4)
 
         # only do top right matrix
         if row>col:
@@ -125,7 +127,7 @@ def plot_dNdS_permutations(boot_diff:dict, measure_diff:dict, A_dict:dict, X_dic
 
         ## plot species name on diagonals
         if row not in diagonals_done:
-            axes[row,row+1].set_xlabel(xlab, fontsize = fs)
+            axes[row,row+1].set_xlabel(hist_label, fontsize = fs)
             # axes[row,row].text(0.8,0.2,f"{species1_lab}", rotation = 90, fontsize = fs*1.3)
             axes[row,row].text(0.1,0.4,f"{species1_lab}", fontsize = fs*1.4)
             diagonals_done.append(row)
@@ -144,7 +146,7 @@ def plot_dNdS_permutations(boot_diff:dict, measure_diff:dict, A_dict:dict, X_dic
         mean_boot = np.nanmedian(data_boot)
 
         nbins = 20
-        axes[row,col].hist(data_boot, bins=nbins, weights=np.ones(len(data_boot)) / len(data_boot), histtype="bar", color = [colors_dict["bars"]], label= "dNdS_A - dNdS_X")#, density = True)
+        axes[row,col].hist(data_boot, bins=nbins, weights=np.ones(len(data_boot)) / len(data_boot), histtype="bar", color = [colors_dict["bars"]], label= hist_label)#, density = True)
         axes[row,col].yaxis.set_major_formatter(FuncFormatter(lambda x, pos: '' if x > 99 and x<1 else f'{int(x*100)}%'))
         axes[row,col].axvline(measure_diff[pair], ymin = 0, ymax = len(data_boot)/nbins, color = colors_dict["line"], linewidth = 3)
         # axes[row,col].axvline(0, ymin = 0, ymax = len(data_boot)/nbins, color = colors_dict["grey"], linewidth = 1, linestyle = "--")
@@ -153,9 +155,9 @@ def plot_dNdS_permutations(boot_diff:dict, measure_diff:dict, A_dict:dict, X_dic
         lwd = 3
         pdf_ax = axes[row,col].twinx()
         if measure_diff[pair] > max(data_boot):
-            pdf_x = np.arange(min(data_boot),measure_diff[pair], 0.001)
+            pdf_x = np.arange(min(data_boot),measure_diff[pair], 0.00001)
         else:
-            pdf_x = np.arange(min(data_boot),max(data_boot), 0.001)
+            pdf_x = np.arange(min(data_boot),max(data_boot), 0.00001)
         mean_cor,std_cor,lower_CI,upper_CI = calculate_list_CI(data_boot)
         pdf_y = sts.norm.pdf(pdf_x, mean_cor, std_cor)
         pdf_ax.plot(pdf_x,pdf_y, linewidth=lwd, color=colors_dict["pdf"], label = r"mean $\text{dNdS}_A - \text{dNdS}_X$"+f": {mean_cor:.3f}")#, linestyle="--")
@@ -193,7 +195,7 @@ def plot_dNdS_permutations(boot_diff:dict, measure_diff:dict, A_dict:dict, X_dic
 
         data_AX = [data_A, data_X]
         # plot mirror
-        violinplot_pair(data_A_X=data_AX, row=col, col=row, n_A=n_A, n_X=n_X, mean_A=mean_A, mean_X=mean_X, axes = axes, colors_dict=colors_dict, fs = fs, xlab = "dNdS")
+        violinplot_pair(data_A_X=data_AX, row=col, col=row, n_A=n_A, n_X=n_X, mean_A=mean_A, mean_X=mean_X, axes = axes, colors_dict=colors_dict, fs = fs, xlab = violin_label, ymax = violin_ymax)
         # axes[col,row].set_title(f'{species2}\n{species1}', fontsize = fs*0.85)
         # axes[col,row].set_title(f'{species2}', fontsize = fs)
 
@@ -204,7 +206,10 @@ def plot_dNdS_permutations(boot_diff:dict, measure_diff:dict, A_dict:dict, X_dic
 
     if dark_mode:
         filename = filename.replace(".png", "_darkmode.png")
-    plt.savefig(filename, dpi = 300, transparent = True)
+
+    if transparent == False:
+        filename = filename.replace(".png", "_white_bg.png")
+    plt.savefig(filename, dpi = 300, transparent = transparent)
     print(f"plot saved in current working directory as: {filename}")
 
 
