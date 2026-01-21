@@ -18,17 +18,24 @@ def permute_dNdS(dNdS_A, dNdS_X):
     return new_A, new_X
 
 
-def permutate_dNdS(dNdS_A, dNdS_X, num_permut = 1000):
+def permutate_dNdS(dNdS_A, dNdS_X, num_permut = 1000, mean=False):
     """
     permutate n times and calculate the differences of median between all pairs
     """
     medians_diff_list = [np.NaN] * num_permut
     # for i in tqdm(range(num_permut)):
-    for i in range(num_permut):
-        new_A, new_X = permute_dNdS(dNdS_A=dNdS_A, dNdS_X=dNdS_X)
-        m_A = np.nanmedian(new_A)
-        m_X = np.nanmedian(new_X)
-        medians_diff_list[i] = m_A - m_X
+    if mean:
+        for i in range(num_permut):
+            new_A, new_X = permute_dNdS(dNdS_A=dNdS_A, dNdS_X=dNdS_X)
+            m_A = np.nanmedian(new_A)
+            m_X = np.nanmedian(new_X)
+            medians_diff_list[i] = m_A - m_X
+    else: # median
+        for i in range(num_permut):
+            new_A, new_X = permute_dNdS(dNdS_A=dNdS_A, dNdS_X=dNdS_X)
+            m_A = np.nanmean(new_A)
+            m_X = np.nanmean(new_X)
+            medians_diff_list[i] = m_A - m_X
     
     return medians_diff_list
 
