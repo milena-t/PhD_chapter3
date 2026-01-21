@@ -357,6 +357,7 @@ def extract_np_lnL(path, verbose = False):
 def calculate_LRT(lnL0:float, lnL1:float, df:int):
     """
     calculate the likelihood ratio test from paml analysis
+    use df = 2 according to paml documentation, https://snoweye.github.io/phyclust/document/pamlDOC.pdf p. 28
     """
     LR_statistic = -2 * (lnL0 - lnL1)
     p_val = scipy.stats.chi2.sf(LR_statistic, df)
@@ -789,7 +790,8 @@ if __name__ == '__main__':
 
         M1a_np, M1a_lnL = extract_np_lnL(M1a_out, verbose=False)
         M2a_np, M2a_lnL = extract_np_lnL(M2a_out, verbose=False)
-        df = M2a_np-M1a_np
+        # use df = 2 according to paml documentation, https://snoweye.github.io/phyclust/document/pamlDOC.pdf p. 28
+        df = 2
         
         pval = calculate_LRT(lnL0=M1a_lnL, lnL1=M2a_lnL, df=df)
         
