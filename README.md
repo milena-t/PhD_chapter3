@@ -440,13 +440,42 @@ First, I categorize genes according to whether the LRT was significant or not an
 3. **Normal distribution:** Compute a normal distribution from all mean(A) - mean(X) values, find 95% confidence intervals
 4. **Plot:** Histrogram and normal distribution, compare original observed dNdS_A - dNdS_X to 95% confidence intervals of the permutations
 
-I have chosen 10000 permutations for now, this takes less than 10 mins. 
+Everything is 10000 permutations, and A-X, therefore:
+ 
+* A-X < 0 -> A < X -> FastX
+* A-X > 0 -> A > X -> SlowX
 
-### Tribolium
+### Bruchini
+
+**Binary** (left): FastX in all comparison except *B. siliquastri*
+
+**Proportional** (right): no difference between X and A
 
 <p float="left">
   <img src="data/fastX_ortholog_ident/fastX_bin_pos_sites_permutation_Bruchini_white_bg.png" width="45%" />
   <img src="data/fastX_ortholog_ident/fastX_prop_pos_sites_permutation_Bruchini_white_bg.png" width="45%" />
+</p>
+
+### Coccinella
+
+**Binary** (left): FastX in all comparison except *B. siliquastri*
+
+**Proportional** (right): no difference between X and A
+
+<p float="left">
+  <img src="data/fastX_ortholog_ident/fastX_bin_pos_sites_permutation_Csep_Cmag_white_bg.png" width="45%" />
+  <img src="data/fastX_ortholog_ident/fastX_prop_pos_sites_permutation_Csep_Cmag_white_bg.png" width="45%" />
+</p>
+
+### Tribolium
+
+**Binary** (left): FastX in all comparison except *B. siliquastri*
+
+**Proportional** (right): no difference between X and A
+
+<p float="left">
+  <img src="data/fastX_ortholog_ident/fastX_bin_pos_sites_permutation_Tcas_Tfre_white_bg.png" width="45%" />
+  <img src="data/fastX_ortholog_ident/fastX_prop_pos_sites_permutation_Tcas_Tfre_white_bg.png" width="45%" />
 </p>
 
 # dNdS: paml branch model
