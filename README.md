@@ -421,6 +421,8 @@ I have decided to go with the paml site model, since I am only doing a pairwise 
 
 # dNdS: paml branch model
 
+The paml branch model takes multiple sequence alignments and fits dNdS values to every branch. This approach worked when using MSAs of phylogeny-wide 1-to-1 orthologs, since those have more species in them. For the pairwise test we use now this is not a good approach because the "tree" here is only two species, which is not recommended. Therefore we decided to switch to site-models instead, see above. I keep these results here just in case I need them again for some reason.
+
 ## Statistical analysis via permutation test
 
 The dNdS is calculated between all pairwise comparisons for A-linked and X-linked genes identified with BRH above. I am doing unique comparisons only below, so (Cmac,Aobt) is the same as (Aobt,Cmac) which is why only one of them is shown. Also, self-comparisons make no sense here so I am excluding them as well. I show horizontal lines of the median dNdS for A and X in matching colors to the violin plot to clearly show the mean difference in dNdS. 
