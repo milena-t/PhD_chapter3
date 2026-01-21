@@ -377,11 +377,17 @@ I will use the complete X contig list from the beginning, *not* just the synteni
 
 ## orthofinder
 
+<details>
+<summary>We decided to do BRH since it's only pairwise comparisons anyways, toggle down to see orthofinder upset plot though</summary>
+
+
 In the original analysis with Lila we ran orthofinder and used the orthologs that are 1-to-1 across all species. With the new species selection, I tried that here as well, but it seems like the *Diorhabda* X chromosomes are not syntenic. 
 
 <p float="left">
   <img src="data/orthofinder/orthogroups_by_contig_upset_plot.png" width="65%" />
 </p>
+
+</details>
 
 ## best reciprocal hits
 
@@ -408,11 +414,12 @@ I suspect that this is not because there are no ancestral gametologs, but becaus
 
 I will continue with best reciprocal hits, becasue the orthofinder clustering is a bit more "relaxed", meaning that a transcript is more likely to be included in an orthogorup. Since I am only using pairwise comparisons, this method may make larger orthogroups that would not qualify as 1-to-1 orthologs, and therefore reduce the sample size for our dNdS analysis.
 
-# dNdS: slow X or fast X?
 
-## paml site models
+# dNdS: paml site models and LRT
 
 I have decided to go with the paml site model, since I am only doing a pairwise comparison, and the branch model is not reliable for a tree of only two species. I compute M1a and M2a models (nearly neutral and positive selection respectively, see paml documentation), do the likelihood ratio test, and then return the site-class table of M2a if the test is significant, and M1a if it is not. This can then be used to either compute an average dNdS for the entire gene (weighted by proportions) or to do some other independent statistical analysis based on the proportion of positively selected sites in A vs. X genes.
+
+# dNdS: paml branch model
 
 ## Statistical analysis via permutation test
 
