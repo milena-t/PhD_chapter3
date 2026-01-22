@@ -468,11 +468,14 @@ Everything is 10000 permutations, and A-X, therefore:
   - nonsignificant: A= 79.39% X=73.46%
   - significant: A= 20.61% X=26.54%
 
+<p float="left">
+  <img src="data/fastX_ortholog_ident/fastX_bin_pos_sites_permutation_Bruchini_white_bg.png" width="75%" />
+</p>
+
 **Proportional** (right): no difference between X and A
 
 <p float="left">
-  <img src="data/fastX_ortholog_ident/fastX_bin_pos_sites_permutation_Bruchini_white_bg.png" width="45%" />
-  <img src="data/fastX_ortholog_ident/fastX_prop_pos_sites_permutation_Bruchini_white_bg.png" width="45%" />
+  <img src="data/fastX_ortholog_ident/fastX_prop_pos_sites_permutation_Bruchini_white_bg.png" width="75%" />
 </p>
 
 ### Coccinella
