@@ -505,6 +505,7 @@ Methods similar to [Torgerson & Singh 2006](https://www.nature.com/articles/6800
 
 * **binary**: which I also do. They find fastX for non-sperm expressed genes
 * **proportional**: they count the codons according to the BEB (bayes empirical bayes) test and don't use the site classes proportion. I'm unsure how exactly that works because they show the proportion of positively selected codons but it's possible for two orthologs to have different lengths? 
+  * Maybe I can count the number of codons and normalize by the number of genes instead?
 
 
 **Proportional** (right): not significant
