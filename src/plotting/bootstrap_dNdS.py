@@ -4,6 +4,7 @@ import numpy as np
 from tqdm import tqdm
 import matplotlib.pyplot as plt
 from matplotlib.ticker import PercentFormatter,FuncFormatter
+import analyze_site_classes as site_classes
 
 
 def permute_dNdS(dNdS_A, dNdS_X):
@@ -55,6 +56,7 @@ def calculate_list_CI(values_list:list, cl = 0.95, verbose = False):
         print(f"\t\tmean correlation coefficient: {mean_coeff:.3f}, standard deviation {std_coeff:.3f}, 95% confidence interval: [{lower:.3f}, {upper:.3f}]")
     # ci = sts.t.interval(cl, df=len(values_list)-1, loc=np.mean(values_list), scale=np.std(values_list, ddof=1) / np.sqrt(len(values_list)))
     return(norm_coeffs)
+
 
 
 def plot_dNdS_permutations(boot_diff:dict, measure_diff:dict, A_dict:dict, X_dict:dict, filename = "dNdS_permutations.png", dark_mode=False, hist_label = r"$\text{dNdS}_A - \text{dNdS}_X$", violin_label="dNdS", violin_ymax = 0, transparent=True, binary = False):
@@ -194,17 +196,9 @@ def plot_dNdS_permutations(boot_diff:dict, measure_diff:dict, A_dict:dict, X_dic
         mean_X = np.nanmedian(data_X)
 
         data_AX = [data_A, data_X]
-        # plot mirror
 
         if binary:
-            A_nonsig = len([val for val in data_A if val == 0.0])
-            X_nonsig = len([val for val in data_X if val == 0.0])
-            nonsig = [A_nonsig/len(data_A), X_nonsig/len(data_X)]
-            A_sig = len([val for val in data_A if val == 1.0])
-            X_sig = len([val for val in data_X if val == 1.0])
-            sig = [A_sig/len(data_A), X_sig/len(data_X)]
-            axes[col,row].bar([1,2], nonsig, width = 0.75, label='M1a', color=[colors_dict["A"], colors_dict["X"]], hatch="")
-            axes[col,row].bar([1,2], sig, width = 0.75, bottom=nonsig, label='M2a', color= [colors_dict["A"], colors_dict["X"]], hatch="//")
+            site_classes.binary_barplot_pair(data_A=data_A, data_X=data_X, row=col, col=row, n_A=n_A, n_X=n_X, axes=axes, colors_dict=colors_dict, fs = fs, ylab ="pos. sel. genes")
         else:
             violinplot_pair(data_A_X=data_AX, row=col, col=row, n_A=n_A, n_X=n_X, mean_A=mean_A, mean_X=mean_X, axes = axes, colors_dict=colors_dict, fs = fs, xlab = violin_label, ymax = violin_ymax)
         # axes[col,row].set_title(f'{species2}\n{species1}', fontsize = fs*0.85)

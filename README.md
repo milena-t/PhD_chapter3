@@ -449,6 +449,25 @@ Everything is 10000 permutations, and A-X, therefore:
 
 **Binary** (left): FastX in all comparison except *B. siliquastri*
 
+* A. obtectus vs. B. siliquastri
+  - nonsignificant: A= 84.88% X=83.42%
+  - significant: A= 15.12% X=16.58%
+* A. obtectus vs. C. chinensis
+  - nonsignificant: A= 87.80% X=82.46%
+  - significant: A= 12.20% X=17.54%
+* C. maculatus vs. A. obtectus
+  - nonsignificant: A= 90.27% X=85.68%
+  - significant: A= 9.73% X=14.32%
+* B. siliquastri vs. C. chinensis
+  - nonsignificant: A= 81.37% X=77.44%
+  - significant: A= 18.63% X=22.56%
+* C. maculatus vs. B. siliquastri
+  - nonsignificant: A= 85.46% X=82.22%
+  - significant: A= 14.54% X=17.78%
+* C. maculatus vs. C. chinensis
+  - nonsignificant: A= 79.39% X=73.46%
+  - significant: A= 20.61% X=26.54%
+
 **Proportional** (right): no difference between X and A
 
 <p float="left">
@@ -459,6 +478,8 @@ Everything is 10000 permutations, and A-X, therefore:
 ### Coccinella
 
 **Binary** (left): Significantly slowX
+- nonsignificant: A= 81.80% X=86.13%
+- significant: A= 18.20% X=13.87%
 
 **Proportional** (right): Significantly slowX
 
@@ -470,6 +491,8 @@ Everything is 10000 permutations, and A-X, therefore:
 ### Tribolium
 
 **Binary** (left): not significant
+- nonsignificant: A= 78.36% X=79.78%
+- significant: A= 21.64% X=20.22%
 
 **Proportional** (right): not significant
 
