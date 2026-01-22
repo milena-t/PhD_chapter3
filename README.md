@@ -70,6 +70,7 @@ DTOL open data release policy [here](https://www.darwintreeoflife.org/wp-content
     * aphids (Jaquiéry et al. 2018)
     * spiders (Bechsgaard et al. 2019), and 
     * stick insects (Parker et al. 2022)
+
 * Slower-X or ambiguous
   * fruit flies (Counterman et al. 2004, Thornton et al. 2006, Connallon 2007, Begun et al. 2007, Baines et al. 2008, Vicoso et al. 2008, Mank et al. 2010b, Meisel & Connallon 2013, Ávila et al. 2014, Charlesworth et al. 2018)
   * lepidoptera (Sackton et al. 2014, Rousselle et al. 2016, Pinharanda et al. 2019, Mongue et al. 2022, Höök et al. 2023).
@@ -497,12 +498,23 @@ Everything is 10000 permutations, and A-X, therefore:
 - nonsignificant: A= 78.36% X=79.78%
 - significant: A= 21.64% X=20.22%
 
+
+### Summary
+
+Methods similar to [Torgerson & Singh 2006](https://www.nature.com/articles/6800749)), which shows Faster X in sperm-expressed genes in mammals. This is a much smaller dataset and they only have one comparison. They have two approaches for analysis:
+
+* **binary**: which I also do. They find fastX for non-sperm expressed genes
+* **proportional**: they count the codons according to the BEB (bayes empirical bayes) test and don't use the site classes proportion. I'm unsure how exactly that works because they show the proportion of positively selected codons but it's possible for two orthologs to have different lengths? 
+
+
 **Proportional** (right): not significant
 
 <p float="left">
   <img src="data/fastX_ortholog_ident/fastX_bin_pos_sites_permutation_Tcas_Tfre_white_bg.png" width="45%" />
   <img src="data/fastX_ortholog_ident/fastX_prop_pos_sites_permutation_Tcas_Tfre_white_bg.png" width="45%" />
 </p>
+
+[Whittle 2020](https://academic.oup.com/g3journal/article/10/3/1125/6026234) already did this comparison, and they find significantly slow X. But they do paml `yn00` which we have concluded is not ideal.
 
 # dNdS: paml branch model
 
