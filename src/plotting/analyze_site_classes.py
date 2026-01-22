@@ -229,7 +229,7 @@ def binary_barplot_pair(data_A, data_X, row, col, n_A, n_X, axes, colors_dict, f
     print(f"\t - row: {row} col: {col}\t nonsignificant: A= {nonsig[0]:.2f}% X={nonsig[1]:.2f}%")
     print(f"\t - row: {row} col: {col}\t significant: A= {sig[0]:.2f}% X={sig[1]:.2f}%")
 
-    axes[row, col].set_ylim([0,120])
+    axes[row, col].set_ylim([0,118])
     axes[row, col].yaxis.set_major_formatter(FuncFormatter(lambda x, pos: '' if x > 100 and x<1 else f'{int(x)}%'))
 
     axes[row, col].text(1-0.2, 105, f"n={n_A}", fontsize = fs, color = colors_dict["A"])
