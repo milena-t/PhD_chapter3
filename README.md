@@ -25,7 +25,13 @@ DTOL open data release policy [here](https://www.darwintreeoflife.org/wp-content
   * 
 * [Li 2010](https://pubmed.ncbi.nlm.nih.gov/21035095/) FastZ in duplicates compared to autosomal duplicates
   * within-species comparison, make all pairwise dN/dS of all genes within a gene family (check methods specifically that they use to reduce between-sample depencence for statistical power)
-  
+* **Molecular population genetics chapter 7:**
+  * The M1a/M2a LRT comparison is a good approach
+  * w (lowercase omega) is some sort of statistical estimator for dN/dS, where dN and dS are not separately estimated, see box 7.2
+  * multi-sequence alignments that are still used for pairwise comparisons can lower statistical power. a gap in one sequence will result in the entire section of the alignment being ignored for all pairs.
+  * dNdS between pairs of species that have very different divergence times can be misleading due to differences in dS
+  * remove any dS > 2 from any estimates  
+
 ### Expectations
 
 * Retrotransposition of male-biased genes from X to A ([Ellegren 2011](https://www.nature.com/articles/nrg2948.pdf))
