@@ -8,6 +8,7 @@ and then p and w from the site classes table. Either two or three site classes, 
 import os
 import numpy as np
 import bootstrap_dNdS 
+from matplotlib.ticker import FuncFormatter
 
 site_classes_files = {
     "A" : "/Users/miltr339/work/chapter3/dNdS/site_classes_summary_A-linked.txt",
@@ -211,10 +212,45 @@ def avg_prop_pos_sel_sites(summary_dict, full_list = False):
     return out_dict
 
 
+
+def binary_barplot_pair(data_A, data_X, row, col, n_A, n_X, axes, colors_dict, fs, ylab ="percent", xticks = ["A", "X"]):
+    """
+    plot a bar chart to show proportion of genes that have a positive site-class model LRT
+    """
+    A_nonsig = len([val for val in data_A if val == 0.0])*100.0
+    X_nonsig = len([val for val in data_X if val == 0.0])*100.0
+    nonsig = [A_nonsig/len(data_A), X_nonsig/len(data_X)]
+    A_sig = len([val for val in data_A if val == 1.0])*100.0
+    X_sig = len([val for val in data_X if val == 1.0])*100.0
+    sig = [A_sig/len(data_A), X_sig/len(data_X)]
+
+    axes[row,col].bar([1,2], nonsig, width = 0.75, label='M1a', color=[colors_dict["A"], colors_dict["X"]], alpha=0.7)
+    axes[row,col].bar([1,2], sig, width = 0.75, bottom=nonsig, label='M2a', color= [colors_dict["A"], colors_dict["X"]])
+    print(f"\t - row: {row} col: {col}\t nonsignificant: A= {nonsig[0]:.2f}% X={nonsig[1]:.2f}%")
+    print(f"\t - row: {row} col: {col}\t significant: A= {sig[0]:.2f}% X={sig[1]:.2f}%")
+
+    axes[row, col].set_ylim([0,118])
+    axes[row, col].yaxis.set_major_formatter(FuncFormatter(lambda x, pos: '' if x > 100 and x<1 else f'{int(x)}%'))
+
+    axes[row, col].text(1-0.2, 105, f"n={n_A}", fontsize = fs, color = colors_dict["A"])
+    axes[row, col].text(2-0.2, 105, f"n={n_X}", fontsize = fs, color = colors_dict["X"])
+    
+    axes[row, col].set_xticks([1,2])
+    axes[row, col].set_xticklabels(xticks)
+
+    axes[row, col].set_xlabel('')
+    if col-row == 1:
+        axes[row, col].set_ylabel(ylab, fontsize = fs*0.8)
+    else:
+        axes[row, col].set_ylabel('')
+    axes[row,col].tick_params(axis='y', labelsize=fs)
+    axes[row,col].tick_params(axis='x', labelsize=fs) 
+
+
 if __name__ == "__main__":
 
     chr_types = ["X", "A"]
-    username = "milena" # f"miltr339"
+    username = f"miltr339" #"milena"
 
     if False:
         ## compute statistics to terminal
@@ -268,8 +304,10 @@ if __name__ == "__main__":
     bootstraps = {pair : [] for pair in pairs_list}
     mean_num_pos_sel = {pair : np.NaN for pair in pairs_list}
     
-    ### test with 100, takes a bit of time otherwise
+    ####
+    #  test with 100, takes a bit of time otherwise
     num_permutations = 10000
+    ####
 
     for pair in pairs_list:
         pos_props_A = pos_list_A[pair]

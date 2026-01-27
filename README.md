@@ -76,6 +76,7 @@ DTOL open data release policy [here](https://www.darwintreeoflife.org/wp-content
     * aphids (Jaquiéry et al. 2018)
     * spiders (Bechsgaard et al. 2019), and 
     * stick insects (Parker et al. 2022)
+
 * Slower-X or ambiguous
   * fruit flies (Counterman et al. 2004, Thornton et al. 2006, Connallon 2007, Begun et al. 2007, Baines et al. 2008, Vicoso et al. 2008, Mank et al. 2010b, Meisel & Connallon 2013, Ávila et al. 2014, Charlesworth et al. 2018)
   * lepidoptera (Sackton et al. 2014, Rousselle et al. 2016, Pinharanda et al. 2019, Mongue et al. 2022, Höök et al. 2023).
@@ -455,16 +456,40 @@ Everything is 10000 permutations, and A-X, therefore:
 
 **Binary** (left): FastX in all comparison except *B. siliquastri*
 
+* A. obtectus vs. B. siliquastri
+  - nonsignificant: A= 84.88% X=83.42%
+  - significant: A= 15.12% X=16.58%
+* A. obtectus vs. C. chinensis
+  - nonsignificant: A= 87.80% X=82.46%
+  - significant: A= 12.20% X=17.54%
+* C. maculatus vs. A. obtectus
+  - nonsignificant: A= 90.27% X=85.68%
+  - significant: A= 9.73% X=14.32%
+* B. siliquastri vs. C. chinensis
+  - nonsignificant: A= 81.37% X=77.44%
+  - significant: A= 18.63% X=22.56%
+* C. maculatus vs. B. siliquastri
+  - nonsignificant: A= 85.46% X=82.22%
+  - significant: A= 14.54% X=17.78%
+* C. maculatus vs. C. chinensis
+  - nonsignificant: A= 79.39% X=73.46%
+  - significant: A= 20.61% X=26.54%
+
+<p float="left">
+  <img src="data/fastX_ortholog_ident/fastX_bin_pos_sites_permutation_Bruchini_white_bg.png" width="75%" />
+</p>
+
 **Proportional** (right): no difference between X and A
 
 <p float="left">
-  <img src="data/fastX_ortholog_ident/fastX_bin_pos_sites_permutation_Bruchini_white_bg.png" width="45%" />
-  <img src="data/fastX_ortholog_ident/fastX_prop_pos_sites_permutation_Bruchini_white_bg.png" width="45%" />
+  <img src="data/fastX_ortholog_ident/fastX_prop_pos_sites_permutation_Bruchini_white_bg.png" width="75%" />
 </p>
 
 ### Coccinella
 
 **Binary** (left): Significantly slowX
+- nonsignificant: A= 81.80% X=86.13%
+- significant: A= 18.20% X=13.87%
 
 **Proportional** (right): Significantly slowX
 
@@ -476,6 +501,18 @@ Everything is 10000 permutations, and A-X, therefore:
 ### Tribolium
 
 **Binary** (left): not significant
+- nonsignificant: A= 78.36% X=79.78%
+- significant: A= 21.64% X=20.22%
+
+
+### Summary
+
+Methods similar to [Torgerson & Singh 2006](https://www.nature.com/articles/6800749)), which shows Faster X in sperm-expressed genes in mammals. This is a much smaller dataset and they only have one comparison. They have two approaches for analysis:
+
+* **binary**: which I also do. They find fastX for non-sperm expressed genes
+* **proportional**: they count the codons according to the BEB (bayes empirical bayes) test and don't use the site classes proportion. I'm unsure how exactly that works because they show the proportion of positively selected codons but it's possible for two orthologs to have different lengths? 
+  * Maybe I can count the number of codons and normalize by the number of genes instead?
+
 
 **Proportional** (right): not significant
 
@@ -483,6 +520,8 @@ Everything is 10000 permutations, and A-X, therefore:
   <img src="data/fastX_ortholog_ident/fastX_bin_pos_sites_permutation_Tcas_Tfre_white_bg.png" width="45%" />
   <img src="data/fastX_ortholog_ident/fastX_prop_pos_sites_permutation_Tcas_Tfre_white_bg.png" width="45%" />
 </p>
+
+[Whittle 2020](https://academic.oup.com/g3journal/article/10/3/1125/6026234) already did this comparison, and they find significantly slow X. But they do paml `yn00` which we have concluded is not ideal.
 
 # dNdS: paml branch model
 
