@@ -21,8 +21,7 @@ DTOL open data release policy [here](https://www.darwintreeoflife.org/wp-content
 * [Mank 2009](https://academic.oup.com/mbe/article/27/3/661/1000994?login=true) Faster-Z in birds is mainly due to drift
   * Positive selection would be fixation of recessive male-biased mutations
 * [Mank 2007](https://academic.oup.com/mbe/article/24/12/2698/978299) faster evolutionary rate of female biased genes in bird brains (not male biased)
-  * Note the ZW system in birds
-  * 
+  * Note the ZW system in birdss
 * [Li 2010](https://pubmed.ncbi.nlm.nih.gov/21035095/) FastZ in duplicates compared to autosomal duplicates
   * within-species comparison, make all pairwise dN/dS of all genes within a gene family (check methods specifically that they use to reduce between-sample depencence for statistical power)
 * **Molecular population genetics chapter 7:**
@@ -44,6 +43,7 @@ DTOL open data release policy [here](https://www.darwintreeoflife.org/wp-content
 * comparison of different estimation methods [Tzeng 2004](https://academic.oup.com/mbe/article/21/12/2290/1071055?login=true)
 
 ### X evolution
+
 * original FastX [Charlesworth 1986](https://www.journals.uchicago.edu/doi/abs/10.1086/284701)
 * general X evolution review [Vicoso & Charlesworth 2006](https://www.nature.com/articles/nrg1914)
 
@@ -66,16 +66,21 @@ DTOL open data release policy [here](https://www.darwintreeoflife.org/wp-content
     * Mouse ([Kousathanas et al. 2014](https://academic.oup.com/genetics/article/196/4/1131/5935629)): again fastX for X-linked genes expressed in male-specific tissues and during spermatogenesis. MK-test.
   * birds 
     * [Borge et al. 2005](https://academic.oup.com/genetics/article/171/4/1861/6061046): looks at introns, significantly reduced Z-linked variation.
-    * [Mank et al. 2007a](https://genome.cshlp.org/content/17/5/618.short):
-    * Mank et al. 2007b
-    * Mank et al. 2010a
-    * Wright AE et al. 2015
-  * snakes (Vicoso et al. 2013)
-  * teleostei fish (Darolti et al. 2013)
-  * arthropods
-    * aphids (Jaquiéry et al. 2018)
-    * spiders (Bechsgaard et al. 2019), and 
-    * stick insects (Parker et al. 2022)
+    * [Mank et al. 2007a](https://genome.cshlp.org/content/17/5/618.short): fastZ, TODO read more in detail for theory
+    * [Mank et al. 2007b](https://academic.oup.com/mbe/article/24/12/2698/978299): fastZ more for genes with female-biased expression. Here they say based on selection but Mank2010 contradicts this with more evidence.
+    * [Mank et al. 2010a](https://academic.oup.com/mbe/article/27/3/661/1000994): fastZ again more pronounced for female-biased genes. this time they argue that that means the main source for FastZ is drift in ZW females, and that the sexual selection of ZZ males. **Check for sex-bias as an angle for sexual conflict?** 
+    * [Wright AE et al. 2015](https://onlinelibrary.wiley.com/doi/full/10.1111/mec.13113): Agrees with Mank about fastZ through drift, "*selection is less effective on the Z chromosome, particularly in promiscuous species, and that Faster-Z Evolution in birds is due primarily to genetic drift.*". TODO check the theory stuff about mating system influence on Ne_X.
+  * snakes (ZW sex determination)
+    * [Vicoso et al. 2013](https://journals.plos.org/plosbiology/article?id=10.1371/journal.pbio.1001643): polygynous mating system in some snakes greatly reduced Ne of the Z chromosome, increasing drift and driving fastZ, compared to snakes with a different mating system. **FastZ also likely due to drift, same as birds**
+  * teleostei fish 
+    * [Darolti et al. 2023](https://onlinelibrary.wiley.com/doi/full/10.1111/mec.17048): only increased dN with higher XY divergence (more hemizygosity). Also **interesting methods**:
+      * paml (codeml) branch model (`model=2`,`nssites=0`), for all 6 species respectively, with each being the focal species once. This estimates the branch dN and dS for all the focal species.
+      * This makes the comparisons not pairwise!! unsure if this is impacted by the specific phylogeny still though, since I do have long distances between groups of sister-species.
+      * filter dS>2
+  * arthropods (all XX/XO here)
+    * aphids ([Jaquiéry et al. 2018](https://academic.oup.com/gbe/article/10/2/507/4817508)): also mostly due to lower Ne and relaxed selection and therefore drift. They also do some gene expression stuff, TODO check sex bias
+    * spiders ([Bechsgaard et al. 2019](https://academic.oup.com/mbe/article/36/6/1281/5420164)): They say the use paml but no details, so I guess `yn00`? They have species with differing mating systems and sex ratios. In the species with a female-biased sex ratio (NeX is close to NeA) dNdS is higher, they think therefore fastX due to adaptive evolution.
+    * stick insects ([Parker et al. 2022](https://academic.oup.com/jeb/article/35/12/1734/7317967)): They think high dNdS due to relaxed selection and male-biased mutation, TODO check more detail
 
 * Slower-X or ambiguous
   * fruit flies (Counterman et al. 2004, Thornton et al. 2006, Connallon 2007, Begun et al. 2007, Baines et al. 2008, Vicoso et al. 2008, Mank et al. 2010b, Meisel & Connallon 2013, Ávila et al. 2014, Charlesworth et al. 2018)
