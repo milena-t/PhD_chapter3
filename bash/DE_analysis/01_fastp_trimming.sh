@@ -1,12 +1,10 @@
 #!/bin/bash
 #SBATCH -A uppmax2026-1-8
-#SBATCH -p core
 #SBATCH -n 16
 #SBATCH -t 2:00:00
 #SBATCH -J trimming_fastp
 #SBATCH -o trimming_fastp.log
 #SBATCH --mail-type=ALL
-#SBATCH --mail-user milena.trabert@ebc.uu.se
 
 module load bioinfo-tools fastp/0.23.4 MultiQC/1.22.2
 

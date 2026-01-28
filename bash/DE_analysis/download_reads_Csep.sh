@@ -1,12 +1,10 @@
 #!/bin/bash -l
 #SBATCH -A uppmax2026-1-8
 #SBATCH -n 8
-#SBATCH -p core
 #SBATCH -t 1:00:00
-#SBATCH -J SRR23732241_download_sequences
-#SBATCH -o SRR23732241_download_sequences.log
+#SBATCH -J download_sequences
+#SBATCH -o download_sequences.log
 #SBATCH --mail-type=ALL
-#SBATCH --mail-user milena.trabert@ebc.uu.se
 
 module load bioinfo-tools
 module load sratools/3.0.7
