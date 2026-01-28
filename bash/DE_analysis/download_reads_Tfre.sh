@@ -3,7 +3,7 @@
 #SBATCH -c 8
 #SBATCH -t 1:00:00
 #SBATCH -J download_sequences
-#SBATCH -o download_sequences.log
+#SBATCH -o download_sequences_Tcas.log
 #SBATCH --mail-type=ALL
 
 module load pigz/2.8-GCCcore-13.3.0
