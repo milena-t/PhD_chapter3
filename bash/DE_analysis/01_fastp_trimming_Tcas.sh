@@ -26,7 +26,7 @@ do
     out_r1="${output_dir}/${SRR_num}_1_trimmed.fastq.gz"
     out_r2="${output_dir}/${SRR_num}_2_trimmed.fastq.gz"
 
-    echo "Running fastp on $sample ..."
+    echo "Running fastp on $SRR_num ..."
     fastp -w 16 -i "$r1" -I "$r2" -o "$out_r1" -O "$out_r2" -h "$output_reports/${SRR_num}fastp.html"
 done
 
