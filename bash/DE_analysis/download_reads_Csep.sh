@@ -1,6 +1,6 @@
 #!/bin/bash -l
 #SBATCH -A uppmax2026-1-8
-#SBATCH -n 8
+#SBATCH -c 8
 #SBATCH -t 1:00:00
 #SBATCH -J download_sequences
 #SBATCH -o download_sequences.log
