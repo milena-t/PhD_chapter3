@@ -83,7 +83,17 @@ DTOL open data release policy [here](https://www.darwintreeoflife.org/wp-content
     * stick insects ([Parker et al. 2022](https://academic.oup.com/jeb/article/35/12/1734/7317967)): They think high dNdS due to relaxed selection and male-biased mutation, TODO check more detail
 
 * Slower-X or ambiguous
-  * fruit flies (Counterman et al. 2004, Thornton et al. 2006, Connallon 2007, Begun et al. 2007, Baines et al. 2008, Vicoso et al. 2008, Mank et al. 2010b, Meisel & Connallon 2013, Ávila et al. 2014, Charlesworth et al. 2018)
+  * fruit flies
+    * [Counterman et al. 2004](https://academic.oup.com/evolut/article-abstract/58/3/656/6755860): SlowX 
+    * [Thornton et al. 2006](https://genome.cshlp.org/content/16/4/498.full#sec-6): SlowX
+    * [Connallon 2007](https://academic.oup.com/mbe/article/24/11/2566/1017579):
+    * Begun et al. 2007
+    * Baines et al. 2008
+    * Vicoso et al. 2008
+    * Mank et al. 2010b
+    * Meisel & Connallon 2013
+    * Ávila et al. 2014
+    * Charlesworth et al. 2018
   * lepidoptera (Sackton et al. 2014, Rousselle et al. 2016, Pinharanda et al. 2019, Mongue et al. 2022, Höök et al. 2023).
 
 ### Results
