@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH -A uppmax2026-1-8
-#SBATCH -n 16
+#SBATCH -c 16
 #SBATCH -t 2:00:00
 #SBATCH -J trimming_fastp_Tcas
 #SBATCH -o trimming_fastp_Tcas.log
