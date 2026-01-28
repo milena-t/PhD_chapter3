@@ -17,6 +17,6 @@ SRAPATH=/proj/naiss2023-6-65/Milena/software_install/sra_tools/sratoolkit.3.3.0-
 mkdir -p $SRA $FASTQ
 
 ${SRAPATH}prefetch $1 --output-directory $SRA # Download .sra file
-fasterq-dump $SRA/$1/$1.sra -O $FASTQ --split-files --threads 8 # Convert to FASTQ (paired-end, gzipped)
+${SRAPATH}fasterq-dump $SRA/$1/$1.sra -O $FASTQ --split-files --threads 8 # Convert to FASTQ (paired-end, gzipped)
 
 gunzip "${FASTQ}"/*
