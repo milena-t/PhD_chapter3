@@ -40,6 +40,7 @@ do
         --cds "${FILE}" \
         --pal2nalbin $PAL2NAL \
         --codeml \
+        --branch_model \
         --codemlbin $PAML \
         --clustalbin $CLUSTALO \
         --fasttreebin $FASTTREE \
