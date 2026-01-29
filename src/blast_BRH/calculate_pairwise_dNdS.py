@@ -81,6 +81,10 @@ The individual steps consist of:
     paml.add_argument('--codeml', action='store_true', help="run codeml (specify path to executeable in --codemlbin)")
     paml.add_argument('--yn00', action='store_true', help="run yn00 (specify path to executeable in --yn00bin)")
 
+    site_or_branch = parser.add_mutually_exclusive_group(required=False)
+    site_or_branch.add_argument('--branch_model', action='store_true', help="run codeml branch-model with model=1")
+    site_or_branch.add_argument('--site_model_LRT', action='store_true', help="run codeml site-model with M1a and M2a, do LRT and extract site-classes table")
+
     paml_bin = parser.add_mutually_exclusive_group(required=False)
     paml_bin.add_argument('--codemlbin', type=str, help="path to the codeml executeable")
     paml_bin.add_argument('--yn00bin', type=str, help="path to the yn00 executeable")
@@ -109,6 +113,9 @@ The individual steps consist of:
         args.codemlbin = "codeml"
     if not args.yn00bin:
         args.yn00bin = "yn00"
+    if args.codeml:
+        if not args.branch_model and not args.site_model_LRT:
+            raise RuntimeError(f"if you use --codeml, you need to specify if you want --branch_model or --site_model_LRT !")
     # if not args.verbose:
     #     args.verbose=False
     
@@ -660,16 +667,11 @@ if __name__ == '__main__':
     os.chdir(topdir)
 
 
-    if run_codeml: # if the 2YN files are empty/nonexistent, either because it didn't work or because --codeml was specified and it wasn't run
-
     ###########################################
     ############ run PAML (codeml) ############
     ###########################################
 
-
-        if verbose:
-            print(f"\n *  run codeml")
-
+    if run_codeml:
         ######### modify the newick tree to work with codeml
         tree_modified = tree_outfile.replace(".tre", "_10chr_leafnames.tre")
 
@@ -684,10 +686,78 @@ if __name__ == '__main__':
         if verbose:
             print(f"\t\t--> Modified tree saved to {tree_modified}\n")
 
-        #########
-
         tree_loc = tree_modified.split("/")[-1]
         pal2nal_loc = pal2nal_alignment.split("/")[-1]
+        #########
+
+        ###!!
+        os.chdir(outdir_path) 
+        ###!!
+
+        # copy the codeml config file into the folder
+        # codeml_config_source = "/sw/bioinfo/paml/4.10.7/rackham/examples/codeml.ctl"
+        codeml_config_source = codeml_bin.split("bin")[0]
+        codeml_config_source = f"{codeml_config_source}examples/codeml.ctl"
+        if not os.path.isfile(codeml_config_source):
+            codeml_config_source = codeml_bin.split("src")[0]
+            codeml_config_source = f"{codeml_config_source}examples/codeml.ctl"
+        if not os.path.isfile(codeml_config_source):
+            raise RuntimeError(f"codeml config file not found in expected location {codeml_config_source}!")
+
+        codeml_config = f"codeml.ctl"
+        copy_command = f"cp {codeml_config_source} {codeml_config}"
+
+        os.system(copy_command)
+        if verbose:
+            print(f"\t - setup config file\n\t\tcopy from source: {copy_command}\n\t\tmodify config file:")
+
+    ###################################
+    ## codeml branch model
+    if run_codeml and args.branch_model:
+        if verbose:
+            print(f"\n *  run codeml branch-model")
+
+        codeml_settings_dict = {"seqfile" : f"{pal2nal_loc}", 
+                    "treefile" : f"{tree_loc}", "outfile" : "codeml.out", 
+                    "model" : "1", # default paml model is 1
+                    "verbose" : "1",
+                    "seqtype" : "1",
+                    #"runmode" : "2", # 2 is an automatic run mode, the default is 0 which is a user generated tree
+                    "CodonFreq" : "2" 
+                    } 
+        
+        start_time = time.time()
+        modify_paml_config(codeml_settings_dict=codeml_settings_dict, codeml_config_path=codeml_config, verbose=False)
+        codeml_command = "codeml > codeml.log"
+        if verbose:
+            print(f"running: {codeml_command}")
+        os.system(codeml_command) 
+        end_time = time.time()
+
+        if verbose:
+            print("done with codeml")
+            passed_time = end_time - start_time
+            if verbose:
+                print(f"codeml took {passed_time:.2f} seconds, or {passed_time/60.0:.2f} minutes")
+
+        #### done with codeml, calculate dNdS based on that:
+        dN_filepath = "2NG.dN"
+        dS_filepath = "2NG.dS"
+        dNdS_filepath = "2NG.dNdS"
+        
+        if is_file_non_empty(dN_filepath) and is_file_non_empty(dS_filepath):
+            if verbose:
+                print(f"\n================ calcualte dN/dS ratio:")
+
+            calculate_dNdS(dN_filepath, dS_filepath, dNdS_filepath)
+
+    ###################################
+    ## codeml site classes
+    if run_codeml and args.site_model_LRT:
+
+        if verbose:
+            print(f"\n *  run codeml site-model")
+
         codeml_settings_dict_M1a = {"seqfile" : f"{pal2nal_loc}", 
                         "treefile" : f"{tree_loc}",  
                         "outfile" : "codeml_M1a.out", 
@@ -719,28 +789,6 @@ if __name__ == '__main__':
                         "CodonFreq" : "2" 
                         }
         
-
-        # os.chdir(topdir)
-        ###!!
-        os.chdir(outdir_path) 
-        ###!!
-        # copy the codeml config file into the folder
-        # codeml_config_source = "/sw/bioinfo/paml/4.10.7/rackham/examples/codeml.ctl"
-        codeml_config_source = codeml_bin.split("bin")[0]
-        codeml_config_source = f"{codeml_config_source}examples/codeml.ctl"
-        if not os.path.isfile(codeml_config_source):
-            codeml_config_source = codeml_bin.split("src")[0]
-            codeml_config_source = f"{codeml_config_source}examples/codeml.ctl"
-        if not os.path.isfile(codeml_config_source):
-            raise RuntimeError(f"codeml config file not found in expected location {codeml_config_source}!")
-
-        codeml_config = f"codeml.ctl"
-        copy_command = f"cp {codeml_config_source} {codeml_config}"
-
-        os.system(copy_command)
-        if verbose:
-            print(f"\t - setup config file\n\t\tcopy from source: {copy_command}\n\t\tmodify config file:")
-    
 
         ## fit M1a and M2a separately
         ## --> do this and not combined outfile because this makes it easier to extract lnL and df for LRT
