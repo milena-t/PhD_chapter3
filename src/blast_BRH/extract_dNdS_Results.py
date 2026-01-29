@@ -209,7 +209,7 @@ if __name__ == "__main__":
     for chr_type in chr_types:
 
         # results_path = f"/Users/miltr339/work/pairwise_blast_chapter_2_3/brh_tables/brh_results_{chr_type}/"
-        results_path = f"/proj/naiss2023-6-65/Milena/chapter3/dNdS_calculations/brh_results_{chr_type}/_branch_model"
+        results_path = f"/proj/naiss2023-6-65/Milena/chapter3/dNdS_calculations/brh_results_{chr_type}_branch_model/"
         print(chr_type)
         print(f"\n//////////////////// {chr_type} ////////////////////\n")
 
