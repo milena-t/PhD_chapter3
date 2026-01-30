@@ -71,11 +71,12 @@ if __name__ == "__main__":
     #######
     chr_type = "X"
     #######
-    # analysis = "LRT" ## codeml site model M1a and M2a with likelihood ratio test
-    analysis = "dNdS" ## codeml branch model
+    analysis = "LRT" ## codeml site model M1a and M2a with likelihood ratio test
+    # analysis = "dNdS" ## codeml branch model
     #######
     ###############
     #############################
+    ## done: A_dNdS, X_dNdS, X_LRT
     
     script_path = f"{bash_dir}/run_batch_{analysis}_{chr_type}.sh"
 
