@@ -88,6 +88,7 @@ The individual steps consist of:
     paml_bin = parser.add_mutually_exclusive_group(required=False)
     paml_bin.add_argument('--codemlbin', type=str, help="path to the codeml executeable")
     paml_bin.add_argument('--yn00bin', type=str, help="path to the yn00 executeable")
+    paml_bin.add_argument('--config_path', type=str, help="if any paml executeables can be called from PATH, give here the location of the codeml.ctl default file")
 
     parser.add_argument('--verbose', action='store_true', help="enable verbose mode")
     parser.add_argument('--overwrite', action='store_true', help="overwrite existing output files with default names from previous runs")
@@ -407,6 +408,10 @@ if __name__ == '__main__':
     yn00_bin = args.yn00bin
     run_codeml =args.codeml
     codeml_bin = args.codemlbin
+    if codeml_bin == "codeml" or yn00_bin == "yn00":
+        codeml_config_source = args.codeml_config_source
+    else:
+        codeml_config_source = ""
     
     if verbose:
         print()
@@ -696,13 +701,14 @@ if __name__ == '__main__':
 
         # copy the codeml config file into the folder
         # codeml_config_source = "/sw/bioinfo/paml/4.10.7/rackham/examples/codeml.ctl"
-        codeml_config_source = codeml_bin.split("bin")[0]
-        codeml_config_source = f"{codeml_config_source}examples/codeml.ctl"
-        if not os.path.isfile(codeml_config_source):
-            codeml_config_source = codeml_bin.split("src")[0]
+        if codeml_config_source == "" and codeml_bin != "codeml":
+            codeml_config_source = codeml_bin.split("bin")[0]
             codeml_config_source = f"{codeml_config_source}examples/codeml.ctl"
+            if not os.path.isfile(codeml_config_source):
+                codeml_config_source = codeml_bin.split("src")[0]
+                codeml_config_source = f"{codeml_config_source}examples/codeml.ctl"
         if not os.path.isfile(codeml_config_source):
-            raise RuntimeError(f"codeml config file not found in expected location {codeml_config_source}!")
+            raise RuntimeError(f"codeml config file not found in expected location {codeml_config_source}! codeml binary exec was given as '{codeml_bin}'")
 
         codeml_config = f"codeml.ctl"
         copy_command = f"cp {codeml_config_source} {codeml_config}"

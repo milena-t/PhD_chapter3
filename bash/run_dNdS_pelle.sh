@@ -7,7 +7,7 @@
 #SBATCH -J run_dNdS
 #SBATCH -o run_dNdS.log
 
-ml FastTree/2.2-GCCcore-13.3.0 Biopython/1.84-foss-2024a PAML/4.10.9-GCCcore-13.3.0
+# ml FastTree/2.2-GCCcore-13.3.0 Biopython/1.84-foss-2024a PAML/4.10.9-GCCcore-13.3.0
 INFILE=$1
 
 PAL2NAL_UPPMAX=/proj/naiss2023-6-65/Lila/beetle_genomes/pal2nal.v14/pal2nal.pl
