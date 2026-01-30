@@ -13,7 +13,7 @@ def make_nested_lists(dir_path):
 
     fastas = []
     for pairdir in subdirs:
-        print(pairdir)
+        print(f"making nested fasta lists in: {pairdir}")
         fastas.extend([f"{pairdir}{f}" for f in os.listdir(pairdir) if os.path.isfile(os.path.join(pairdir, f))])
     
     nested_dict = {}
