@@ -83,7 +83,7 @@ if __name__ == "__main__":
     ########
     ## for testing purposes only do a few files of each pair
     ## if 0 then it takes all files, for a normal run
-    num_files = 10
+    num_files = 0
     ########
 
     for species1, subdict in x_paths_nested_dict.items():
