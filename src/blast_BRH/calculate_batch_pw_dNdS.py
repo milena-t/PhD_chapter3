@@ -55,10 +55,10 @@ if __name__ == "__main__":
         pelle = True
     
     #######
-    chr_type = "A"
+    chr_type = "X"
     #######
-    # analysis = "LRT" 
-    analysis = "dNdS"
+    # analysis = "LRT" ## codeml site model M1a and M2a with likelihood ratio test
+    analysis = "dNdS" ## codeml branch model
     #######
     
     script_path = f"{bash_dir}/run_batch_{analysis}_{chr_type}.sh"
@@ -83,11 +83,13 @@ if __name__ == "__main__":
     ########
     ## for testing purposes only do a few files of each pair
     ## if 0 then it takes all files, for a normal run
-    num_files = 0
+    num_files = 10
     ########
 
     for species1, subdict in x_paths_nested_dict.items():
         if species1 == " C_magnifica"  or species1 == "C_septempunctata":
+            pass
+        elif species1 == " T_castaneum"  or species1 == "T_freemani":
             pass
         else:
             continue
