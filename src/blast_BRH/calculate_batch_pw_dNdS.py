@@ -57,7 +57,7 @@ if __name__ == "__main__":
         pelle = True
     
     #######
-    chr_type = "X"
+    chr_type = "A"
     #######
 
     ### original
@@ -83,7 +83,7 @@ if __name__ == "__main__":
             pass
         else:
             continue
-        
+
         for species2, fasta_list in subdict.items():
             if species1 == species2:
                 continue
