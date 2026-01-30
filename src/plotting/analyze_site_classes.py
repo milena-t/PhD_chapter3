@@ -4,7 +4,7 @@ The results file contains the path to the ortholog, with pair and number ID, M1a
 and then p and w from the site classes table. Either two or three site classes, depending on if M2a (3 classes) was significantly better than M1a (2 classes)
 """
 
-
+from plot_dNdS import get_summary_paths,read_dNdS_summary_file,get_species_list
 import os
 import numpy as np
 import bootstrap_dNdS 
@@ -275,8 +275,15 @@ if __name__ == "__main__":
 
     ## plot 
 
-    summary_dict_A, no_dNdS_A = read_site_classes(site_classes_files["A"])
-    summary_dict_X, no_dNdS_X = read_site_classes(site_classes_files["X"])
+
+    username = "milena"# "miltr339"
+    chromosome = "A"
+    data_files = {"A" : ["A_dNdS", "A_LRT"],
+                  "X" : ["X_dNdS", "X_LRT"]}
+    summary_paths = get_summary_paths(username=username)
+
+    summary_dict_A, no_dNdS_A = read_site_classes(summary_paths[data_files["A"][1]])
+    summary_dict_X, no_dNdS_X = read_site_classes(summary_paths[data_files["X"][1]])
 
 
     type_plot = "bin" # bin for binary or prop for proportion of sites

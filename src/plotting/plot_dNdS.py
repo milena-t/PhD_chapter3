@@ -283,8 +283,8 @@ if __name__ == "__main__":
     data_files = {"A" : ["A_dNdS", "A_LRT"],
                   "X" : ["X_dNdS", "X_LRT"]}
     summary_paths = get_summary_paths(username=username)
-    dNdS_dict_A = read_dNdS_summary_file(summary_paths["A"])
-    dNdS_dict_X = read_dNdS_summary_file(summary_paths["X"])
+    dNdS_dict_A = read_dNdS_summary_file(summary_paths[data_files["A"][0]])
+    dNdS_dict_X = read_dNdS_summary_file(summary_paths[data_files["X"][0]])
     species = get_species_list(dNdS_dict_A)
     plot_dNdS_violins(A_dict=dNdS_dict_A, X_dict=dNdS_dict_X,filename=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/dNdS_violin_plot.png")
     

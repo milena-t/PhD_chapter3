@@ -221,17 +221,21 @@ def plot_dNdS_permutations(boot_diff:dict, measure_diff:dict, A_dict:dict, X_dic
 
 if __name__ == """__main__""":
 
-    username = f"miltr339"
+    username = "milena"# "miltr339"
+    chromosome = "A"
+    data_files = {"A" : ["A_dNdS", "A_LRT"],
+                  "X" : ["X_dNdS", "X_LRT"]}
     summary_paths = get_summary_paths(username=username)
-    dNdS_dict_A = read_dNdS_summary_file(summary_paths["A"])
-    dNdS_dict_X = read_dNdS_summary_file(summary_paths["X"])
+    dNdS_dict_A = read_dNdS_summary_file(summary_paths[data_files["A"][0]])
+    dNdS_dict_X = read_dNdS_summary_file(summary_paths[data_files["X"][0]])
+    species = get_species_list(dNdS_dict_A)
     pairs_list = list(dNdS_dict_A.keys())
     
     bootstraps = { pair : [] for pair in pairs_list}
     median_diffs = {pair : np.NaN for pair in pairs_list}
     
     ### test with 100, takes a bit of time otherwise
-    num_permutations = 10000
+    num_permutations = 100
 
     for pair in pairs_list:
         
@@ -241,5 +245,6 @@ if __name__ == """__main__""":
         bootstraps[pair] = permutate_dNdS(dNdS_A=dNdS_A, dNdS_X=dNdS_X, num_permut=num_permutations)
         mean_boot = np.mean(bootstraps[pair])
         print(f" *  {pair} median(dNdS_A)-median(dNdS_X)  --> \t{median_diffs[pair]:.3f}, mean bootstrap diff {mean_boot:.5f}")
-
-    plot_dNdS_permutations(boot_diff=bootstraps,measure_diff=median_diffs, A_dict=dNdS_dict_A, X_dict=dNdS_dict_X, filename=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/fastX_permutation.png")
+    
+    filename =f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/fastX_permutation.png"
+    plot_dNdS_permutations(boot_diff=bootstraps,measure_diff=median_diffs, A_dict=dNdS_dict_A, X_dict=dNdS_dict_X, filename = filename, transparent=False)
