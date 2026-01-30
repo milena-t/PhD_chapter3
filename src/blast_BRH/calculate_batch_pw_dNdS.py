@@ -46,23 +46,31 @@ if __name__ == "__main__":
     datadir = f"/Users/miltr339/work/pairwise_blast_chapter_2_3/brh_tables/"
     bash_dir = f"/Users/miltr339/work/PhD_code/PhD_chapter3/bash"
     dNdS_exec = f"bash"
-    script_path = f"{bash_dir}/run_batch_dNdS.sh"
     pelle = False
 
     if not os.path.isdir(datadir):
         datadir = f"/proj/naiss2023-6-65/Milena/chapter3/dNdS_calculations/"
         bash_dir = f"/proj/naiss2023-6-65/Milena/chapter3/PhD_chapter3/bash"
         dNdS_exec = f"sbatch"
-        script_path = f"{bash_dir}/run_batch_dNdS.sh"
         pelle = True
     
     #######
     chr_type = "A"
     #######
+    # analysis = "LRT" 
+    analysis = "dNdS"
+    #######
+    
+    script_path = f"{bash_dir}/run_batch_{analysis}_{chr_type}.sh"
 
     ### original
     X_path = f"{datadir}brh_sequences_{chr_type}/"
-    outdir = f"{datadir}brh_results_{chr_type}_branch_model/"
+    if analysis=="dNdS":
+        outdir = f"{datadir}brh_results_{chr_type}_branch_model/"
+    elif analysis=="LRT":
+        outdir = f"{datadir}brh_results_{chr_type}/"
+    else:
+        raise RuntimeError(f"invalid 'analysis' option! you have {analysis} but it needs to be 'dNdS' or 'LRT' ")
 
     ### second run for the ancestral X-syntenic chromosome in Dcar as X
     # X_path = f"{datadir}brh_sequences_{chr_type}_Dcar_X_syntenic/"

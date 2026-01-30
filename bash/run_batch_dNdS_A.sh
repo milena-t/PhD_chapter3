@@ -10,7 +10,7 @@
 
 IN_LIST=$@ # space separated list of filenames, do like 100 at a time
 
-CHR_TYPE=X
+CHR_TYPE=A
 
 RUN_DIR=/proj/naiss2023-6-65/Milena/chapter3/PhD_chapter3/src/blast_BRH/
 if [ -d "$RUN_DIR" ]; then
@@ -21,6 +21,7 @@ if [ -d "$RUN_DIR" ]; then
     CLUSTALO=/proj/naiss2023-6-65/Milena/software_install/clustal_omega/clustal-omega-1.2.4/bin/clustalo
     PAML=/sw/bioinfo/paml/4.10.7/rackham/bin/codeml
     FASTTREE=FastTree
+    PAML_CONFIG=/sw/bioinfo/paml/4.10.7/rackham/examples/codeml.ctl
 else
     RUN_DIR=/Users/miltr339/work/PhD_code/PhD_chapter3/src/blast_BRH/
     IN_DIR=/Users/miltr339/work/pairwise_blast_chapter_2_3/brh_tables/brh_sequences_${CHR_TYPE}/
@@ -41,10 +42,9 @@ do
         --pal2nalbin $PAL2NAL \
         --codeml \
         --branch_model \
-        --codemlbin $PAML \
+        --codeml_config_path $PAML_CONFIG \
         --clustalbin $CLUSTALO \
         --fasttreebin $FASTTREE \
-        --codemlbin $PAML \
         --overwrite \
         --verbose
 
