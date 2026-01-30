@@ -5,16 +5,25 @@ Make batches of dNdS to calculate at once. splits it into several jobs of orthol
 import os
 
 
-def make_nested_lists(dir_path):
+def make_nested_lists(dir_path, include_list = []):
     """
-    make dictionary of by-species nested lists for the pairwise fasta files
+    make dictionary of by-species nested lists for the pairwise fasta files. if include_list is specified then only use 
+    pairs that have members in that list
     """
     subdirs = [f"{dir_path}{f}/" for f in os.listdir(dir_path) if os.path.isdir(os.path.join(dir_path, f))]
 
     fastas = []
     for pairdir in subdirs:
         print(f"making nested fasta lists in: {pairdir}")
-        fastas.extend([f"{pairdir}{f}" for f in os.listdir(pairdir) if os.path.isfile(os.path.join(pairdir, f))])
+        species_present = True
+        if include_list != []:
+            species_present = False
+            for species_incl in include_list:
+                if species_incl in dir_path:
+                    species_present = True
+                    break
+        if species_present:
+            fastas.extend([f"{pairdir}{f}" for f in os.listdir(pairdir) if os.path.isfile(os.path.join(pairdir, f))])
     
     nested_dict = {}
     print(f"{len(fastas)} orthologs: {fastas[:3]} ... ")
@@ -77,7 +86,7 @@ if __name__ == "__main__":
     # outdir = f"{datadir}brh_results_{chr_type}_Dcar_X_syntenic/"
 
     os.chdir(outdir)
-    x_paths_nested_dict = make_nested_lists(X_path)
+    x_paths_nested_dict = make_nested_lists(X_path, include_list=["C_magnifica","C_septempunctata","T_castaneum","T_freemani"])
     sp1_list=list(x_paths_nested_dict.keys())
 
     ########
