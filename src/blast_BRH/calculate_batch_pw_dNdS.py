@@ -11,6 +11,8 @@ def make_nested_lists(dir_path, include_list = []):
     pairs that have members in that list
     """
     subdirs = [f"{dir_path}{f}/" for f in os.listdir(dir_path) if os.path.isdir(os.path.join(dir_path, f))]
+    if include_list != []:
+        print(f"include only species: {include_list}")
 
     fastas = []
     for pairdir in subdirs:
@@ -19,7 +21,8 @@ def make_nested_lists(dir_path, include_list = []):
         if include_list != []:
             species_present = False
             for species_incl in include_list:
-                if species_incl in dir_path:
+                print(f"\t - testing {species_incl} in {pairdir}")
+                if species_incl in pairdir:
                     species_present = True
                     break
         if species_present:
