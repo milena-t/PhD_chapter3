@@ -112,6 +112,8 @@ The individual steps consist of:
         args.fasttreebin = "FastTree"
     if not args.codemlbin:
         args.codemlbin = "codeml"
+    if not args.codeml_config_path:
+        args.codeml_config_path = ""
     if not args.yn00bin:
         args.yn00bin = "yn00"
     if args.codeml:
@@ -408,10 +410,7 @@ if __name__ == '__main__':
     yn00_bin = args.yn00bin
     run_codeml =args.codeml
     codeml_bin = args.codemlbin
-    if codeml_bin == "codeml" or yn00_bin == "yn00":
-        codeml_config_source = args.codeml_config_source
-    else:
-        codeml_config_source = ""
+    codeml_config_source = args.codeml_config_path
     
     if verbose:
         print()
