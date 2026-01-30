@@ -88,7 +88,7 @@ The individual steps consist of:
     paml_bin = parser.add_mutually_exclusive_group(required=False)
     paml_bin.add_argument('--codemlbin', type=str, help="path to the codeml executeable")
     paml_bin.add_argument('--yn00bin', type=str, help="path to the yn00 executeable")
-    paml_bin.add_argument('--config_path', type=str, help="if any paml executeables can be called from PATH, give here the location of the codeml.ctl default file")
+    paml_bin.add_argument('--codeml_config_path', type=str, help="if any paml executeables can be called from PATH, give here the location of the codeml.ctl default file")
 
     parser.add_argument('--verbose', action='store_true', help="enable verbose mode")
     parser.add_argument('--overwrite', action='store_true', help="overwrite existing output files with default names from previous runs")

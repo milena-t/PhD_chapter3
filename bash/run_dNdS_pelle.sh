@@ -21,7 +21,7 @@ python3 /proj/naiss2023-6-65/Milena/chapter3/PhD_chapter3/src/blast_BRH/calculat
     --pal2nalbin $PAL2NAL_UPPMAX \
     --codeml \
     --branch_model \
-    --config_path $PAML_CONFIG \
+    --codeml_config_path $PAML_CONFIG \
     --clustalbin $CLUSTALO_UPPMAX \
     
     # --codemlbin $PAML_UPPMAX \
