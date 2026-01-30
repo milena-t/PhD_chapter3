@@ -11,8 +11,10 @@ from matplotlib.colors import LinearSegmentedColormap
 
 def get_summary_paths(username = "miltr339"):
     summary_paths = {
-        "A" : f"/Users/{username}/work/pairwise_blast_chapter_2_3/brh_tables/brh_results_A/dNdS_summary_A-linked.txt",
-        "X" : f"/Users/{username}/work/pairwise_blast_chapter_2_3/brh_tables/brh_results_X/dNdS_summary_X-linked.txt",
+        "A_dNdS" : f"/Users/{username}/work/pairwise_blast_chapter_2_3/brh_tables/brh_results_A/dNdS_summary_A-linked.txt",
+        "A_LRT" : f"/Users/{username}/work/pairwise_blast_chapter_2_3/brh_tables/brh_results_A/site_classes_summary_A-linked.txt",
+        "X_dNdS" : f"/Users/{username}/work/pairwise_blast_chapter_2_3/brh_tables/brh_results_X/dNdS_summary_X-linked.txt",
+        "X_LRT" : f"/Users/{username}/work/pairwise_blast_chapter_2_3/brh_tables/brh_results_X/site_classes_summary_X-linked.txt",
     }
     return summary_paths
 
@@ -276,9 +278,11 @@ def plot_dNdS_violins(A_dict:dict, X_dict:dict, filename = "dNdS_ratios_A_X.png"
 
 
 if __name__ == "__main__":
-    username = "miltr339"
+    username = "milena"# "miltr339"
     chromosome = "A"
-    summary_paths = get_summary_paths
+    data_files = {"A" : ["A_dNdS", "A_LRT"],
+                  "X" : ["X_dNdS", "X_LRT"]}
+    summary_paths = get_summary_paths(username=username)
     dNdS_dict_A = read_dNdS_summary_file(summary_paths["A"])
     dNdS_dict_X = read_dNdS_summary_file(summary_paths["X"])
     species = get_species_list(dNdS_dict_A)
