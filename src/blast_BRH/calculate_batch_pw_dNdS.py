@@ -66,12 +66,16 @@ if __name__ == "__main__":
         dNdS_exec = f"sbatch"
         pelle = True
     
+    #############################
+    ###############
     #######
     chr_type = "A"
     #######
     # analysis = "LRT" ## codeml site model M1a and M2a with likelihood ratio test
     analysis = "dNdS" ## codeml branch model
     #######
+    ###############
+    #############################
     
     script_path = f"{bash_dir}/run_batch_{analysis}_{chr_type}.sh"
 
