@@ -4,8 +4,8 @@
 #SBATCH --mem=20G
 #SBATCH -t 10:00:00
 #SBATCH --mail-type=ALL
-#SBATCH -J run_extract_dNdS_results
-#SBATCH -o run_extract_dNdS_results.log
+#SBATCH -J dNdS_extract_results
+#SBATCH -o dNdS_extract_results.log
 
 module load Biopython/1.84-foss-2024a
 
