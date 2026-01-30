@@ -79,7 +79,7 @@ if __name__ == "__main__":
     ########
 
     for species1, subdict in x_paths_nested_dict.items():
-        if species1 == " C_magnifica" or species1 == "T_castaneum":
+        if species1 == " C_magnifica":#  or species1 == "T_castaneum":
             pass
         else:
             continue
