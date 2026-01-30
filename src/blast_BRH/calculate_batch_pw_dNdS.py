@@ -88,15 +88,15 @@ if __name__ == "__main__":
 
     for species1, subdict in x_paths_nested_dict.items():
         print(f"species1 : {species1}")
-        if species1 == " C_magnifica"  or species1 == "C_septempunctata":
+        if species1 == "C_magnifica"  or species1 == "C_septempunctata":
             print(f"run {species1}")
             pass
-        elif species1 == " T_castaneum"  or species1 == "T_freemani":
+        elif species1 == "T_castaneum"  or species1 == "T_freemani":
             print(f"run {species1}")
             pass
         else:
             print(f"skip {species1}")
-            # continue
+            continue
 
         for species2, fasta_list in subdict.items():
             if species1 == species2:
