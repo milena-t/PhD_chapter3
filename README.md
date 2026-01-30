@@ -77,24 +77,31 @@ DTOL open data release policy [here](https://www.darwintreeoflife.org/wp-content
       * paml (codeml) branch model (`model=2`,`nssites=0`), for all 6 species respectively, with each being the focal species once. This estimates the branch dN and dS for all the focal species.
       * This makes the comparisons not pairwise!! unsure if this is impacted by the specific phylogeny still though, since I do have long distances between groups of sister-species.
       * filter dS>2
-  * arthropods (all XX/XO here)
+  * arthropods (XX/XO)
     * aphids ([Jaquiéry et al. 2018](https://academic.oup.com/gbe/article/10/2/507/4817508)): also mostly due to lower Ne and relaxed selection and therefore drift. They also do some gene expression stuff, TODO check sex bias
     * spiders ([Bechsgaard et al. 2019](https://academic.oup.com/mbe/article/36/6/1281/5420164)): They say the use paml but no details, so I guess `yn00`? They have species with differing mating systems and sex ratios. In the species with a female-biased sex ratio (NeX is close to NeA) dNdS is higher, they think therefore fastX due to adaptive evolution.
     * stick insects ([Parker et al. 2022](https://academic.oup.com/jeb/article/35/12/1734/7317967)): They think high dNdS due to relaxed selection and male-biased mutation, TODO check more detail
+  * arthropods (ZZ/ZW)
+    * [Höök et al. 2023](https://academic.oup.com/evolut/article/78/9/1554/7685102#479682355): fastZ, with some nuanced effects of genes with sex-biased expression
+  * drosophila
+    * [Begun et al. 2007](https://journals.plos.org/plosbiology/article?id=10.1371/journal.pbio.0050310): Very detailed methods, also including MK test. TODO refer back to this one
 
 * Slower-X or ambiguous
   * fruit flies
     * [Counterman et al. 2004](https://academic.oup.com/evolut/article-abstract/58/3/656/6755860): SlowX 
     * [Thornton et al. 2006](https://genome.cshlp.org/content/16/4/498.full#sec-6): SlowX
-    * [Connallon 2007](https://academic.oup.com/mbe/article/24/11/2566/1017579):
-    * Begun et al. 2007
-    * Baines et al. 2008
+    * [Connallon 2007](https://academic.oup.com/mbe/article/24/11/2566/1017579): good theory summary for presentation
+    * [Baines et al. 2008](https://academic.oup.com/mbe/article/25/8/1639/1109677):
     * Vicoso et al. 2008
     * Mank et al. 2010b
     * Meisel & Connallon 2013
     * Ávila et al. 2014
     * Charlesworth et al. 2018
-  * lepidoptera (Sackton et al. 2014, Rousselle et al. 2016, Pinharanda et al. 2019, Mongue et al. 2022, Höök et al. 2023).
+  * lepidoptera 
+    * Sackton et al. 2014
+    * Rousselle et al. 2016
+    * Pinharanda et al. 2019
+    * Mongue et al. 2022
 
 ### Results
 
@@ -662,3 +669,11 @@ not available in preliminary data
     <img src="data/fastX_ortholog_ident/dS_vs_dNdS_scatterplot_all_pairs.png" width="100%" />
   </p>
 </details>
+
+
+# MK test
+
+From [Kousathanas 2014](https://academic.oup.com/genetics/article/196/4/1131/5935629#403207161): "*The standard MK test compares the ratio of nonsynonymous to synonymous divergence (dN/dS) between two species with the ratio of nonsynonymous to synonymous polymorphism (pN/pS) within a species. Because positively selected mutations are not expected to contribute substantially to polymorphism, an excess of dN/dS relative to pN/pS is interpreted to be the result of adaptive substitutions. The rate of molecular adaptation is usually quantified by calculating the proportion of substitutions that have been fixed by positive selection (α) as α=(dN-dS(pN/pS))/(dN)*". See the entire section on "Measuring the rate of molecular adatpation"
+
+maybe with this: https://frubino.github.io/scripts/pnps_gen.html
+

@@ -57,12 +57,12 @@ if __name__ == "__main__":
         pelle = True
     
     #######
-    chr_type = "X"
+    chr_type = "A"
     #######
 
     ### original
     X_path = f"{datadir}brh_sequences_{chr_type}/"
-    outdir = f"{datadir}brh_results_{chr_type}/"
+    outdir = f"{datadir}brh_results_{chr_type}_branch_model/"
 
     ### second run for the ancestral X-syntenic chromosome in Dcar as X
     # X_path = f"{datadir}brh_sequences_{chr_type}_Dcar_X_syntenic/"

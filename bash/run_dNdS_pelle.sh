@@ -20,6 +20,7 @@ python3 /proj/naiss2023-6-65/Milena/chapter3/PhD_chapter3/src/blast_BRH/calculat
     --cds "${IN_DIR}${INFILE}" \
     --pal2nalbin $PAL2NAL_UPPMAX \
     --codeml \
+    --branch_model \
     --codemlbin $PAML_UPPMAX \
     --clustalbin $CLUSTALO_UPPMAX \
     
