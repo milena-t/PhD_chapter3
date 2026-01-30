@@ -69,7 +69,7 @@ if __name__ == "__main__":
     #############################
     ###############
     #######
-    chr_type = "A"
+    chr_type = "X"
     #######
     # analysis = "LRT" ## codeml site model M1a and M2a with likelihood ratio test
     analysis = "dNdS" ## codeml branch model
