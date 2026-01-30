@@ -79,8 +79,11 @@ if __name__ == "__main__":
     ########
 
     for species1, subdict in x_paths_nested_dict.items():
-        # if species1 != "D_carinulata":
-        #     continue
+        if species1 == " C_magnifica" or species1 == "T_castaneum":
+            pass
+        else:
+            continue
+        
         for species2, fasta_list in subdict.items():
             if species1 == species2:
                 continue
