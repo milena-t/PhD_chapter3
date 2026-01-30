@@ -36,6 +36,26 @@ cm141
 cm145
 cm147
 cm163
+tc25
+tc33
+tc36    --> X
+tc43
+tc49
+tc52
+tc65
+tc67
+tc69
+tc74
+cs2
+cs3
+cs7     --> X
+cs9
+cs10
+cs11
+cs13
+cs14
+cs17
+cs20
 dc1
 dc2
 dc8
