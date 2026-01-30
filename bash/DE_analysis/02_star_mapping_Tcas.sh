@@ -1,19 +1,17 @@
 #!/bin/bash
 #SBATCH -A uppmax2026-1-8
 #SBATCH -c 16
-#SBATCH -t 20:00:00
-#SBATCH -J STAR_mapping_Csep
-#SBATCH -o STAR_mapping_Csep.log
+#SBATCH -t 24:00:00
+#SBATCH -J STAR_mapping_Tcas
+#SBATCH -o STAR_mapping_Tcas.log
 #SBATCH --mail-type=ALL
 
 module load  STAR/2.7.11b-GCC-13.3.0
 
-GENOME=/proj/naiss2023-6-65/Milena/annotation_pipeline/only_orthodb_annotation/C_septempunctata/assembly_genomic.fna.masked
-INDEX=/proj/naiss2023-6-65/Milena/chapter3/RNAseq/Coccinella/star_index
-ANNOT=/proj/naiss2023-6-65/Milena/chapter3/RNAseq/Coccinella/GCF_907165205.1_icCocSept1.1_genomic.gtf
-OUT_DIR=/proj/naiss2023-6-65/Milena/chapter3/RNAseq/Coccinella/star_mapping
-
-TCAS_GENOME=/proj/naiss2023-6-65/Milena/annotation_pipeline/only_orthodb_annotation/T_castaneum/assembly_genomic.fna.masked
+GENOME=/proj/naiss2023-6-65/Milena/annotation_pipeline/only_orthodb_annotation/T_castaneum/assembly_genomic.fna.masked
+INDEX=/proj/naiss2023-6-65/Milena/chapter3/RNAseq/Tribolium/star_index
+ANNOT=/proj/naiss2023-6-65/Milena/chapter3/RNAseq/Tribolium/GCF_031307605.1_icTriCast1.1_genomic.gtf
+OUT_DIR=/proj/naiss2023-6-65/Milena/chapter3/RNAseq/Tribolium/star_mapping
 
 
 #Create the STAR genome index
