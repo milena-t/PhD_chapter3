@@ -462,8 +462,8 @@ Additionally, all plots are filtered to only contain dNdS ratios where the dS < 
 
 The right is all the permutation tests. the pink line is the measured `dNdS_A - dNdS_X`, while green is the distributions from the permutation test. Since I am plotting `dNdS_A - dNdS_X`, and I mostly observe `dNdS_A - dNdS_X > 0`, which means `dNdS_A > dNdS_X`, this indicates slowX. 
 
-<p float="left">
-  <img src="data/fastX_ortholog_ident/fastX_permutation_bruchini_white_bg.png" width="100%" />
+<p float="center">
+  <img src="data/fastX_ortholog_ident/fastX_permutation_bruchini_white_bg.png" width="75%" />
 </p>
 
 <p float="left">
@@ -475,8 +475,8 @@ The right is all the permutation tests. the pink line is the measured `dNdS_A - 
 
 In many cases, orthologs are too diverged to properly estimat dS, which greatly impacts the dNdS ratio. I therefore also look at dS both to assess the reliability of the estimates, and also to see if there is a difference in neutral substitution rate between X and A.
 
-<p float="left">
-  <img src="data/fastX_ortholog_ident/dS_vs_dNdS_scatterplot_bruchini_white_bg.png" width="100%" />
+<p float="center">
+  <img src="data/fastX_ortholog_ident/dS_vs_dNdS_scatterplot_bruchini_white_bg.png" width="75%" />
 </p>
 
 <p float="left">
