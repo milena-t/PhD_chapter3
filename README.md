@@ -458,7 +458,9 @@ The dNdS is calculated between all pairwise comparisons for A-linked and X-linke
 3. **Normal distribution:** Compute a normal distribution from all mean(A) - mean(X) values, find 95% confidence intervals
 4. **Plot:** Histrogram and normal distribution, compare original observed dNdS_A - dNdS_X to 95% confidence intervals of the permutations
 
-The right is all the permutation tests. the pink line is the measured `dNdS_A - dNdS_X`, while green is the distributions from the permutation test. Since I am plotting `dNdS_A - dNdS_X`, and I mostly observe `dNdS_A - dNdS_X > 0`, which means `dNdS_A > dNdS_X`, this indicates slowX.
+Additionally, all plots are filtered to only contain dNdS ratios where the dS < 2.
+
+The right is all the permutation tests. the pink line is the measured `dNdS_A - dNdS_X`, while green is the distributions from the permutation test. Since I am plotting `dNdS_A - dNdS_X`, and I mostly observe `dNdS_A - dNdS_X > 0`, which means `dNdS_A > dNdS_X`, this indicates slowX. 
 
 <p float="left">
   <img src="data/fastX_ortholog_ident/fastX_permutation_bruchini_white_bg.png" width="100%" />

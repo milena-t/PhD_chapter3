@@ -1,10 +1,30 @@
-from plot_dNdS import get_summary_paths,read_dNdS_summary_file,get_species_list,violinplot_pair,violinplot_pair_single
+from plot_dNdS import get_summary_paths,get_species_list,violinplot_pair,violinplot_pair_single
+from plot_dS import read_dNdS_dS_summary_file
 import scipy.stats as sts
 import numpy as np
 from tqdm import tqdm
 import matplotlib.pyplot as plt
 from matplotlib.ticker import PercentFormatter,FuncFormatter
 import analyze_site_classes as site_classes
+
+
+
+def read_filtered_dNdS_summary(summary_path, excl_list=[], max_dS=2):
+    """
+    read the dNdS and dS values, filter for min_dS, and return only dNdS values that meet the criteria
+    """
+    summary_dict = read_dNdS_dS_summary_file(summary_path=summary_path, exclude_list=excl_list, only_dS=False)
+    dNdS_dict = {pair : [] for pair in summary_dict.keys()}
+    for pair, lists_dict in summary_dict.items():
+        dNdS_unfiltered = lists_dict["dNdS"]
+        dS_list = lists_dict["dS"]
+        assert len(dNdS_unfiltered) == len(dS_list)
+
+        dNdS_filtered = [dNdS for i, dNdS in enumerate(dNdS_unfiltered) if dS_list[i]<max_dS]
+        print(f"{pair} : {len(dNdS_unfiltered)} dNdS values, {len(dS_list)} dS values; \t {len(dNdS_filtered)} have dS < {max_dS}")
+        dNdS_dict[pair] = dNdS_filtered
+
+    return dNdS_dict
 
 
 def permute_dNdS(dNdS_A, dNdS_X):
@@ -99,7 +119,7 @@ def plot_dNdS_permutations(boot_diff:dict, measure_diff:dict, A_dict:dict, X_dic
     for pair in pairs_sorted:
         ### get pair indices for species pair
         try:
-            gen1, spec1, gen2, spec2,dNdS_str =pair.split("_")
+            gen1, spec1, gen2, spec2 =pair.split("_")
         except:
             raise RuntimeError(f"{pair} could not be parsed")
         species1 = f"{gen1}_{spec1}"
@@ -258,7 +278,7 @@ def plot_dNdS_permutations_one_pair(boot_diff:dict, measure_diff:dict, A_dict:di
     for pair in pairs_sorted:
         ### get pair indices for species pair
         try:
-            gen1, spec1, gen2, spec2,dNdS_str =pair.split("_")
+            gen1, spec1, gen2, spec2 =pair.split("_")
         except:
             raise RuntimeError(f"{pair} could not be parsed")
         species1 = f"{gen1}_{spec1}"
@@ -360,7 +380,7 @@ if __name__ == """__main__""":
     summary_paths = get_summary_paths(username=username)
 
     # bruchini
-    if True:
+    if False:
         species_excl = ["D_carinulata", "D_sublineata", "T_castaneum", "T_freemani", "C_septempunctata", "C_magnifica"]
         filename =f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/fastX_permutation_bruchini.png"
     # coccinella
@@ -372,8 +392,11 @@ if __name__ == """__main__""":
         species_excl = ["D_carinulata", "D_sublineata", "C_septempunctata", "C_magnifica", "B_siliquastri", "A_obtectus", "C_maculatus", "C_chinensis"]
         filename =f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/fastX_permutation_tribolium.png"
     
-    dNdS_dict_A = read_dNdS_summary_file(summary_paths[data_files["A"][0]], excl_list=species_excl)
-    dNdS_dict_X = read_dNdS_summary_file(summary_paths[data_files["X"][0]], excl_list=species_excl)
+    print(" * reading dNdS_dict_A ... ")
+    dNdS_dict_A = read_filtered_dNdS_summary(summary_paths[data_files["A"][0]], excl_list=species_excl, max_dS=2)
+    print(" * reading dNdS_dict_X ... ")
+    dNdS_dict_X = read_filtered_dNdS_summary(summary_paths[data_files["X"][0]], excl_list=species_excl, max_dS=2)
+    
     species = get_species_list(dNdS_dict_A, exclude_list=species_excl)
     pairs_list = list(dNdS_dict_A.keys())
 
@@ -386,14 +409,6 @@ if __name__ == """__main__""":
     num_permutations = 10000
 
     for pair in pairs_list:
-        if "dNdS" not in pair:
-            continue
-        gen1, spec1, gen2, spec2,dNdS_str =pair.split("_")
-        species1 = f"{gen1}_{spec1}"
-        species2 = f"{gen2}_{spec2}"
-        if species1 in species_excl or species2 in species_excl:
-            print(f"\t excluding {pair}")
-            continue
         dNdS_A = dNdS_dict_A[pair]
         dNdS_X = dNdS_dict_X[pair]
         median_diffs[pair] = np.nanmedian(dNdS_A) - np.nanmedian(dNdS_X)
