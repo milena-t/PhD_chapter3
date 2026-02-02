@@ -180,20 +180,52 @@ def violinplot_pair(data_A_X, row, col, n_A, n_X, mean_A, mean_X, axes, colors_d
     if ymax == 0:
         max_dNdS_add = 0.3
         axes[row, col].set_ylim([0,1+max_dNdS_add])
-        axes[row, col].text(1-0.2, 0.78+max_dNdS_add, f"n={n_A}", fontsize = fs, color = colors_dict["A"])
-        axes[row, col].text(2-0.2, 0.78+max_dNdS_add, f"n={n_X}", fontsize = fs, color = colors_dict["X"])
+        axes[row, col].text(1-0.4, 0.78+max_dNdS_add, f"n={n_A}\nmedian={mean_A:.3f}", fontsize = fs, color = colors_dict["A"])
+        axes[row, col].text(2-0.4, 0.78+max_dNdS_add, f"n={n_X}\nmedian={mean_X:.3f}", fontsize = fs, color = colors_dict["X"])
         axes[row, col].hlines(y=mean_A, xmin=0.5, xmax=2.5, linewidth=2, color=colors_dict["A"])
         axes[row, col].hlines(y=mean_X, xmin=0.5, xmax=2.5, linewidth=2, color=colors_dict["X"])
         axes[row, col].hlines(y=1, xmin=0.5, xmax=2.5, linewidth=2, linestyle = ":", color="#818181")
     else:
         axes[row, col].set_ylim([0,ymax])
-        axes[row, col].text(1-0.2, 0.75*ymax, f"n={n_A}", fontsize = fs, color = colors_dict["A"])
-        axes[row, col].text(2-0.2, 0.75*ymax, f"n={n_X}", fontsize = fs, color = colors_dict["X"])
+        axes[row, col].text(1-0.4, 0.8*ymax, f"n={n_A}\nmedian={mean_A:.3f}", fontsize = fs, color = colors_dict["A"])
+        axes[row, col].text(2-0.4, 0.8*ymax, f"n={n_X}\nmedian={mean_X:.3f}", fontsize = fs, color = colors_dict["X"])
     axes[row, col].set_xticks([1,2])
     axes[row, col].set_xticklabels(xticks)
-    
 
     return violins
+
+
+def violinplot_pair_single(data_A_X, col, n_A, n_X, mean_A, mean_X, axes, colors_dict,fs, xticks = ["A", "X"], xlab = "", ymax = 0):
+    ## make general function so i can repeat it easily for the "mirror" species where row and col are switched
+    violins = axes[col].violinplot(data_A_X, showmeans = False, showextrema = False)
+    colors = [colors_dict["A"], colors_dict["X"]]
+    for body, color in zip(violins['bodies'], colors):
+        body.set_facecolor(color)
+        body.set_edgecolor(color)
+        body.set_alpha(0.7)
+    
+    axes[col].set_xlabel('')
+    axes[col].set_ylabel('dN/dS', fontsize = fs*0.8)
+    axes[col].set_ylabel(xlab, fontsize = fs)
+    axes[col].tick_params(axis='x', labelsize=fs)
+    axes[col].tick_params(axis='y', labelsize=fs)
+    if ymax == 0:
+        max_dNdS_add = 0.3
+        axes[col].set_ylim([0,1+max_dNdS_add])
+        axes[col].text(1-0.4, 0.8+max_dNdS_add, f"n={n_A}\nmedian={mean_A:.3f}", fontsize = fs, color = colors_dict["A"])
+        axes[col].text(2-0.4, 0.8+max_dNdS_add, f"n={n_X}\nmedian={mean_X:.3f}", fontsize = fs, color = colors_dict["X"])
+        axes[col].hlines(y=mean_A, xmin=0.5, xmax=2.5, linewidth=2, color=colors_dict["A"])
+        axes[col].hlines(y=mean_X, xmin=0.5, xmax=2.5, linewidth=2, color=colors_dict["X"])
+        axes[col].hlines(y=1, xmin=0.5, xmax=2.5, linewidth=2, linestyle = ":", color="#818181")
+    else:
+        axes[col].set_ylim([0,ymax])
+        axes[col].text(1-0.4, 0.75*ymax, f"n={n_A}\nmedian={mean_A:.3f}", fontsize = fs, color = colors_dict["A"])
+        axes[col].text(2-0.4, 0.75*ymax, f"n={n_X}\nmedian={mean_X:.3f}", fontsize = fs, color = colors_dict["X"])
+    axes[col].set_xticks([1,2])
+    axes[col].set_xticklabels(xticks)
+
+    return violins
+
 
 def plot_dNdS_violins(A_dict:dict, X_dict:dict, filename = "dNdS_ratios_A_X.png", legend_in_last = True, dark_mode=False):
     """

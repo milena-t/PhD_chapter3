@@ -1,4 +1,4 @@
-from plot_dNdS import get_summary_paths,read_dNdS_summary_file,get_species_list,violinplot_pair
+from plot_dNdS import get_summary_paths,read_dNdS_summary_file,get_species_list,violinplot_pair,violinplot_pair_single
 import scipy.stats as sts
 import numpy as np
 from tqdm import tqdm
@@ -78,9 +78,9 @@ def plot_dNdS_permutations(boot_diff:dict, measure_diff:dict, A_dict:dict, X_dic
     if rows>2:
         fig, axes = plt.subplots(rows, cols, figsize=(27, 25)) # for more than three rows
     else:
-        fig, axes = plt.subplots(rows, cols, figsize=(15, 10)) # for more than three rows
+        fig, axes = plt.subplots(rows, cols, figsize=(15, 10)) # for less than three rows
     
-    fs = 25
+    fs = 28
     plt.rcParams['text.usetex'] = True
 
     colors_dict = {
@@ -107,7 +107,7 @@ def plot_dNdS_permutations(boot_diff:dict, measure_diff:dict, A_dict:dict, X_dic
         species2 = f"{gen2}_{spec2}"
         col = species_index[species2]
 
-        
+        ## plot center row/col species names
         # put this here before otherwise the last row/col label never gets reached
         if row == len(species_list)-1:
             species1_lab = species1.replace("_", ". ")
@@ -134,7 +134,6 @@ def plot_dNdS_permutations(boot_diff:dict, measure_diff:dict, A_dict:dict, X_dic
             axes[row,row].text(0.1,0.4,f"{species1_lab}", fontsize = fs*1.4)
             diagonals_done.append(row)
         
-        
         ### plot bootstraps
 
         data_boot = np.array(boot_diff[pair], dtype=float)
@@ -148,9 +147,10 @@ def plot_dNdS_permutations(boot_diff:dict, measure_diff:dict, A_dict:dict, X_dic
         mean_boot = np.nanmedian(data_boot)
 
         nbins = 20
-        axes[row,col].hist(data_boot, bins=nbins, weights=np.ones(len(data_boot)) / len(data_boot), histtype="bar", color = [colors_dict["bars"]], label= hist_label)#, density = True)
+        axes[row,col].hist(data_boot, bins=nbins, weights=np.ones(len(data_boot)) / len(data_boot), histtype="bar", color = [colors_dict["bars"]])#, density = True)
         axes[row,col].yaxis.set_major_formatter(FuncFormatter(lambda x, pos: '' if x > 99 and x<1 else f'{int(x*100)}%'))
-        axes[row,col].axvline(measure_diff[pair], ymin = 0, ymax = len(data_boot)/nbins, color = colors_dict["line"], linewidth = 3)
+        axes[row,col].axvline(measure_diff[pair], ymin = 0, ymax = len(data_boot)/nbins, color = colors_dict["line"], linewidth = 3, label = f"median(A) - median(X)")
+        # axes[row,col].legend(fontsize = fs*0.85)
         # axes[row,col].axvline(0, ymin = 0, ymax = len(data_boot)/nbins, color = colors_dict["grey"], linewidth = 1, linestyle = "--")
 
         ## plot normal pdf based on sampling
@@ -206,7 +206,135 @@ def plot_dNdS_permutations(boot_diff:dict, measure_diff:dict, A_dict:dict, X_dic
 
         print(f"{row}, {col} : {species1_lab} vs. {species2_lab} --> mean(dNdS_A)-mean(dNdS_X) bootstrap: {mean_boot:.5f}, measured: {measure_diff[pair]:.3f}")
 
-    # Adjust layout to prevent overlap
+    # Adjust layout to prevent overlap  (left, bottom, right, top)
+    plt.tight_layout(rect=[0.01, 0, 1, 1])
+
+    if dark_mode:
+        filename = filename.replace(".png", "_darkmode.png")
+
+    # transparent background
+    plt.savefig(filename, dpi = 300, transparent = True)
+    # non-transparent background
+    filename_tr = filename.replace(".png", "_white_bg.png")
+    plt.savefig(filename_tr, dpi = 300, transparent = False)
+    print(f"plot saved in current working directory as: {filename} and {filename_tr}")
+
+
+def plot_dNdS_permutations_one_pair(boot_diff:dict, measure_diff:dict, A_dict:dict, X_dict:dict, filename = "dNdS_permutations.png", dark_mode=False, hist_label = r"$\text{dNdS}_A - \text{dNdS}_X$", violin_label="dNdS", violin_ymax = 0, transparent=True, binary = False):
+    """
+    plot a grid of histogram distribution plots for all pairwise comparisons
+    """
+
+    if dark_mode:
+        plt.style.use('dark_background')
+
+    species_list = get_species_list(boot_diff)
+    print(f"... plotting {len(species_list)} species")
+
+    species_count = len(species_list)
+    assert species_count==2
+    species_index = {species : i for i, species in enumerate(species_list)}
+
+    cols = species_count
+    rows = 1
+    fig, axes = plt.subplots(rows, cols, figsize=(16, 8)) # for less than three rows
+    fs = 25
+    plt.rcParams['text.usetex'] = True
+
+    colors_dict = {
+        "grey" : "#3A4040", 
+        "bars" : "#7BB7AE", 
+        "line" : "#FE4894",
+        "pdf" : "#3D7068", 
+        "A" : "#F2933A", # uniform_filtered orange
+        "X" : "#b82946", # native red
+    }
+
+    diagonals_done = []
+
+    # sort so that the order stays the same every time. otherwise it changes
+    pairs_sorted = sorted(list(boot_diff.keys()))
+    assert len(pairs_sorted) ==1
+    for pair in pairs_sorted:
+        ### get pair indices for species pair
+        try:
+            gen1, spec1, gen2, spec2,dNdS_str =pair.split("_")
+        except:
+            raise RuntimeError(f"{pair} could not be parsed")
+        species1 = f"{gen1}_{spec1}"
+        row = species_index[species1]
+        species2 = f"{gen2}_{spec2}"
+        col = species_index[species2]
+
+        species1_lab = species1.replace("_", ". ")
+        species2_lab = species2.replace("_", ". ")
+        fig.suptitle(f"{species1_lab} vs. {species2_lab} \ndNdS comparison and permutation test", fontsize = fs*1.25)
+        
+        ### plot bootstraps
+
+        data_boot = np.array(boot_diff[pair], dtype=float)
+
+        n_boot = len(data_boot)
+        mean_boot = np.nanmedian(data_boot)
+
+        nbins = 20
+        axes[1].hist(data_boot, bins=nbins, weights=np.ones(len(data_boot)) / len(data_boot), histtype="bar", color = [colors_dict["bars"]])#, density = True)
+        axes[1].yaxis.set_major_formatter(FuncFormatter(lambda x, pos: '' if x > 99 and x<1 else f'{int(x*100)}%'))
+        axes[1].axvline(measure_diff[pair], ymin = 0, ymax = len(data_boot)/nbins, color = colors_dict["line"], linewidth = 3, label = f"median(A) - median(X)")
+        # axes[1].legend(fontsize = fs*0.85)
+        # axes[row,col].axvline(0, ymin = 0, ymax = len(data_boot)/nbins, color = colors_dict["grey"], linewidth = 1, linestyle = "--")
+
+        ## plot normal pdf based on sampling
+        lwd = 3
+        pdf_ax = axes[1].twinx()
+        if measure_diff[pair] > max(data_boot):
+            pdf_x = np.arange(min(data_boot),measure_diff[pair], 0.00001)
+        else:
+            pdf_x = np.arange(min(data_boot),max(data_boot), 0.00001)
+        mean_cor,std_cor,lower_CI,upper_CI = calculate_list_CI(data_boot)
+        pdf_y = sts.norm.pdf(pdf_x, mean_cor, std_cor)
+        pdf_ax.plot(pdf_x,pdf_y, linewidth=lwd, color=colors_dict["pdf"], label = r"mean $\text{dNdS}_A - \text{dNdS}_X$"+f": {mean_cor:.3f}")#, linestyle="--")
+        pdf_ax.axvline(x=lower_CI, linewidth=lwd, color=colors_dict["pdf"], linestyle=":", label = f"95% standard error \nof the mean [{lower_CI:.3f}, {upper_CI:.3f}]")
+        pdf_ax.axvline(x=upper_CI, linewidth=lwd, color=colors_dict["pdf"], linestyle=":")
+        axes[1].axvspan(lower_CI, upper_CI, color=colors_dict["pdf"], alpha=0.25)
+        axes[1].set_xlabel(hist_label, fontsize = fs)
+        pdf_ax.axis('off')
+
+        # axes[row,col].set_title(f'{species2_lab}', fontsize = fs)
+        # axes[row,col].set_title(f'{species2}\n{species1}', fontsize = fs*0.85)
+        axes[1].tick_params(axis='y', labelsize=fs)
+        axes[1].tick_params(axis='x', labelsize=fs) 
+        
+        ### plot violins or binary bar charts
+
+        ## exclude all the NaNs because violinplot can't handle them
+        data_A_nan = np.array(A_dict[pair], dtype=float)
+        data_X_nan = np.array(X_dict[pair], dtype=float)
+        data_A = [dNdS_A for dNdS_A in data_A_nan if not np.isnan(dNdS_A) ]
+        data_X = [dNdS_X for dNdS_X in data_X_nan if not np.isnan(dNdS_X) ]
+    
+        if len(data_A)==0 or len(data_X)==0:
+            # axes[col,row].axis('off')
+            # axes[col,row].set_title(f'{species1}\n{species2}', fontsize = fs*0.85)
+            continue
+
+        n_A = len(data_A)
+        n_X = len(data_X)
+        mean_A = np.nanmedian(data_A)
+        mean_X = np.nanmedian(data_X)
+
+        data_AX = [data_A, data_X]
+
+        if binary:
+            site_classes.binary_barplot_pair(data_A=data_A, data_X=data_X, row=col, col=row, n_A=n_A, n_X=n_X, axes=axes, colors_dict=colors_dict, fs = fs, ylab ="pos. sel. genes")
+        else:
+            violinplot_pair_single(data_A_X=data_AX, col=0, n_A=n_A, n_X=n_X, mean_A=mean_A, mean_X=mean_X, axes = axes, colors_dict=colors_dict, fs = fs, xlab = violin_label, ymax = violin_ymax)
+        # axes[col,row].set_title(f'{species2}\n{species1}', fontsize = fs*0.85)
+        # axes[col,row].set_title(f'{species2}', fontsize = fs)
+
+        print(f"{species1_lab} vs. {species2_lab} --> mean(dNdS_A)-mean(dNdS_X) bootstrap: {mean_boot:.5f}, measured: {measure_diff[pair]:.3f}")
+
+    # Adjust layout to prevent overlap (left, bottom, right, top)
     plt.tight_layout(rect=[0, 0.05, 1, 1])
 
     if dark_mode:
@@ -221,6 +349,7 @@ def plot_dNdS_permutations(boot_diff:dict, measure_diff:dict, A_dict:dict, X_dic
 
 
 
+
 if __name__ == """__main__""":
 
     # username = "milena"
@@ -230,7 +359,18 @@ if __name__ == """__main__""":
                   "X" : ["X_dNdS", "X_LRT"]}
     summary_paths = get_summary_paths(username=username)
 
-    species_excl = ["D_carinulata", "D_sublineata", "T_castaneum", "T_freemani", "C_septempunctata", "C_magnifica"]
+    # bruchini
+    if True:
+        species_excl = ["D_carinulata", "D_sublineata", "T_castaneum", "T_freemani", "C_septempunctata", "C_magnifica"]
+        filename =f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/fastX_permutation_bruchini.png"
+    # coccinella
+    elif False:
+        species_excl = ["D_carinulata", "D_sublineata", "T_castaneum", "T_freemani", "B_siliquastri", "A_obtectus", "C_maculatus", "C_chinensis"]
+        filename =f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/fastX_permutation_coccinella.png"
+    # tribolium
+    elif True:
+        species_excl = ["D_carinulata", "D_sublineata", "C_septempunctata", "C_magnifica", "B_siliquastri", "A_obtectus", "C_maculatus", "C_chinensis"]
+        filename =f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/fastX_permutation_tribolium.png"
     
     dNdS_dict_A = read_dNdS_summary_file(summary_paths[data_files["A"][0]], excl_list=species_excl)
     dNdS_dict_X = read_dNdS_summary_file(summary_paths[data_files["X"][0]], excl_list=species_excl)
@@ -261,5 +401,9 @@ if __name__ == """__main__""":
         mean_boot = np.mean(bootstraps[pair])
         print(f" *  {pair} --> \t median(dNdS_A)-median(dNdS_X) = {median_diffs[pair]:.3f}, mean bootstrap diff = {mean_boot:.5f}")
     
-    filename =f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/fastX_permutation_bruchini.png"
-    plot_dNdS_permutations(boot_diff=bootstraps,measure_diff=median_diffs, A_dict=dNdS_dict_A, X_dict=dNdS_dict_X, filename = filename, transparent=False)
+    if len(pairs_list)>1:
+        print(f"plot pairwise matrix ...")
+        plot_dNdS_permutations(boot_diff=bootstraps,measure_diff=median_diffs, A_dict=dNdS_dict_A, X_dict=dNdS_dict_X, filename = filename)
+    else:
+        print(f"plot one pair ...")
+        plot_dNdS_permutations_one_pair(boot_diff=bootstraps,measure_diff=median_diffs, A_dict=dNdS_dict_A, X_dict=dNdS_dict_X, filename = filename)
