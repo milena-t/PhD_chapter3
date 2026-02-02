@@ -7,17 +7,18 @@ import pandas as pd
 from math import sqrt, isnan
 import matplotlib.pyplot as plt
 import scipy.stats
+from plot_dNdS import get_summary_paths,violinplot_pair_single
 
 
-def get_summary_paths(username = "miltr339"):
-    summary_paths = {
-        "A" : f"/Users/{username}/work/pairwise_blast_chapter_2_3/brh_tables/brh_results_A/dNdS_dS_summary_A-linked.txt",
-        "X" : f"/Users/{username}/work/pairwise_blast_chapter_2_3/brh_tables/brh_results_X/dNdS_dS_summary_X-linked.txt",
-    }
-    return summary_paths
-
-
-def read_dNdS_summary_file(summary_path, only_dS, exclude_list = []):
+def read_dNdS_dS_summary_file(summary_path, only_dS, exclude_list = []):
+    """
+    read dNdS and dS summary outfiles into a dict by species pair
+    out_dict = { pair : {
+                    "dS" : [],
+                    "dNdS" : []
+                    }
+                }
+    """
     out_dict = {}
     pairs_done = []
     with open(summary_path, "r") as summary:
@@ -58,6 +59,23 @@ def read_dNdS_summary_file(summary_path, only_dS, exclude_list = []):
                 out_dict[pair]["dNdS"] = values_list
 
     return out_dict
+
+def read_filtered_dNdS_summary(summary_path, excl_list=[], max_dS=2):
+    """
+    read the dNdS and dS values, filter for min_dS, and return only dNdS values that meet the criteria
+    """
+    summary_dict = read_dNdS_dS_summary_file(summary_path=summary_path, exclude_list=excl_list, only_dS=False)
+    dNdS_dict = {pair : [] for pair in summary_dict.keys()}
+    for pair, lists_dict in summary_dict.items():
+        dNdS_unfiltered = lists_dict["dNdS"]
+        dS_list = lists_dict["dS"]
+        assert len(dNdS_unfiltered) == len(dS_list)
+
+        dNdS_filtered = [dNdS for i, dNdS in enumerate(dNdS_unfiltered) if dS_list[i]<max_dS]
+        print(f"{pair} : {len(dNdS_unfiltered)} dNdS values, {len(dS_list)} dS values; \t {len(dNdS_filtered)} have dS < {max_dS}")
+        dNdS_dict[pair] = dNdS_filtered
+
+    return dNdS_dict
 
 
 def calculate_num_species(dNdS_dict):
@@ -111,8 +129,8 @@ def violinplot_pair(data_A_X, row, col, n_A, n_X, mean_A, mean_X, axes, colors_d
     axes[row, col].set_xticks([1,2])
     axes[row, col].set_xticklabels(xticks)
     
-    axes[row, col].text(1-0.2, 0.78+max_dNdS_add, f"n={n_A}", fontsize = fs, color = colors_dict["A"])
-    axes[row, col].text(2-0.2, 0.78+max_dNdS_add, f"n={n_X}", fontsize = fs, color = colors_dict["X"])
+    axes[row, col].text(1-0.2, 1.5+max_dNdS_add, f"n={n_A}", fontsize = fs, color = colors_dict["A"])
+    axes[row, col].text(2-0.2, 1.5+max_dNdS_add, f"n={n_X}", fontsize = fs, color = colors_dict["X"])
     axes[row, col].hlines(y=mean_A, xmin=0.5, xmax=2.5, linewidth=2, color=colors_dict["A"])
     axes[row, col].hlines(y=mean_X, xmin=0.5, xmax=2.5, linewidth=2, color=colors_dict["X"])
     axes[row, col].hlines(y=1, xmin=0.5, xmax=2.5, linewidth=2, linestyle = ":", color="#818181")
@@ -220,8 +238,9 @@ def plot_dS_violins(A_dict:dict, X_dict:dict, filename = "dNdS_ratios_A_X.png", 
         #     print(f"sample sizes, n_A = {n_A}, n_X = {n_X}, data X  = {data_X}")
     
     # fig.text(0.5, 0.04, x_label, ha='center', va='center', fontsize=fs)
-    # Adjust layout to prevent overlap
-    plt.tight_layout(rect=[0, 0.05, 1, 1])
+    
+    # Adjust layout to prevent overlap  (left, bottom, right, top)
+    plt.tight_layout(rect=[0.01, 0, 1, 1])
 
     if dark_mode:
         filename = filename.replace(".png", "_darkmode.png")
@@ -266,7 +285,7 @@ def make_line_vectors(slope, intercept, x_data, y_data):
     return x,y
 
 
-def plot_dS_vs_dNdS(A_dict:dict, X_dict:dict, filename = "dS_vs_dNdS.png", dark_mode=False):
+def plot_dS_vs_dNdS(A_dict:dict, X_dict:dict, filename = "dS_vs_dNdS.png", dark_mode=False, max_dS=2):
     """
     plot a grid of scatterplots of dS vs. dNdS in X and autosomes for each pair
     """
@@ -296,7 +315,9 @@ def plot_dS_vs_dNdS(A_dict:dict, X_dict:dict, filename = "dS_vs_dNdS.png", dark_
     colors_dict = {
         # "A" : "#4d7298", # uniform_unfiltered blue
         "A" : "#F2933A", # uniform_filtered orange
+        "A_line" : "#D36D0D", # darker orange
         "X" : "#b82946", # native red
+        "X_line" : "#861D32" #dark red
     }
 
     diagonals_done = []
@@ -336,14 +357,26 @@ def plot_dS_vs_dNdS(A_dict:dict, X_dict:dict, filename = "dS_vs_dNdS.png", dark_
         ## exclude all the NaNs because violinplot can't handle them
         dS_A_nan = np.array(A_dict[pair]["dS"], dtype=float)
         dS_X_nan = np.array(X_dict[pair]["dS"], dtype=float)
-        dS_A = [dS_A for dS_A in dS_A_nan if not np.isnan(dS_A) ]
-        dS_X = [dS_X for dS_X in dS_X_nan if not np.isnan(dS_X) ]
-
         dNdS_A_nan = np.array(A_dict[pair]["dNdS"], dtype=float)
         dNdS_X_nan = np.array(X_dict[pair]["dNdS"], dtype=float)
-        dNdS_A = [dNdS_A for dNdS_A in dNdS_A_nan if not np.isnan(dNdS_A) ]
-        dNdS_X = [dNdS_X for dNdS_X in dNdS_X_nan if not np.isnan(dNdS_X) ]
-    
+
+        # remove nan's from both (remove both elements if one of them is nan)
+        dS_A_all = [dS_A for i, dS_A in enumerate(dS_A_nan) if not np.isnan(dS_A_nan[i]) and not np.isnan(dNdS_A_nan[i]) ]
+        dS_X_all = [dS_X for i, dS_X in enumerate(dS_X_nan) if not np.isnan(dS_X_nan[i]) and not np.isnan(dNdS_X_nan[i]) ]
+        dNdS_A_all = [dNdS_A for i, dNdS_A in enumerate(dNdS_A_nan) if not np.isnan(dS_A_nan[i]) and not np.isnan(dNdS_A_nan[i]) ]
+        dNdS_X_all = [dNdS_X for i, dNdS_X in enumerate(dNdS_X_nan) if not np.isnan(dS_X_nan[i]) and not np.isnan(dNdS_X_nan[i]) ]
+        assert len(dS_A_all) == len(dNdS_A_all)
+        assert len(dS_X_all) == len(dNdS_X_all)
+        # remove dS>mad_dS from both (remove dNdS also if dS is removed)
+        dS_A = [dS for dS in dS_A_all if dS < max_dS]
+        dS_X = [dS for dS in dS_X_all if dS < max_dS]
+        dNdS_A = [dNdS for i, dNdS in enumerate(dNdS_A_all) if dS_A_all[i] < max_dS]
+        dNdS_X = [dNdS for i, dNdS in enumerate(dNdS_X_all) if dS_X_all[i] < max_dS]
+        assert len(dS_A) == len(dNdS_A)
+        assert len(dS_X) == len(dNdS_X)
+
+        print(f"\tremoved dS>{max_dS}:\n\t{len(dNdS_A_all)} A dNdS values (no np.nan) before filtering, {len(dNdS_A)} after filtering, \n\t{len(dNdS_X_all)} X dNdS values (no np.nan) before filtering , {len(dNdS_X)} after filtering")
+
         if len(dS_A)==0 or len(dS_X)==0 or len(dNdS_A)==0 or len(dNdS_X)==0:
             axes[row,col].axis('off')
             axes[row,col].text(0.1,0.4,f"{species1}\n{species2}:\nmissing data", fontsize = fs*0.75)
@@ -368,22 +401,24 @@ def plot_dS_vs_dNdS(A_dict:dict, X_dict:dict, filename = "dS_vs_dNdS.png", dark_
         axes[col,row].tick_params(axis='y', labelsize=fs)
         axes[species_count-1,row].set_xlabel("dS", fontsize = fs)
         axes[col,0].set_ylabel("dNdS", fontsize = fs)
+        axes[col,row].set_xlim(-0.08,2.08)
         ## linear regression
         slope_A, intercept_A, normal_residuals_A = calculate_dS_dNdS_lin_reg(dS_list = dS_A, dNdS_list = dNdS_A, species_pair= pair)
         slope_X, intercept_X, normal_residuals_X = calculate_dS_dNdS_lin_reg(dS_list = dS_X, dNdS_list = dNdS_X, species_pair= pair)
         linreg_x_A, linreg_y_A = make_line_vectors(slope=slope_A, intercept=intercept_A, x_data=dS_A, y_data=dNdS_A)
         linreg_x_X, linreg_y_X = make_line_vectors(slope=slope_X, intercept=intercept_X, x_data=dS_X, y_data=dNdS_X)
-        if normal_residuals_A:
-            linestyle_A = "-"
-        else:
-            linestyle_A = ":"
-        if normal_residuals_X:
-            linestyle_X = "-"
-        else:
-            linestyle_X = ":"
 
-        axes[col,row].plot(linreg_x_A, linreg_y_A, color = colors_dict["A"], linewidth=2, label=f"slope: {slope_A:.3f}", linestyle=linestyle_A)    
-        axes[col,row].plot(linreg_x_X, linreg_y_X, color = colors_dict["X"], linewidth=2, label=f"slope: {slope_X:.3f}", linestyle=linestyle_X)
+        if normal_residuals_A:
+            linestyle_A = ":"
+        else:
+            linestyle_A = "-"
+        if normal_residuals_X:
+            linestyle_X = ":"
+        else:
+            linestyle_X = "-"
+
+        axes[col,row].plot(linreg_x_A, linreg_y_A, color = colors_dict["A_line"], linewidth=2, label=f"slope: {slope_A:.3f}", linestyle=linestyle_A)    
+        axes[col,row].plot(linreg_x_X, linreg_y_X, color = colors_dict["X_line"], linewidth=2, label=f"slope: {slope_X:.3f}", linestyle=linestyle_X)
         axes[col,row].legend(fontsize=fs*0.75)
 
         axes[row,row].axis('off')
@@ -394,20 +429,40 @@ def plot_dS_vs_dNdS(A_dict:dict, X_dict:dict, filename = "dS_vs_dNdS.png", dark_
         #     print(f"sample sizes, n_A = {n_A}, n_X = {n_X}, data X  = {data_X}")
     
     # fig.text(0.5, 0.04, x_label, ha='center', va='center', fontsize=fs)
-    # Adjust layout to prevent overlap
-    plt.tight_layout(rect=[0, 0.05, 1, 1])
+    # Adjust layout to prevent overlap  (left, bottom, right, top)
+    plt.tight_layout(rect=[0.01, 0, 1, 1])
 
     if dark_mode:
         filename = filename.replace(".png", "_darkmode.png")
-    plt.savefig(filename, dpi = 300, transparent = False)
-    print(f"plot saved in current working directory as: {filename}")
+    # transparent background
+    plt.savefig(filename, dpi = 300, transparent = True)
+    # non-transparent background
+    filename_tr = filename.replace(".png", "_white_bg.png")
+    plt.savefig(filename_tr, dpi = 300, transparent = False)
+    print(f"plot saved in current working directory as: {filename} and {filename_tr}")
 
 
 
 if __name__ == "__main__":
     username = "miltr339"
     chromosome = "A"
-    summary_paths = get_summary_paths()
+    data_files = {"A" : ["A_dNdS", "A_LRT"],
+                  "X" : ["X_dNdS", "X_LRT"]}
+    summary_paths = get_summary_paths(username=username)
+
+    # bruchini
+    if False:
+        species_excl = ["D_carinulata", "D_sublineata", "T_castaneum", "T_freemani", "C_septempunctata", "C_magnifica"]
+        filename =f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/dS_vs_dNdS_scatterplot_bruchini.png"
+    # coccinella
+    elif False:
+        species_excl = ["D_carinulata", "D_sublineata", "T_castaneum", "T_freemani", "B_siliquastri", "A_obtectus", "C_maculatus", "C_chinensis"]
+        filename =f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/dS_vs_dNdS_scatterplot_coccinella.png"
+    # tribolium
+    elif True:
+        species_excl = ["D_carinulata", "D_sublineata", "C_septempunctata", "C_magnifica", "B_siliquastri", "A_obtectus", "C_maculatus", "C_chinensis"]
+        filename =f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/dS_vs_dNdS_scatterplot_tribolium.png"
+    
     
     ## make the violinplots of only dS for each pair
     if False:
@@ -424,14 +479,14 @@ if __name__ == "__main__":
     
     ## make the scatterplots
     if True:
-        print(f"/////////////// A ///////////////")
-        dS_dict_A = read_dNdS_summary_file(summary_paths["A"], only_dS = False, exclude_list=["D_carinulata", "D_sublineata"])
+        print(f"reading A ...")
+        dS_dict_A = read_dNdS_dS_summary_file(summary_paths[data_files["A"][0]], only_dS = False, exclude_list=species_excl)
         # print(dS_dict_A)
 
-        print(f"/////////////// X ///////////////")
-        dS_dict_X = read_dNdS_summary_file(summary_paths["X"], only_dS = False, exclude_list=["D_carinulata", "D_sublineata"])
+        print(f"reading X ...")
+        dS_dict_X = read_dNdS_dS_summary_file(summary_paths[data_files["X"][0]], only_dS = False, exclude_list=species_excl)
         # print(dS_dict_X)
         
         species = get_species_list(dS_dict_A)
-        plot_dS_vs_dNdS(A_dict=dS_dict_A, X_dict=dS_dict_X,filename=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/dS_vs_dNdS_scatterplot.png")
+        plot_dS_vs_dNdS(A_dict=dS_dict_A, X_dict=dS_dict_X,filename=filename, max_dS=2)
     
