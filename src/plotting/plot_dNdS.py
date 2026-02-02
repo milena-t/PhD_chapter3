@@ -278,7 +278,8 @@ def plot_dNdS_violins(A_dict:dict, X_dict:dict, filename = "dNdS_ratios_A_X.png"
 
 
 if __name__ == "__main__":
-    username = "milena"# "miltr339"
+    username = "miltr339"
+    # username = "milena" 
     chromosome = "A"
     data_files = {"A" : ["A_dNdS", "A_LRT"],
                   "X" : ["X_dNdS", "X_LRT"]}
@@ -293,3 +294,8 @@ if __name__ == "__main__":
     if False:
         dNdS_array, species_list = make_means_array_from_dict(dNdS_dict)
         plot_heatmap(counts_array= dNdS_array, species_list=species, filename=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/mean_dNdS_{chromosome}_linked_heatmap.png", title = f"{chromosome}-linked orthologs mean pairwise dNdS")
+
+    # rsync -azP milenatr@pelle.uppmax.uu.se:/proj/naiss2023-6-65/Milena/chapter3/dNdS_calculations/brh_results_A/site_classes_summary_A-linked.txt /Users/miltr339/work/pairwise_blast_chapter_2_3/brh_tables/brh_results_A/site_classes_summary_A-linked.txt
+    # rsync -azP milenatr@pelle.uppmax.uu.se:/proj/naiss2023-6-65/Milena/chapter3/dNdS_calculations/brh_results_A_branch_model/dNdS_dS_summary_A-linked_updated_species.txt /Users/miltr339/work/pairwise_blast_chapter_2_3/brh_tables/brh_results_A/dNdS_summary_A-linked.txt
+    # rsync -azP milenatr@pelle.uppmax.uu.se:/proj/naiss2023-6-65/Milena/chapter3/dNdS_calculations/brh_results_X/site_classes_summary_X-linked.txt /Users/miltr339/work/pairwise_blast_chapter_2_3/brh_tables/brh_results_X/site_classes_summary_X-linked.txt
+    # rsync -azP milenatr@pelle.uppmax.uu.se:/proj/naiss2023-6-65/Milena/chapter3/dNdS_calculations/brh_results_X_branch_model/dNdS_dS_summary_X-linked_updated_species.txt /Users/miltr339/work/pairwise_blast_chapter_2_3/brh_tables/brh_results_X/dNdS_summary_X-linked.txt
