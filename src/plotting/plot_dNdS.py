@@ -195,7 +195,7 @@ def violinplot_pair(data_A_X, row, col, n_A, n_X, mean_A, mean_X, axes, colors_d
     return violins
 
 
-def violinplot_pair_single(data_A_X, col, n_A, n_X, mean_A, mean_X, axes, colors_dict,fs, xticks = ["A", "X"], xlab = "", ymax = 0):
+def violinplot_pair_single(data_A_X, col, n_A, n_X, mean_A, mean_X, axes, colors_dict,fs, xticks = ["A", "X"], xlab = "",ylab='dN/dS', ymax = 0):
     ## make general function so i can repeat it easily for the "mirror" species where row and col are switched
     violins = axes[col].violinplot(data_A_X, showmeans = False, showextrema = False)
     colors = [colors_dict["A"], colors_dict["X"]]
@@ -205,8 +205,8 @@ def violinplot_pair_single(data_A_X, col, n_A, n_X, mean_A, mean_X, axes, colors
         body.set_alpha(0.7)
     
     axes[col].set_xlabel('')
-    axes[col].set_ylabel('dN/dS', fontsize = fs*0.8)
-    axes[col].set_ylabel(xlab, fontsize = fs)
+    axes[col].set_ylabel(ylab, fontsize = fs)
+    axes[col].set_xlabel(xlab, fontsize = fs)
     axes[col].tick_params(axis='x', labelsize=fs)
     axes[col].tick_params(axis='y', labelsize=fs)
     if ymax == 0:

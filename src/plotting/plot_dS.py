@@ -523,7 +523,7 @@ def plot_dS_vs_dNdS_one_pair(A_dict:dict, X_dict:dict, filename = "dS_vs_dNdS.pn
         dS_AX = [dS_A, dS_X]
 
         # plot dS violins
-        violinplot_pair_single(data_A_X=dS_AX, col=1, n_A=n_A, n_X=n_X, mean_A=mean_A, mean_X=mean_X, axes = axes, colors_dict=colors_dict, fs=fs)
+        violinplot_pair_single(data_A_X=dS_AX, col=1, n_A=n_A, n_X=n_X, mean_A=mean_A, mean_X=mean_X, axes = axes, colors_dict=colors_dict, fs=fs, ylab = "dS")
 
         # plot dNdS scatters
         axes[0].scatter(dS_A, dNdS_A, color = colors_dict["A"], s=35)
@@ -583,7 +583,7 @@ if __name__ == "__main__":
         species_excl = ["D_carinulata", "D_sublineata", "T_castaneum", "T_freemani", "C_septempunctata", "C_magnifica"]
         filename =f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/dS_vs_dNdS_scatterplot_bruchini.png"
     # coccinella
-    elif True:
+    elif False:
         species_excl = ["D_carinulata", "D_sublineata", "T_castaneum", "T_freemani", "B_siliquastri", "A_obtectus", "C_maculatus", "C_chinensis"]
         filename =f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/dS_vs_dNdS_scatterplot_coccinella.png"
     # tribolium
