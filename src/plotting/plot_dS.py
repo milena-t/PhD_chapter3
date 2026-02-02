@@ -103,39 +103,38 @@ def get_species_list(dNdS_dict):
     assert len(species) == calculate_num_species(dNdS_dict)
     return(species)
 
+if True:
 
+    def violinplot_pair(data_A_X, row, col, n_A, n_X, mean_A, mean_X, axes, colors_dict,fs, xticks = ["A", "X"], xlab = ""):
+        ## make general function so i can repeat it easily for the "mirror" species where row and col are switched
+        violins = axes[row,col].violinplot(data_A_X, showmeans = False, showextrema = False)
+        colors = [colors_dict["A"], colors_dict["X"]]
+        for body, color in zip(violins['bodies'], colors):
+            body.set_facecolor(color)
+            body.set_edgecolor(color)
+            body.set_alpha(0.7)
+        
+        max_dNdS_add = 0.3
 
-def violinplot_pair(data_A_X, row, col, n_A, n_X, mean_A, mean_X, axes, colors_dict,fs, xticks = ["A", "X"], xlab = ""):
-    ## make general function so i can repeat it easily for the "mirror" species where row and col are switched
-    violins = axes[row,col].violinplot(data_A_X, showmeans = False, showextrema = False)
-    colors = [colors_dict["A"], colors_dict["X"]]
-    for body, color in zip(violins['bodies'], colors):
-        body.set_facecolor(color)
-        body.set_edgecolor(color)
-        body.set_alpha(0.7)
-    
-    max_dNdS_add = 0.3
+        axes[row, col].set_xlabel('')
+        if col-row == 1:
+            axes[row, col].set_ylabel('dS', fontsize = fs)
+        elif xlab != "" and col == 0:
+            axes[row, col].set_ylabel(xlab, fontsize = fs)
+        else:
+            axes[row, col].set_ylabel('')
+        axes[row, col].tick_params(axis='x', labelsize=fs)
+        axes[row, col].tick_params(axis='y', labelsize=fs)
+        # axes[row, col].set_ylim([0,1+max_dNdS_add])
+        axes[row, col].set_xticks([1,2])
+        axes[row, col].set_xticklabels(xticks)
+        
+        axes[row, col].text(1-0.4, 1.5+max_dNdS_add, f"n={n_A}\nmedian={mean_A:.3f}", fontsize = fs*0.65, color = colors_dict["A"])
+        axes[row, col].text(2-0.4, 1.5+max_dNdS_add, f"n={n_X}\nmedian={mean_X:.3f}", fontsize = fs*0.65, color = colors_dict["X"])
+        axes[row, col].hlines(y=mean_A, xmin=0.5, xmax=2.5, linewidth=2, color=colors_dict["A"])
+        axes[row, col].hlines(y=mean_X, xmin=0.5, xmax=2.5, linewidth=2, color=colors_dict["X"])
 
-    axes[row, col].set_xlabel('')
-    if col-row == 1:
-        axes[row, col].set_ylabel('dS', fontsize = fs)
-    elif xlab != "" and col == 0:
-        axes[row, col].set_ylabel(xlab, fontsize = fs)
-    else:
-        axes[row, col].set_ylabel('')
-    axes[row, col].tick_params(axis='x', labelsize=fs)
-    axes[row, col].tick_params(axis='y', labelsize=fs)
-    # axes[row, col].set_ylim([0,1+max_dNdS_add])
-    axes[row, col].set_xticks([1,2])
-    axes[row, col].set_xticklabels(xticks)
-    
-    axes[row, col].text(1-0.2, 1.5+max_dNdS_add, f"n={n_A}", fontsize = fs, color = colors_dict["A"])
-    axes[row, col].text(2-0.2, 1.5+max_dNdS_add, f"n={n_X}", fontsize = fs, color = colors_dict["X"])
-    axes[row, col].hlines(y=mean_A, xmin=0.5, xmax=2.5, linewidth=2, color=colors_dict["A"])
-    axes[row, col].hlines(y=mean_X, xmin=0.5, xmax=2.5, linewidth=2, color=colors_dict["X"])
-    axes[row, col].hlines(y=1, xmin=0.5, xmax=2.5, linewidth=2, linestyle = ":", color="#818181")
-
-    return violins
+        return violins
 
 def plot_dS_violins(A_dict:dict, X_dict:dict, filename = "dNdS_ratios_A_X.png", legend_in_last = True, dark_mode=False):
     """
@@ -428,6 +427,135 @@ def plot_dS_vs_dNdS(A_dict:dict, X_dict:dict, filename = "dS_vs_dNdS.png", dark_
         # if species1 == "D_carinulata" or species2 == "D_carinulata":
         #     print(f"sample sizes, n_A = {n_A}, n_X = {n_X}, data X  = {data_X}")
     
+    fig.suptitle(f"Bruchini: dS vs. dNdS and dS violin plot, filtered dS < {max_dS}", fontsize = fs*1.25)
+    # Adjust layout to prevent overlap  (left, bottom, right, top)
+    plt.tight_layout(rect=[0.01, 0, 1, 1])
+
+    if dark_mode:
+        filename = filename.replace(".png", "_darkmode.png")
+    # transparent background
+    plt.savefig(filename, dpi = 300, transparent = True)
+    # non-transparent background
+    filename_tr = filename.replace(".png", "_white_bg.png")
+    plt.savefig(filename_tr, dpi = 300, transparent = False)
+    print(f"plot saved in current working directory as: {filename} and {filename_tr}")
+
+
+
+def plot_dS_vs_dNdS_one_pair(A_dict:dict, X_dict:dict, filename = "dS_vs_dNdS.png", dark_mode=False, max_dS=2):
+    """
+    plot a grid of scatterplots of dS vs. dNdS in X and autosomes for each pair
+    """
+
+    if dark_mode:
+        plt.style.use('dark_background')
+
+    species_list = get_species_list(A_dict)
+    
+    ### check that A and X are about the same species set
+    assert species_list == get_species_list(A_dict)
+    assert list(A_dict.keys()) == list(X_dict.keys())
+
+    species_count = len(species_list)
+    species_index = {species : i for i, species in enumerate(species_list)}
+
+    assert species_count==2
+    cols = species_count
+    fig, axes = plt.subplots(1, cols, figsize=(16, 8)) # for more than three rows
+    fs = 25
+    
+
+    colors_dict = {
+        # "A" : "#4d7298", # uniform_unfiltered blue
+        "A" : "#F2933A", # uniform_filtered orange
+        "A_line" : "#D36D0D", # darker orange
+        "X" : "#b82946", # native red
+        "X_line" : "#861D32" #dark red
+    }
+
+    for pair in A_dict.keys():
+        ### get pair indices for species pair
+        try:
+            gen1, spec1, gen2, spec2 =pair.split("_")
+        except:
+            raise RuntimeError(f"{pair} could not be parsed")
+        species1 = f"{gen1}_{spec1}"
+        row = species_index[species1]
+        species2 = f"{gen2}_{spec2}"
+        col = species_index[species2]
+        
+        species1_lab = species1.replace("_", ". ")
+        species2_lab = species2.replace("_", ". ")
+        fig.suptitle(f"{species1_lab} vs. {species2_lab} \ndS vs. dNdS and dS violin plot, filtered dS < {max_dS}", fontsize = fs*1.25)
+        
+        # Extract dS and dNdS
+        ## exclude all the NaNs because violinplot can't handle them
+        dS_A_nan = np.array(A_dict[pair]["dS"], dtype=float)
+        dS_X_nan = np.array(X_dict[pair]["dS"], dtype=float)
+        dNdS_A_nan = np.array(A_dict[pair]["dNdS"], dtype=float)
+        dNdS_X_nan = np.array(X_dict[pair]["dNdS"], dtype=float)
+
+        # remove nan's from both (remove both elements if one of them is nan)
+        dS_A_all = [dS_A for i, dS_A in enumerate(dS_A_nan) if not np.isnan(dS_A_nan[i]) and not np.isnan(dNdS_A_nan[i]) ]
+        dS_X_all = [dS_X for i, dS_X in enumerate(dS_X_nan) if not np.isnan(dS_X_nan[i]) and not np.isnan(dNdS_X_nan[i]) ]
+        dNdS_A_all = [dNdS_A for i, dNdS_A in enumerate(dNdS_A_nan) if not np.isnan(dS_A_nan[i]) and not np.isnan(dNdS_A_nan[i]) ]
+        dNdS_X_all = [dNdS_X for i, dNdS_X in enumerate(dNdS_X_nan) if not np.isnan(dS_X_nan[i]) and not np.isnan(dNdS_X_nan[i]) ]
+        assert len(dS_A_all) == len(dNdS_A_all)
+        assert len(dS_X_all) == len(dNdS_X_all)
+        # remove dS>mad_dS from both (remove dNdS also if dS is removed)
+        dS_A = [dS for dS in dS_A_all if dS < max_dS]
+        dS_X = [dS for dS in dS_X_all if dS < max_dS]
+        dNdS_A = [dNdS for i, dNdS in enumerate(dNdS_A_all) if dS_A_all[i] < max_dS]
+        dNdS_X = [dNdS for i, dNdS in enumerate(dNdS_X_all) if dS_X_all[i] < max_dS]
+        assert len(dS_A) == len(dNdS_A)
+        assert len(dS_X) == len(dNdS_X)
+
+        print(f"\tremoved dS>{max_dS}:\n\t{len(dNdS_A_all)} A dNdS values (no np.nan) before filtering, {len(dNdS_A)} after filtering, \n\t{len(dNdS_X_all)} X dNdS values (no np.nan) before filtering , {len(dNdS_X)} after filtering")
+
+        if len(dS_A)==0 or len(dS_X)==0 or len(dNdS_A)==0 or len(dNdS_X)==0:
+            raise RuntimeError("something went wrong! no data")
+
+        n_A = len(dS_A)
+        n_X = len(dS_X)
+        mean_A = np.nanmedian(dS_A)
+        mean_X = np.nanmedian(dS_X)
+
+        dS_AX = [dS_A, dS_X]
+
+        # plot dS violins
+        violinplot_pair_single(data_A_X=dS_AX, col=1, n_A=n_A, n_X=n_X, mean_A=mean_A, mean_X=mean_X, axes = axes, colors_dict=colors_dict, fs=fs)
+
+        # plot dNdS scatters
+        axes[0].scatter(dS_A, dNdS_A, color = colors_dict["A"], s=35)
+        axes[0].scatter(dS_X, dNdS_X, color = colors_dict["X"], s=35)
+        axes[0].tick_params(axis='x', labelsize=fs)
+        axes[0].tick_params(axis='y', labelsize=fs)
+        axes[0].set_xlabel("dS", fontsize = fs)
+        axes[0].set_ylabel("dNdS", fontsize = fs)
+        axes[0].set_xlim(-0.08,2.08)
+        ## linear regression
+        slope_A, intercept_A, normal_residuals_A = calculate_dS_dNdS_lin_reg(dS_list = dS_A, dNdS_list = dNdS_A, species_pair= pair)
+        slope_X, intercept_X, normal_residuals_X = calculate_dS_dNdS_lin_reg(dS_list = dS_X, dNdS_list = dNdS_X, species_pair= pair)
+        linreg_x_A, linreg_y_A = make_line_vectors(slope=slope_A, intercept=intercept_A, x_data=dS_A, y_data=dNdS_A)
+        linreg_x_X, linreg_y_X = make_line_vectors(slope=slope_X, intercept=intercept_X, x_data=dS_X, y_data=dNdS_X)
+
+        if normal_residuals_A:
+            linestyle_A = ":"
+        else:
+            linestyle_A = "-"
+        if normal_residuals_X:
+            linestyle_X = ":"
+        else:
+            linestyle_X = "-"
+
+        axes[0].plot(linreg_x_A, linreg_y_A, color = colors_dict["A_line"], linewidth=2, label=f"slope: {slope_A:.3f}", linestyle=linestyle_A)    
+        axes[0].plot(linreg_x_X, linreg_y_X, color = colors_dict["X_line"], linewidth=2, label=f"slope: {slope_X:.3f}", linestyle=linestyle_X)
+        axes[0].legend(fontsize=fs*0.75)
+
+        print(f"{row}, {col} : {species1} vs. {species2}, slope A: {slope_A:.2f}, slope X: {slope_X:.2f}")
+        # if species1 == "D_carinulata" or species2 == "D_carinulata":
+        #     print(f"sample sizes, n_A = {n_A}, n_X = {n_X}, data X  = {data_X}")
+    
     # fig.text(0.5, 0.04, x_label, ha='center', va='center', fontsize=fs)
     # Adjust layout to prevent overlap  (left, bottom, right, top)
     plt.tight_layout(rect=[0.01, 0, 1, 1])
@@ -455,7 +583,7 @@ if __name__ == "__main__":
         species_excl = ["D_carinulata", "D_sublineata", "T_castaneum", "T_freemani", "C_septempunctata", "C_magnifica"]
         filename =f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/dS_vs_dNdS_scatterplot_bruchini.png"
     # coccinella
-    elif False:
+    elif True:
         species_excl = ["D_carinulata", "D_sublineata", "T_castaneum", "T_freemani", "B_siliquastri", "A_obtectus", "C_maculatus", "C_chinensis"]
         filename =f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/dS_vs_dNdS_scatterplot_coccinella.png"
     # tribolium
@@ -488,5 +616,8 @@ if __name__ == "__main__":
         # print(dS_dict_X)
         
         species = get_species_list(dS_dict_A)
-        plot_dS_vs_dNdS(A_dict=dS_dict_A, X_dict=dS_dict_X,filename=filename, max_dS=2)
+        if len(species)>2:
+            plot_dS_vs_dNdS(A_dict=dS_dict_A, X_dict=dS_dict_X,filename=filename, max_dS=2)
+        else:
+            plot_dS_vs_dNdS_one_pair(A_dict=dS_dict_A, X_dict=dS_dict_X,filename=filename, max_dS=2)
     
