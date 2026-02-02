@@ -443,12 +443,39 @@ I suspect that this is not because there are no ancestral gametologs, but becaus
 
 I will continue with best reciprocal hits, becasue the orthofinder clustering is a bit more "relaxed", meaning that a transcript is more likely to be included in an orthogorup. Since I am only using pairwise comparisons, this method may make larger orthogroups that would not qualify as 1-to-1 orthologs, and therefore reduce the sample size for our dNdS analysis.
 
+# paml codeml analysis
 
-# dNdS: paml site models and LRT
+## dNdS: paml branch model
+
+The paml branch model takes multiple sequence alignments and fits dNdS values to every branch. This approach worked when using MSAs of phylogeny-wide 1-to-1 orthologs, since those have more species in them. For the pairwise test we use now this is not a good approach because the "tree" here is only two species, which is not recommended. Therefore we decided to switch to site-models instead, see above. I keep these results here just in case I need them again for some reason.
+
+### Statistical analysis via permutation test
+
+The dNdS is calculated between all pairwise comparisons for A-linked and X-linked genes identified with BRH above. I am doing unique comparisons only below, so (Cmac,Aobt) is the same as (Aobt,Cmac) which is why only one of them is shown. Also, self-comparisons make no sense here so I am excluding them as well. I show horizontal lines of the median dNdS for A and X in matching colors to the violin plot to clearly show the mean difference in dNdS. I do the permutation test in four stebs like this:
+
+1. **Sample without replacement:** Merge A and X value lists into one list, sample new A and new X lists with original sample sizes without replacement
+2. **Calculate mean:** Calculate mean A and mean X from resampled lists, use difference A - X
+3. **Normal distribution:** Compute a normal distribution from all mean(A) - mean(X) values, find 95% confidence intervals
+4. **Plot:** Histrogram and normal distribution, compare original observed dNdS_A - dNdS_X to 95% confidence intervals of the permutations
+
+Most species are slowX, except the *D. carinulata* comparisons, but those have such a low sample size for X-linked genes that the mean is not reliable. 
+
+Generally, all species pairs seem to show slowX, but I will do a permutation test for each species pair like described above. The top right is all the permutation tests. the pink line is the measured `dNdS_A - dNdS_X`, while green is the distributions from the permutation test. Since I am plotting `dNdS_A - dNdS_X`, and I mostly observe `dNdS_A - dNdS_X > 0`, which means `dNdS_A > dNdS_X`, this indicates slowX. the bottom right is the same violin plot as above. Note the low sample sizes for *D. carinulata* X, which are "hidden" in the permutation test.
+
+<p float="left">
+  <img src="data/fastX_ortholog_ident/fastX_permutation_bruchini_white_bg.png" width="100%" />
+</p>
+
+<p float="left">
+  <img src="data/fastX_ortholog_ident/fastX_permutation_coccinella_white_bg.png" width="49%" />
+  <img src="data/fastX_ortholog_ident/fastX_permutation_tribolium_white_bg.png" width="49%" />
+</p>
+
+## paml site models and LRT
 
 I have decided to go with the paml site model, since I am only doing a pairwise comparison, and the branch model is not reliable for a tree of only two species. I compute M1a and M2a models (nearly neutral and positive selection respectively, see paml documentation), do the likelihood ratio test, and then return the site-class table of M2a if the test is significant, and M1a if it is not. This can then be used to either compute an average dNdS for the entire gene (weighted by proportions) or to do some other independent statistical analysis based on the proportion of positively selected sites in A vs. X genes. I use two degrees of freedom for the LRT as specified in the paml documentation.
 
-## w values from site classes
+### w values from site classes
 
 I use as an example here a gene under positive selection: Dcar_Dsub ortholog no. 0.
 
@@ -462,12 +489,7 @@ Additionally, 27.4 seems crazy high for w, so I am not using the actual numerica
 
 ## Results 1
 
-First, I categorize genes according to whether the LRT was significant or not and base the statistical analysis on that. Second, I use the *proportion* of positively selected sites as a continuous variable (`p`, *not* `w`), which is 0 if the LRT is not significant. I show the violin plots (TODO find better way for categorical variables), and do the permutation test in four steps:
-
-1. **Sample without replacement:** Merge A and X value lists into one list, sample new A and new X lists with original sample sizes without replacement
-2. **Calculate mean:** Calculate mean A and mean X from resampled lists, use difference A - X
-3. **Normal distribution:** Compute a normal distribution from all mean(A) - mean(X) values, find 95% confidence intervals
-4. **Plot:** Histrogram and normal distribution, compare original observed dNdS_A - dNdS_X to 95% confidence intervals of the permutations
+First, I categorize genes according to whether the LRT was significant or not and base the statistical analysis on that. Second, I use the *proportion* of positively selected sites as a continuous variable (`p`, *not* `w`), which is 0 if the LRT is not significant. I show the proportion of positively selected sites, and do the permutation test as described above
 
 Everything is 10000 permutations, and A-X, therefore:
  
@@ -545,22 +567,7 @@ Methods similar to [Torgerson & Singh 2006](https://www.nature.com/articles/6800
 
 [Whittle 2020](https://academic.oup.com/g3journal/article/10/3/1125/6026234) already did this comparison, and they find significantly slow X. But they do paml `yn00` which we have concluded is not ideal.
 
-# dNdS: paml branch model
 
-The paml branch model takes multiple sequence alignments and fits dNdS values to every branch. This approach worked when using MSAs of phylogeny-wide 1-to-1 orthologs, since those have more species in them. For the pairwise test we use now this is not a good approach because the "tree" here is only two species, which is not recommended. Therefore we decided to switch to site-models instead, see above. I keep these results here just in case I need them again for some reason.
-
-## Statistical analysis via permutation test
-
-The dNdS is calculated between all pairwise comparisons for A-linked and X-linked genes identified with BRH above. I am doing unique comparisons only below, so (Cmac,Aobt) is the same as (Aobt,Cmac) which is why only one of them is shown. Also, self-comparisons make no sense here so I am excluding them as well. I show horizontal lines of the median dNdS for A and X in matching colors to the violin plot to clearly show the mean difference in dNdS. 
-
-Most species are slowX, except the *D. carinulata* comparisons, but those have such a low sample size for X-linked genes that the mean is not reliable. 
-
-
-Generally, all species pairs seem to show slowX, but I will do a permutation test for each species pair like described above. The top right is all the permutation tests. the pink line is the measured `dNdS_A - dNdS_X`, while green is the distributions from the permutation test. Since I am plotting `dNdS_A - dNdS_X`, and I mostly observe `dNdS_A - dNdS_X > 0`, which means `dNdS_A > dNdS_X`, this indicates slowX. the bottom right is the same violin plot as above. Note the low sample sizes for *D. carinulata* X, which are "hidden" in the permutation test.
-
-<p float="left">
-  <img src="data/fastX_ortholog_ident/fastX_permutation_white_bg.png" width="100%" />
-</p>
 
 ### investigating the three X-lined orthologs in the *D. carinulata* vs. *D. sublineata* comparison
 
