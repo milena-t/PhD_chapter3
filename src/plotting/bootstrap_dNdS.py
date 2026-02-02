@@ -99,7 +99,7 @@ def plot_dNdS_permutations(boot_diff:dict, measure_diff:dict, A_dict:dict, X_dic
     for pair in pairs_sorted:
         ### get pair indices for species pair
         try:
-            gen1, spec1, gen2, spec2 =pair.split("_")
+            gen1, spec1, gen2, spec2,dNdS_str =pair.split("_")
         except:
             raise RuntimeError(f"{pair} could not be parsed")
         species1 = f"{gen1}_{spec1}"
@@ -186,8 +186,8 @@ def plot_dNdS_permutations(boot_diff:dict, measure_diff:dict, A_dict:dict, X_dic
         data_X = [dNdS_X for dNdS_X in data_X_nan if not np.isnan(dNdS_X) ]
     
         if len(data_A)==0 or len(data_X)==0:
-            axes[col,row].axis('off')
-            axes[col,row].set_title(f'{species1}\n{species2}', fontsize = fs*0.85)
+            # axes[col,row].axis('off')
+            # axes[col,row].set_title(f'{species1}\n{species2}', fontsize = fs*0.85)
             continue
 
         n_A = len(data_A)
@@ -212,39 +212,54 @@ def plot_dNdS_permutations(boot_diff:dict, measure_diff:dict, A_dict:dict, X_dic
     if dark_mode:
         filename = filename.replace(".png", "_darkmode.png")
 
-    if transparent == False:
-        filename = filename.replace(".png", "_white_bg.png")
-    plt.savefig(filename, dpi = 300, transparent = transparent)
-    print(f"plot saved in current working directory as: {filename}")
+    # transparent background
+    plt.savefig(filename, dpi = 300, transparent = True)
+    # non-transparent background
+    filename_tr = filename.replace(".png", "_white_bg.png")
+    plt.savefig(filename_tr, dpi = 300, transparent = False)
+    print(f"plot saved in current working directory as: {filename} and {filename_tr}")
 
 
 
 if __name__ == """__main__""":
 
-    username = "milena"# "miltr339"
+    # username = "milena"
+    username = "miltr339"
     chromosome = "A"
     data_files = {"A" : ["A_dNdS", "A_LRT"],
                   "X" : ["X_dNdS", "X_LRT"]}
     summary_paths = get_summary_paths(username=username)
-    dNdS_dict_A = read_dNdS_summary_file(summary_paths[data_files["A"][0]])
-    dNdS_dict_X = read_dNdS_summary_file(summary_paths[data_files["X"][0]])
-    species = get_species_list(dNdS_dict_A)
-    pairs_list = list(dNdS_dict_A.keys())
+
+    species_excl = ["D_carinulata", "D_sublineata", "T_castaneum", "T_freemani", "C_septempunctata", "C_magnifica"]
     
+    dNdS_dict_A = read_dNdS_summary_file(summary_paths[data_files["A"][0]], excl_list=species_excl)
+    dNdS_dict_X = read_dNdS_summary_file(summary_paths[data_files["X"][0]], excl_list=species_excl)
+    species = get_species_list(dNdS_dict_A, exclude_list=species_excl)
+    pairs_list = list(dNdS_dict_A.keys())
+
     bootstraps = { pair : [] for pair in pairs_list}
     median_diffs = {pair : np.NaN for pair in pairs_list}
+
     
     ### test with 100, takes a bit of time otherwise
-    num_permutations = 100
+    ### actual analysis with 10000
+    num_permutations = 10000
 
     for pair in pairs_list:
-        
+        if "dNdS" not in pair:
+            continue
+        gen1, spec1, gen2, spec2,dNdS_str =pair.split("_")
+        species1 = f"{gen1}_{spec1}"
+        species2 = f"{gen2}_{spec2}"
+        if species1 in species_excl or species2 in species_excl:
+            print(f"\t excluding {pair}")
+            continue
         dNdS_A = dNdS_dict_A[pair]
         dNdS_X = dNdS_dict_X[pair]
         median_diffs[pair] = np.nanmedian(dNdS_A) - np.nanmedian(dNdS_X)
         bootstraps[pair] = permutate_dNdS(dNdS_A=dNdS_A, dNdS_X=dNdS_X, num_permut=num_permutations)
         mean_boot = np.mean(bootstraps[pair])
-        print(f" *  {pair} median(dNdS_A)-median(dNdS_X)  --> \t{median_diffs[pair]:.3f}, mean bootstrap diff {mean_boot:.5f}")
+        print(f" *  {pair} --> \t median(dNdS_A)-median(dNdS_X) = {median_diffs[pair]:.3f}, mean bootstrap diff = {mean_boot:.5f}")
     
-    filename =f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/fastX_permutation.png"
+    filename =f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/fastX_permutation_bruchini.png"
     plot_dNdS_permutations(boot_diff=bootstraps,measure_diff=median_diffs, A_dict=dNdS_dict_A, X_dict=dNdS_dict_X, filename = filename, transparent=False)

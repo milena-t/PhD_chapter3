@@ -19,7 +19,14 @@ def get_summary_paths(username = "miltr339"):
     return summary_paths
 
 
-def read_dNdS_summary_file(summary_path):
+def read_dNdS_summary_file(summary_path, excl_list=[], no_dS = True):
+    """
+    read the summary file with lines like:
+        pair_dNdS:1,2,3,4,...
+        pair_dS:1,2,3,4,...
+        ...
+    into a dict where every string before ':' is the key and the list after the value
+    """
     out_dict = {}
     with open(summary_path, "r") as summary:
         for line in summary.readlines():
@@ -28,6 +35,17 @@ def read_dNdS_summary_file(summary_path):
             except:
                 raise RuntimeError(f"could not parse line: \n{line[:500]} ...")
             pair = pair_ident.split("_pairwise")[0]
+            # exclude dS values
+            if "dNdS" not in pair:
+                continue
+            # exclude pairs with forbidden species
+            pair_excl = False
+            for sp in excl_list:
+                if sp in pair:
+                    pair_excl = True
+                    break
+            if pair_excl:
+                continue # skip this pair if at least one member species is in excl_list
             dNdS_list = [float(dNdS) if dNdS != 0.0 else np.NaN for dNdS in dNdS_vals.split(",")]
             out_dict[pair] = dNdS_list
 
@@ -44,17 +62,20 @@ def calculate_num_species(dNdS_dict):
     num_ind = (1+sqrt(1+8*pairs))/2
     return int(num_ind)
 
-def get_species_list(dNdS_dict):
+def get_species_list(dNdS_dict, exclude_list = []):
     """
     get species list from dNdS dict
+    if you add exclude_list, then species in this list will not be added to the total species list
     """
     species = []
     for pair_names in dNdS_dict.keys():
         split_names = pair_names.split("_")
         sp1 = f"{split_names[0]}_{split_names[1]}"
-        species.append(sp1)
+        if sp1 not in exclude_list:
+            species.append(sp1)
         sp2 = f"{split_names[2]}_{split_names[3]}"
-        species.append(sp2)
+        if sp2 not in exclude_list:
+            species.append(sp2)
     species = list(set(species))
     # assert len(species) == calculate_num_species(dNdS_dict)
     # the assertion doesn't hold any more with new species selection because I don't do complete comparisons of every species vs. every other species any more
