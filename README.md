@@ -647,5 +647,7 @@ not available in preliminary data
 
 From [Kousathanas 2014](https://academic.oup.com/genetics/article/196/4/1131/5935629#403207161): "*The standard MK test compares the ratio of nonsynonymous to synonymous divergence (dN/dS) between two species with the ratio of nonsynonymous to synonymous polymorphism (pN/pS) within a species. Because positively selected mutations are not expected to contribute substantially to polymorphism, an excess of dN/dS relative to pN/pS is interpreted to be the result of adaptive substitutions. The rate of molecular adaptation is usually quantified by calculating the proportion of substitutions that have been fixed by positive selection (α) as α=(dN-dS(pN/pS))/(dN)*". See the entire section on "Measuring the rate of molecular adatpation"
 
-maybe with this: https://frubino.github.io/scripts/pnps_gen.html
+maybe with this: https://frubino.github.io/scripts/pnps_gen.html?
+
+In general, it also just tests for positive selection, and since we already mostly have this covered with the site model, I don't think it's necessary.
 
