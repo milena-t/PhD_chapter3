@@ -81,27 +81,45 @@ DTOL open data release policy [here](https://www.darwintreeoflife.org/wp-content
     * aphids ([Jaquiéry et al. 2018](https://academic.oup.com/gbe/article/10/2/507/4817508)): also mostly due to lower Ne and relaxed selection and therefore drift. They also do some gene expression stuff, TODO check sex bias
     * spiders ([Bechsgaard et al. 2019](https://academic.oup.com/mbe/article/36/6/1281/5420164)): They say the use paml but no details, so I guess `yn00`? They have species with differing mating systems and sex ratios. In the species with a female-biased sex ratio (NeX is close to NeA) dNdS is higher, they think therefore fastX due to adaptive evolution.
     * stick insects ([Parker et al. 2022](https://academic.oup.com/jeb/article/35/12/1734/7317967)): They think high dNdS due to relaxed selection and male-biased mutation, TODO check more detail
-  * arthropods (ZZ/ZW)
+  * lepidoptera (ZZ/ZW)
     * [Höök et al. 2023](https://academic.oup.com/evolut/article/78/9/1554/7685102#479682355): fastZ, with some nuanced effects of genes with sex-biased expression
-  * drosophila
-    * [Begun et al. 2007](https://journals.plos.org/plosbiology/article?id=10.1371/journal.pbio.0050310): Very detailed methods, also including MK test. TODO refer back to this one
+    * [Sackton et al. 2014](https://academic.oup.com/evolut/article/68/8/2331/6852409): (*Bombyx*)
+      * (has lots of additional references for Dmel studies)
+      * median omega and dN of all A/X genes is sig different, but not dS.
+      * When split by sex-biased expression, fastZ is only significant on female-biased genes
+    * * Pinharanda et al. 2019
+  * drosophila (older papers have few genes/low sample size)
+    * [Begun et al. 2007](https://journals.plos.org/plosbiology/article?id=10.1371/journal.pbio.0050310): Very detailed analyses of dN and dS, selection, divergence etc. also including MK test. TODO refer back to this one, it is crazy long and detailed. no expression data
+    * [Baines et al. 2008](https://academic.oup.com/mbe/article/25/8/1639/1109677): 
+      * DnaSP for dNdS, also estimate selection (MK test) and adaptive substitutions, see methods for detail
+      * X has higher rates of adaptive evolution (esp. male-biased genes)
+      * fastX for male-biased genes and unbiased genes, but if all genes taken together no difference between X and A detected
+      * --> maybe mostly drift, like the birds, see [Connallon 2007](https://academic.oup.com/mbe/article/24/11/2566/1017579).
 
 * Slower-X or ambiguous
-  * fruit flies
-    * [Counterman et al. 2004](https://academic.oup.com/evolut/article-abstract/58/3/656/6755860): SlowX 
-    * [Thornton et al. 2006](https://genome.cshlp.org/content/16/4/498.full#sec-6): SlowX
-    * [Connallon 2007](https://academic.oup.com/mbe/article/24/11/2566/1017579): good theory summary for presentation
-    * [Baines et al. 2008](https://academic.oup.com/mbe/article/25/8/1639/1109677):
-    * Vicoso et al. 2008
-    * Mank et al. 2010b
-    * Meisel & Connallon 2013
-    * Ávila et al. 2014
+  * Drosophila
+    * [Counterman 2004](https://academic.oup.com/evolut/article-abstract/58/3/656/6755860): SlowX, no sex-biased expression taken into account
+    * [Thornton 2006](https://genome.cshlp.org/content/16/4/498.full): SlowX with good sample size (n>1000). Good explanation on what is up with that *D. pseudoobscura* "neo"-X fusion. dS already saturated between *D. melanogaster* and *D. pseudoobscura*. Also no expression data included
+    * [Ávila 2014](https://academic.oup.com/gbe/article/6/10/2968/614631)
     * Charlesworth et al. 2018
-  * lepidoptera 
-    * Sackton et al. 2014
-    * Rousselle et al. 2016
-    * Pinharanda et al. 2019
-    * Mongue et al. 2022
+    * [Meisel 2013](https://www.cell.com/trends/genetics/fulltext/S0168-9525(13)00088-7?large_figure=true): (review)
+      * TODO
+
+* ambiguous (not significantly fast or slow)
+  * Drosophila
+    * [Connallon 2007](https://academic.oup.com/mbe/article/24/11/2566/1017579): ambiguous, not slow or fast. Good theory summary for presentation
+      * controlls for different Ne to isolate adaptive effects from drift!
+    * [Vicoso et al. 2008](https://www.cambridge.org/core/journals/genetics-research/article/multispecies-approach-for-comparing-sequence-evolution-of-xlinked-and-autosomal-sites-in-drosophila/2D5A002257980CAF0583FF4F17F42B1D): lower Ks (dS) for X-linked genes. also ambiguous, not significantly fast X
+  * Lepidoptera
+    * [Rousselle 2016](https://academic.oup.com/gbe/article/8/10/3108/2939545) (*Satyrinae*):
+      * uses MK test as implemented [here](https://journals.plos.org/plosgenetics/article?id=10.1371/journal.pgen.1005774).
+      * no piN/piS difference between X and A in general, "*no indications that the Z chromosome experiences a reduced efficacy of purifying selection despite its low Ne relative to autosomes*".
+      * piN/piS on Z the highest in male-biased genes, then unbiased, then female biased.
+      * no significant enrichment of positively selected genes by sex-biased expression
+  *  Meta-analysis (birds, mammals, drosophila) (!!!): 
+    * [Mank 2010](https://academic.oup.com/evolut/article/64/3/663/6853545):
+      * variation of NeX due to mating system --> no significant effect on dNdS(A) vs. dNdS(X) 
+      * Contradictory results when looking at the effects of delta Ne, and the fixation rate of beneficial or deleterious mutations, which may confuse the signal. "*For example, in the case of Drosophila, with very large NeA and high NeX/NeA, both of which facilitate Faster-X evolution for beneficial mutations, we expect the X chromosome to have a higher rate of adaptive evolution than the autosomes, as seen in Figure 2A. This is, however, counteracted by the strongly reduced rate of fixation of mildly deleterious mutations on the X chromosome, compared to the autosomes (shown in Fig. 2B). These results imply that Faster-X evolution may only be detected in Drosophila if a very large fraction of the divergence were caused by positive selection, and only a small fraction by drift.*"
 
 ### Results
 
