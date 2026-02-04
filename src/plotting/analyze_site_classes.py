@@ -10,11 +10,6 @@ import numpy as np
 import bootstrap_dNdS 
 from matplotlib.ticker import FuncFormatter
 
-site_classes_files = {
-    "A" : "/Users/miltr339/work/chapter3/dNdS/site_classes_summary_A-linked.txt",
-    "X" : "/Users/miltr339/work/chapter3/dNdS/site_classes_summary_X-linked.txt",
-}
-
 
 class SiteClassesTable:
     """
@@ -86,7 +81,7 @@ def species_names_from_pair(pair_string):
     return f"{g1}_{s1}", f"{g2}_{s2}"
 
 
-def get_pairs_from_summary(summary_path):
+def get_pairs_from_summary(summary_path, excl_list = []):
     """
     get a list of species pair sets from the summary path
     """
@@ -102,25 +97,30 @@ def get_pairs_from_summary(summary_path):
             filepath = filepath.split("/")
             pair_name = filepath[-3]
             species1,species2=species_names_from_pair(pair_name)
+            if species1 in excl_list or species2 in excl_list:
+                continue
             if "-" in species1 or "-" in species2:
                 raise RuntimeError(f"wrong parsing!\n {line} \n-> {filepath} \n-> {pair_name}")
             pairs_list[i] = f"{species1}_{species2}"
         pairs_list_unique = list(set(pairs_list))
+        pairs_list_unique = [pair for pair in pairs_list_unique if len(pair)>0] # exclude empty string
     
     return pairs_list_unique
 
 
-def read_site_classes(summary_path):
+def read_site_classes(summary_path, excl_list = []):
     """
     read the site classes summary file into a data structure
     """
     if not os.path.isfile(summary_path):
         raise RuntimeError(f"FILE: {summary_path} does not exist!")
 
-    out_dict = {pair : [] for pair in get_pairs_from_summary(summary_path)}
-    no_dNdS = {pair : [] for pair in get_pairs_from_summary(summary_path)}
+    pairs_list = get_pairs_from_summary(summary_path, excl_list=excl_list)
+    out_dict = {pair : [] for pair in pairs_list}
+    no_dNdS = {pair : [] for pair in pairs_list}
     print(f" *  {len(out_dict)} unique pairs")
-    
+
+
     with open(summary_path, "r") as summary_file:
         for line in summary_file.readlines():
             try:
@@ -133,6 +133,8 @@ def read_site_classes(summary_path):
             pair_name,site_class_name = filepath[-2:]
             species1,species2=species_names_from_pair(pair_name)
             pair = f"{species1}_{species2}"
+            if pair not in pairs_list:
+                continue # skip species that are excluded by excl_list above
             model = site_class_name.split("_")[1]
             try:
                 pair_number = int(pair_name.split("_")[-2])
@@ -248,9 +250,8 @@ def binary_barplot_pair(data_A, data_X, row, col, n_A, n_X, axes, colors_dict, f
 
 
 if __name__ == "__main__":
+    
 
-    chr_types = ["X", "A"]
-    username = f"miltr339" #"milena"
 
     if False:
         ## compute statistics to terminal
@@ -276,15 +277,29 @@ if __name__ == "__main__":
     ## plot 
 
 
-    username = "milena"# "miltr339"
+    # username = "milena"
+    username = "miltr339"
     chromosome = "A"
     data_files = {"A" : ["A_dNdS", "A_LRT"],
                   "X" : ["X_dNdS", "X_LRT"]}
     summary_paths = get_summary_paths(username=username)
 
-    summary_dict_A, no_dNdS_A = read_site_classes(summary_paths[data_files["A"][1]])
-    summary_dict_X, no_dNdS_X = read_site_classes(summary_paths[data_files["X"][1]])
+    # bruchini
+    if False:
+        species_excl = ["D_carinulata", "D_sublineata", "T_castaneum", "T_freemani", "C_septempunctata", "C_magnifica"]
+        filename =f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/LRT_site_model_plot_bruchini.png"
+    # coccinella
+    elif False:
+        species_excl = ["D_carinulata", "D_sublineata", "T_castaneum", "T_freemani", "B_siliquastri", "A_obtectus", "C_maculatus", "C_chinensis"]
+        filename =f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/LRT_site_model_plot_coccinella.png"
+    # tribolium
+    elif True:
+        species_excl = ["D_carinulata", "D_sublineata", "C_septempunctata", "C_magnifica", "B_siliquastri", "A_obtectus", "C_maculatus", "C_chinensis"]
+        filename =f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/LRT_site_model_plot_tribolium.png"
 
+    summary_dict_A, no_dNdS_A = read_site_classes(summary_paths[data_files["A"][1]], excl_list=species_excl)
+    summary_dict_X, no_dNdS_X = read_site_classes(summary_paths[data_files["X"][1]], excl_list=species_excl)
+    
 
     type_plot = "bin" # bin for binary or prop for proportion of sites
 
@@ -297,23 +312,12 @@ if __name__ == "__main__":
 
     pairs_list = list(summary_dict_X.keys())
 
-### specify species subsets
-    # pairs_list = [pair for pair in pairs_list if "T_castaneum" in pair]
-    # plot_name = f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/fastX_{type_plot}_pos_sites_permutation_Tcas_Tfre.png"
-
-    # pairs_list = [pair for pair in pairs_list if "C_magnifica" in pair]
-    # plot_name = f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/fastX_{type_plot}_pos_sites_permutation_Csep_Cmag.png"
-
-    pairs_list = [pair for pair in pairs_list if "C_maculatus" in pair or "C_chinensis" in pair or "A_obtectus" in pair or "B_siliquastri" in pair]
-    plot_name = f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/fastX_{type_plot}_pos_sites_permutation_Bruchini.png"
-###
-
     bootstraps = {pair : [] for pair in pairs_list}
     mean_num_pos_sel = {pair : np.NaN for pair in pairs_list}
     
     ####
     #  test with 100, takes a bit of time otherwise
-    num_permutations = 10000
+    num_permutations = 100
     ####
 
     for pair in pairs_list:
@@ -332,6 +336,6 @@ if __name__ == "__main__":
         binary=True
 
     bootstrap_dNdS.plot_dNdS_permutations(boot_diff=bootstraps,measure_diff=mean_num_pos_sel, A_dict=pos_list_A, X_dict=pos_list_X, 
-                                            filename=plot_name, hist_label = f"mean({type_plot}_A)-mean({type_plot}_X)", violin_label=f"{type_plot}. pos. sel.", 
+                                            filename=filename, hist_label = f"mean({type_plot}_A)-mean({type_plot}_X)", violin_label=f"{type_plot}. pos. sel.", 
                                             violin_ymax=violin_ymax, transparent=False, binary=binary)
     
