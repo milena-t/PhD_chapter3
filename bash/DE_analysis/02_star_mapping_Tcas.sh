@@ -20,7 +20,7 @@ STAR --runThreadN 16 \
      --genomeDir "$INDEX" \
      --genomeFastaFiles "$GENOME" \
      --sjdbGTFfile "$ANNOT" \
-     --genomeSAindexNbases 12 \
+     --genomeSAindexNbases 12 \ ## otherwise in output: !!!!! WARNING: --genomeSAindexNbases 14 is too large for the genome size=241861439, which may cause seg-fault at the mapping step. Re-run genome generation with recommended --genomeSAindexNbases 12
      --sjdbOverhang 149 #max read length 150-1
 
 #Align reads and produce gene counts
