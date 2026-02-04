@@ -528,17 +528,11 @@ Methods similar to [Torgerson & Singh 2006](https://www.nature.com/articles/6800
 * **proportional**: they count the codons according to the BEB (bayes empirical bayes) test and don't use the site classes proportion. I'm unsure how exactly that works because they show the proportion of positively selected codons but it's possible for two orthologs to have different lengths? 
   * Maybe I can count the number of codons and normalize by the number of genes instead?
 
-
-**Proportional** (right): not significant
-
-<p float="left">
-  <img src="data/fastX_ortholog_ident/fastX_bin_pos_sites_permutation_Tcas_Tfre_white_bg.png" width="45%" />
-  <img src="data/fastX_ortholog_ident/fastX_prop_pos_sites_permutation_Tcas_Tfre_white_bg.png" width="45%" />
-</p>
-
 [Whittle 2020](https://academic.oup.com/g3journal/article/10/3/1125/6026234) already did this comparison, and they find significantly slow X. But they do paml `yn00` which we have concluded is not ideal.
 
 
+# old analysis with *Diorhaba*
+ I suspect that *D. carinulata* has a misidentified X chromosome, which leaves it only three 1-to-1 orthologs. I looked into it a bit here, in case it is X turnover. I would need actual lab evidence to conclude that thoug I think, since the X is so conserved in all the other *Coleoptera* I have here.
 
 ### investigating the three X-lined orthologs in the *D. carinulata* vs. *D. sublineata* comparison
 
