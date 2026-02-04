@@ -496,71 +496,29 @@ I use as an example here a gene under positive selection: Dcar_Dsub ortholog no.
 p:   0.93938  0.00000  0.06061
 w:   0.04346  1.00000 27.41259
 ```
-when I use `p` as weights, the weighted average w is 0.0437239804. Accodring to the `dN & dS for each branch` table, the dNdS is  1.7024, but even with the normal, non-weighted mean I only get 0.33893, so no clue what is happening here. Since I specify a site model and not a branch model, I will ignore this.
+when I use `p` as weights, the weighted average w is 0.0437239804. Accodring to the `dN & dS for each branch` table, the dNdS is  1.7024, but even with the normal, non-weighted mean I only get 0.33893, so no clue what is happening here. Since I specify a site model and not a branch model, I will ignore this. Additionally, 27.4 seems crazy high for w, and there's much higher ones than that in some other genes, so I would not be using the actual numerical value, but rather the proportion, which is 0 if the LRT is not significant.
 
-Additionally, 27.4 seems crazy high for w, so I am not using the actual numerical value, but rather the proportion.
+## Results
 
-## Results 1
-
-First, I categorize genes according to whether the LRT was significant or not and base the statistical analysis on that. Second, I use the *proportion* of positively selected sites as a continuous variable (`p`, *not* `w`), which is 0 if the LRT is not significant. I show the proportion of positively selected sites, and do the permutation test as described above
+I categorize genes according to whether the LRT was significant or not and base the statistical analysis on that, and do the permutation test as described above
 
 Everything is 10000 permutations, and A-X, therefore:
  
 * A-X < 0 -> A < X -> FastX
 * A-X > 0 -> A > X -> SlowX
 
-### Bruchini
+* *Bruchini*: FastX in all comparison except *B. siliquastri*
+* *Coccinella*: Significantly slowX
+* *Tribolium*: not significant
 
-**Binary** (left): FastX in all comparison except *B. siliquastri*
-
-* A. obtectus vs. B. siliquastri
-  - nonsignificant: A= 84.88% X=83.42%
-  - significant: A= 15.12% X=16.58%
-* A. obtectus vs. C. chinensis
-  - nonsignificant: A= 87.80% X=82.46%
-  - significant: A= 12.20% X=17.54%
-* C. maculatus vs. A. obtectus
-  - nonsignificant: A= 90.27% X=85.68%
-  - significant: A= 9.73% X=14.32%
-* B. siliquastri vs. C. chinensis
-  - nonsignificant: A= 81.37% X=77.44%
-  - significant: A= 18.63% X=22.56%
-* C. maculatus vs. B. siliquastri
-  - nonsignificant: A= 85.46% X=82.22%
-  - significant: A= 14.54% X=17.78%
-* C. maculatus vs. C. chinensis
-  - nonsignificant: A= 79.39% X=73.46%
-  - significant: A= 20.61% X=26.54%
-
-<p float="left">
-  <img src="data/fastX_ortholog_ident/fastX_bin_pos_sites_permutation_Bruchini_white_bg.png" width="75%" />
+<p float="center">
+  <img src="data/fastX_ortholog_ident/LRT_site_model_plot_bruchini_white_bg.png" width="75%" />
 </p>
 
-**Proportional** (right): no difference between X and A
-
 <p float="left">
-  <img src="data/fastX_ortholog_ident/fastX_prop_pos_sites_permutation_Bruchini_white_bg.png" width="75%" />
+  <img src="data/fastX_ortholog_ident/LRT_site_model_plot_coccinella_white_bg.png" width="49%" />
+  <img src="data/fastX_ortholog_ident/LRT_site_model_plot_tribolium_white_bg.png" width="49%" />
 </p>
-
-### Coccinella
-
-**Binary** (left): Significantly slowX
-- nonsignificant: A= 81.80% X=86.13%
-- significant: A= 18.20% X=13.87%
-
-**Proportional** (right): Significantly slowX
-
-<p float="left">
-  <img src="data/fastX_ortholog_ident/fastX_bin_pos_sites_permutation_Csep_Cmag_white_bg.png" width="45%" />
-  <img src="data/fastX_ortholog_ident/fastX_prop_pos_sites_permutation_Csep_Cmag_white_bg.png" width="45%" />
-</p>
-
-### Tribolium
-
-**Binary** (left): not significant
-- nonsignificant: A= 78.36% X=79.78%
-- significant: A= 21.64% X=20.22%
-
 
 ### Summary
 
