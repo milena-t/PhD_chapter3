@@ -12,6 +12,7 @@ GENOME=/proj/naiss2023-6-65/Milena/annotation_pipeline/only_orthodb_annotation/C
 INDEX=/proj/naiss2023-6-65/Milena/chapter3/RNAseq/Coccinella/star_index
 ANNOT=/proj/naiss2023-6-65/Milena/chapter3/RNAseq/Coccinella/GCF_907165205.1_icCocSept1.1_genomic.gtf
 OUT_DIR=/proj/naiss2023-6-65/Milena/chapter3/RNAseq/Coccinella/star_mapping
+RNA_DIR=/proj/naiss2023-6-65/Milena/chapter3/RNAseq/Coccinella/raw_data/trimmed_fastp
 
 TCAS_GENOME=/proj/naiss2023-6-65/Milena/annotation_pipeline/only_orthodb_annotation/T_castaneum/assembly_genomic.fna.masked
 
@@ -25,9 +26,11 @@ STAR --runThreadN 16 \
      --sjdbOverhang 149 #max read length 150-1
 
 #Align reads and produce gene counts
-for R1 in "$RNA_DIR"/*_1.fastq.gz; do
-  R2="${R1/_1.fastq.gz/_2.fastq.gz}"
-  SAMPLE="$(basename "$R1" "_1.fastq.gz")"
+for R1 in "$RNA_DIR"/*_1_trimmed.fastq.gz; do
+  R2="${R1/_1_trimmed.fastq.gz/_2_trimmed.fastq.gz}"
+  echo $R1
+  echo $R2
+  SAMPLE="$(basename "$R1" "_1_trimmed.fastq.gz")"
   STAR --runThreadN 16 \
        --genomeDir "$INDEX" \
        --readFilesIn "$R1" "$R2" \
