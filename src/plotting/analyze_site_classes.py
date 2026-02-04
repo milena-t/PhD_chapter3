@@ -249,6 +249,35 @@ def binary_barplot_pair(data_A, data_X, row, col, n_A, n_X, axes, colors_dict, f
     axes[row,col].tick_params(axis='x', labelsize=fs) 
 
 
+def binary_barplot_single_pair(data_A, data_X, row, n_A, n_X, axes, colors_dict, fs, ylab ="percent", xticks = ["A", "X"]):
+    """
+    plot a bar chart to show proportion of genes that have a positive site-class model LRT
+    """
+    A_nonsig = len([val for val in data_A if val == 0.0])*100.0
+    X_nonsig = len([val for val in data_X if val == 0.0])*100.0
+    nonsig = [A_nonsig/len(data_A), X_nonsig/len(data_X)]
+    A_sig = len([val for val in data_A if val == 1.0])*100.0
+    X_sig = len([val for val in data_X if val == 1.0])*100.0
+    sig = [A_sig/len(data_A), X_sig/len(data_X)]
+
+    axes[row].bar([1,2], nonsig, width = 0.75, label='M1a', color=[colors_dict["A"], colors_dict["X"]], alpha=0.7)
+    axes[row].bar([1,2], sig, width = 0.75, bottom=nonsig, label='M2a', color= [colors_dict["A"], colors_dict["X"]])
+    print(f"\t - row: {row}\t nonsignificant: A= {nonsig[0]:.2f}% X={nonsig[1]:.2f}%")
+    print(f"\t - row: {row}\t significant: A= {sig[0]:.2f}% X={sig[1]:.2f}%")
+
+    axes[row].set_ylim([0,118])
+    axes[row].yaxis.set_major_formatter(FuncFormatter(lambda x, pos: '' if x > 100 and x<1 else f'{int(x)}%'))
+
+    axes[row].text(1-0.2, 105, f"n={n_A}", fontsize = fs, color = colors_dict["A"])
+    axes[row].text(2-0.2, 105, f"n={n_X}", fontsize = fs, color = colors_dict["X"])
+    axes[row].set_xticks([1,2])
+    axes[row].set_xticklabels(xticks)
+    axes[row].set_xlabel('')
+    axes[row].set_ylabel(ylab, fontsize = fs)
+    axes[row].tick_params(axis='y', labelsize=fs)
+    axes[row].tick_params(axis='x', labelsize=fs) 
+
+
 if __name__ == "__main__":
     
 
@@ -317,7 +346,7 @@ if __name__ == "__main__":
     
     ####
     #  test with 100, takes a bit of time otherwise
-    num_permutations = 100
+    num_permutations = 10000
     ####
 
     for pair in pairs_list:
@@ -335,7 +364,14 @@ if __name__ == "__main__":
         violin_ymax=0
         binary=True
 
-    bootstrap_dNdS.plot_dNdS_permutations(boot_diff=bootstraps,measure_diff=mean_num_pos_sel, A_dict=pos_list_A, X_dict=pos_list_X, 
+    if len(pairs_list)>1:
+        print(f"plot pairwise matrix ...")
+        bootstrap_dNdS.plot_dNdS_permutations(boot_diff=bootstraps,measure_diff=mean_num_pos_sel, A_dict=pos_list_A, X_dict=pos_list_X, 
+                                            filename=filename, hist_label = f"mean({type_plot}_A)-mean({type_plot}_X)", violin_label=f"{type_plot}. pos. sel.", 
+                                            violin_ymax=violin_ymax, transparent=False, binary=binary)
+    else:
+        print(f"plot one pair ...")
+        bootstrap_dNdS.plot_dNdS_permutations_one_pair(boot_diff=bootstraps,measure_diff=mean_num_pos_sel, A_dict=pos_list_A, X_dict=pos_list_X, 
                                             filename=filename, hist_label = f"mean({type_plot}_A)-mean({type_plot}_X)", violin_label=f"{type_plot}. pos. sel.", 
                                             violin_ymax=violin_ymax, transparent=False, binary=binary)
     

@@ -346,7 +346,7 @@ def plot_dNdS_permutations_one_pair(boot_diff:dict, measure_diff:dict, A_dict:di
         data_AX = [data_A, data_X]
 
         if binary:
-            site_classes.binary_barplot_pair(data_A=data_A, data_X=data_X, row=col, col=row, n_A=n_A, n_X=n_X, axes=axes, colors_dict=colors_dict, fs = fs, ylab ="pos. sel. genes")
+            site_classes.binary_barplot_single_pair(data_A=data_A, data_X=data_X, row=0, n_A=n_A, n_X=n_X, axes=axes, colors_dict=colors_dict, fs = fs, ylab ="pos. sel. genes")
         else:
             violinplot_pair_single(data_A_X=data_AX, col=0, n_A=n_A, n_X=n_X, mean_A=mean_A, mean_X=mean_X, axes = axes, colors_dict=colors_dict, fs = fs, xlab = violin_label, ymax = violin_ymax)
         # axes[col,row].set_title(f'{species2}\n{species1}', fontsize = fs*0.85)
