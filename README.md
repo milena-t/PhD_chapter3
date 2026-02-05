@@ -83,11 +83,12 @@ DTOL open data release policy [here](https://www.darwintreeoflife.org/wp-content
     * stick insects ([Parker et al. 2022](https://academic.oup.com/jeb/article/35/12/1734/7317967)): They think high dNdS due to relaxed selection and male-biased mutation, TODO check more detail
   * lepidoptera (ZZ/ZW)
     * [Höök et al. 2023](https://academic.oup.com/evolut/article/78/9/1554/7685102#479682355): fastZ, with some nuanced effects of genes with sex-biased expression
+    * [Yazdi 2022](https://academic.oup.com/evolut/article/76/2/357/6728459): neo-Z
     * [Sackton et al. 2014](https://academic.oup.com/evolut/article/68/8/2331/6852409): (*Bombyx*)
       * (has lots of additional references for Dmel studies)
       * median omega and dN of all A/X genes is sig different, but not dS.
       * When split by sex-biased expression, fastZ is only significant on female-biased genes
-    * * Pinharanda et al. 2019
+    * Pinharanda et al. 2019
   * drosophila (older papers have few genes/low sample size)
     * [Begun et al. 2007](https://journals.plos.org/plosbiology/article?id=10.1371/journal.pbio.0050310): Very detailed analyses of dN and dS, selection, divergence etc. also including MK test. TODO refer back to this one, it is crazy long and detailed. no expression data
     * [Baines et al. 2008](https://academic.oup.com/mbe/article/25/8/1639/1109677): 
