@@ -122,7 +122,7 @@ DTOL open data release policy [here](https://www.darwintreeoflife.org/wp-content
       * variation of NeX due to mating system --> no significant effect on dNdS(A) vs. dNdS(X) 
       * Contradictory results when looking at the effects of delta Ne, and the fixation rate of beneficial or deleterious mutations, which may confuse the signal. "*For example, in the case of Drosophila, with very large NeA and high NeX/NeA, both of which facilitate Faster-X evolution for beneficial mutations, we expect the X chromosome to have a higher rate of adaptive evolution than the autosomes, as seen in Figure 2A. This is, however, counteracted by the strongly reduced rate of fixation of mildly deleterious mutations on the X chromosome, compared to the autosomes (shown in Fig. 2B). These results imply that Faster-X evolution may only be detected in Drosophila if a very large fraction of the divergence were caused by positive selection, and only a small fraction by drift.*"
 
-### Results
+### Review
 
 * TODO read: [Vicoso & Bachtrog 2006](https://www.nature.com/articles/nrg1914) Big early paper that everyone cites about the different evolutionary forces that act differently on the X vs the autosomes
 * [Navarro 2003](https://www.science.org/doi/full/10.1126/science.1080600) accelerated evolutionary rate on rearranged chromosomes between species
@@ -137,7 +137,9 @@ DTOL open data release policy [here](https://www.darwintreeoflife.org/wp-content
     * Meisel, R. P., Han, M. V. & Hahn, M. W. A complex suite of forces drives gene traffic from Drosophila X chromosomes. Genome Biol. Evol. 1, 176–188 (2009).
     * Vibranovski, M. D., Zhang, Y. & Long, M. General gene movement off the X chromosome in the Drosophila genus. Genome Res. 19, 897–903
   (2009)
+
 * [Yu 2026](https://www.pnas.org/doi/full/10.1073/pnas.2522417123) super conserved noncoding sex determining locus in (haplodiploid) hymenoptera
+* *T. castaneum* dosage compensation according to [Prince 2010](https://academic.oup.com/gbe/article/doi/10.1093/gbe/evq024/572118): upregulation of the X, but in both sexes, X-linked genes are very female biased as a result.
 
 
 ## Workflow
