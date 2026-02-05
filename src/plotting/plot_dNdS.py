@@ -76,7 +76,7 @@ def get_species_list(dNdS_dict, exclude_list = []):
         sp2 = f"{split_names[2]}_{split_names[3]}"
         if sp2 not in exclude_list:
             species.append(sp2)
-    species = list(set(species))
+    species = sorted(list(set(species)))
     # assert len(species) == calculate_num_species(dNdS_dict)
     # the assertion doesn't hold any more with new species selection because I don't do complete comparisons of every species vs. every other species any more
     return(species)

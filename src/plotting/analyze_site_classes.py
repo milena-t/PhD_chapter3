@@ -236,6 +236,26 @@ def binary_barplot_pair(data_A, data_X, row, col, n_A, n_X, axes, colors_dict, f
 
     axes[row, col].text(1-0.2, 105, f"n={n_A}", fontsize = fs, color = colors_dict["A"])
     axes[row, col].text(2-0.2, 105, f"n={n_X}", fontsize = fs, color = colors_dict["X"])
+
+    ## plot individual numbers inside stacked bars
+    # values in order left to right and bottom bar to top, so A_nonsig, X_nonsig, A_sig, X_sig
+    vals = [f"{int(A_nonsig/100)}", f"{int(X_nonsig/100)}", f"{int(A_sig/100)}", f"{int(X_sig/100)}"]
+    for i,bar in enumerate(axes[row,col].patches):
+        axes[row,col].text(
+            # Put the text in the middle of each bar. get_x returns the start
+            # so we add half the width to get to the middle.
+            bar.get_x() + bar.get_width() / 2,
+            # Vertically, add the height of the bar to the start of the bar,
+            # along with the offset.
+            bar.get_height() + bar.get_y() -7,
+            # This is actual value we'll show.
+            vals[i],
+            # Center the labels and style them a bit.
+            ha='center',
+            color='w',
+            weight='bold',
+            size=fs*0.9
+        )
     
     axes[row, col].set_xticks([1,2])
     axes[row, col].set_xticklabels(xticks)
@@ -270,6 +290,27 @@ def binary_barplot_single_pair(data_A, data_X, row, n_A, n_X, axes, colors_dict,
 
     axes[row].text(1-0.2, 105, f"n={n_A}", fontsize = fs, color = colors_dict["A"])
     axes[row].text(2-0.2, 105, f"n={n_X}", fontsize = fs, color = colors_dict["X"])
+
+    ## plot individual numbers inside stacked bars
+    # values in order left to right and bottom bar to top, so A_nonsig, X_nonsig, A_sig, X_sig
+    vals = [f"{int(A_nonsig/100)}", f"{int(X_nonsig/100)}", f"{int(A_sig/100)}", f"{int(X_sig/100)}"]
+    for i,bar in enumerate(axes[row].patches):
+        axes[row].text(
+            # Put the text in the middle of each bar. get_x returns the start
+            # so we add half the width to get to the middle.
+            bar.get_x() + bar.get_width() / 2,
+            # Vertically, add the height of the bar to the start of the bar,
+            # along with the offset.
+            bar.get_height() + bar.get_y() -7,
+            # This is actual value we'll show.
+            vals[i],
+            # Center the labels and style them a bit.
+            ha='center',
+            color='w',
+            weight='bold',
+            size=fs*0.9
+        )
+
     axes[row].set_xticks([1,2])
     axes[row].set_xticklabels(xticks)
     axes[row].set_xlabel('')
@@ -314,11 +355,11 @@ if __name__ == "__main__":
     summary_paths = get_summary_paths(username=username)
 
     # bruchini
-    if False:
+    if True:
         species_excl = ["D_carinulata", "D_sublineata", "T_castaneum", "T_freemani", "C_septempunctata", "C_magnifica"]
         filename =f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/LRT_site_model_plot_bruchini.png"
     # coccinella
-    elif False:
+    elif True:
         species_excl = ["D_carinulata", "D_sublineata", "T_castaneum", "T_freemani", "B_siliquastri", "A_obtectus", "C_maculatus", "C_chinensis"]
         filename =f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/LRT_site_model_plot_coccinella.png"
     # tribolium

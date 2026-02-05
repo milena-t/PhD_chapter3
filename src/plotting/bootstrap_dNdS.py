@@ -9,7 +9,7 @@ import analyze_site_classes as site_classes
 
 
 
-def read_filtered_dNdS_summary(summary_path, excl_list=[], max_dS=2):
+def read_filtered_dNdS_summary(summary_path, excl_list=[], max_dS=2, max_dNdS = 2):
     """
     read the dNdS and dS values, filter for min_dS, and return only dNdS values that meet the criteria
     """
@@ -20,7 +20,7 @@ def read_filtered_dNdS_summary(summary_path, excl_list=[], max_dS=2):
         dS_list = lists_dict["dS"]
         assert len(dNdS_unfiltered) == len(dS_list)
 
-        dNdS_filtered = [dNdS for i, dNdS in enumerate(dNdS_unfiltered) if dS_list[i]<max_dS]
+        dNdS_filtered = [dNdS for i, dNdS in enumerate(dNdS_unfiltered) if dS_list[i]<max_dS and dNdS<max_dNdS]
         print(f"{pair} : {len(dNdS_unfiltered)} dNdS values, {len(dS_list)} dS values; \t {len(dNdS_filtered)} have dS < {max_dS}")
         dNdS_dict[pair] = dNdS_filtered
 
@@ -100,7 +100,8 @@ def plot_dNdS_permutations(boot_diff:dict, measure_diff:dict, A_dict:dict, X_dic
     else:
         fig, axes = plt.subplots(rows, cols, figsize=(15, 10)) # for less than three rows
     
-    fs = 28
+    fs = 30
+
     plt.rcParams['text.usetex'] = True
 
     colors_dict = {
@@ -226,6 +227,7 @@ def plot_dNdS_permutations(boot_diff:dict, measure_diff:dict, A_dict:dict, X_dic
 
         print(f"{row}, {col} : {species1_lab} vs. {species2_lab} --> mean(dNdS_A)-mean(dNdS_X) bootstrap: {mean_boot:.5f}, measured: {measure_diff[pair]:.3f}")
 
+    fig.suptitle(f"Bruchini: A and X dNdS violin plot and permutation test\n ", fontsize = fs*1.5)
     # Adjust layout to prevent overlap  (left, bottom, right, top)
     plt.tight_layout(rect=[0.01, 0, 1, 1])
 
@@ -258,7 +260,7 @@ def plot_dNdS_permutations_one_pair(boot_diff:dict, measure_diff:dict, A_dict:di
     cols = species_count
     rows = 1
     fig, axes = plt.subplots(rows, cols, figsize=(16, 8)) # for less than three rows
-    fs = 25
+    fs = 30
     plt.rcParams['text.usetex'] = True
 
     colors_dict = {
@@ -270,9 +272,6 @@ def plot_dNdS_permutations_one_pair(boot_diff:dict, measure_diff:dict, A_dict:di
         "X" : "#b82946", # native red
     }
 
-    diagonals_done = []
-
-    # sort so that the order stays the same every time. otherwise it changes
     pairs_sorted = sorted(list(boot_diff.keys()))
     assert len(pairs_sorted) ==1
     for pair in pairs_sorted:
@@ -282,13 +281,11 @@ def plot_dNdS_permutations_one_pair(boot_diff:dict, measure_diff:dict, A_dict:di
         except:
             raise RuntimeError(f"{pair} could not be parsed")
         species1 = f"{gen1}_{spec1}"
-        row = species_index[species1]
         species2 = f"{gen2}_{spec2}"
-        col = species_index[species2]
 
         species1_lab = species1.replace("_", ". ")
         species2_lab = species2.replace("_", ". ")
-        fig.suptitle(f"{species1_lab} vs. {species2_lab} \ndNdS comparison and permutation test", fontsize = fs*1.25)
+        fig.suptitle(f"{species1_lab} vs. {species2_lab}: \nA and X dNdS violin plot and permutation test", fontsize = fs*1.5)
         
         ### plot bootstraps
 
@@ -380,7 +377,7 @@ if __name__ == """__main__""":
     summary_paths = get_summary_paths(username=username)
 
     # bruchini
-    if False:
+    if True:
         species_excl = ["D_carinulata", "D_sublineata", "T_castaneum", "T_freemani", "C_septempunctata", "C_magnifica"]
         filename =f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/fastX_permutation_bruchini.png"
     # coccinella
@@ -393,9 +390,9 @@ if __name__ == """__main__""":
         filename =f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/fastX_permutation_tribolium.png"
     
     print(" * reading dNdS_dict_A ... ")
-    dNdS_dict_A = read_filtered_dNdS_summary(summary_paths[data_files["A"][0]], excl_list=species_excl, max_dS=2)
+    dNdS_dict_A = read_filtered_dNdS_summary(summary_paths[data_files["A"][0]], excl_list=species_excl, max_dS=2, max_dNdS=2)
     print(" * reading dNdS_dict_X ... ")
-    dNdS_dict_X = read_filtered_dNdS_summary(summary_paths[data_files["X"][0]], excl_list=species_excl, max_dS=2)
+    dNdS_dict_X = read_filtered_dNdS_summary(summary_paths[data_files["X"][0]], excl_list=species_excl, max_dS=2, max_dNdS=2)
     
     species = get_species_list(dNdS_dict_A, exclude_list=species_excl)
     pairs_list = list(dNdS_dict_A.keys())

@@ -99,7 +99,7 @@ def get_species_list(dNdS_dict):
         species.append(sp1)
         sp2 = f"{split_names[2]}_{split_names[3]}"
         species.append(sp2)
-    species = list(set(species))
+    species = sorted(list(set(species)))
     assert len(species) == calculate_num_species(dNdS_dict)
     return(species)
 
@@ -145,7 +145,7 @@ def plot_dS_violins(A_dict:dict, X_dict:dict, filename = "dNdS_ratios_A_X.png", 
         plt.style.use('dark_background')
 
     species_list = get_species_list(A_dict)
-    
+
     ### check that A and X are about the same species set
     assert species_list == get_species_list(A_dict)
     assert list(A_dict.keys()) == list(X_dict.keys())
@@ -284,7 +284,7 @@ def make_line_vectors(slope, intercept, x_data, y_data):
     return x,y
 
 
-def plot_dS_vs_dNdS(A_dict:dict, X_dict:dict, filename = "dS_vs_dNdS.png", dark_mode=False, max_dS=2):
+def plot_dS_vs_dNdS(A_dict:dict, X_dict:dict, filename = "dS_vs_dNdS.png", dark_mode=False, max_dS=2, max_dNdS=2):
     """
     plot a grid of scatterplots of dS vs. dNdS in X and autosomes for each pair
     """
@@ -293,7 +293,8 @@ def plot_dS_vs_dNdS(A_dict:dict, X_dict:dict, filename = "dS_vs_dNdS.png", dark_
         plt.style.use('dark_background')
 
     species_list = get_species_list(A_dict)
-    
+    print(f"\n all species: {species_list}")
+
     ### check that A and X are about the same species set
     assert species_list == get_species_list(A_dict)
     assert list(A_dict.keys()) == list(X_dict.keys())
@@ -305,11 +306,11 @@ def plot_dS_vs_dNdS(A_dict:dict, X_dict:dict, filename = "dS_vs_dNdS.png", dark_
     rows = cols
     if species_count>4:
         fig, axes = plt.subplots(rows, cols, figsize=(27, 25)) # for more than three rows
-        fs = 25
+        fs = 23
     else:
         fig, axes = plt.subplots(rows, cols, figsize=(20, 18)) # for more than three rows
-        fs = 25
-    
+        fs = 23
+    #plt.rcParams['text.usetex'] = True
 
     colors_dict = {
         # "A" : "#4d7298", # uniform_unfiltered blue
@@ -336,6 +337,9 @@ def plot_dS_vs_dNdS(A_dict:dict, X_dict:dict, filename = "dS_vs_dNdS.png", dark_
         if row == len(species_list)-1:
             species1_lab = species1.replace("_", ". ")
             axes[row,row].text(0.1,0.4,f"{species1_lab}", fontsize = fs*1.2)
+        if col == len(species_list)-1:
+            species2_lab = species2.replace("_", ". ")
+            axes[col,col].text(0.1,0.4,f"{species2_lab}", fontsize = fs*1.2)
 
         # separate top right matrix from bottom left matrix
         if row>col:
@@ -366,15 +370,15 @@ def plot_dS_vs_dNdS(A_dict:dict, X_dict:dict, filename = "dS_vs_dNdS.png", dark_
         dNdS_X_all = [dNdS_X for i, dNdS_X in enumerate(dNdS_X_nan) if not np.isnan(dS_X_nan[i]) and not np.isnan(dNdS_X_nan[i]) ]
         assert len(dS_A_all) == len(dNdS_A_all)
         assert len(dS_X_all) == len(dNdS_X_all)
-        # remove dS>mad_dS from both (remove dNdS also if dS is removed)
-        dS_A = [dS for dS in dS_A_all if dS < max_dS]
-        dS_X = [dS for dS in dS_X_all if dS < max_dS]
-        dNdS_A = [dNdS for i, dNdS in enumerate(dNdS_A_all) if dS_A_all[i] < max_dS]
-        dNdS_X = [dNdS for i, dNdS in enumerate(dNdS_X_all) if dS_X_all[i] < max_dS]
+        # remove dS>max_dS and dNdS>max_dNDS from both (remove dNdS also if dS is removed and vice versa)
+        dS_A = [dS for i, dS in enumerate(dS_A_all) if dNdS_A_all[i] < max_dNdS and dS < max_dS]
+        dS_X = [dS for i, dS in enumerate(dS_X_all) if dNdS_X_all[i] < max_dNdS and dS < max_dS]
+        dNdS_A = [dNdS for i, dNdS in enumerate(dNdS_A_all) if dS_A_all[i] < max_dS and dNdS < max_dNdS]
+        dNdS_X = [dNdS for i, dNdS in enumerate(dNdS_X_all) if dS_X_all[i] < max_dS and dNdS < max_dNdS]
         assert len(dS_A) == len(dNdS_A)
         assert len(dS_X) == len(dNdS_X)
 
-        print(f"\tremoved dS>{max_dS}:\n\t{len(dNdS_A_all)} A dNdS values (no np.nan) before filtering, {len(dNdS_A)} after filtering, \n\t{len(dNdS_X_all)} X dNdS values (no np.nan) before filtering , {len(dNdS_X)} after filtering")
+        print(f"\tremoved dS>{max_dS} and dNdS>{max_dNdS}:\n\t{len(dNdS_A_all)} A dNdS values (no np.nan) before filtering, {len(dNdS_A)} after filtering, \n\t{len(dNdS_X_all)} X dNdS values (no np.nan) before filtering , {len(dNdS_X)} after filtering")
 
         if len(dS_A)==0 or len(dS_X)==0 or len(dNdS_A)==0 or len(dNdS_X)==0:
             axes[row,col].axis('off')
@@ -427,7 +431,7 @@ def plot_dS_vs_dNdS(A_dict:dict, X_dict:dict, filename = "dS_vs_dNdS.png", dark_
         # if species1 == "D_carinulata" or species2 == "D_carinulata":
         #     print(f"sample sizes, n_A = {n_A}, n_X = {n_X}, data X  = {data_X}")
     
-    fig.suptitle(f"Bruchini: dS vs. dNdS and dS violin plot, filtered dS < {max_dS}", fontsize = fs*1.25)
+    fig.suptitle(f"Bruchini: dS vs. dNdS and dS violin plot, filtered dS < {max_dS} and dNdS < {max_dNdS}\n ", fontsize = fs*1.25)
     # Adjust layout to prevent overlap  (left, bottom, right, top)
     plt.tight_layout(rect=[0.01, 0, 1, 1])
 
@@ -442,7 +446,7 @@ def plot_dS_vs_dNdS(A_dict:dict, X_dict:dict, filename = "dS_vs_dNdS.png", dark_
 
 
 
-def plot_dS_vs_dNdS_one_pair(A_dict:dict, X_dict:dict, filename = "dS_vs_dNdS.png", dark_mode=False, max_dS=2):
+def plot_dS_vs_dNdS_one_pair(A_dict:dict, X_dict:dict, filename = "dS_vs_dNdS.png", dark_mode=False, max_dS=2, max_dNdS=2):
     """
     plot a grid of scatterplots of dS vs. dNdS in X and autosomes for each pair
     """
@@ -462,8 +466,8 @@ def plot_dS_vs_dNdS_one_pair(A_dict:dict, X_dict:dict, filename = "dS_vs_dNdS.pn
     assert species_count==2
     cols = species_count
     fig, axes = plt.subplots(1, cols, figsize=(16, 8)) # for more than three rows
-    fs = 25
-    
+    fs = 23
+    # plt.rcParams['text.usetex'] = True
 
     colors_dict = {
         # "A" : "#4d7298", # uniform_unfiltered blue
@@ -486,7 +490,7 @@ def plot_dS_vs_dNdS_one_pair(A_dict:dict, X_dict:dict, filename = "dS_vs_dNdS.pn
         
         species1_lab = species1.replace("_", ". ")
         species2_lab = species2.replace("_", ". ")
-        fig.suptitle(f"{species1_lab} vs. {species2_lab} \ndS vs. dNdS and dS violin plot, filtered dS < {max_dS}", fontsize = fs*1.25)
+        fig.suptitle(f"{species1_lab} vs. {species2_lab} \ndS vs. dNdS and dS violin plot, filtered dS < {max_dS} and dNdS < {max_dNdS}", fontsize = fs*1.25)
         
         # Extract dS and dNdS
         ## exclude all the NaNs because violinplot can't handle them
@@ -502,11 +506,11 @@ def plot_dS_vs_dNdS_one_pair(A_dict:dict, X_dict:dict, filename = "dS_vs_dNdS.pn
         dNdS_X_all = [dNdS_X for i, dNdS_X in enumerate(dNdS_X_nan) if not np.isnan(dS_X_nan[i]) and not np.isnan(dNdS_X_nan[i]) ]
         assert len(dS_A_all) == len(dNdS_A_all)
         assert len(dS_X_all) == len(dNdS_X_all)
-        # remove dS>mad_dS from both (remove dNdS also if dS is removed)
-        dS_A = [dS for dS in dS_A_all if dS < max_dS]
-        dS_X = [dS for dS in dS_X_all if dS < max_dS]
-        dNdS_A = [dNdS for i, dNdS in enumerate(dNdS_A_all) if dS_A_all[i] < max_dS]
-        dNdS_X = [dNdS for i, dNdS in enumerate(dNdS_X_all) if dS_X_all[i] < max_dS]
+        # remove dS>max_dS and dNdS>max_dNDS from both (remove dNdS also if dS is removed and vice versa)
+        dS_A = [dS for i, dS in enumerate(dS_A_all) if dNdS_A_all[i] < max_dNdS and dS < max_dS]
+        dS_X = [dS for i, dS in enumerate(dS_X_all) if dNdS_X_all[i] < max_dNdS and dS < max_dS]
+        dNdS_A = [dNdS for i, dNdS in enumerate(dNdS_A_all) if dS_A_all[i] < max_dS and dNdS < max_dNdS]
+        dNdS_X = [dNdS for i, dNdS in enumerate(dNdS_X_all) if dS_X_all[i] < max_dS and dNdS < max_dNdS]
         assert len(dS_A) == len(dNdS_A)
         assert len(dS_X) == len(dNdS_X)
 
@@ -617,7 +621,7 @@ if __name__ == "__main__":
         
         species = get_species_list(dS_dict_A)
         if len(species)>2:
-            plot_dS_vs_dNdS(A_dict=dS_dict_A, X_dict=dS_dict_X,filename=filename, max_dS=2)
+            plot_dS_vs_dNdS(A_dict=dS_dict_A, X_dict=dS_dict_X,filename=filename, max_dS=2, max_dNdS=2)
         else:
-            plot_dS_vs_dNdS_one_pair(A_dict=dS_dict_A, X_dict=dS_dict_X,filename=filename, max_dS=2)
+            plot_dS_vs_dNdS_one_pair(A_dict=dS_dict_A, X_dict=dS_dict_X,filename=filename, max_dS=2, max_dNdS=2)
     
