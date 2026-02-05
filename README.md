@@ -36,6 +36,10 @@ DTOL open data release policy [here](https://www.darwintreeoflife.org/wp-content
 * Retrotransposition of male-biased genes from X to A ([Ellegren 2011](https://www.nature.com/articles/nrg2948.pdf))
 * Ampliconic regions on both X and Y, expansion of intergenic regions
 * Lower dS on X vs. autosomes, because selection purges deleterious mutations more effectively on the hemizygous X [McVean 1997](https://www.nature.com/articles/386388a0)
+* *T. castaneum* dosage compensation:
+  * [Prince 2010](https://academic.oup.com/gbe/article/doi/10.1093/gbe/evq024/572118): upregulation of the X, but in both sexes, X-linked genes are very female biased as a result.
+  * [Mahajan 2015](https://academic.oup.com/gbe/article/7/2/591/630149): partial and heterogeneous
+  * neo-X in *T. confusum* [Bracewell 2024](https://journals.plos.org/plosgenetics/article?id=10.1371/journal.pgen.1011477)
 
 ### Ka/Ks theory
 
@@ -46,6 +50,7 @@ DTOL open data release policy [here](https://www.darwintreeoflife.org/wp-content
 
 * original FastX [Charlesworth 1986](https://www.journals.uchicago.edu/doi/abs/10.1086/284701)
 * general X evolution review [Vicoso & Charlesworth 2006](https://www.nature.com/articles/nrg1914)
+* X evolution in beetles [Bracewell 2024](https://journals.plos.org/plosgenetics/article?id=10.1371/journal.pgen.1011477)
 
 ### FastX papers from Lila's thesis
 
@@ -137,9 +142,6 @@ DTOL open data release policy [here](https://www.darwintreeoflife.org/wp-content
     * Meisel, R. P., Han, M. V. & Hahn, M. W. A complex suite of forces drives gene traffic from Drosophila X chromosomes. Genome Biol. Evol. 1, 176–188 (2009).
     * Vibranovski, M. D., Zhang, Y. & Long, M. General gene movement off the X chromosome in the Drosophila genus. Genome Res. 19, 897–903
   (2009)
-
-* [Yu 2026](https://www.pnas.org/doi/full/10.1073/pnas.2522417123) super conserved noncoding sex determining locus in (haplodiploid) hymenoptera
-* *T. castaneum* dosage compensation according to [Prince 2010](https://academic.oup.com/gbe/article/doi/10.1093/gbe/evq024/572118): upregulation of the X, but in both sexes, X-linked genes are very female biased as a result.
 
 
 ## Workflow
