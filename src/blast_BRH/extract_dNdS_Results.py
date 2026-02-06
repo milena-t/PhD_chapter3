@@ -148,11 +148,15 @@ def get_dNdS_values_by_ortholog(results_dir, outfile_name = "", only_dNdS = True
                 file_dNdS = f"{run_directory}/2NG.dNdS"
                 file_dS = f"{run_directory}/2NG.dS"
                 file_dN = f"{run_directory}/2NG.dN"
-                if not (os.path.isfile(file_dNdS) and os.path.isfile(file_dS) and os.path.isfile(file_dN)):
-                    raise RuntimeError(f"one of these files does not exist!\n{file_dNdS}\n{file_dS}\n{file_dS}\n")
-                value_dNdS = extract_dNdS_file(file_dNdS, dS_file=False)
-                value_dS = extract_dNdS_file(file_dS, dS_file=True)
-                value_dN = extract_dNdS_file(file_dN, dS_file=True)
+                if os.path.isfile(file_dNdS) and os.path.isfile(file_dS) and os.path.isfile(file_dN):
+                    value_dNdS = extract_dNdS_file(file_dNdS, dS_file=False)
+                    value_dS = extract_dNdS_file(file_dS, dS_file=True)
+                    value_dN = extract_dNdS_file(file_dN, dS_file=True)
+                else:
+                    # raise RuntimeError(f"one of these files does not exist!\n{file_dNdS}\n{file_dS}\n{file_dS}\n")
+                    value_dNdS="not_found"
+                    value_dS="not_found"
+                    value_dN="not_found"
 
             print(f"{d}:dN={value_dN},dS={value_dS},dNdS={value_dNdS}\n")
             outfile.write(f"{d}:dN={value_dN},dS={value_dS},dNdS={value_dNdS}\n")
