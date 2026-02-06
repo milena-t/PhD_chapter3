@@ -25,13 +25,27 @@ METRICS="$OUTPUT_DIR/${SAMPLE}_markdup_metrics.txt"
 
 echo "Array task $SLURM_ARRAY_TASK_ID processing $SAMPLE..."
 
+SAMPLE="$(basename "$BAM" "_Aligned.sortedByCoord.out.bam")"
+
+# add readgroups that picard needs
+java -jar $EBROOTPICARD/picard.jar AddOrReplaceReadGroups \
+    INPUT="$BAM" \
+    OUTPUT="${BAM%.bam}.rg.bam" \
+    RGID=$SAMPLE \
+    RGLB=lib1 \
+    RGPL=ILLUMINA \
+    RGPU=unit1 \
+    RGSM=$SAMPLE \
+    SORT_ORDER=coordinate \
+    VALIDATION_STRINGENCY=LENIENT
+
+
 # Mark duplicates
 java -jar $EBROOTPICARD/picard.jar MarkDuplicates \
     INPUT="$BAM" \
     OUTPUT="$OUTPUT_BAM" \
     METRICS_FILE="$METRICS" \
     VALIDATION_STRINGENCY=LENIENT \
-    OPTICAL_DUPLICATE_PIXEL_DISTANCE=0
 
 # Index the marked BAM
 samtools index "$OUTPUT_BAM"
