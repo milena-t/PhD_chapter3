@@ -26,7 +26,7 @@ METRICS="$OUTPUT_DIR/${SAMPLE}_markdup_metrics.txt"
 echo "Array task $SLURM_ARRAY_TASK_ID processing $SAMPLE..."
 
 # Mark duplicates
-java -jar $PICARD_HOME/picard.jar MarkDuplicates \
+java -jar $EBROOTPICARD/picard.jar MarkDuplicates \
     INPUT="$BAM" \
     OUTPUT="$OUTPUT_BAM" \
     METRICS_FILE="$METRICS" \
