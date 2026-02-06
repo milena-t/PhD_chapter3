@@ -113,6 +113,52 @@ def get_dNdS_pairs_dict(results_dir, outfile_name = "", only_dNdS = True):
         print(f"outfile saved to: {outfile_name}\nin {results_dir}")
 
 
+def get_dNdS_values_by_ortholog(results_dir, outfile_name = "", only_dNdS = True):
+    """
+    Extract dN, dS and dN/dS values from paml results, save for each ortholog individually like the site classes
+    """
+    pair_dirs = []
+    for d in os.listdir(results_dir):
+        if os.path.isfile(d):
+            continue
+        d_sp = d.split("_")
+        try:
+            species1 = f"{d_sp[0]}_{d_sp[1]}"
+            species2 = f"{d_sp[2]}_{d_sp[3]}"
+        except:
+            print(f"{d} cannot be parsed as species")
+            continue
+        if species1 != species2:
+            pair_dirs.append(d)
+
+    outfile_name = f"{results_dir}{outfile_name}"
+    with open(outfile_name, "w") as outfile:
+        for pair_dir in pair_dirs:
+            print(f" --> {pair_dir}")
+            if ".out" in pair_dir or ".log" in pair_dir or ".txt" in pair_dir:
+                print(f"\t! log file ignired")
+                continue
+            if not os.path.isdir(f"{results_dir}{pair_dir}"):
+                raise RuntimeError(f"parsed dir {results_dir}{pair_dir} does not exist!")
+
+            for d in os.listdir(f"{results_dir}{pair_dir}"):
+                run_directory = f"{results_dir}{pair_dir}/{d}" 
+                file_dNdS = f"{run_directory}/2NG.dNdS"
+                file_dS = f"{run_directory}/2NG.dS"
+                file_dN = f"{run_directory}/2NG.dN"
+                if not (os.path.isfile(file_dNdS) and os.path.isfile(file_dS) and os.path.isfile(file_dN)):
+                    raise RuntimeError(f"one of these files does not exist!\n{file_dNdS}\n{file_dS}\n{file_dS}\n")
+                value_dNdS = extract_dNdS_file(file_dNdS, dS_file=False)
+                value_dS = extract_dNdS_file(file_dS, dS_file=True)
+                value_dN = extract_dNdS_file(file_dN, dS_file=True)
+
+            outfile.write(f"{d}:dN={value_dN},dS={value_dS},dNdS={value_dNdS}\n")
+            break
+            
+        print(f"outfile saved to: {outfile_name}\nin {results_dir}")
+
+
+
 def extract_site_classes(site_classes_path):
     if not os.path.exists(site_classes_path):
         # print(f"{dNdS_path} does not exist")
@@ -133,7 +179,6 @@ def extract_site_classes(site_classes_path):
         lines_str = f"{p_line.strip()};{w_line.strip()}"
 
     return(lines_str)
-
 
 def site_classes_list_of_pair(pair_dir, results_dir):
     """
@@ -207,13 +252,14 @@ if __name__ == "__main__":
     chr_types = ["X","A"]
     for chr_type in chr_types:
 
-        results_path_LRT = f"//proj/naiss2023-6-65/Milena/chapter3/dNdS_calculations/brh_results_{chr_type}/"
+        results_path_LRT = f"/proj/naiss2023-6-65/Milena/chapter3/dNdS_calculations/brh_results_{chr_type}/"
         results_path_dNdS = f"/proj/naiss2023-6-65/Milena/chapter3/dNdS_calculations/brh_results_{chr_type}_branch_model/"
         print(chr_type)
         print(f"\n//////////////////// {chr_type} ////////////////////\n")
 
         # get_dNdS_pairs_dict(results_path_dNdS, outfile_name= f"dNdS_dS_summary_{chr_type}-linked_updated_species.txt", only_dNdS=False)
-        get_site_classes(results_path_LRT, outfile_name= f"site_classes_summary_{chr_type}-linked.txt")
+        # get_site_classes(results_path_LRT, outfile_name= f"site_classes_summary_{chr_type}-linked.txt")
+        get_dNdS_values_by_ortholog(results_path_dNdS, outfile_name= f"dNdS_by_ortholog_{chr_type}-linked_updated_species.txt", only_dNdS=False)
 
 #     [f"{dirpath}{d}/2NG.dNdS" for d in os.listdir(results_path)]
 
