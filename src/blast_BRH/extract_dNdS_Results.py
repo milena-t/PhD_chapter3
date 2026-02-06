@@ -145,6 +145,7 @@ def get_dNdS_values_by_ortholog(results_dir, outfile_name = "", only_dNdS = True
                 run_directory = f"{results_dir}{pair_dir}/{d}" 
                 if ".out" in run_directory or ".log" in pair_dir or ".txt" in pair_dir:
                     print(f"\t! log file ignired")
+                    continue
                 file_dNdS = f"{run_directory}/2NG.dNdS"
                 file_dS = f"{run_directory}/2NG.dS"
                 file_dN = f"{run_directory}/2NG.dN"
