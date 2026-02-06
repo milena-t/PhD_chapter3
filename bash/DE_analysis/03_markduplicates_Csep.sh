@@ -12,12 +12,13 @@ INPUT_DIR=/proj/naiss2023-6-65/Milena/chapter3/RNAseq/Coccinella/star_mapping
 OUTPUT_DIR="$INPUT_DIR/picard_marked_indexed"
 
 mkdir -p "$OUTPUT_DIR"
-
 #Make an array of all the .bam files 
-BAM_FILES=("$INPUT_DIR"/*_Aligned.sortedByCoord.out.bam)
+#BAM_FILES=("$INPUT_DIR"/*_Aligned.sortedByCoord.out.bam)
 
 #pick out the specific bam file for each array job 
-BAM="${BAM_FILES[$SLURM_ARRAY_TASK_ID - 1]}"  #arrays are 0-based
+#BAM="${BAM_FILES[$SLURM_ARRAY_TASK_ID - 1]}"  #arrays are 0-based
+
+for BAM in "$INPUT_DIR"/*_Aligned.sortedByCoord.out.bam; do
 
 SAMPLE=$(basename "$BAM" "_Aligned.sortedByCoord.out.bam")
 OUTPUT_BAM="$OUTPUT_DIR/${SAMPLE}_marked_duplicates.bam"
@@ -42,10 +43,12 @@ java -jar $EBROOTPICARD/picard.jar AddOrReplaceReadGroups \
 
 # Mark duplicates
 java -jar $EBROOTPICARD/picard.jar MarkDuplicates \
-    INPUT="$BAM" \
+    INPUT="${BAM%.bam}.rg.bam" \
     OUTPUT="$OUTPUT_BAM" \
     METRICS_FILE="$METRICS" \
-    VALIDATION_STRINGENCY=LENIENT \
+    VALIDATION_STRINGENCY=LENIENT
 
 # Index the marked BAM
 samtools index "$OUTPUT_BAM"
+
+done
