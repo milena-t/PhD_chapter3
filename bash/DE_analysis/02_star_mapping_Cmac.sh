@@ -16,16 +16,16 @@ RNA_DIR=/proj/naiss2023-6-65/Milena/chapter3/RNAseq/maculatus/raw_data/trimmed_f
 
 TCAS_GENOME=/proj/naiss2023-6-65/Milena/annotation_pipeline/only_orthodb_annotation/T_castaneum/assembly_genomic.fna.masked
 
-
 #Create the STAR genome index
 STAR --runThreadN 16 \
      --runMode genomeGenerate \
      --genomeDir "$INDEX" \
      --genomeFastaFiles "$GENOME" \
      --sjdbGTFfile "$ANNOT" \
-     --genomeSAindexNbases 12 \ ## otherwise in output: !!!!! WARNING: --genomeSAindexNbases 14 is too large for the genome size=241861439, which may cause seg-fault at the mapping step. Re-run genome generation with recommended --genomeSAindexNbases 12
      --sjdbOverhang 149 #max read length 150-1
 
+     # --genomeSAindexNbases 12 \ ## otherwise in output: !!!!! WARNING: --genomeSAindexNbases 14 is too large for the genome size=241861439, which may cause seg-fault at the mapping step. Re-run genome generation with recommended --genomeSAindexNbases 12
+     
 #Align reads and produce gene counts
 for R1 in "$RNA_DIR"/*_1_trimmed.fastq.gz; do
   R2="${R1/_1_trimmed.fastq.gz/_2_trimmed.fastq.gz}"
