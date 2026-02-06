@@ -159,9 +159,9 @@ def get_dNdS_values_by_ortholog(results_dir, outfile_name = "", only_dNdS = True
                     value_dS="not_found"
                     value_dN="not_found"
 
-                print(f"{d}:dN={value_dN},dS={value_dS},dNdS={value_dNdS}\n")
                 outfile.write(f"{d}:dN={value_dN},dS={value_dS},dNdS={value_dNdS}\n")
-                break
+                # print(f"{d}:dN={value_dN},dS={value_dS},dNdS={value_dNdS}\n")
+                # break
             
         print(f"outfile saved to: {outfile_name}\nin {results_dir}")
 
