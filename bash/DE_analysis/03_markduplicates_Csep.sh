@@ -2,13 +2,13 @@
 #SBATCH -A uppmax2026-1-8
 #SBATCH -c 8
 #SBATCH -t 4:00:00
-#SBATCH -J Cmac_mark_duplicates
+#SBATCH -J Csep_mark_duplicates
 #SBATCH --output=%x.%A_%a.out  #adds the array number after the jobid
 #SBATCH --mail-type=ALL
 
 module load picard/3.4.0-Java-17 SAMtools/1.22-GCC-13.3.0
 
-INPUT_DIR=/proj/naiss2023-6-65/Milena/chapter3/RNAseq/maculatus/star_mapping
+INPUT_DIR=/proj/naiss2023-6-65/Milena/chapter3/RNAseq/Coccinella/star_mapping
 OUTPUT_DIR="$INPUT_DIR/picard_marked_indexed"
 
 mkdir -p "$OUTPUT_DIR"
