@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH -A uppmax2026-1-8
 #SBATCH -c 16
-#SBATCH -t 1-00:00:00
+#SBATCH -t 1:00:00
 #SBATCH -J count_reads_Csep
 #SBATCH -o count_reads_Csep.log
 #SBATCH --mail-type=ALL
