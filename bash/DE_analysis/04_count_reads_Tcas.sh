@@ -2,8 +2,8 @@
 #SBATCH -A uppmax2026-1-8
 #SBATCH -c 16
 #SBATCH -t 1-00:00:00
-#SBATCH -J Tcas_count_reads
-#SBATCH -o Tcas_count_reads
+#SBATCH -J count_reads_Tcas
+#SBATCH -o count_reads_Tcas.log
 #SBATCH --mail-type=ALL
 
 module load Subread/2.1.1-GCC-13.3.0

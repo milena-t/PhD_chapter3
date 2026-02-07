@@ -2,8 +2,8 @@
 #SBATCH -A uppmax2026-1-8
 #SBATCH -c 16
 #SBATCH -t 1-00:00:00
-#SBATCH -J Cmac_count_reads
-#SBATCH -o Cmac_count_reads
+#SBATCH -J count_reads_Cmac
+#SBATCH -o count_reads_Cmac.og
 #SBATCH --mail-type=ALL
 
 module load Subread/2.1.1-GCC-13.3.0

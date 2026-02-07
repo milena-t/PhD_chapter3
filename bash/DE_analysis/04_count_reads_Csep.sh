@@ -2,8 +2,8 @@
 #SBATCH -A uppmax2026-1-8
 #SBATCH -c 16
 #SBATCH -t 1-00:00:00
-#SBATCH -J Csep_count_reads
-#SBATCH -o Csep_count_reads
+#SBATCH -J count_reads_Csep
+#SBATCH -o count_reads_Csep.log
 #SBATCH --mail-type=ALL
 
 module load Subread/2.1.1-GCC-13.3.0
