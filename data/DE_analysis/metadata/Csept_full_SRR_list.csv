@@ -1,4 +1,4 @@
-SRR_id,sex,age,organ,replicate
+Run,sex,age,organ,replicate
 SRR24182302,female,adult,head,replicate_1
 SRR24182336,female,adult,head,replicate_2
 SRR24182335,female,adult,head,replicate_3
