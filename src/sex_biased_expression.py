@@ -17,7 +17,6 @@ from sklearn.decomposition import PCA
 
 ## R analysis with DESeq2 according to sebastian's github
 # -Aggregate to transcript level by summing exon counts,
-# -chose to only load and use the multimapped transcript counts,
 # -filtered on ≥3 mean counts per sample in each sex,
 # -DESeq2 for DE analysis based on male vs female,
 # -used vst for count normalization with variance stabilization.
