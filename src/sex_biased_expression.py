@@ -122,8 +122,8 @@ def plot_PCA_vst_counts(counts_path:str, metadata_path:str, plot_path:str="", co
     ## make legend
     sex_labels = { sex : points_dict['sex'][sex] for sex in pca_df['sex']}
     org_labels = { org : colors_dict['organ'][org] for org in pca_df['organ']}
-    yleg = ylim[0]-1e4
-    xleg = xlim[0]-1e4
+    yleg = ylim[0]-1e6
+    xleg = xlim[0]-1e6
 
     for key,value in sex_labels.items():
         ax.scatter(xleg,yleg,marker=value,s=ps,label=key, color='black')
