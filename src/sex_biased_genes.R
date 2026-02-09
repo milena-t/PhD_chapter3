@@ -4,11 +4,14 @@
 
 
 # install DESeq2
-if (!require("BiocManager", quietly = TRUE))
-  install.packages("BiocManager")
-BiocManager::install("DESeq2") # compiled from source 
-# install tidyverse (ggplot2 is in tidyverse)
-install.packages("tidyverse")
+if (FALSE){
+  if (!require("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+  BiocManager::install("DESeq2") # compiled from source 
+  # install tidyverse (ggplot2 is in tidyverse)
+  install.packages("tidyverse") 
+  install.packages("gtable") 
+}
 library("DESeq2")
 library(tidyverse)
 library(ggplot2)
@@ -22,28 +25,37 @@ Tcas_path <- "Tcas_gene_counts_short_headers.txt"
 Cmac_path_out <- "Cmac_gene_counts_short_headers_vst.txt"
 Csep_path_out <- "Csep_gene_counts_short_headers_vst.txt"
 Tcas_path_out <- "Tcas_gene_counts_short_headers_vst.txt"
+## log-fold-change outfiles
+Cmac_path_out_lfc <- "Cmac_gene_counts_short_headers_lfc.txt"
+Csep_path_out_lfc <- "Csep_gene_counts_short_headers_lfc.txt"
+Tcas_path_out_lfc <- "Tcas_gene_counts_short_headers_lfc.txt"
 
 #### metadata relative paths
 Cmac_metadata <- '/Users/miltr339/work/PhD_code/PhD_chapter3/data/DE_analysis/metadata/Cmac_full_SRR_list.csv'
 Csep_metadata <- '/Users/miltr339/work/PhD_code/PhD_chapter3/data/DE_analysis/metadata/Csep_full_SRR_list.csv'
 Tcas_metadata <- '/Users/miltr339/work/PhD_code/PhD_chapter3/data/DE_analysis/metadata/Tcas_full_SRR_list.csv'
 
-#### read data for DE
-if (TRUE){
+#### do one species of the three
+if (FALSE){
   data_path <- Cmac_path
   out_path_vst <- Cmac_path_out
+  out_path_lfc <- Cmac_path_out_lfc
   metadata <- Cmac_metadata
 }
-if (FALSE){
+if (TRUE){
   data_path <- Csep_path
   out_path_vst <- Csep_path_out
+  out_path_lfc <- Csep_path_out_lfc
   metadata <- Csep_metadata
 }
 if (FALSE){
   data_path <- Tcas_path
   out_path_vst <- Tcas_path_out
+  out_path_lfc <- Tcas_path_out_lfc
   metadata <- Tcas_metadata
 }
+
+#### read data for DE
 ## count data
 count_data <- read.csv(data_path, header = TRUE, sep = "\t",comment.char = "#")
 count_data <- count_data %>% select(-one_of('Chr','Start','End','Strand','Length')) 
@@ -70,8 +82,10 @@ dds <- dds[keep,]
 # get normalized counts
 dds <- estimateSizeFactors(dds)
 # for the output files we might want this, but the new data structure doesn't work with DESeq2 any more
-if (FALSE){
-  dds_vst <- varianceStabilizingTransformation(dds, blind = TRUE, fitType = "parametric")
+if (TRUE){
+  # dds_vst <- varianceStabilizingTransformation(dds, blind = TRUE, fitType = "parametric")
+  # normalized_counts <- counts(dds_vst, normalized = TRUE)
+  normalized_counts <- counts(dds, normalized = TRUE)
   write.table(normalized_counts, file=out_path_vst, sep = '\t', quote=F, col.names = NA)
 }
 
@@ -80,6 +94,11 @@ if (FALSE){
 dds <- DESeq(dds)
 res <- results(dds)
 summary(res)
+write.table(res, file=out_path_lfc, sep = '\t', quote=F, col.names = NA)
+## plot results
+rld <- rlog(dds)
+plotPCA(rld, intgroup="sex")
+
 
 
 
