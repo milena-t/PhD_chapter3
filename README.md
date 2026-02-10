@@ -169,7 +169,7 @@ graph TD;
     mcscanx_out --> mcscanx_plot([protein synteny plot, pairwise and riparian plot with all species])
     mcscanx_plot .-> conf_X(confirm X-chromosome identification)
     
-    blast --> dNdS_groups(make 1-to-1 orthologs to estimate dNdS);
+    blast --> dNdS_groups(make 1-to-1 orthologs between all species pairs);
 
     dNdS_groups --> basicFastX(estimate pairwise dN and dS with codeml branch model);
     dNdS_groups --> posSel(test for positive selection with codeml site models and LRT);
@@ -178,7 +178,7 @@ graph TD;
     basicFastX --> summary[(information on every pairwise ortholog: dN and dS, positively selected sites, sex-biased expression)]
     posSel --> summary
     sexbias --> summary
-    
+
 ```   
 
 </details>
