@@ -1,0 +1,1053 @@
+---
+title: "SATC Analysis C. analis"
+author: "Milena R. Trabert"
+output: html_notebook
+editor_options: 
+  chunk_output_type: console
+---
+
+load modules
+```{r}
+source("https://raw.githubusercontent.com/popgenDK/SATC/main/satcFunc.R")
+library(mclust)
+library(reshape)
+library(ggplot2)
+library(stringr)
+```
+
+Set correct working directory (milena = laptop, miltr339 = work)
+```{r}
+#setwd("/Users/milena/Box Sync/code/SATC/")
+setwd("/Users/miltr339/Box Sync/code/SATC")
+```
+
+read files
+```{r}
+IDXFILE_analis <- "analis_samples/analis_samples.txt"
+IDXFILE_chinensis <- "coleoptera_samples/chinensis_idxstats_new_ref.txt"
+# IDXFILE_obtectus <- "obtectus/obtectus_idxstats_L.txt" #E or L or all
+IDXFILE_obtectus <- "obtectus/obtectus_F0_all.idxstats" #E or L or all
+  # E does the sex assignment the wrong way around and all is completely confused
+#IDXFILE_chinensis <- "coleoptera_samples/chinensis_idxstats_filtered_with_copies.txt"
+#IDXFILE_maculatus <- "/Users/milena/work/SATC/maculatus_data/sayadi_et_al_2019_illumina_reads/unfiltered_list.txt"
+IDXFILE_maculatus <- "/Users/milena/work/SATC/maculatus_data/sayadi_et_al_2019_illumina_reads/filtered_list.txt"
+#IDXFILE_maculatus_unfilt <- "/Users/miltr339/SATC/unfilt/unfiltered_list.txt"
+#IDXFILE_maculatus_filt <- "/Users/miltr339/SATC/filt_readsreps/filtered_list.txt"
+filenames_analis <- scan(IDXFILE_analis,what="sUp")
+filenames_chinensis <- scan(IDXFILE_chinensis,what="sUp")
+filenames_obtectus <- scan(IDXFILE_obtectus,what="sUp")
+filenames_maculatus <- scan(IDXFILE_maculatus,what="sUp")
+
+## read idx files analis
+idx_a <- lapply(filenames_analis,read.table,as.is=T)
+names(idx_a) <- basename(filenames_analis)
+# shorten contig names, works for ENA reference
+#for (i in 1:length(idx_a)){
+#  idx_a[[i]]$V1 <- sapply(idx_a[[i]]$V1, function(x) substr(x, 21, 38))
+#}
+
+## read idx files chinensis
+idx_c <- lapply(filenames_chinensis,read.table,as.is=T)
+names(idx_c) <- basename(filenames_chinensis)
+
+## read idx files obtetcus 
+idx_o <- lapply(filenames_obtectus,read.table,as.is=T)
+names(idx_o) <- sapply(basename(filenames_obtectus), function(x) gsub(".sort.MarkDup.RG.bam.idxstats", "",x))
+
+## read idx files maculatus
+idx_m <- lapply(filenames_maculatus,read.table,as.is=T)
+names(idx_m) <- basename(filenames_maculatus)
+
+```
+
+Modify the filterScaffold function from SATC. 
+For some reason, if I run the normal one, in line 55 the rank() function returns floats, not ints, and therefore no overlap with 1:M, which returns in normScarfs being only FALSE, which causes an error. Resolving ties with "first" returns integers instead, solving the problem.
+-> When using the C. maculatus dataset as a test, I can compare filterScaffold and filterScaffold_new, and they result in identical normalized expression values.
+```{r}
+# minLength=1e5 by default
+filterScaffold_new <- function(dat,minLength=5e5,M=5,normScaffolds = NULL,range=c(0.3,2),useMedian=FALSE,saveWarn=FALSE){
+  #order of size of scaffold
+  ord <- order(dat[[1]]$V2,decreasing=T)
+  
+  keepScarfs <- dat[[1]]$V2[ord] > minLength
+  fun <- function(x){
+    colnames(x)[1:3] <- c("scaffold","Length","Nreads")
+    rownames(x) <- x$scaffold
+    x[ord,][keepScarfs,]
+  }
+  ## filter and sort idxstat files
+  filtered <- lapply(dat,fun)
+  warnMsg <- "none"
+  ## scaffolds use for normalization
+  if(!is.null(normScaffolds)){
+    #  normScaffolds <- scan(normScaffolds, what="d")
+    if(!all(normScaffolds%in%filtered[[1]][,1]))
+      warnings("Chosen normalizing scaffold not found (after min length filtering)")
+    normScarfs <- filtered[[1]]$scaffold%in%normScaffolds
+  }
+  else
+    #normScarfs <- rank(-filtered[[1]]$Length)%in%1:M
+    #the above line was in the original function
+    normScarfs <- rank(-filtered[[1]]$Length, ties.method = "first")%in%1:M
+  
+  norma <- function(x){
+    x$normScafs <- normScarfs
+    if(useMedian){
+      denom <- median(x$Nreads[normScarfs]/x$Length[normScarfs])
+      x$norm <- x$Nreads/x$Length/denom
+      
+    }
+    else{
+      denom <- sum(x$Nreads[normScarfs])/sum(x$Length[normScarfs])
+      x$norm <- x$Nreads/x$Length/denom
+    }
+    x
+  }
+  normed <- lapply(filtered,norma)
+  cov <- sapply(normed,function(x) diff(range(x[x[,"normScafs"],"norm"])))
+  if(any(cov>0.3)){
+    warning("large difference in covarage of the scaffolds used for normalization. Consider using the median instead (--useMedian TRUE) or manually choose scaffolds (--normScaffolds)")
+    warnMsg <- "large difference in covarage of the scaffolds used for normalization. Consider using the median instead or manually choose normalizing scaffolds "
+    
+    
+  }
+  
+  meanNormDepth <- rowMeans(sapply(normed,function(x) x$norm))
+  keep <- meanNormDepth > range[1] & meanNormDepth<range[2]
+  if(saveWarn)
+    return(list(lapply(normed,function(x) x[keep,]),warnMsg))
+  lapply(normed,function(x) x[keep,])
+}
+
+rFilt_a <- filterScaffold_new(dat=idx_a,minLength=1e4,M=5)
+rFilt_c <- filterScaffold_new(dat=idx_c,minLength=1e4,M=5)
+rFilt_o <- filterScaffold_new(dat=idx_o,minLength=1e4,M=5)
+
+rFilt_m <- filterScaffold_new(dat=idx_m,minLength=1e4,M=5)
+#rFilt_m_old <- filterScaffold(dat=idx_m,minLength=1e5,M=5)
+```
+
+
+plot coverage depth by contig
+When I execute the plotDepth function call as-is it doesn't work but executing each line of the function individually does? The below code is basically exactly copied from the plotDepth function included in SATC.
+```{r}
+dat <- rFilt_o #rFilt_c or rFilt_a or rFilt_m or rFilt_o
+normOnly=FALSE
+    col=1:length(dat)
+  if(normOnly){
+    dat <- lapply(dat,function(x) x[x$normScafs,])
+    if(missing(ylim))
+      ylim<-range(sapply(dat,function(x) x$norm))
+  }
+  scafLen <- dat[[1]][,2]
+  mmax <- max(sapply(dat,function(x) max(x[,"norm"])))
+    ylim <- c(0,mmax)
+  par(mar = c(7, 7, 2, 3))
+  plot(scafLen,dat[[1]][,"norm"],log="x",xlab="",ylab="",ylim=ylim,type="l", cex.lab=2.8, 
+       cex.axis=1.5)
+  s<- sapply(1:length(dat),function(x) 
+    lines(scafLen,dat[[x]][,"norm"],col=col[x],pch=16,type="b",cex=.3))
+  title(ylab="normalized depth", line=4, cex.lab=1.5)
+  title(xlab="scaffold length", line=4, cex.lab=1.5)
+#}
+
+#plotDepth(rFilt_c, normOnly = T) ##all scaffs
+```
+
+
+Plot normalized coverage (from Axel's SATC code)
+```{r}
+rFilt <- rFilt_o #rFilt_a or rFilt_c or rFilt_m or rFilt_o
+
+covlen_mat <- sapply(rFilt,function(x) x$Nreads/1000000)
+#rownames(covlen_mat)<-rFilt$`analis-F2.bam.idxstats`$scaffold
+rownames(covlen_mat)<-rFilt[[1]]$scaffold
+
+covlen_mat_df<-as.data.frame(covlen_mat)
+covlen_mat_df$scaf<-row.names(covlen_mat)
+#covlen_mat_df$len<-rFilt$`analis-F2.bam.idxstats`$Length
+#covlen_mat_df$normscaf<-rFilt$`analis-F2.bam.idxstats`$normScafs
+covlen_mat_df$len<-rFilt[[1]]$Length
+covlen_mat_df$normscaf<-rFilt[[1]]$normScafs
+covlen_mat_df_m<-melt(covlen_mat_df,id.vars = c("scaf","len","normscaf"))
+colnames(covlen_mat_df_m)<-c("scaf","len","normscaf","sample","covlen")
+
+covlen_mat_df_m[covlen_mat_df_m$normscaf,]
+
+# Plotting the coverage (total number of reads) for all contigs
+ggplot()+
+  geom_point(data=covlen_mat_df_m,aes(x=log(len),y=covlen,fill=sample),shape=21,alpha=1/3)+
+  scale_fill_manual("Sample",values=c("pink", "red","dodgerblue","pink", "red","dodgerblue"))+
+  geom_point(data=covlen_mat_df_m[covlen_mat_df_m$normscaf,],
+             aes(x=log(len),y=covlen,group=sample),shape=21,size=5,colour="black")+
+  theme(panel.background = element_rect(fill = "white", colour = "black"))+
+  theme(legend.key = element_rect(fill = "white"))+
+  xlab("log(length)")+
+  ylab("Nreads (x 1,000,000)")#+
+
+cov_mat <- sapply(rFilt,function(x) x$norm)
+cov_mat_df<-as.data.frame(cov_mat)
+cov_mat_df$scaf<-rFilt[[1]]$scaffold
+cov_mat_df$len<-rFilt[[1]]$Length
+cov_mat_df$normscaf<-rFilt[[1]]$normScafs
+cov_mat_df_m<-melt(cov_mat_df,id.vars = c("scaf","len","normscaf"))
+colnames(cov_mat_df_m)<-c("scaf","len","normscaf","sample","normcov")
+
+cov_mat_df_m[cov_mat_df_m$normscaf,]
+
+# Plotting the normalised coverage of all contigs
+ggplot()+
+  geom_point(data=cov_mat_df_m,aes(x=log(len),y=normcov,fill=sample),shape=21,alpha=1/3,size=2)+
+  scale_fill_manual("Sample",values=c("pink", "red","dodgerblue","pink", "red","dodgerblue"))+
+  geom_point(data=cov_mat_df_m[cov_mat_df_m$normscaf,],
+             aes(x=log(len),y=normcov,group=sample),shape=21,size=5,colour="black")+
+  theme(panel.background = element_rect(fill = "white", colour = "black"))+
+  theme(legend.key = element_rect(fill = "white"))+
+  xlab("log(length)")+
+  ylab("Normalised coverage")#+
+```
+
+Try the sex determination function
+identify sex-linked scaffolds
+The sex determination does not work with only four samples, the clustering algorithm will not converge. For this reason, the sample size was artificially increased by copying each sample, resulting in 8 replicates.
+This way the clustering algorithm works and the sex assignment is still correct.
+
+```{r}
+# analis
+sex_a <- sexDetermine(dat=rFilt_a, K=2, model="gaussian")
+cbind(names(idx_a),sex_a$sex)
+
+#chinensis
+sex_c <- sexDetermine(dat=rFilt_c, K=2, model="gaussian")
+cbind(names(idx_c),sex_c$sex)
+
+#maculatus
+sex_m <- sexDetermine(dat=rFilt_m, K=2, model="gaussian")
+#cbind(names(idx_m),sex_m$sex)
+
+#obtectus
+sex_o <- sexDetermine(dat=rFilt_o, K=2, model="gaussian")
+# sub(paste0(".sort.MarkDup.RG.filter.bam.idxstats", "$"), "", names(idx_o))
+cbind(names(idx_o),sex_o$sex)
+```
+
+SexDetermine modification for obtectus_E 
+The base version sorts the samples correctly by sex but is then assigning M/F them the wrong way around
+```{r}
+
+# custom set along with pcs you want to cluster the samples
+sexDetermineCustomPCs <- function(dat,pc=c(1,2),weight=TRUE,model="gaussian",lengthWeight=FALSE){
+    model <- char.expand(model, c("gaussian","hclust"))
+    
+    mat_first <- sapply(dat,function(x) x$norm) # get norm values from the dat input in matrix
+    noNArow=apply(mat_first,1,function(x) ifelse(sum(is.na(x))==0,TRUE,FALSE))
+    #center
+    mat <- mat_first[noNArow,]-rowMeans(mat_first[noNArow,])
+    
+    #    pca <- prcomp(t(mat),scale=F)
+    w <- 1
+    if(lengthWeight) ## weight by squared chromosome length
+       w <- sqrt(dat[[1]][noNArow,"Length"])
+    # not sure what the deal with this is, more complicated PCA?
+    maxRank <- min(dim(mat))
+    svd <- svd(t(mat*w))
+    SIG <- matrix(0,maxRank,maxRank)
+    diag(SIG)<-svd$d
+    pca <- svd
+    pca$x <- svd$u[,1:maxRank]%*%SIG
+    
+    if(weight)
+      d<- pca$x[,pc]
+    else
+      d <- svd$u[,1:maxRank]
+    if(model=="gaussian"){
+        group <- Mclust(d,G=2,modelName="EVV")
+        if(is.null(group))
+            group <- Mclust(d,G=2)
+        g <- group$classification
+    }
+    else if(model=="hclust"){
+        hh<-hclust(dist(d))
+        g <- cutree(hh, k=2) # cut
+    }
+
+    if(sum(g==1) ==1 |  sum(g==2) ==1 ) stop("Dataset can not be used for sex determination (poor clustering). One of the inferred sex groups only have one member.")
+
+    beta <- rowMeans(mat[,g==1])-rowMeans(mat[,g==2])
+
+    if(!any( abs(beta) > 0.4 & abs(beta) < 0.6))
+        stop("No good candidates for sex scaffold found based on depth of coverage. Try changing the clustering method, or consider SATC might not work for your data.")
+
+    if( mean(beta[ abs(beta) > 0.4 & abs(beta) < 0.6]) > 0 )
+        sex <- c("homomorphic","heteromorphic")[g]
+    else{
+        sex <- c("heteromorphic","homomorphic")[g]
+        beta <- - beta
+    }
+    homoMedian <- apply( mat_first [,sex=="homomorphic"],1,median)
+    heteroMedian <- apply( mat_first [,sex=="heteromorphic"],1,median) 
+    pval <- apply(mat,1,function(x) t.test(x~sex)$p.value) #new
+    sexAssoScafs <- pval < 0.05/nrow(mat) #new
+
+    X_Z_Scaffold <- beta > 0.4 & beta < 0.6  & homoMedian<1.3 & homoMedian>0.7 & heteroMedian<0.7 & heteroMedian>0.3 & sexAssoScafs
+    Abnormal <- sexAssoScafs & !X_Z_Scaffold
+    outlierScafs<- rowMeans(mat_first) > 1.3
+    autoScafs<- as.logical
+
+    list(dat=dat,pca=pca,sex=sex,SexScaffolds=data.frame(Name=dat[[1]][,1],Length=dat[[1]][,2],X_Z_Scaffolds=X_Z_Scaffold,Abnormal_sex_linked_Scaffolds=Abnormal,Pval=pval,homoMedian=homoMedian,heteroMedian=heteroMedian,stringsAsFactors = FALSE))
+}
+
+
+#obtectus
+# sex_o_pc_custom <- sexDetermineCustomPCs(dat=rFilt_o, pc=c(1,3), model="gaussian")
+sex_o_pc_custom <- sexDetermineCustomPCs(dat=rFilt_o, pc=c(1,4), model="gaussian")
+cbind(names(idx_o),sex_o$sex)
+
+```
+
+plot the PCA clustering
+```{r}
+## plot the clustering
+
+# analis
+if (F){
+  mat <- sapply(sex_a$dat,function(y) y$norm)
+  sex_pca_dat<-as.data.frame(sex_a$pca$x)
+  #sex_pca_dat$sample<-colnames(mat)
+  #sex_pca_dat$sample<-c("Analis F2", "Analis F4", "Analis M2", "Analis M3", "Analis F2", "Analis F4", "Analis M2", "Analis M3")
+  sex_pca_dat$sample<-c("Analis F2", "Analis F4", "Analis M3", "Analis M1", "Analis M4")
+  sex_pca_dat$sex<-sex_a$sex
+  ylims <- c(-3,4)
+  xlims <- c(-10,6)
+    png("/Users/milena/Box Sync/code/SATC/analis_figures/sexing_PCA.png", width=17, height=15, units="cm", res=250)
+}
+
+# chinensis
+if (F){
+  mat <- sapply(sex_c$dat,function(y) y$norm)
+  sex_pca_dat<-as.data.frame(sex_c$pca$x)
+  sex_pca_dat$sample<-c("Chinensis FR1", "Chinensis FR2", "Chinensis M1", "Chinensis M3")
+  sex_pca_dat$sex<-sex_c$sex
+  head(sex_pca_dat)
+  ylims <- c(-3,3)
+  xlims <- c(-6,5)
+}
+
+# maculatus
+if (F){
+  mat <- sapply(sex_c$dat,function(y) y$norm) 
+  sex_pca_dat<-as.data.frame(sex_c$pca$x)
+  sex_pca_dat$sample<-c("CmacF1", "CmacF2", "CmacM1", "CmacM2")
+  sex_pca_dat$sex<-sex_c$sex
+  ylims <- c(-1,1)
+  xlims <- c(-2.5,2.5)
+}
+
+# obtectus
+if (T){
+  mat <- sapply(sex_o$dat,function(y) y$norm) 
+  sex_pca_dat<-as.data.frame(sex_o$pca$x)
+  #sex_pca_dat$sample<-sub(paste0(".sort.MarkDup.RG.filter.bam.idxstats", "$"), "", names(idx_o))
+  sex_pca_dat$sample <- gsub("^Sample_VA-3193-|\\.sort\\.MarkDup\\.RG\\.filter\\.bam\\.idxstats$", "", names(idx_o))
+
+  sex_pca_dat$sex<-sex_o$sex
+  ylims <- c(-5,5)
+  xlims <- c(-12,12)
+  png("/Users/milena/Box Sync/code/SATC/obtectus/sexing_PCA_F0_all_samples.png", width=15, height=15, units="cm", res=250)
+}
+
+ggplot()+ #TODO why does plotting not work any more???
+  geom_point(data=sex_pca_dat,aes(x=V1,y=V2,fill=sex),shape=21,size=3)+
+  #geom_point(data=sex_pca_dat,aes(x=sex_pca_dat$V1,y=sex_pca_dat$V2,fill=sex_pca_dat$sex),shape=21,size=3)+
+  geom_label(data=sex_pca_dat,aes(x=V1,y=V2,label=sample),vjust=1.5)+
+  scale_x_continuous("PC1",limits=xlims)+
+  scale_y_continuous("PC2",limits=ylims)+
+  scale_fill_manual("Inferred sex",
+                    labels=c("heteromorphic\n(XY)","homomorphic\n(XX)"),
+                    values=c("blue","red"))+
+  theme_classic()+
+  theme(axis.text=element_text(size=16),
+        axis.title=element_text(size=16))
+dev.off()
+```
+
+
+Plot log fold change in expression for each contig between male and female samples (sex assignment by sexDetermine().)
+In the Bachtrog X paper (Figure 2D) they do this:  "Normalized female/male whole genome sequencing coverage over the Tribolium confusum genome assembly. Each point represents a 50kb window. Blue, black, and red horizontal lines indicate expected coverage over Y-linked, autosomal, and X-linked scaffolds, respectively"
+However, since I don't have a chromosome level assembly, and my assembly is super fragmented, I won't do windows but instead coverage by entire contig
+
+```{r}
+
+
+# chinensis
+if (F){ 
+  
+  plot_title = "C. chinensis"
+  plot_directory="chinensis_figures_and_annotation"
+  
+  mean_female <- rowMeans(cbind(sex_c$dat$`chinensis-FR1new_ref.bam.idxstats`$norm,
+                                sex_c$dat$`chinensis-FR2new_ref.bam.idxstats`$norm))
+  mean_male <- rowMeans(cbind(sex_c$dat$`chinensis-M1new_ref.bam.idxstats`$norm,
+                              sex_c$dat$`chinensis-M3new_ref.bam.idxstats`$norm))
+    
+  coverage_ratio <- mean_female/mean_male
+  coverage_ratio <- setNames(coverage_ratio, sex_c$dat$`chinensis-FR1new_ref.bam.idxstats`$scaffold)
+  
+  # remove inf and 0 from the vector since they are caused by contigs having a mean 0 coverage in either male or female samples
+  coverage_ratio <- coverage_ratio[!is.infinite(coverage_ratio)]
+  coverage_ratio <- coverage_ratio[coverage_ratio!=0]
+  # remove all outliers with a female/male ratio > 3
+  coverage_ratio <- coverage_ratio[coverage_ratio<3]
+  
+  # get list of contigs with X and Y homology
+  x_homologs <- as.character(read.csv("/Users/milena/work/sex_chromosome_homology/chinensis_maculatus_x_homology_contig_list.csv", header=FALSE))
+  y_homologs <- as.character(read.csv("/Users/milena/work/sex_chromosome_homology/chinensis_maculatus_y_homology_contig_list.csv", header=FALSE))
+  homologs <- c(x_homologs, y_homologs)
+  
+  # height for the separator-lines in the plot
+  top_line = 1.5
+  bottom_line = 0.5
+}
+
+# obtectus pool-seq (change plot title to E or L lines depending on which one you used!)
+if (F){ 
+  
+  plot_title = "A. obtectus L-lines" 
+  plot_directory="obtectus"
+  
+  mean_female <- rowMeans(cbind(sex_o$dat$`LVIII-F`$norm,
+                                sex_o$dat$`LV-F`$norm,
+                                sex_o$dat$`LVII-F`$norm))
+  mean_male <- rowMeans(cbind(sex_o$dat$`LV-M`$norm,
+                              sex_o$dat$`LVII-M`$norm,
+                              sex_o$dat$`LVI-M`$norm))
+    
+  coverage_ratio <- mean_female/mean_male
+  coverage_ratio <- setNames(coverage_ratio, sex_o$dat$`LV-M`$scaffold)
+  
+  # remove inf and 0 from the vector since they are caused by contigs having a mean 0 coverage in either male or female samples
+  coverage_ratio <- coverage_ratio[!is.infinite(coverage_ratio)]
+  coverage_ratio <- coverage_ratio[coverage_ratio!=0]
+  # remove all outliers with a female/male ratio > 3
+  coverage_ratio <- coverage_ratio[coverage_ratio<3]
+  
+  # get list of contigs with X and Y homology
+  #x_homologs <- as.character(read.csv("/Users/milena/work/sex_chromosome_homology/chinensis_maculatus_x_homology_contig_list.csv", header=FALSE))
+  #y_homologs <- as.character(read.csv("/Users/milena/work/sex_chromosome_homology/chinensis_maculatus_y_homology_contig_list.csv", header=FALSE))
+  #homologs <- c(x_homologs, y_homologs)
+  
+  homologs <- c()
+  
+  # height for the separator-lines in the plot
+  top_line = 1.5
+  bottom_line = 0.5
+}
+
+# obtectus F0 individuals (change plot title to E or L lines depending on which one you used!)
+if (T){ 
+  
+  plot_title = "A. obtectus E and L lines F0 individuals" 
+  plot_directory="obtectus"
+  
+  if (F){ # L lines
+      mean_female <- rowMeans(cbind(sex_o$dat$`Sample_VA-3193-EL1-F.sort.MarkDup.RG.filter.bam.idxstats`$norm,
+                                sex_o$dat$`Sample_VA-3193-EL4-F.sort.MarkDup.RG.filter.bam.idxstats`$norm))
+      mean_male <- rowMeans(cbind(sex_o$dat$`Sample_VA-3193-LE2-M.sort.MarkDup.RG.filter.bam.idxstats`$norm,
+                                sex_o$dat$`Sample_VA-3193-LEfixed_M.sort.MarkDup.RG.filter.bam.idxstats`$norm))
+      coverage_ratio <- mean_female/mean_male
+      coverage_ratio <- setNames(coverage_ratio,sex_o$dat$`Sample_VA-3193-EL1-F.sort.MarkDup.RG.filter.bam.idxstats`$scaffold)
+  }else if (F){ # E lines
+      mean_female <- rowMeans(cbind(sex_o$dat$`Sample_VA-3193-LE2-F.sort.MarkDup.RG.filter.bam.idxstats`$norm,
+                                sex_o$dat$`Sample_VA-3193-LEfixed_F.sort.MarkDup.RG.filter.bam.idxstats`$norm))
+      mean_male <- rowMeans(cbind(sex_o$dat$`Sample_VA-3193-EL1-M.sort.MarkDup.RG.filter.bam.idxstats`$norm,
+                                sex_o$dat$`Sample_VA-3193-EL4-M.sort.MarkDup.RG.filter.bam.idxstats`$norm))
+      coverage_ratio <- mean_female/mean_male
+      coverage_ratio <- setNames(coverage_ratio,sex_o$dat$`Sample_VA-3193-LEfixed_F.sort.MarkDup.RG.filter.bam.idxstats`$scaffold)
+  }else{ # all samples
+      mean_female <- rowMeans(cbind(
+                                  sex_o$dat$`Sample_VA-3193-EL1-F.sort.MarkDup.RG.filter.bam.idxstats`$norm,
+                                  sex_o$dat$`Sample_VA-3193-LE2-F.sort.MarkDup.RG.filter.bam.idxstats`$norm,
+                                  sex_o$dat$`Sample_VA-3193-EL4-F.sort.MarkDup.RG.filter.bam.idxstats`$norm,
+                                  sex_o$dat$`Sample_VA-3193-LEfixed_F.sort.MarkDup.RG.filter.bam.idxstats`$norm))
+      mean_male <- rowMeans(cbind(
+                                  sex_o$dat$`Sample_VA-3193-LE2-M.sort.MarkDup.RG.filter.bam.idxstats`$norm,
+                                  sex_o$dat$`Sample_VA-3193-EL1-M.sort.MarkDup.RG.filter.bam.idxstats`$norm,
+                                  sex_o$dat$`Sample_VA-3193-LEfixed_M.sort.MarkDup.RG.filter.bam.idxstats`$norm,
+                                  sex_o$dat$`Sample_VA-3193-EL4-M.sort.MarkDup.RG.filter.bam.idxstats`$norm))
+      coverage_ratio <- mean_female/mean_male
+      coverage_ratio <- setNames(coverage_ratio,sex_o$dat$`Sample_VA-3193-LEfixed_F.sort.MarkDup.RG.filter.bam.idxstats`$scaffold)
+  }
+
+    
+
+  
+  # remove inf and 0 from the vector since they are caused by contigs having a mean 0 coverage in either male or female samples
+  coverage_ratio <- coverage_ratio[!is.infinite(coverage_ratio)]
+  coverage_ratio <- coverage_ratio[coverage_ratio!=0]
+  # remove all outliers with a female/male ratio > 3
+  coverage_ratio <- coverage_ratio[coverage_ratio<3]
+  
+  # get list of contigs with X and Y homology
+  #x_homologs <- as.character(read.csv("/Users/milena/work/sex_chromosome_homology/chinensis_maculatus_x_homology_contig_list.csv", header=FALSE))
+  #y_homologs <- as.character(read.csv("/Users/milena/work/sex_chromosome_homology/chinensis_maculatus_y_homology_contig_list.csv", header=FALSE))
+  #homologs <- c(x_homologs, y_homologs)
+  
+  homologs <- c()
+  
+  # height for the separator-lines in the plot
+  top_line = 1.5
+  bottom_line = 0.5
+}
+
+# analis
+if (F){
+  
+  plot_title = "C. analis"
+  plot_directory="analis_figures"
+  
+  mean_female <- rowMeans(cbind(sex_a$dat$`WE-3665-analis-F2new_ref.bam.idxstats`$norm,
+                                sex_a$dat$`WE-3665-analis-F4new_ref.bam.idxstats`$norm))
+  mean_male <- rowMeans(cbind(sex_a$dat$`WL-3898-analis-M1new_ref.bam.idxstats`$norm,
+                              #sex_a$dat$`WE-3665-analis-M3new_ref.bam.idxstats`$norm,
+                              sex_a$dat$`WL-3898-analis-M4new_ref.bam.idxstats`$norm))
+    
+  coverage_ratio <- mean_female/mean_male
+  coverage_ratio <- setNames(coverage_ratio, sex_a$dat$`WE-3665-analis-F2new_ref.bam.idxstats`$scaffold)
+  
+  # remove inf and 0 from the vector since they are caused by contigs having a mean 0 coverage in either male or female samples
+  coverage_ratio <- coverage_ratio[!is.infinite(coverage_ratio)]
+  coverage_ratio <- coverage_ratio[coverage_ratio!=0]
+  # remove all outliers with a female/male ratio > 3
+  coverage_ratio <- coverage_ratio[coverage_ratio<3]
+  
+    # get list of contigs with X and Y homology
+  x_homologs <- as.character(read.csv("/Users/milena/work/sex_chromosome_homology/analis_maculatus_x_homology_contig_list.csv", header=FALSE))
+  y_homologs <- as.character(read.csv("/Users/milena/work/sex_chromosome_homology/analis_maculatus_y_homology_contig_list.csv", header=FALSE))
+  homologs <- c(x_homologs, y_homologs)
+  
+  
+  top_line = 1.5
+  bottom_line = 0.5
+}
+
+# maculatus
+if (F){ 
+  
+  plot_title = "C. maculatus"
+  plot_directory="maculatus_figures"
+  
+  mean_female <- rowMeans(cbind(sex_m$dat$CmacF1_filtrepsreads.idxstats$norm, sex_m$dat$CmacF2_filtrepsreads.idxstats$norm))
+  mean_male <- rowMeans(cbind(sex_m$dat$CmacM1_filtrepsreads.idxstats$norm, sex_m$dat$CmacM2_filtrepsreads.idxstats$norm))
+    
+  coverage_ratio <- mean_female/mean_male
+  coverage_ratio <- setNames(coverage_ratio, sex_m$dat$CmacF1_filtrepsreads.idxstats$scaffold)
+  
+  # remove inf and 0 from the vector since they are caused by contigs having a mean 0 coverage in either male or female samples
+  coverage_ratio <- coverage_ratio[!is.infinite(coverage_ratio)]
+  coverage_ratio <- coverage_ratio[coverage_ratio!=0]
+  # remove all outliers with a female/male ratio > 3
+  coverage_ratio <- coverage_ratio[coverage_ratio<3]
+  
+  top_line = 1.5
+  bottom_line = 0.5
+  homologs = c()
+}
+
+# if you want a color gradient to highlight X/A/Y contigs
+# also includes code that highlights the homolog contigs
+if (TRUE){
+  color_gradient <- colorRampPalette(c("blue", "gray35", "red"))
+
+  # Determine the number of colors. Let's use 200 to have an even split around zero.
+  num_colors <- 2*length(coverage_ratio)
+  colors <- color_gradient(num_colors)
+  
+  # Normalize y values to a range centered around 1
+  # This can be done by shifting y values such that 1 is the center
+  y_shifted <- coverage_ratio - 1
+  
+  # Normalize y values to a range of -1 to 1
+  y_normalized <- y_shifted / max(abs(y_shifted))
+  
+  # Map y values to the color gradient, centered at 0
+  # Convert normalized y values to an index from 1 to num_colors
+  y_scaled <- round((y_normalized + 1) * (num_colors / 2))
+  
+  # Ensure indices are within the valid range
+  y_scaled[y_scaled < 1] <- 1
+  y_scaled[y_scaled > num_colors] <- num_colors
+  
+  # Assign colors to points
+  point_colors <- colors[y_scaled]
+  
+  plot_filename = "female_male_coverage_ratio_E_L.png"
+  
+  
+  # make all points grey that aren't in the homologs list that is generated from blast hits
+  if (length(homologs)>0){
+    plot_filename <- "female_male_coverage_ratio_with_homologs.png"
+    
+    homolog_binary <- names(coverage_ratio) %in% homologs # binary vector if the point is in the homologs list
+    
+    autosome_grey <- colors[length(colors)/2]
+    
+    point_colors_homologs = rep("", length(point_colors))
+    
+    for (i in 1:length(homolog_binary)){
+      if (!homolog_binary[i]){ # if a points is False in the homolog binary, it is not a homolog and the color will be replaced with autosome grey
+        point_colors_homologs[i] <- autosome_grey
+      }else{
+        point_colors_homologs[i] <- point_colors[i]
+      }
+    }
+    point_colors <- point_colors_homologs
+  }
+  
+  
+  # Function to add transparency to colors
+  add_alpha <- function(color, alpha = 0.5) {
+    apply(sapply(color, col2rgb)/255, 2, function(x) {
+      rgb(x[1], x[2], x[3], alpha=alpha)
+    })
+  }
+  # add transparency
+  point_colors <- add_alpha(point_colors, alpha=0.5)
+  
+}else{
+  point_colors <- rep("gray42", length(coverage_ratio))
+}
+
+
+## plot
+plot_coverage <- TRUE
+
+if(plot_coverage){
+  
+  # the plot filename is defined with the colors above
+  png(filename = paste(plot_directory, plot_filename, sep="/"), width=17, height=13, units="cm", res=200)
+  plot(coverage_ratio, xaxt = "n", xlab = "contigs (sorted by size, decreasing)", ylab = "normalized female/male coverage", 
+       pch = 20, col = point_colors,
+       main = plot_title)
+  # add vertical lines to show which contigs are considered
+  abline(h=bottom_line, lty = 2, lwd = 2, col = "seagreen")
+  abline(h=top_line, lty = 2, lwd = 2, col = "seagreen")
+  
+  dev.off()
+}
+
+ # write csv of contigs that are above and below the green threshold
+if (T){
+  X_contigs = coverage_ratio[coverage_ratio>top_line]
+  X_contigs = cbind(X_contigs, rep("X", length(X_contigs)))
+  Y_contigs = coverage_ratio[coverage_ratio<bottom_line]
+  Y_contigs = cbind(Y_contigs, rep("Y", length(Y_contigs)))
+  
+  contig_names = setNames(c("norm_f/m_coverage", "chromosome"), "Names")
+  SC_contigs = data.frame(rbind(contig_names,X_contigs, Y_contigs))
+
+  write.csv(SC_contigs, file = paste(plot_directory, "female_male_coverage_ratio_contig_list_all.csv", sep="/"))
+  
+  print(paste("contig_list saved to:", paste(plot_directory, "female_male_coverage_ratio_contig_list.csv", sep="/"), sep=" "))
+}
+
+
+if (plot_coverage){
+  print(paste("plot saved to:", paste(plot_directory, plot_filename, sep="/"), sep=" "))
+}
+
+```
+
+
+
+
+Look at the scaffolds individually, 
+check which ones are significant corrected for multiple testing
+
+```{r}
+sex <- sex_o #sex_a or sex_c or sex_m
+
+head(sex$SexScaffolds)
+# Compute benjamini hochberg adjusted p-values
+bonf<-0.05/nrow(sex$SexScaffolds)
+sex$SexScaffolds$bonf_p<-sex$SexScaffolds$Pval<bonf
+x<-sex$SexScaffolds$Pval
+BenHoch<-function(x){
+  ranks<-rank(x)
+  adj_x<-(ranks/length(x))*0.05
+  crit<-max(x[which(x<adj_x)])
+  return(x<=crit)
+}
+sex$SexScaffolds$benjhoch_p<-BenHoch(sex$SexScaffolds$Pval)
+
+sex$SexScaffolds[which(sex$SexScaffolds$benjhoch_p),]
+sex$SexScaffolds[which(sex$SexScaffolds$bonf_p),]
+
+sig_scafs<-sex$SexScaffolds$Name[which(sex$SexScaffolds$Pval<0.05)]
+sig_scafs_bonf<-sex$SexScaffolds$Name[which(sex$SexScaffolds$bonf_p)]
+sig_scafs_benhoch <- sex$SexScaffolds$Name[which(sex$SexScaffolds$benjhoch_p)]
+```
+
+Compare sex-linked scaffolds to blast results
+```{r}
+#analis_blast <- read.csv("/Users/milena/Box Sync/Bioinformatics stuff/analis_utg322_blast_matches_list.csv", header = T, sep = ",")
+#analis_blast_filtered <- read.csv("/Users/milena/Box Sync/Bioinformatics stuff/analis_utg322_blast_matches_list_filtered.csv", header = T, sep = ",")
+#sex <- sex_a
+#sex_linked_matches <- analis_blast$contig_name[which(analis_blast$contig_name %in% sex$SexScaffolds$Name[sex$SexScaffolds$Abnormal_sex_linked_Scaffolds])]
+
+# /Users/miltr339/ or /Users/milena/ for the filepath
+chinensis_blast <- read.csv("/Users/miltr339/Box Sync/Bioinformatics stuff/chinensis_utg322_blast_matches_list.csv", header = T, sep = ",")
+chinensis_blast_filtered <- read.csv("/Users/miltr339/Box Sync/Bioinformatics stuff/chinensis_utg322_blast_matches_list_filtered.csv", header = T, sep = ",")
+
+#chinensis_blast <- read.csv("/Users/miltr339/Box Sync/Bioinformatics stuff/chinensis_new_ref_utg322_blast_matches_list.csv", header = T, sep = ",")
+#chinensis_blast_filtered <- read.csv("/Users/miltr339/Box Sync/Bioinformatics stuff/chinensis_new_ref_utg322_blast_matches_list_filtered.csv", header = T, sep = ",")
+sex <- sex_c
+sex_linked_matches <- chinensis_blast$contig_name[which(chinensis_blast$contig_name %in% sex$SexScaffolds$Name[sex$SexScaffolds$Abnormal_sex_linked_Scaffolds])]
+```
+
+
+Plot scaffolds for significantly differential expression
+(from Axel's code)
+
+Prep:
+```{r}
+
+plot_directory="chinensis_figures_and_annotation"
+#plot_directory="analis_figures"
+#plot_directory="chinensis_figures/lower_min_len_threshold"
+#plot_directory="maculatus_figures"
+```
+
+Select scaffolds to plot on different conditions
+
+Contigs that are marked as significantly differentially expressed:
+```{r}
+sig_dif_scafs<-sex$SexScaffolds[which(sex$SexScaffolds$Name %in% unique(sig_scafs_bonf)),]
+sig_dif_scafs$chromosome <- ifelse(sig_dif_scafs$homoMedian<0.5, "Y", "X")
+#sig_dif_scafs<-sex$SexScaffolds[which(sex$SexScaffolds$Pval<0.05),]
+
+plot_title = "Contigs with significant differential coverage \n(p-values from SATC, Bonferroni corrected)\nno multimapping"
+filename = "dif_expr_scafs_benhoch_new_ref.png"
+#plot_width = 35
+plot_width = 15
+
+# for chinensis: add contig information
+#contig_stats <- read.table("/Users/milena/work/contig_list_sex_biased/chinensis/bonf_sig_contigs_quast/summary.tsv", sep = "\t", header = T)
+legend_position = c(0, 0)
+```
+
+abnormal coverage from SATC:
+```{r}
+sig_dif_scafs<-sex$SexScaffolds[sex$SexScaffolds$Abnormal_sex_linked_Scaffolds,]
+
+plot_title = "Contigs marked as abnormal-sex-linked by SATC"
+#plot_title = "Contigs marked as abnormal-sex-linked by SATC\nfiltered mapping results\noriginal normalization function"
+filename = "abnormal_sex_linked_scafs.png"
+#plot_width = 60
+plot_width = 15
+legend_position = c(-0.04, -0.3)
+
+# for chinensis: add contig information
+#contig_stats <- read.table("/Users/milena/work/contig_list_sex_biased/chinensis/SATC_sig_contigs_quast/summary.tsv", sep = "\t", header = T)
+```
+
+Blast hits with Cmac Y chromosome:
+```{r}
+# (choose chinensis or analis)
+
+sig_dif_scafs<-sex$SexScaffolds[which(sex$SexScaffolds$Name %in% unique(chinensis_blast_filtered$contig_name)),]
+
+#sig_dif_scafs<-sex$SexScaffolds[which(sex$SexScaffolds$Name %in% unique(analis_blast_filtered$contig_name)),]
+
+plot_directory="chinensis_figures"
+#plot_directory="analis_figures"
+plot_title = "Contigs with top blast hits in the longest C. maculatus Y contig"
+filename = "scafs_with_blast_hits_in_Cmac.png"
+plot_width = 50
+
+# for chinensis: add contig information
+contig_stats <- read.table("/Users/milena/work/contig_list_sex_biased/chinensis/blast_cmac_y_hits_contigs_quast/summary.tsv", sep = "\t", header = T)
+
+legend_position = c(-0.08, -0.3)
+```
+
+Only contigs with analis-M2$norm > 1.4:
+```{r}
+high_expr_m2 <- sex$dat[[3]]$scaffold[sex$dat[[3]]$norm>1.4 ]#& sex$dat[[3]]$norm<1.2]
+sig_dif_scafs<-sex$SexScaffolds[which(sex$SexScaffolds$Name %in% high_expr_m2),]
+
+plot_directory="analis_figures"
+plot_title = "Contigs with a norm. expr. > 1.4 in M2 (female-labelled by SATC)"
+filename = "scafs_with_high_m2_norm_expr.png"
+plot_width = 30
+```
+
+Overlap between with analis-M2$norm > 1.4 and blast hits:
+```{r}
+high_expr_m2 <- sex$dat[[3]]$scaffold[sex$dat[[3]]$norm>1.4 ]#& sex$dat[[3]]$norm<1.2]
+overlap <- high_expr_m2[high_expr_m2 %in% analis_blast$contig_name]
+sig_dif_scafs<-sex$SexScaffolds[which(sex$SexScaffolds$Name %in% overlap),]
+
+plot_directory="analis_figures"
+plot_title = "Contigs with a norm. expr. > 1.4 in M2 \n(female-labelled by SATC) and with blast hits \nfor the C. maculatus Y chromosome"
+filename = "scafs_with_high_m2_norm_expr_and_blast_hits.png"
+plot_width = 13
+```
+
+only contigs with > 0.2 difference in normalized expression between males and females in chinensis:
+```{r}
+#sig_dif_scafs <- sex$SexScaffolds[abs(sex$dat[[3]]$norm - sex$dat[[1]]$norm) >0.5 & sex$dat[[1]]$norm < 0.3,]
+
+
+#sig_dif_scafs <- sex$SexScaffolds[abs(sex$dat[[3]]$norm - sex$dat[[1]]$norm)>0.5,]
+len<-as.character(sum(sig_dif_scafs$Length))
+#plot_title = paste("contigs with a difference in norm. coverage greater than 0.5  \ntotal length of all contigs: ", len, sep = "")
+#filename = "scafs_with_high_dif_in_norm_expr_rew_ref.png"
+
+male_means <- rowMeans(cbind(sex$dat[[3]]$norm, sex$dat[[4]]$norm))
+female_means <- rowMeans(cbind(sex$dat[[1]]$norm, sex$dat[[2]]$norm))
+sig_dif_scafs <- sex$SexScaffolds[abs(male_means - female_means)>0.85,]
+sig_dif_scafs$chromosome <- ifelse(sig_dif_scafs$homoMedian<0.5, "Y", "X")
+#sig_dif_scafs <- sex$SexScaffolds[(female_means - male_means)>0.5,]
+len<-as.character(sum(sig_dif_scafs$Length))
+plot_title = paste("contigs with norm. coverage in males at least 0.5 higher than in females \ntotal length of all contigs: ", len, sep = "")
+filename = "scafs_with_high_norm_cov_in_males_new_ref.png"
+
+plot_width = length(sig_dif_scafs$Name) # 30 for analis, 60 for chinensis
+
+
+#write.csv(sig_dif_scafs, filename = paste(plot_directory, "scafs_with_high_dif_in_norm_expr_new_ref.csv", sep="/"))
+```
+
+overlap between chinensis blast hits and contigs with > 0.2 difference in normalized expression:
+```{r}
+#overlap <- sig_scafs_bonf[sig_scafs_bonf %in% analis_blast$contig_name]
+dif_scafs <- sex$SexScaffolds[sex$dat[[3]]$norm - sex$dat[[1]]$norm >0.6 & sex$dat[[1]]$norm < 0.3,]$Name
+#dif_scafs <- sex$SexScaffolds[abs(sex$dat[[1]]$norm - sex$dat[[3]]$norm)>0.2,]$Name
+overlap <- dif_scafs[dif_scafs %in% chinensis_blast$contig_name]
+sig_dif_scafs<-sex$SexScaffolds[which(sex$SexScaffolds$Name %in% overlap),]
+
+#plot_directory="chinensis_figures"
+#plot_directory="analis_figures"
+plot_title = "Contigs with top blast hits in the longest C. maculatus Y contig \nthat also have higher coverage in males than females by at least 0.6"
+filename = "dif_expr_blast_overlap_new_ref.png"
+plot_width = 20
+
+# for chinensis: add contig information
+#contig_stats <- read.table("/Users/milena/work/contig_list_sex_biased/chinensis/bonferroni_blast_cmac_y_overlap_contigs_quast/summary.tsv", sep = "\t", header = T)
+
+legend_position = c(0, 0)
+
+```
+
+overlap between Cmac blast hits and sig_scafs_bonf and analis-M2$norm > 1.4:
+```{r}
+overlap <- sig_scafs_bonf[sig_scafs_bonf %in% analis_blast$contig_name]
+overlap <- overlap[overlap %in% sex$dat[[3]]$scaffold[sex$dat[[3]]$norm>1.4 ]]
+sig_dif_scafs<-sex$SexScaffolds[which(sex$SexScaffolds$Name %in% overlap),]
+
+plot_directory="analis_figures"
+plot_title = "Contigs with top blast hits in the longest C. maculatus Y contig that are also sig. diff. expressed according to SATC and have a male normalized expression > 1.4"
+filename = "dif_expr_high_norm_blast_overlap.png"
+plot_width = 30
+```
+
+overlap between analis_blast and analis-M2$norm > 1.3
+```{r}
+high_expr_m2 <- sex$dat$`analis-M2.bam.idxstats`$scaffold[sex$dat$`analis-M2.bam.idxstats`$norm>1.2] 
+#overlap <- high_expr_m2[high_expr_m2 %in% analis_blast$contig_name]
+#overlap <- overlap[overlap %in% sig_scafs_bonf]
+#sig_dif_scafs<-sex$SexScaffolds[which(sex$SexScaffolds$Name %in% overlap),]
+print(overlap)
+```
+
+plot:
+```{r}
+mat <- sapply(sex$dat,function(y) y$norm)
+rownames(mat) <- as.character(sex$dat[[1]][,1])
+sig_dif_scafs_dat<-mat[unique(c(sig_dif_scafs$Name)),]
+sig_dif_scafs_dat<-t(sig_dif_scafs_dat)
+sig_dif_scafs_dat<-as.data.frame(sig_dif_scafs_dat)
+sig_dif_scafs_dat$samp<-row.names(sig_dif_scafs_dat)
+sig_dif_scafs_dat$sex<-sex$sex
+sig_dif_scafs_dat<-melt(sig_dif_scafs_dat,id.vars = c("samp","sex"))
+colnames(sig_dif_scafs_dat)<-c("samp","sex","contig","norm")
+
+png(filename = paste(plot_directory, filename, sep="/"), width=plot_width, height=13, units="cm", res=200)
+
+  if("chromosome" %in% colnames(sig_dif_scafs)){
+    ggplot()+
+    geom_point(data=sig_dif_scafs_dat,
+             aes(x=contig,y=norm,color=sex,group=sex,shape=rep(sig_dif_scafs$chromosome, each=4)),
+             size=3,position=position_dodge(0.2),alpha=1/2)+
+        
+    scale_color_manual(name = "inferred sex (SATC)", values = c("steelblue", "brown2")) +
+    scale_shape_manual(name = "chromosome",values = c(18, 19)) +
+    ylab("Normalised Coverage")+
+    xlab("")+
+    ggtitle(plot_title) +
+    scale_fill_discrete("Inferred Sex",labels=c("heteromorphic\n(XY)","homomorphic\n(XX)"))+
+    theme(axis.text.x = element_text(angle=45,vjust=1,hjust=1))+
+    theme(panel.background = element_rect(fill = "white", colour = "black"))+
+    theme(legend.key = element_rect(fill = "white"))+
+    theme(plot.margin=unit(c(0.1,0,0,1), 'cm')) #c(top, right, bottom, left)
+  }else{
+    ggplot()+
+    geom_point(data=sig_dif_scafs_dat,
+             aes(x=contig,y=norm,color=sex,group=sex),
+             shape=19,size=3,position=position_dodge(0.2),alpha=1/2)+
+        
+    scale_color_manual(name = "inferred sex (SATC)", values = c("steelblue", "brown2")) +
+    ylab("Normalised Coverage")+
+    xlab("")+
+    ggtitle(plot_title) +
+    scale_fill_discrete("Inferred sex",labels=c("heteromorphic\n(XY)","homomorphic\n(XX)"))+
+    theme(axis.text.x = element_text(angle=45,vjust=1,hjust=1))+
+    theme(panel.background = element_rect(fill = "white", colour = "black"))+
+    theme(legend.key = element_rect(fill = "white"))+
+    theme(plot.margin=unit(c(0.1,0,0,1), 'cm')) #c(top, right, bottom, left)
+  }
+
+print(paste(plot_directory, filename, sep="/"))
+dev.off()
+
+write.csv(sig_dif_scafs, file = paste(plot_directory, paste(filename, "contig_list.csv", sep="_"), sep="/"))
+```
+
+
+Plot with contig stats:
+```{r}
+mat <- sapply(sex$dat,function(y) y$norm)
+rownames(mat) <- as.character(sex$dat[[1]][,1])
+sig_dif_scafs_dat<-mat[unique(c(sig_dif_scafs$Name)),]
+
+# order the matrix to follow the same order as contig_stats:
+#index_vector <- sapply(contig_stats$X, function(name) grep(name, rownames(sig_dif_scafs_dat)))
+#sig_dif_scafs_dat<-sig_dif_scafs_dat[index_vector,]
+
+# order the contig_stats to follow the same order as the matrix:
+index_vector <- sapply(rownames(sig_dif_scafs_dat), function(name) grep(name, contig_stats$X))
+#contig_stats <- contig_stats[index_vector,]
+
+sig_dif_scafs_dat<-t(sig_dif_scafs_dat)
+sig_dif_scafs_dat<-as.data.frame(sig_dif_scafs_dat)
+sig_dif_scafs_dat$samp<-row.names(sig_dif_scafs_dat)
+sig_dif_scafs_dat$sex<-sex$sex
+sig_dif_scafs_dat<-melt(sig_dif_scafs_dat,id.vars = c("samp","sex"))
+colnames(sig_dif_scafs_dat)<-c("samp","sex","contig","norm")
+
+#filename_gc <- paste(str_split(filename, ".png")[[1]], "with_contig_length.png", sep = "_")[1]
+filename_gc <- paste(str_split(filename, ".png")[[1]], "with_GC_content.png", sep = "_")[1]
+
+## save plot in high resolution
+png(filename = paste(plot_directory, filename_gc, sep="/"), width=plot_width, height=13, units="cm", res=200)
+
+#plot(sig_dif_scafs_dat$contig, sig_dif_scafs_dat$norm, type = "n")
+  # if you plot with levels like this it automatically makes a barpot that can not be overriden with type = "n" for some reason
+  
+par(mar=c(8, 4, 4, 6), xpd = F) # default c(5, 4, 4, 2) with c(bottom, left, top, right), xpd = T allows the legend to be outside the plot window
+par(las = 2)
+plot(sig_dif_scafs_dat$contig, 
+     rep(min(sig_dif_scafs_dat$norm)-0.05, length(sig_dif_scafs_dat$contig)), 
+     ylim = c(min(sig_dif_scafs_dat$norm), max(sig_dif_scafs_dat$norm)),
+     las = 2, # rotate the x axis ticks by 90° to make them all fit
+     xlab = "", ylab = "normalized coverage", 
+     xaxt = "n", 
+     main = plot_title,
+     col = alpha("white", 0.5))
+abline(h=min(sig_dif_scafs_dat$norm)-0.05, col= "white", lwd = 4) #to cover the bars from the original plot. TODO doesn't work with h only v?
+axis(1, at=c(1:length(levels(sig_dif_scafs_dat$contig))), 
+     labels = levels(sig_dif_scafs_dat$contig),
+     cex.axis = 0.75)
+par(xpd = T)
+legend("bottomright", inset=legend_position, 
+       #legend = c("heteromorphic XY", "homomorphic XX"), 
+       legend = levels(as.factor(sig_dif_scafs_dat$sex)),
+       col=as.factor(sig_dif_scafs_dat$sex),
+       pch = 16,
+       cex = 0.8)
+points(sig_dif_scafs_dat$contig, sig_dif_scafs_dat$norm, col=as.factor(sig_dif_scafs_dat$sex),
+     pch = 16, type = "p")
+
+
+gc_col = "mediumseagreen"
+#gc_col = "dodgerblue"
+stat = contig_stats$GC_content # contig_stats$length or contig_stats$GC_content
+par(new = T)
+plot(sig_dif_scafs_dat$contig, rep(0, length(sig_dif_scafs_dat$contig)), 
+     ylim = c(min(stat), max(stat)),
+     axes = FALSE,
+     xaxt = "n",
+     ylab = "", xlab = "")
+points(as.factor(contig_stats$X), stat, 
+       pch = 4, col = gc_col)
+axis(4,at=round(seq(min(stat), max(stat), length.out = 10), digits = 1), col = gc_col, col.ticks = gc_col)
+mtext("GC content in %",side=4,line=3.5, las = 3, col = gc_col)
+
+dev.off()
+print(filename_gc)
+```
+
+
+PlotGroup function from SATC
+shows the same PCA plot as above
+```{r}
+plotGroup(sex) 
+
+```
+
+Plot sex-linked scaffolds
+```{r}
+plotScafs(sex,abnormal=T)
+```
+
+Plot coverage differences of blast result-scaffolds
+modified from the PlotScafs function from SATC
+```{r}
+abnormal=T
+x <- sex
+PlotScafs_mod <- function(x,ylim,abnormal=FALSE,main=""){
+    par(mar=c(4.1,4.1,3.1,2.1))
+    mat <- sapply(x$dat,function(y) y$norm)
+    rownames(mat) <- as.character(x$dat[[1]][,1])
+    sexLinkedScaf <- x$SexScaffolds$Abnormal_sex_linked_Scaffolds|x$SexScaffolds$X_Z_Scaffolds
+    XZScaf <- x$SexScaffolds$X_Z_Scaffolds
+    
+    keep <- as.character(x$dat[[1]][,1][XZScaf])
+    if(abnormal)
+        keep<- c(keep, as.character(x$dat[[1]][,1][sexLinkedScaf & !XZScaf])) # this forces correct order in plot
+    keep <- analis_blast_filtered$contig_name
+    mat <- mat[keep,,drop=FALSE]
+    mat <- mat[rownames(mat)%in%keep,,drop=FALSE]
+    #nam <- gsub("NW_0176|NW_0050","",rownames(mat))
+    nam <- rownames(mat)
+
+    n<- ncol(mat)
+    m<-nrow(mat)
+    s <- factor(rep(nam,each=n),levels=nam)
+    g<-rep(x$sex,m)
+    at <- cumsum(rep(c(1.2,1),m))
+    #if(missing(ylim))
+      ylim <-range(mat)
+    b<-boxplot(as.vector(t(mat))~g+s,las=2,col=col12,names=NA,ylab="Normalized Depth",at=at,axes=F,xlab="Sex Associated Scaffolds",lwd=0.5,pch=16,outcol=col12,ylim=ylim,cex.lab=1.2)
+    #  abline(v=1:m*2.2+0.6,lty=2)
+    axis(2,cex.axis=1.05)
+    
+    text(1:m*2.2-1.1,y=rep(min(ylim)-diff(ylim)/10,m),nam,xpd=T,srt=45,cex=0.9)
+  			title(main,adj=0.2,cex.main=1.5)
+    gen <- c("Heterogametic ","Homogametic ")
+    if(abnormal)
+        abline(v=sum(x$SexScaffolds$X_Z_Scaffolds)*2.2+0.6,lty=2)
+    #legend("topright",gen,pch=16,cex=1,col=col12,bty="n",horiz=T,)
+    legend(2.5*m*0.5,1.1*max(ylim)*1,gen,pch=16,cex=1,col=col12,bty="n",horiz=T,xpd=T)
+    abline(h = 0.5, col="#20A387FF", lwd=1, lty=2)
+  			abline(h = 1, col="#20A387FF", lwd=1, lty=2)
+}
+
+
+```
+
+
+
+
+
+

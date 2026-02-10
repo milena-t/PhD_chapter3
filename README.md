@@ -131,7 +131,7 @@ DTOL open data release policy [here](https://www.darwintreeoflife.org/wp-content
 
 * TODO read: [Vicoso & Bachtrog 2006](https://www.nature.com/articles/nrg1914) Big early paper that everyone cites about the different evolutionary forces that act differently on the X vs the autosomes
 * [Navarro 2003](https://www.science.org/doi/full/10.1126/science.1080600) accelerated evolutionary rate on rearranged chromosomes between species
-* (Review)[Ellegren 2011](https://www.nature.com/articles/nrg2948.pdf) review on the influence of heterogameity on sex chromosome evolution
+* (Review) [Ellegren 2011](https://www.nature.com/articles/nrg2948.pdf) review on the influence of heterogameity on sex chromosome evolution
   * *"For example, long interspersed repeat elements are enriched on both the mammalian X and the avian Z chromosome \[46,47\], whereas gene  density is lower than on autosomes in both systems as a result of intergenic expansions \[27,48\]"*
   * He also says about the selection pressure on X-linked genes in the heterogametic sex that *selection will occur more frequently* as opposed to that it is stronger, which I think doesn't change the outcome because the selection is stronger in the end compared to the autosomes due to it occuring more frequently
   * *Among the genes that generate new retrocopies, through mRNA intermediates, there is an excess of X-linked genes inserted at autosomal locations.* Might be because X linked genes are temporarily inactivated during meiosis in males (meiotic sex-chromosome inactivation **MSCI**), and genes that give selective advantage to males want to escape. The retrocopies that leave often aquire male-specific function, because, if dominant, they spread easier on the autosomes because they are temporarily inactivated on the X negating their selective advantage
@@ -162,36 +162,23 @@ graph TD;
     get_prot --> protfiles(proteinfiles of all species);
     protfiles --> blast{{all-against-all proteinblast}};
     blast -- merge all species --> mcscanx_blast(mcscanx blast input);
-    
 
     mcscanx_bed --> run_mcscanx{{run MCScanX}};
     mcscanx_blast --> run_mcscanx
     run_mcscanx --> mcscanx_out{{collinearity file}}
     mcscanx_out --> mcscanx_plot([protein synteny plot, pairwise and riparian plot with all species])
     mcscanx_plot .-> conf_X(confirm X-chromosome identification)
-
-    species_Ass -- NCBI and SATC --> XY_chr(identify X and Y chromosmes);
     
-    blast --> XY_paralogs(identify species with XY gametologs with blast BRH);
-    dNdS_groups(make orthogroups to compare dNdS);
-    XY_paralogs --> dNdS_groups;
+    blast --> dNdS_groups(make 1-to-1 orthologs to estimate dNdS);
 
-    rearrangeA(dNdS for A depending on if A is rearranged between pairs or not)
-    basicFastX(whole-phylogeny 1-to-1 orthologs for basic FastX);
-    gametologs(dNdS for X genes depending on if they have an ancestral Y gametolog or not);
+    dNdS_groups --> basicFastX(estimate pairwise dN and dS with codeml branch model);
+    dNdS_groups --> posSel(test for positive selection with codeml site models and LRT);
+    sexbias(use RNAseq data to estimate sex-biased expression)
 
-    dNdS_groups --> gametologs;
-    dNdS_groups --> basicFastX;
-    dNdS_groups --> rearrangeA;
-    XY_chr --> gametologs
-    XY_chr --> basicFastX
-    mcscanx_out --> rearrangeA
-
-    OG_dNdS([dNdS analysis based on orthofinder output with https://github.com/milena-t/calculate_orthogroup_dNdS])
-    gametologs --> OG_dNdS
-    basicFastX --> OG_dNdS
-    rearrangeA --> OG_dNdS
-
+    basicFastX --> summary[(information on every pairwise ortholog: dN and dS, positively selected sites, sex-biased expression)]
+    posSel --> summary
+    sexbias --> summary
+    
 ```   
 
 </details>
@@ -268,6 +255,8 @@ C:96.6%[S:88.5%,D:8.1%],F:1.4%,M:2.0%,n:1013
 </details>
 
 ### sex chromosome identification
+
+SATC R package (TODO cite): src/SATC_analysis_sex_chr_ident.Rmd
 
 * **Bruchids**
   * *C. maculatus:* from Kaufmann et al.: 
