@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH -A uppmax2026-1-8
 #SBATCH -c 16
-#SBATCH -t 2:00:00
+#SBATCH -t 5:00:00
 #SBATCH -J trimming_fastp_Cmac
 #SBATCH -o trimming_fastp_Cmac.log
 #SBATCH --mail-type=ALL
