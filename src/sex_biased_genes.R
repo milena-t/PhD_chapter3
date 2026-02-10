@@ -36,13 +36,13 @@ Csep_metadata <- '/Users/miltr339/work/PhD_code/PhD_chapter3/data/DE_analysis/me
 Tcas_metadata <- '/Users/miltr339/work/PhD_code/PhD_chapter3/data/DE_analysis/metadata/Tcas_full_SRR_list.csv'
 
 #### do one species of the three
-if (FALSE){
+if (TRUE){
   data_path <- Cmac_path
   out_path_vst <- Cmac_path_out
   out_path_lfc <- Cmac_path_out_lfc
   metadata <- Cmac_metadata
 }
-if (TRUE){
+if (FALSE){
   data_path <- Csep_path
   out_path_vst <- Csep_path_out
   out_path_lfc <- Csep_path_out_lfc
@@ -75,9 +75,9 @@ all(colnames(count_data) %in% rownames(meta_data))
 #### set up DESeq data structures
 dds <- DESeqDataSetFromMatrix(countData = count_data,
                               colData = meta_data,
-                              design = organ ~ sex)
+                              design = ~0+sex) # the 0 suppresses the intercept
 # filter any counts less than 10
-keep <- rowSums(counts(dds)) >= 10
+keep <- rowSums(counts(dds) >=2) >= 3 # at least two counts in at least three samples
 dds <- dds[keep,]
 # get normalized counts
 dds <- estimateSizeFactors(dds)
@@ -98,10 +98,4 @@ write.table(res, file=out_path_lfc, sep = '\t', quote=F, col.names = NA)
 ## plot results
 rld <- rlog(dds)
 plotPCA(rld, intgroup="sex")
-
-
-
-
-
-
 
