@@ -21,6 +21,7 @@ zcat SRR3113347_1_trimmed.fastq.gz SRR3113383_1_trimmed.fastq.gz | gzip > lanes_
 zcat SRR3113364_1_trimmed.fastq.gz SRR3113361_1_trimmed.fastq.gz | gzip > lanes_merged_HtVm_1_trimmed.fastq.gz
 zcat SRR3113381_1_trimmed.fastq.gz SRR3113362_1_trimmed.fastq.gz | gzip > lanes_merged_HtVm_1_trimmed.fastq.gz
 zcat SRR3113418_1_trimmed.fastq.gz SRR3113363_1_trimmed.fastq.gz | gzip > lanes_merged_HtVm_1_trimmed.fastq.gz
+echo ">>>>>>>> forward reads done!" 
 
 ## reverse reads
 zcat SRR3113348_2_trimmed.fastq.gz SRR3113384_2_trimmed.fastq.gz | gzip > lanes_merged_AVf_2_trimmed.fastq.gz
@@ -35,3 +36,4 @@ zcat SRR3113347_2_trimmed.fastq.gz SRR3113383_2_trimmed.fastq.gz | gzip > lanes_
 zcat SRR3113364_2_trimmed.fastq.gz SRR3113361_2_trimmed.fastq.gz | gzip > lanes_merged_HtVm_2_trimmed.fastq.gz
 zcat SRR3113381_2_trimmed.fastq.gz SRR3113362_2_trimmed.fastq.gz | gzip > lanes_merged_HtVm_2_trimmed.fastq.gz
 zcat SRR3113418_2_trimmed.fastq.gz SRR3113363_2_trimmed.fastq.gz | gzip > lanes_merged_HtVm_2_trimmed.fastq.gz
+echo ">>>>>>>> reverse reads done!" 
