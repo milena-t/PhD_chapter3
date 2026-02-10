@@ -6,6 +6,8 @@
 #SBATCH -o merge_lanes_Cmac.log
 #SBATCH --mail-type=ALL
 
+cd /proj/naiss2023-6-65/Milena/chapter3/RNAseq/maculatus/raw_data/trimmed_fastp
+
 ## forward reads
 zcat SRR3113348_1_trimmed.fastq.gz SRR3113384_1_trimmed.fastq.gz | gzip > lanes_merged_AVf_1_trimmed.fastq.gz
 zcat SRR3113350_1_trimmed.fastq.gz SRR3113385_1_trimmed.fastq.gz | gzip > lanes_merged_AVf_1_trimmed.fastq.gz
