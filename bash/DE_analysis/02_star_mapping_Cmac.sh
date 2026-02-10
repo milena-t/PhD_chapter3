@@ -27,7 +27,7 @@ STAR --runThreadN 16 \
      # --genomeSAindexNbases 12 \ ## otherwise in output: !!!!! WARNING: --genomeSAindexNbases 14 is too large for the genome size=241861439, which may cause seg-fault at the mapping step. Re-run genome generation with recommended --genomeSAindexNbases 12
      
 #Align reads and produce gene counts
-for R1 in "$RNA_DIR"/*_1_trimmed.fastq.gz; do
+for R1 in "$RNA_DIR"/lanes_merged_*_1_trimmed.fastq.gz; do
   R2="${R1/_1_trimmed.fastq.gz/_2_trimmed.fastq.gz}"
   echo $R1
   echo $R2
@@ -43,3 +43,5 @@ for R1 in "$RNA_DIR"/*_1_trimmed.fastq.gz; do
        --limitBAMsortRAM 20000000000 \
        --outFileNamePrefix "$OUT_DIR/${SAMPLE}_"
 done
+
+# for R1 in "$RNA_DIR"/lanes_merged_*_1_trimmed.fastq.gz; do R2="${R1/_1_trimmed.fastq.gz/_2_trimmed.fastq.gz}"; echo $R1 ;echo $R2 ; echo "" ;done
