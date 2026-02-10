@@ -561,11 +561,9 @@ Methods similar to [Torgerson & Singh 2006](https://www.nature.com/articles/6800
 As a bunch of papers in the literature review above have found, the molecular rate of X-linked genes can differ depending on their expression sex-bias (since that can strengthen or weaken the impact of the dominance and heterozygosity effects that influence faster or slower X). I have found three sets of RNAseq data, one in each species group, to assess sex bias in the orthologs and evaluate this. The RNAseq data is from *T. castaneum*, *C. septempunctata* and *C. maculatus*. I mostly follow the standard STAR pipeline from [Sebastian's github](https://github.com/sellwe/Master_thesis_sebastian) (without taking into account multimapping) to get the read counts, and then use DEseq2 in R to normalize counts.
 
 <p float="left">
-  <img src="data/DE_analysis/Cmac_vst_counts_PCA.png" width="45%" />
-  <img src="data/DE_analysis/Csep_vst_counts_PCA.png" width="45%" />
-</p>
-<p float="middle">
-  <img src="data/DE_analysis/Tcas_vst_counts_PCA.png" width="45%" />
+  <img src="data/DE_analysis/Cmac_vst_counts_PCA.png" width="65%" />
+  <img src="data/DE_analysis/Csep_vst_counts_PCA.png" width="65%" />
+  <img src="data/DE_analysis/Tcas_vst_counts_PCA.png" width="65%" />
 </p>
 
 # old analysis with *Diorhaba*
