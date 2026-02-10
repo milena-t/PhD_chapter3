@@ -560,17 +560,23 @@ Methods similar to [Torgerson & Singh 2006](https://www.nature.com/articles/6800
 
 As a bunch of papers in the literature review above have found, the molecular rate of X-linked genes can differ depending on their expression sex-bias (since that can strengthen or weaken the impact of the dominance and heterozygosity effects that influence faster or slower X). I have found three sets of RNAseq data, one in each species group, to assess sex bias in the orthologs and evaluate this. The RNAseq data is from *T. castaneum*, *C. septempunctata* and *C. maculatus*. I mostly follow the standard STAR pipeline from [Sebastian's github](https://github.com/sellwe/Master_thesis_sebastian) (without taking into account multimapping) to get the read counts, and then use DEseq2 in R to normalize counts.
 
+### *C. maculatus*
+
 <p float="left">
   <img src="data/DE_analysis/Cmac_vst_counts_PCA.png" width="60%" />
 </p>
 
 Sex biased expression is the main PC, tissue differences only 2nd PC with much less variance explained. Can probably use all samples for sex bias.
 
+### *C. septempunctata*
+
 <p float="left">
   <img src="data/DE_analysis/Csep_vst_counts_PCA.png" width="60%" />
 </p>
 
 PC1 is the tissue, and clear sex bias is only present in the abdomen. Only use abdomen for sex biased expression? 
+
+### *T. castaneum*
 
 <p float="left">
   <img src="data/DE_analysis/Tcas_vst_counts_PCA.png" width="60%" />
