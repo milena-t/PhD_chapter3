@@ -142,7 +142,7 @@ def plot_PCA_vst_counts(counts_path:str, metadata_path:str, plot_path:str="", co
 if __name__ == "__main__":
 
     species_list = ["Cmac","Tcas","Csep"] 
-    # species_list = ["Csep"]
+    species_list = ["Cmac"]
     species_names = {
         "Cmac" : "C. maculatus",
         "Tcas" : "T. castaneum",
