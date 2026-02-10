@@ -554,8 +554,24 @@ Methods similar to [Torgerson & Singh 2006](https://www.nature.com/articles/6800
 [Whittle 2020](https://academic.oup.com/g3journal/article/10/3/1125/6026234) already did this comparison, and they find significantly slow X. But they do paml `yn00` which we have concluded is not ideal.
 
 
+# Sex biased gene expression
+
+## Samples and PCA
+
+As a bunch of papers in the literature review above have found, the molecular rate of X-linked genes can differ depending on their expression sex-bias (since that can strengthen or weaken the impact of the dominance and heterozygosity effects that influence faster or slower X). I have found three sets of RNAseq data, one in each species group, to assess sex bias in the orthologs and evaluate this. The RNAseq data is from *T. castaneum*, *C. septempunctata* and *C. maculatus*. I mostly follow the standard STAR pipeline from [Sebastian's github](https://github.com/sellwe/Master_thesis_sebastian) (without taking into account multimapping) to get the read counts, and then use DEseq2 in R to normalize counts.
+
+<p float="left">
+  <img src="/Users/miltr339/work/PhD_code/PhD_chapter3/data/DE_analysis/Cmac_vst_counts_PCA.png" width="32%" />
+  <img src="/Users/miltr339/work/PhD_code/PhD_chapter3/data/DE_analysis/Csep_vst_counts_PCA.png" width="32%" />
+  <img src="/Users/miltr339/work/PhD_code/PhD_chapter3/data/DE_analysis/Tcas_vst_counts_PCA.png" width="32%" />
+</p>
+
+
 # old analysis with *Diorhaba*
  I suspect that *D. carinulata* has a misidentified X chromosome, which leaves it only three 1-to-1 orthologs. I looked into it a bit here, in case it is X turnover. I would need actual lab evidence to conclude that thoug I think, since the X is so conserved in all the other *Coleoptera* I have here.
+
+<details>
+  <summary>See old analysis</summary>
 
 ### investigating the three X-lined orthologs in the *D. carinulata* vs. *D. sublineata* comparison
 
@@ -674,3 +690,4 @@ maybe with this: https://frubino.github.io/scripts/pnps_gen.html?
 
 In general, it also just tests for positive selection, and since we already mostly have this covered with the site model, I don't think it's necessary.
 
+</details>
