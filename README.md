@@ -349,12 +349,12 @@ SATC R package (TODO cite): src/SATC_analysis_sex_chr_ident.Rmd
   ```
   * [Coccinella magnifica](https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_965644565.1/)
   ```python
-  { X : ['	OZ286750.1'],
+  { X : ['OZ286750.1'],
     Y : ['unidentified']}
   ```
 
 
-# Riparian plot for synteny
+# Riparian plot for synteny TODO update for no *Diorhabda*
 
 I use MCscanX to plot synteny, and [SynVisio](https://synvisio.github.io/) to visualize the riparian plot. *C. chinensis* is not superscaffolded and therefore not included in the plot.
 
@@ -372,14 +372,6 @@ The X chromosomes are all shown at the right-most side of the plot except *D. ca
 Synteny is conserved within *Bruchini* and within *Diorhabda*, but not between them.
 
 Notably, there is one autosome missing in *A. obtectus*. Since the SynVisio website is not great to use with more species and when unplaced contigs are included, I use the setting to exclude contigs with no synteny blocks on them, which apparently excludes the one missing *A. obtectus* contig.
-
-## No syntenic X in *Diorhabda carinulata*
-
-Despite the broken-down synteny of the autosomes between *Bruchini* and *Diorhabda*, the X chromosomes are all syntenic except *D. carinulata* (dc 35), which is in agreement with the identified 1-to-1 orthologs below, where most pairwise comparisons have 300-400 X-linked orthologs, except any pair involving *D. carinulata*. The "old" syntenic chromosome in *D. carinulata* is `NC_079460.1` (dc13). A part of the *D. carinulata* X is syntenic to *D. sublineata* `NC_079475.1` (ds5).
-
-### Sex chromosome identification methods
-
-Since this is strange, I checked the methods for sex chromosome identification. The assemblys are part of a large effort by the USDA, called USDA-ARS Ag100Pest Initiative and  published [here](https://www.mdpi.com/2075-4450/12/7/626). This does not say anything about the sex chromosomes?? No methods of identification, not even short-read sequencing for coverage analyses
 
 ## X synteny in Tribolium and Coccinella
 
@@ -579,7 +571,35 @@ PC1 shows sex bias only in head and body, not antennae. Exclude antennae from se
 <details>
   <summary>See old analysis</summary>
 
-### investigating the three X-lined orthologs in the *D. carinulata* vs. *D. sublineata* comparison
+## Riparian plot for synteny
+
+I use MCscanX to plot synteny, and [SynVisio](https://synvisio.github.io/) to visualize the riparian plot. *C. chinensis* is not superscaffolded and therefore not included in the plot.
+
+<p float="left">
+  <img src="data/synteny_plots/synvisio_all_riparian.png" width="100%" />
+</p>
+
+The X chromosomes are all shown at the right-most side of the plot except *D. carinulata*:
+* ao1950 `CAVLJG010000002`
+* bs9
+* cm124 `utg000057l_1` (scaffold 10 in the superscaffolded version of Cmac)
+* dc35 (!) (on the left in the plot)
+* ds21
+
+Synteny is conserved within *Bruchini* and within *Diorhabda*, but not between them.
+
+Notably, there is one autosome missing in *A. obtectus*. Since the SynVisio website is not great to use with more species and when unplaced contigs are included, I use the setting to exclude contigs with no synteny blocks on them, which apparently excludes the one missing *A. obtectus* contig.
+
+## No syntenic X in *Diorhabda carinulata*
+
+Despite the broken-down synteny of the autosomes between *Bruchini* and *Diorhabda*, the X chromosomes are all syntenic except *D. carinulata* (dc 35), which is in agreement with the identified 1-to-1 orthologs below, where most pairwise comparisons have 300-400 X-linked orthologs, except any pair involving *D. carinulata*. The "old" syntenic chromosome in *D. carinulata* is `NC_079460.1` (dc13). A part of the *D. carinulata* X is syntenic to *D. sublineata* `NC_079475.1` (ds5).
+
+### Sex chromosome identification methods
+
+Since this is strange, I checked the methods for sex chromosome identification. The assemblys are part of a large effort by the USDA, called USDA-ARS Ag100Pest Initiative and  published [here](https://www.mdpi.com/2075-4450/12/7/626). This does not say anything about the sex chromosomes?? No methods of identification, not even short-read sequencing for coverage analyses
+
+
+## investigating the three X-lined orthologs in the *D. carinulata* vs. *D. sublineata* comparison
 
 The sequences are these:
 
