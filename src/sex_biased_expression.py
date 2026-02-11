@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 # sed 's|/proj/naiss2023-6-65/Milena/chapter3/RNAseq/Tribolium/star_mapping/picard_marked_indexed/||g' Tcas_gene_counts.txt | sed 's|_marked_duplicates.bam||g' > Tcas_gene_counts_short_headers.txt
 
 # rsync -azP milenatr@pelle.uppmax.uu.se:/proj/naiss2023-6-65/Milena/chapter3/RNAseq/maculatus/gene_counts/gene_counts_standard.txt /Users/miltr339/work/chapter3/DE_analysis/Cmac_gene_counts.txt
-# sed 's|/proj/naiss2023-6-65/Milena/chapter3/RNAseq/maculatus/star_mapping/picard_marked_indexed/||g' Cmac_gene_counts.txt | sed 's|_marked_duplicates.bam||g' > Cmac_gene_counts_short_headers.txt
+# sed 's|/proj/naiss2023-6-65/Milena/chapter3/RNAseq/maculatus/star_mapping/picard_marked_indexed/lanes_merged_||g' Cmac_gene_counts.txt | sed 's|_marked_duplicates.bam||g' > Cmac_gene_counts_short_headers.txt
 
 ## R analysis with DESeq2 according to sebastian's github
 # -Aggregate to transcript level by summing exon counts,
@@ -30,7 +30,7 @@ def counts_paths(username="miltr339"):
         "Csep" : f"/Users/{username}/work/chapter3/DE_analysis/Csep_gene_counts_short_headers.txt"
     }
     VST_paths = {
-        "Cmac" : f"/Users/{username}/work/chapter3/DE_analysis/Cmac_gene_counts_short_headers_vst.txt",
+        "Cmac" : f"/Users/{username}/work/chapter3/DE_analysis/Cmac_gene_counts_edgeR_normalized.txt",
         "Tcas" : f"/Users/{username}/work/chapter3/DE_analysis/Tcas_gene_counts_short_headers_vst.txt",
         "Csep" : f"/Users/{username}/work/chapter3/DE_analysis/Csep_gene_counts_short_headers_vst.txt"
     }
@@ -38,7 +38,7 @@ def counts_paths(username="miltr339"):
 
 def metadata_paths(username="miltr339"):
     metadata = {
-        "Cmac" : f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/metadata/Cmac_full_SRR_list.csv",
+        "Cmac" : f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/metadata/Cmac_SRR_metadata.csv",
         "Tcas" :  f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/metadata/Tcas_full_SRR_list.csv",
         "Csep" :  f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/metadata/Csep_full_SRR_list.csv"
     }
@@ -97,7 +97,7 @@ def read_orthologID_lookup_dict(table_path:str):
             ol_num = ortholog.split("_")[-1]
             association = OrthologTranscripts(species1=f"{g1}_{s1}", species2=f"{g2}_{s2}", trID1=t1, trID2=t2, ortholog_num=ol_num)
             pair = f"{g1}_{s1}_{g2}_{s2}"
-            out_dict[pair][]
+            # out_dict[pair][]
             break
     
     return out_dict
@@ -141,7 +141,7 @@ def plot_PCA_vst_counts(counts_path:str, metadata_path:str, plot_path:str="", co
     norm_counts = pd.read_csv(counts_path, sep="\t", comment="#", index_col=0)
     # read metadata and sort/order according to counts
     metadata = pd.read_csv(metadata_path)
-    metadata = metadata.set_index('Run')
+    metadata = metadata.set_index('ID')
     metadata = metadata.reindex(norm_counts.columns)
     print(metadata)
     # categories = list(metadata.columns)
@@ -149,8 +149,10 @@ def plot_PCA_vst_counts(counts_path:str, metadata_path:str, plot_path:str="", co
     # create transpose
     vst_t = norm_counts.T
     vst_t.columns = vst_t.columns.astype(str) # convert all column names to string
-    pca = PCA(n_components=2)
+    # pca = PCA(n_components=2)
+    pca = PCA()
     pca_scores = pca.fit_transform(vst_t)
+    # print(pca_scores)
 
     pca_df = metadata.copy()
     pca_df['PC1'] = pca_scores[:,0]
@@ -211,11 +213,12 @@ if __name__ == "__main__":
     username = "miltr339"
     ortholog_ID_lookup_tables = lookup_tables(username=username)
 
-    lookup_dict = read_orthologID_lookup_dict(ortholog_ID_lookup_tables["X"])
-    print(lookup_dict)
+    if False:
+        lookup_dict = read_orthologID_lookup_dict(ortholog_ID_lookup_tables["X"])
+        print(lookup_dict)
 
     ### plot PCA
-    if False:
+    if True:
         counts_paths_dict, vst_paths_dict = counts_paths(username=username)
         metadata_paths_dict = metadata_paths(username=username)
         for species in species_list:

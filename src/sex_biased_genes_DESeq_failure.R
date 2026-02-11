@@ -1,9 +1,4 @@
-### Everything is mostly based off of this blog post:
-# https://ashleyschwartz.com/posts/2023/05/deseq2-tutorial
-# and i use vst for count normalization: https://www.rdocumentation.org/packages/DESeq2/versions/1.12.3/topics/varianceStabilizingTransformation
-
-
-# install DESeq2
+# install all dependencies
 if (FALSE){
   if (!require("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
@@ -11,10 +6,12 @@ if (FALSE){
   # install tidyverse (ggplot2 is in tidyverse)
   install.packages("tidyverse") 
   install.packages("gtable") 
+  install.packages("pcadapt") 
 }
 library("DESeq2")
 library(tidyverse)
 library(ggplot2)
+library(pcadapt)
 
 #### load data
 setwd("/Users/miltr339/work/chapter3/DE_analysis")
@@ -31,7 +28,7 @@ Csep_path_out_lfc <- "Csep_gene_counts_short_headers_lfc.txt"
 Tcas_path_out_lfc <- "Tcas_gene_counts_short_headers_lfc.txt"
 
 #### metadata relative paths
-Cmac_metadata <- '/Users/miltr339/work/PhD_code/PhD_chapter3/data/DE_analysis/metadata/Cmac_full_SRR_list.csv'
+Cmac_metadata <- '/Users/miltr339/work/PhD_code/PhD_chapter3/data/DE_analysis/metadata/Cmac_SRR_metadata.csv'
 Csep_metadata <- '/Users/miltr339/work/PhD_code/PhD_chapter3/data/DE_analysis/metadata/Csep_full_SRR_list.csv'
 Tcas_metadata <- '/Users/miltr339/work/PhD_code/PhD_chapter3/data/DE_analysis/metadata/Tcas_full_SRR_list.csv'
 
@@ -64,8 +61,8 @@ count_data <- count_data %>% remove_rownames %>% column_to_rownames(var="Geneid"
 ## meta data
 DE_metadata_all <- read.csv(metadata, header = TRUE, sep = ",",comment.char = "#")
 # only include metadata when the samples are in the counts
-meta_data <- DE_metadata_all[which((DE_metadata_all$Run %in% names(count_data))==TRUE), ]
-meta_data <- meta_data %>% remove_rownames %>% column_to_rownames(var="Run")
+meta_data <- DE_metadata_all[which((DE_metadata_all$ID %in% names(count_data))==TRUE), ]
+meta_data <- meta_data %>% remove_rownames %>% column_to_rownames(var="ID")
 # reorder so it's in the same order as the count data columns
 meta_data <- meta_data[names(count_data),]
 # check assumptions
@@ -81,21 +78,55 @@ keep <- rowSums(counts(dds) >=2) >= 3 # at least two counts in at least three sa
 dds <- dds[keep,]
 # get normalized counts
 dds <- estimateSizeFactors(dds)
-# for the output files we might want this, but the new data structure doesn't work with DESeq2 any more
-if (TRUE){
-  # dds_vst <- varianceStabilizingTransformation(dds, blind = TRUE, fitType = "parametric")
-  # normalized_counts <- counts(dds_vst, normalized = TRUE)
-  normalized_counts <- counts(dds, normalized = TRUE)
-  write.table(normalized_counts, file=out_path_vst, sep = '\t', quote=F, col.names = NA)
-}
+normalized_counts <- counts(dds, normalized = TRUE)
+write.table(normalized_counts, file=out_path_vst, sep = '\t', quote=F, col.names = NA)
+
+if (FALSE){
+  dds_vst <- rlog(dds, fitType = "local") #variance stabilizing transormation
+  
+  ## test PCA plotting with different tests
+  # built-in function for DEseq2:
+  plotPCA(dds_vst, intgroup="sex")
+  plotPCA(dds_vst, intgroup="organ") # by organ i mean tissue
+   
+  ## try manually 
+  # this gives completely different results, from both the above plotPCA and also the python PCA based on the normalized_counts
+  # ?????????
+  pca <- prcomp(normalized_counts)#, center = TRUE)# , scale. = TRUE)
+  # Extract first two PCs for the loadings
+  x <- pca$rotation[, "PC1"]
+  y <- pca$rotation[, "PC2"]
+  # Percent variance explained
+  var_explained <- (pca$sdev^2) / sum(pca$sdev^2)
+  percent_var <- round(100 * var_explained, 1)
+  # Plot points
+  plot(x, y,pch = 19,xlab = paste0("PC1 (", percent_var[1], "%)"),ylab = paste0("PC2 (", percent_var[2], "%)"))
+  text(x, y,labels = colnames(normalized_counts),pos = 3)
+  
+  ## PCadapt
+  # again a new 
+  expr <- t(normalized_counts)
+  # expr <- normalized_counts
+  pcadapt_input <- read.pcadapt(expr, type = "pcadapt")
+  pc <- pcadapt(input = pcadapt_input, K = 10)
+  percent_var <- round(100 * pc$singular.values^2 / sum(pc$singular.values^2), 1)
+  plot(pc$scores[,1],pc$scores[,2],pch = 19,xlab = paste0("PC1 (", percent_var[1], "%)"),ylab = paste0("PC2 (", percent_var[2], "%)"))
+  text(pc$scores[,1],pc$scores[,2],labels = colnames(normalized_counts),pos = 3,cex = 0.7)
+  }
+
 
 
 #### run differential expression
-dds <- DESeq(dds)
-res <- results(dds)
+dds_DE <- DESeq(dds)
+res <- results(dds_DE, alpha=0.05)
 summary(res)
+
 write.table(res, file=out_path_lfc, sep = '\t', quote=F, col.names = NA)
-## plot results
-rld <- rlog(dds)
-plotPCA(rld, intgroup="sex")
+
+### plot results
+## PCA
+rld_DE<- rlog(dds_DE) # also very similar to VST, see function documentation
+plotPCA(rld_DE, intgroup="sex")
+## MA plot
+plotMA(res, ylim=c(-5,5))
 
