@@ -46,13 +46,13 @@ OUTDIR=/proj/naiss2023-6-65/Milena/chapter3/all_vs_all_blastp
 ## -->
 
 
-for SPECIES1 in $T_castaneum_proteins $T_freemani_proteins # $C_maculatus_proteins # $A_obtectus_proteins $B_siliquastri_proteins $C_chinensis_proteins $D_sublineata_proteins $D_carinulata_proteins
+for SPECIES1 in $T_castaneum_proteins $T_freemani_proteins $C_maculatus_proteins # $C_septempunctata_proteins $C_magnifica_proteins # $A_obtectus_proteins $B_siliquastri_proteins $C_chinensis_proteins $D_sublineata_proteins $D_carinulata_proteins
 do  
 
     SPECIES1_name="${SPECIES1##*/}"
     SPECIES1_name="${SPECIES1_name%.*}"
 
-    for SPECIES2 in $T_castaneum_proteins $T_freemani_proteins # $D_sublineata_proteins $D_carinulata_proteins # $A_obtectus_proteins $B_siliquastri_proteins $C_chinensis_proteins $C_maculatus_proteins $T_castaneum_proteins 
+    for SPECIES2 in $T_castaneum_proteins $T_freemani_proteins $C_maculatus_proteins # $C_septempunctata_proteins $C_magnifica_proteins # $D_sublineata_proteins $D_carinulata_proteins # $A_obtectus_proteins $B_siliquastri_proteins $C_chinensis_proteins $C_maculatus_proteins $T_castaneum_proteins 
     do
 
         SPECIES2_name="${SPECIES2##*/}"
@@ -78,13 +78,13 @@ do
     done
 done
 
-for SPECIES1 in $C_septempunctata_proteins $C_magnifica_proteins # $C_maculatus_proteins # $A_obtectus_proteins $B_siliquastri_proteins $C_chinensis_proteins $D_sublineata_proteins $D_carinulata_proteins
+for SPECIES1 in $C_septempunctata_proteins $C_magnifica_proteins $C_maculatus_proteins # $A_obtectus_proteins $B_siliquastri_proteins $C_chinensis_proteins $D_sublineata_proteins $D_carinulata_proteins
 do  
 
     SPECIES1_name="${SPECIES1##*/}"
     SPECIES1_name="${SPECIES1_name%.*}"
 
-    for SPECIES2 in $C_septempunctata_proteins $C_magnifica_proteins # $D_sublineata_proteins $D_carinulata_proteins # $A_obtectus_proteins $B_siliquastri_proteins $C_chinensis_proteins $C_maculatus_proteins $T_castaneum_proteins 
+    for SPECIES2 in $C_septempunctata_proteins $C_magnifica_proteins $C_maculatus_proteins # $D_sublineata_proteins $D_carinulata_proteins # $A_obtectus_proteins $B_siliquastri_proteins $C_chinensis_proteins $C_maculatus_proteins $T_castaneum_proteins 
     do
 
         SPECIES2_name="${SPECIES2##*/}"
