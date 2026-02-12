@@ -539,15 +539,22 @@ Methods similar to [Torgerson & Singh 2006](https://www.nature.com/articles/6800
 
 ## Samples and PCA
 
-As a bunch of papers in the literature review above have found, the molecular rate of X-linked genes can differ depending on their expression sex-bias (since that can strengthen or weaken the impact of the dominance and heterozygosity effects that influence faster or slower X). I have found three sets of RNAseq data, one in each species group, to assess sex bias in the orthologs and evaluate this. The RNAseq data is from *T. castaneum*, *C. septempunctata* and *C. maculatus*. I mostly follow the standard STAR pipeline from [Sebastian's github](https://github.com/sellwe/Master_thesis_sebastian) (without taking into account multimapping) to get the read counts, and then use DEseq2 in R to normalize counts.
+As a bunch of papers in the literature review above have found, the molecular rate of X-linked genes can differ depending on their expression sex-bias (since that can strengthen or weaken the impact of the dominance and heterozygosity effects that influence faster or slower X). I have found three sets of RNAseq data, one in each species group, to assess sex bias in the orthologs and evaluate this. The RNAseq data is from *T. castaneum*, *C. septempunctata* and *C. maculatus*. I mostly follow the standard STAR pipeline from [Sebastian's github](https://github.com/sellwe/Master_thesis_sebastian) (without taking into account multimapping) to get the read counts, and then use edgeR in R to normalize counts.
 
 ### *C. maculatus*
+
+The dataset includes virgin and mated individuals, I am only using virgin.
 
 <p float="left">
   <img src="data/DE_analysis/Cmac_vst_counts_PCA.png" width="60%" />
 </p>
 
 Sex biased expression is the main PC, tissue differences only 2nd PC with much less variance explained. Can probably use all samples for sex bias.
+
+<details>
+  <summary>DE for Coccinella and Tribolium</summary>
+
+There is also data for the other species but the sampling is not great and so we're not using it 
 
 ### *C. septempunctata*
 
@@ -564,6 +571,26 @@ PC1 is the tissue, and clear sex bias is only present in the abdomen. Only use a
 </p>
 
 PC1 shows sex bias only in head and body, not antennae. Exclude antennae from sex biased expression?
+
+</details>
+
+
+## Differential expression analysis with edgeR
+
+I had a bad time with DESeq2, and I will be using edgeR. The main point is to do the preprocessing (normalizing etc.) and then to do a differential expression analysis of sex bias in abdomen and head+thorax samples. I am using Elina's code from the original publication, and I am saving output tables of normalized counts, LFC abdomen and LFC head+thorax for all genes. The results for the differential expression is very similar even though the reads were mapped to the genome of a different population
+
+<p float="left">
+  <img src="data/DE_analysis/edgeR_analysis/DE_tissues.png" width="60%" />
+</p>
+
+number of sex-biased genes in female-male contrast:
+
+|               | abdomen       | head+thorax   |
+| ------------- | ------------- | ------------- |
+| downregulated | 3265          | 1331          |
+| unbiased      | 5279          | 9201          |
+| upregulated   | 2793          | 805           |
+
 
 # old analysis with *Diorhaba*
  I suspect that *D. carinulata* has a misidentified X chromosome, which leaves it only three 1-to-1 orthologs. I looked into it a bit here, in case it is X turnover. I would need actual lab evidence to conclude that thoug I think, since the X is so conserved in all the other *Coleoptera* I have here.
