@@ -50,8 +50,6 @@ class SiteClassesTable:
 
 
 
-
-
 class Ortholog:
     """
     class that contains all information about an ortholog and the site classes table
@@ -100,9 +98,14 @@ def get_pairs_from_summary(summary_path, excl_list = []):
         lines = summary_file.readlines()
         pairs_list = ['']*len(lines)
         for i, line in enumerate(lines):
-            filepath = line.strip().split(" : ")[0]
-            filepath = filepath.split("/")
-            pair_name = filepath[-3]
+            filepath = line.strip().split(":")[0]
+            filepath = filepath.strip().split("/")
+            try:
+                pair_name = filepath[-3]
+            except:
+                pair_name = filepath[0]
+                if ".log" in pair_name or len(pair_name)<5:
+                    continue
             species1,species2=species_names_from_pair(pair_name)
             if species1 in excl_list or species2 in excl_list:
                 continue
