@@ -51,58 +51,6 @@ def lookup_tables(username="miltr339"):
     }
     return tables
 
-class OrthologTranscripts:
-    def __init__(self,species1:str, species2:str, trID1:str,trID2:str, ortholog_num:str) -> None:
-        self.species1=species1
-        self.species2=species2
-        self.trID1=trID1
-        self.trID2=trID2
-        self.ortholog_num=ortholog_num
-        ### TODO not sure if this is the best way to do it. I essentially want a table of Cmac LFC, Cmac/Cchi dNdS and po_sel
-    
-    
-def get_species_pairs_from_lookuptable(table_path:str):
-    """
-    get all species pairs that are in the orthologID_transcript lookup table
-    """
-    with open(table_path, "r") as table_file:
-        lines = table_file.readlines()
-        lines_parsed = [line.strip().split(":")[0] for line in lines]
-        pairs = lines_parsed
-        for i , ortholog_ID_full in enumerate(lines_parsed):
-            splits = ortholog_ID_full.split("_")
-            pairs[i] = "_".join(splits[:4])
-        return sorted(list(set(pairs))) 
-            
-
-
-def read_orthologID_lookup_dict(table_path:str):
-    """
-    The lookup tables have the format species1_species2_orthologID:transcript1,transcript2
-    read them into a dictionary with {
-        species_pair : {
-            orthologID : OrthologTranscripts
-        }
-    }
-    """
-    out_dict = {pair : {} for pair in get_species_pairs_from_lookuptable(table_path)}
-    
-    with open(table_path, "r") as table_file:
-        lines = table_file.readlines()
-        for line in tqdm(lines):
-            line = line.strip()
-            ortholog,transcrpts = line.split(":")
-            t1,t2 = transcrpts.split(",")
-            g1,s1,g2,s2 = ortholog.split("_")[:4]
-            ol_num = ortholog.split("_")[-1]
-            association = OrthologTranscripts(species1=f"{g1}_{s1}", species2=f"{g2}_{s2}", trID1=t1, trID2=t2, ortholog_num=ol_num)
-            pair = f"{g1}_{s1}_{g2}_{s2}"
-            # out_dict[pair][]
-            break
-    
-    return out_dict
-
-
 
 colors_dict = {
     "sex" : {
@@ -213,9 +161,6 @@ if __name__ == "__main__":
     username = "miltr339"
     ortholog_ID_lookup_tables = lookup_tables(username=username)
 
-    if False:
-        lookup_dict = read_orthologID_lookup_dict(ortholog_ID_lookup_tables["X"])
-        print(lookup_dict)
 
     ### plot PCA
     if True:

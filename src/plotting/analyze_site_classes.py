@@ -62,6 +62,13 @@ class Ortholog:
         self.ortholog_number = ortholog_number
         self.site_classes = site_classes
 
+    @property
+    def sig_pos_selection(self):
+        if self.site_classes.p_pos==0.0 and self.site_classes.w_pos==0.0:
+            return False
+        else:
+            return True
+
     def __str__(self) -> str:
         site_classes_string = f"\tp:\t{self.site_classes.p_neg}\t{self.site_classes.p_neutr}\t{self.site_classes.p_pos}\n\tw:\t{self.site_classes.w_neg}\t{self.site_classes.w_neutr}\t{self.site_classes.w_pos}"
         return f"1-to-1 ortholog nr. {self.ortholog_number} between {self.pair[0]} and {self.pair[1]}, site class table:\n{site_classes_string}"
@@ -108,7 +115,7 @@ def get_pairs_from_summary(summary_path, excl_list = []):
     return pairs_list_unique
 
 
-def read_site_classes(summary_path, excl_list = []):
+def read_site_classes(summary_path, excl_list = [], read_for_table = False):
     """
     read the site classes summary file into a data structure
     """
@@ -116,7 +123,10 @@ def read_site_classes(summary_path, excl_list = []):
         raise RuntimeError(f"FILE: {summary_path} does not exist!")
 
     pairs_list = get_pairs_from_summary(summary_path, excl_list=excl_list)
-    out_dict = {pair : [] for pair in pairs_list}
+    if read_for_table:
+        out_dict = {pair : {} for pair in pairs_list}
+    else:
+        out_dict = {pair : [] for pair in pairs_list}
     no_dNdS = {pair : [] for pair in pairs_list}
     print(f" *  {len(out_dict)} unique pairs")
 
@@ -160,7 +170,10 @@ def read_site_classes(summary_path, excl_list = []):
             stc = SiteClassesTable(p_neg=p_list[0], p_neutr=p_list[1], p_pos=p_list[2], w_neg=w_list[0], w_neutr=w_list[1], w_pos=w_list[2])
             og = Ortholog(pair=[species1,species2], ortholog_number=pair_number, site_classes=stc)
 
-            out_dict[pair].append(og)
+            if read_for_table:
+                out_dict[pair][pair_number]=og
+            else:
+                out_dict[pair].append(og)
 
     return out_dict, no_dNdS
 

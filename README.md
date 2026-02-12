@@ -580,7 +580,7 @@ PC1 shows sex bias only in head and body, not antennae. Exclude antennae from se
 I had a bad time with DESeq2, and I will be using edgeR. The main point is to do the preprocessing (normalizing etc.) and then to do a differential expression analysis of sex bias in abdomen and head+thorax samples. I am using Elina's code from the original publication, and I am saving output tables of normalized counts, LFC abdomen and LFC head+thorax for all genes. The results for the differential expression is very similar even though the reads were mapped to the genome of a different population
 
 <p float="left">
-  <img src="data/DE_analysis/edgeR_analysis/DE_tissues.png" width="60%" />
+  <img src="data/DE_analysis/edgeR_analysis/DE_tissues.png" width="75%" />
 </p>
 
 number of sex-biased genes in female-male contrast:
@@ -590,6 +590,10 @@ number of sex-biased genes in female-male contrast:
 | downregulated | 3265          | 1331          |
 | unbiased      | 5279          | 9201          |
 | upregulated   | 2793          | 805           |
+
+
+## combining sex-biased expression with molecular rate and positive selection
+
 
 
 # old analysis with *Diorhaba*
