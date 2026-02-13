@@ -525,9 +525,8 @@ Everything is 10000 permutations, and A-X, therefore:
 * A-X < 0 -> A < X -> FastX
 * A-X > 0 -> A > X -> SlowX
 
-* *Bruchini*: FastX in all comparison except *B. siliquastri*
-* *Coccinella*: Significantly slowX
-* *Tribolium*: not significant
+* *Bruchini*: FastX in all comparisons
+* *Coccinella* and *Tribolium*: not significant
 
 <p float="center">
   <img src="data/fastX_ortholog_ident/LRT_site_model_plot_bruchini_white_bg.png" width="75%" />
