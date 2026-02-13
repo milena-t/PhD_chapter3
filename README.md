@@ -607,10 +607,10 @@ number of sex-biased genes in female-male contrast:
 
 I have exported the results of this analysis into a table with the log2FC, FDR-corrected p-value and gene ID. I have then partitioned the sex bias by X or A for both tissues. 
 
-**The numbers here don't match the table above!!! TODO why?**
+**!!!The numbers here don't match the table above!!! TODO why?**
 
 <p float="left">
-  <img src="data/DE_analysis/all_sex_bias_proportion_white_bg.png" width="60%" />
+  <img src="data/DE_analysis/all_sex_bias_proportion_white_bg.png" width="75%" />
 </p>
 
 ### Dosage compensation
