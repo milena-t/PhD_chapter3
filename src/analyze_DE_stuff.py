@@ -353,7 +353,7 @@ def plot_sex_bias_bar_chart(summary_paths, annotation, X_list, outfile = ""):
     ax.tick_params(axis='x', labelsize=fs, rotation=90)
 
     ax.set_xlabel('')
-    ax.set_ylabel(f"proportion of sex-biased genes", fontsize = fs)
+    ax.set_ylabel(f"Percentage of all genes", fontsize = fs)
     ax.tick_params(axis='y', labelsize=fs)
     ax.tick_params(axis='x', labelsize=fs) 
 
