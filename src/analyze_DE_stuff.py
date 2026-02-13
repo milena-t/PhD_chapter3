@@ -44,12 +44,13 @@ def get_contig_lengths(contigs_list, assembly_index):
 
 
 
+
+
 def plot_dosage_compensation(summary_paths, annotation, assembly_index, X_list, outfile = ""):
     """
     plot the log2FC of all genes on the X in both head+thorax and abdominal tissues on the y,
     the X-axis is the position of the gene on the X
     """
-
 
     summary_data_abdomen = pd.read_csv(summary_paths["abdomen"], sep = "\t", index_col=False)
     summary_data_head_thorax = pd.read_csv(summary_paths["head_thorax"], sep = "\t", index_col=False)
@@ -188,6 +189,171 @@ def plot_dosage_compensation(summary_paths, annotation, assembly_index, X_list, 
     ax.set_ylabel(f"log2FC for female-male", fontsize = fs)
     ax2.set_xlabel(f"C. maculatus X chromosome", fontsize = fs, labelpad = 20)
 
+    # layout (left, bottom, right, top)
+    plt.tight_layout(rect=[0, 0.05, 1, 1])
+
+    # transparent background
+    plt.savefig(outfile, dpi = 300, transparent = True)
+    # non-transparent background
+    filename_tr = outfile.replace(".png", "_white_bg.png")
+    plt.savefig(filename_tr, dpi = 300, transparent = False)
+    print(f"plot saved in current working directory as: {outfile} and {filename_tr}")
+
+
+def plot_sex_bias_bar_chart(summary_paths, annotation, X_list, outfile = ""):
+    """
+    plot a bar chart to show proportion of significantly male or female biased genes on X or A chromosome
+    """
+
+    summary_data_abdomen = pd.read_csv(summary_paths["abdomen"], sep = "\t", index_col=False)
+    summary_data_head_thorax = pd.read_csv(summary_paths["head_thorax"], sep = "\t", index_col=False)
+    filtered_abdomen = summary_data_abdomen[pd.notna(summary_data_abdomen["logFC"])]
+    filtered_head_thorax = summary_data_head_thorax[pd.notna(summary_data_head_thorax["logFC"])]
+
+    ## get LFC information for every gene for plotting { transcriptID : LFC_float }
+    ## the data is LFC female-male, so positive values are female-biased
+    LFC_dict_abdomen = dict(zip(filtered_abdomen["geneID"], filtered_abdomen["logFC"]))
+    LFC_dict_head_thorax = dict(zip(filtered_head_thorax["geneID"], filtered_head_thorax["logFC"]))
+    assert sorted(list(LFC_dict_abdomen.keys())) == sorted(list(LFC_dict_head_thorax.keys())) # check that there is data for all transcripts in both
+
+    ## get p-values
+    pval_dict_abdomen = dict(zip(filtered_abdomen["geneID"], filtered_abdomen["FDR"]))
+    pval_dict_head_thorax = dict(zip(filtered_head_thorax["geneID"], filtered_head_thorax["FDR"]))
+
+    sig_p_level = 0.001
+
+    ## parse gene position data
+    annotation_dict = gff.parse_gff3_general(annotation)
+    head_thorax_summary_A = {
+        "sig_male" : 0,
+        "sig_female" : 0,
+        "unbiased" : 0
+    }
+    head_thorax_summary_X = {
+        "sig_male" : 0,
+        "sig_female" : 0,
+        "unbiased" : 0
+    }
+    abdomen_summary_A = {
+        "sig_male" : 0,
+        "sig_female" : 0,
+        "unbiased" : 0
+    }
+    abdomen_summary_X = {
+        "sig_male" : 0,
+        "sig_female" : 0,
+        "unbiased" : 0
+    }
+
+    # { contig : {} for contig in X_list} # dict with { contig : { transcriptID : [start,end], ... }  }
+    for geneID in LFC_dict_abdomen.keys():
+        gene = annotation_dict[geneID]
+
+        if gene.contig in X_list:
+            if pval_dict_abdomen[geneID]<sig_p_level:
+                if LFC_dict_abdomen[geneID] >0:
+                    abdomen_summary_X["sig_female"]+=1
+                else:
+                    abdomen_summary_X["sig_male"]+=1
+            else:
+                abdomen_summary_X["unbiased"]+=1
+
+            if pval_dict_head_thorax[geneID]<sig_p_level:
+                if LFC_dict_head_thorax[geneID] >0:
+                    head_thorax_summary_X["sig_female"]+=1
+                else:
+                    head_thorax_summary_X["sig_male"]+=1
+            else:
+                head_thorax_summary_X["unbiased"]+=1
+        else:
+            if pval_dict_abdomen[geneID]<sig_p_level:
+                if LFC_dict_abdomen[geneID] >0:
+                    abdomen_summary_A["sig_female"]+=1
+                else:
+                    abdomen_summary_A["sig_male"]+=1
+            else:
+                abdomen_summary_A["unbiased"]+=1
+
+            if pval_dict_head_thorax[geneID]<sig_p_level:
+                if LFC_dict_head_thorax[geneID] >0:
+                    head_thorax_summary_A["sig_female"]+=1
+                else:
+                    head_thorax_summary_A["sig_male"]+=1
+            else:
+                head_thorax_summary_A["unbiased"]+=1
+
+    print(f"head_thorax_summary_A: {head_thorax_summary_A}")
+    print(f"head_thorax_summary_X: {head_thorax_summary_X}")
+    print(f"abdomen_summary_A: {abdomen_summary_A}")
+    print(f"abdomen_summary_X: {abdomen_summary_X}")
+
+    ## make percentages for plot 
+    sum_head_thorax_summary_A=sum(list(head_thorax_summary_A.values()))
+    sum_head_thorax_summary_X=sum(list(head_thorax_summary_X.values()))
+    sum_abdomen_summary_A=sum(list(abdomen_summary_A.values()))
+    sum_abdomen_summary_X=sum(list(abdomen_summary_X.values()))
+    head_thorax_percentage_A = {cat : val*100.0/sum_head_thorax_summary_A for cat,val in head_thorax_summary_A.items()}
+    head_thorax_percentage_X = {cat : val*100.0/sum_head_thorax_summary_X for cat,val in head_thorax_summary_X.items()}
+    abdomen_percentage_A = {cat : val*100.0/sum_abdomen_summary_A for cat,val in abdomen_summary_A.items()}
+    abdomen_percentage_X = {cat : val*100.0/sum_abdomen_summary_X for cat,val in abdomen_summary_X.items()}
+
+    ### plot stacked bar chart
+    fs = 25
+    width=0.4
+    x_subtr=width*1.1/2.0
+    x_coords = [1-x_subtr,1+x_subtr, 2-x_subtr,2+x_subtr]
+    fig, ax = plt.subplots(1, 1, figsize=(16, 10)) 
+
+    colors_dict ={
+        "sig_female" : "#DC4141", # scarlet rush
+        "sig_male" : "#7B8CE0", # wisteria blue
+        "unbiased" : "#44455F", # vintage grape
+    }
+    bottom = [0,0,0,0]
+    for DE_category in reversed(head_thorax_summary_A.keys()):
+
+        y_coords = [head_thorax_percentage_A[DE_category],
+                    head_thorax_percentage_X[DE_category],
+                    abdomen_percentage_A[DE_category],
+                    abdomen_percentage_X[DE_category]]
+        ax.bar(x_coords, y_coords, width = width, bottom=bottom, label=DE_category, color= colors_dict[DE_category])
+        
+        bottom = [bottom[i]+y_coords[i] for i in range(len(y_coords))]
+
+    # add numbers to bar chart
+    vals=[]
+    for DE_category in reversed(head_thorax_summary_A.keys()):
+        # values in order left to right and bottom bar to top, so A_nonsig, X_nonsig, A_sig, X_sig
+        vals.extend([f"{head_thorax_summary_A[DE_category]}", f"{head_thorax_summary_X[DE_category]}", f"{abdomen_summary_A[DE_category]}", f"{abdomen_summary_X[DE_category]}"])
+    for i,bar in enumerate(ax.patches):
+        ax.text(
+            # Put the text in the middle of each bar. get_x returns the start
+            # so we add half the width to get to the middle.
+            bar.get_x() + bar.get_width() / 2,
+            # Vertically, add the height of the bar to the start of the bar,
+            # along with the offset.
+            bar.get_height() + bar.get_y() -7,
+            # This is actual value we'll show.
+            vals[i],
+            # Center the labels and style them a bit.
+            ha='center',
+            color='w',
+            weight='bold',
+            size=fs*0.9
+        )
+
+    ax.yaxis.set_major_formatter(FuncFormatter(lambda x, pos: '' if x > 100 and x<1 else f'{int(x)}%'))
+    ax.set_xticks(ticks=x_coords, labels=["A: head+thorax","X: head+thorax","A: abdomen","X: abdomen"])
+    ax.tick_params(axis='y', labelsize=fs)
+    ax.tick_params(axis='x', labelsize=fs, rotation=90)
+
+    ax.set_xlabel('')
+    ax.set_ylabel(f"proportion of sex-biased genes", fontsize = fs)
+    ax.tick_params(axis='y', labelsize=fs)
+    ax.tick_params(axis='x', labelsize=fs) 
+
+    plt.legend(reverse=True, fontsize=fs, loc="lower left", title=f"sig. threshold\np<{sig_p_level}", title_fontsize=fs)
+    plt.title(f"Percent of female/male/unbiased genes", fontsize=fs*1.2)
     plt.tight_layout(rect=[0, 0.05, 1, 1])
 
     # transparent background
@@ -199,18 +365,20 @@ def plot_dosage_compensation(summary_paths, annotation, assembly_index, X_list, 
 
 
 
-
 if __name__ == "__main__":
     
-    username = "miltr339"
+    username = "milena"
     Cmac_annotation = f"/Users/{username}/work/native_annotations/all_native_annot/C_maculatus_superscaffolded_LomeRNA_braker_isoform_filtered.gff"
-    # milenatr@pelle.uppmax.uu.se:/proj/naiss2023-6-65/Milena/annotation_pipeline/Cmac_Lome_superscaffolded_comparison/Cmac_Lome_diverse/Cmac_Lome_diverse/braker/braker_isoform_filtered.gff
+    # milenatr@pelle.uppmax.uu.se:/proj/naiss2023-6-65/Milena/annotation_pipeline/Cmac_Lome_superscaffolded_comparison/Cmac_Lome_diverse/Cmac_Lome_diverse/braker/braker_isoform_filtered.gff C_maculatus_superscaffolded_LomeRNA_braker_isoform_filtered.gff
     Cmac_assembly = f"/Users/{username}/work/assemblies_masked_uniform/C_maculatus_superscaffolded_genomic_fasta.masked.fai" # I only need contig lengths so use assembly index
     summary_paths = get_summary_paths(username=username)
     DE_paths = get_DE_paths(username=username)
     Cmac_X_contigs_list = get_Cmac_superscaffolded_XY_contigs()["X"]
 
-    if True:
+    if False:
         plot_dosage_compensation(summary_paths=DE_paths, annotation=Cmac_annotation, assembly_index=Cmac_assembly, X_list=Cmac_X_contigs_list, 
             outfile=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/X_sex_bias.png")
 
+    if True:
+        plot_sex_bias_bar_chart(summary_paths=DE_paths, annotation=Cmac_annotation, X_list=Cmac_X_contigs_list, 
+            outfile=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/all_sex_bias_proportion.png")

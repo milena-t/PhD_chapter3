@@ -605,6 +605,14 @@ number of sex-biased genes in female-male contrast:
 | upregulated   | 2793          | 805           |
 
 
+I have exported the results of this analysis into a table with the log2FC, FDR-corrected p-value and gene ID. I have then partitioned the sex bias by X or A for both tissues. 
+
+**The numbers here don't match the table above!!! TODO why?**
+
+<p float="left">
+  <img src="data/DE_analysis/all_sex_bias_proportion_white_bg.png" width="60%" />
+</p>
+
 ### Dosage compensation
 
 Theoretically, dosage compensation should be weaker in the abdominal tissues since that is where the reproductive organs are (which are not dosage compensated), which would show as stronger female-bias on the X in abdominal tissues than head+thorax. I have plotted the log2FC of X-linked genes in C. maculatus along the X-chromosomal position:
