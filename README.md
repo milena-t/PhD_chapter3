@@ -606,9 +606,38 @@ number of sex-biased genes in female-male contrast:
 | upregulated   | 2793          | 805           |
 
 
+### Dosage compensation
+
+Theoretically, dosage compensation should be weaker in the abdominal tissues since that is where the reproductive organs are (which are not dosage compensated), which would show as stronger female-bias on the X in abdominal tissues than head+thorax. I have plotted the log2FC of X-linked genes in C. maculatus along the X-chromosomal position:
+
+<p float="left">
+  <img src="data/DE_analysis/X_sex_bias_white_bg.png" width="90%" />
+</p>
+
+I calculated the standard error of the mean (SEM) with `scipy.stats.sem` which takes sample size into account.
+
+* scaffold_10 : 300 transcripts
+	 * abdomen mean log2FC: 0.043, SEM: 0.099
+	 * head+thorax mean log2FC: -0.258, SEM: 0.097
+* scaffold_14 : 67 transcripts
+	 * abdomen mean log2FC: -0.001, SEM: 0.221
+	 * head+thorax mean log2FC: -0.317, SEM: 0.186
+* scaffold_23 : 4 transcripts
+	 * abdomen mean log2FC: 2.043, SEM: 2.472
+	 * head+thorax mean log2FC: 0.450, SEM: 1.476
+* scaffold_31 : 22 transcripts
+	 * abdomen mean log2FC: 0.222, SEM: 0.665
+	 * head+thorax mean log2FC: -0.466, SEM: 0.302
+* scaffold_34 : 44 transcripts
+	 * abdomen mean log2FC: 0.125, SEM: 0.218
+	 * head+thorax mean log2FC: -0.247, SEM: 0.246
+* scaffold_83 : 2 transcripts
+	 * abdomen mean log2FC: -0.910, SEM: 1.759
+	 * head+thorax mean log2FC: 4.023, SEM: 1.668
+
 ## combining sex-biased expression with molecular rate and positive selection
 
-
+TODO
 
 # old analysis with *Diorhaba*
  I suspect that *D. carinulata* has a misidentified X chromosome, which leaves it only three 1-to-1 orthologs. I looked into it a bit here, in case it is X turnover. I would need actual lab evidence to conclude that thoug I think, since the X is so conserved in all the other *Coleoptera* I have here.
