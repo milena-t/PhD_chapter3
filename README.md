@@ -504,6 +504,20 @@ when I use `p` as weights, the weighted average w is 0.0437239804. Accodring to 
 
 ## Results
 
+### multiple testing correction
+
+The LRT is an individual significance test with a p-value for each ortholog. I do Benjamini-Hochberg correction on all X and all A-linked orthologs.
+* **X-linked**
+	 * 2764 genes not under positive selection
+	 * 463 are under positive selection after BH correction
+	 * 159 were positively selected according to simple p-value but are not any more after BH correction
+* **A-linked**
+	 * 63559 genes not under positive selection
+	 * 7820 are under positive selection after BH correction
+	 * 4686 were positively selected according to simple p-value but are not any more after BH correction
+
+### plots
+
 I categorize genes according to whether the LRT was significant or not and base the statistical analysis on that, and do the permutation test as described above
 
 Everything is 10000 permutations, and A-X, therefore:

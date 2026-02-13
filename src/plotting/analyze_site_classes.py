@@ -143,12 +143,12 @@ def read_site_classes(summary_path, excl_list = [], read_for_table = False):
                 # continue
             filepath = filepath_str.split("/")
             
-            pair_name,site_class_name = filepath[-2:]
+            pair_name = filepath[-2]
             species1,species2=species_names_from_pair(pair_name)
             pair = f"{species1}_{species2}"
             if pair not in pairs_list:
                 continue # skip species that are excluded by excl_list above
-            model = site_class_name.split("_")[1]
+
             try:
                 pair_number = int(pair_name.split("_")[-2])
             except:
@@ -166,12 +166,14 @@ def read_site_classes(summary_path, excl_list = [], read_for_table = False):
             p_list = [float(val) for val in p_string.split()[1:]]
             w_list = [float(val) for val in w_string.split()[1:]]
             assert len(p_list) == len(w_list)
-            if model == "M1a" and len(p_list) == 2:
+            if len(p_list) == 2:
                 p_list.append(0.0)
                 w_list.append(0.0)
-            
-            stc = SiteClassesTable(p_neg=p_list[0], p_neutr=p_list[1], p_pos=p_list[2], w_neg=w_list[0], w_neutr=w_list[1], w_pos=w_list[2])
-            og = Ortholog(pair=[species1,species2], ortholog_number=pair_number, site_classes=stc)
+            try:
+                stc = SiteClassesTable(p_neg=p_list[0], p_neutr=p_list[1], p_pos=p_list[2], w_neg=w_list[0], w_neutr=w_list[1], w_pos=w_list[2])
+                og = Ortholog(pair=[species1,species2], ortholog_number=pair_number, site_classes=stc)
+            except: 
+                raise RuntimeError(f"ERROR reading {line}:\n\tp_list = {p_list}\n\tw_list = {w_list}")
 
             if read_for_table:
                 out_dict[pair][pair_number]=og
@@ -258,11 +260,9 @@ def binary_barplot_pair(data_A, data_X, row, col, n_A, n_X, axes, colors_dict, f
     vals = [f"{int(A_nonsig/100)}", f"{int(X_nonsig/100)}", f"{int(A_sig/100)}", f"{int(X_sig/100)}"]
     for i,bar in enumerate(axes[row,col].patches):
         axes[row,col].text(
-            # Put the text in the middle of each bar. get_x returns the start
-            # so we add half the width to get to the middle.
+            # Put the text in the middle of each bar. get_x returns the start so we add half the width to get to the middle.
             bar.get_x() + bar.get_width() / 2,
-            # Vertically, add the height of the bar to the start of the bar,
-            # along with the offset.
+            # Vertically, add the height of the bar to the start of the bar, along with the offset.
             bar.get_height() + bar.get_y() -7,
             # This is actual value we'll show.
             vals[i],
@@ -270,7 +270,7 @@ def binary_barplot_pair(data_A, data_X, row, col, n_A, n_X, axes, colors_dict, f
             ha='center',
             color='w',
             weight='bold',
-            size=fs*0.9
+            size=fs*0.8
         )
     
     axes[row, col].set_xticks([1,2])
@@ -366,16 +366,16 @@ if __name__ == "__main__":
     # username = "milena"
     username = "miltr339"
     chromosome = "A"
-    data_files = {"A" : ["A_dNdS", "A_LRT"],
-                  "X" : ["X_dNdS", "X_LRT"]}
+    data_files = {"A" : ["A_dNdS", "A_LRT_BH_corr"],
+                  "X" : ["X_dNdS", "X_LRT_BH_corr"]}
     summary_paths = get_summary_paths(username=username)
 
     # bruchini
-    if True:
+    if False:
         species_excl = ["D_carinulata", "D_sublineata", "T_castaneum", "T_freemani", "C_septempunctata", "C_magnifica"]
         filename =f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/LRT_site_model_plot_bruchini.png"
     # coccinella
-    elif True:
+    elif False:
         species_excl = ["D_carinulata", "D_sublineata", "T_castaneum", "T_freemani", "B_siliquastri", "A_obtectus", "C_maculatus", "C_chinensis"]
         filename =f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/LRT_site_model_plot_coccinella.png"
     # tribolium
