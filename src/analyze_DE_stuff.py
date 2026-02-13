@@ -309,6 +309,11 @@ def plot_sex_bias_bar_chart(summary_paths, annotation, X_list, outfile = ""):
         "sig_male" : "#7B8CE0", # wisteria blue
         "unbiased" : "#44455F", # vintage grape
     }
+    labels_dict ={
+        "sig_female" : "female biased",
+        "sig_male" : "male biased", 
+        "unbiased" : "unbiased",
+    }
     bottom = [0,0,0,0]
     for DE_category in reversed(head_thorax_summary_A.keys()):
 
@@ -316,7 +321,7 @@ def plot_sex_bias_bar_chart(summary_paths, annotation, X_list, outfile = ""):
                     head_thorax_percentage_X[DE_category],
                     abdomen_percentage_A[DE_category],
                     abdomen_percentage_X[DE_category]]
-        ax.bar(x_coords, y_coords, width = width, bottom=bottom, label=DE_category, color= colors_dict[DE_category])
+        ax.bar(x_coords, y_coords, width = width, bottom=bottom, label=labels_dict[DE_category], color= colors_dict[DE_category])
         
         bottom = [bottom[i]+y_coords[i] for i in range(len(y_coords))]
 
@@ -352,7 +357,7 @@ def plot_sex_bias_bar_chart(summary_paths, annotation, X_list, outfile = ""):
     ax.tick_params(axis='y', labelsize=fs)
     ax.tick_params(axis='x', labelsize=fs) 
 
-    plt.legend(reverse=True, fontsize=fs, loc="lower left", title=f"sig. threshold\np<{sig_p_level}", title_fontsize=fs)
+    plt.legend(reverse=True, fontsize=fs*0.8, loc="lower left", title=f"sig. threshold\np<{sig_p_level}", title_fontsize=fs*0.8)
     plt.title(f"Percent of female/male/unbiased genes", fontsize=fs*1.2)
     plt.tight_layout(rect=[0, 0.05, 1, 1])
 
