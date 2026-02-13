@@ -611,7 +611,7 @@ number of sex-biased genes in female-male contrast:
 Theoretically, dosage compensation should be weaker in the abdominal tissues since that is where the reproductive organs are (which are not dosage compensated), which would show as stronger female-bias on the X in abdominal tissues than head+thorax. I have plotted the log2FC of X-linked genes in C. maculatus along the X-chromosomal position:
 
 <p float="left">
-  <img src="data/DE_analysis/X_sex_bias_white_bg.png" width="90%" />
+  <img src="data/DE_analysis/X_sex_bias_white_bg.png" width="100%" />
 </p>
 
 I calculated the standard error of the mean (SEM) with `scipy.stats.sem` which takes sample size into account.
