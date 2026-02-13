@@ -2,7 +2,8 @@
 
 BLAST_OUTDIR_UPPMAX=/proj/naiss2023-6-65/Milena/chapter3/all_vs_all_blastp
 BLAST_OUTDIR=/Users/miltr339/work/pairwise_blast_chapter_2_3
-SCRIPT_DIR=/Users/miltr339/work/PhD_code/PhD_chapter2/src
+# SCRIPT_DIR=/Users/miltr339/work/PhD_code/PhD_chapter2/src
+SCRIPT_DIR=/proj/naiss2023-6-65/Milena/chapter2/PhD_chapter2/src
 
 
 # python3 $SCRIPT_DIR/get_blast_BRH.py $BLAST_OUTDIR/T_castaneum_original_header_vs_T_freemani_original_header.blast $BLAST_OUTDIR/T_freemani_original_header_vs_T_castaneum_original_header.blast
