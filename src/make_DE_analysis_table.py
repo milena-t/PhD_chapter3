@@ -17,6 +17,7 @@ make a summary table for every ortholog from a C. maculatus perspective. include
 from tqdm import tqdm
 from analyze_site_classes import read_site_classes,get_pairs_from_summary,species_names_from_pair
 import os
+import pandas as pd
 
 def get_lookup_tables(username="miltr339"):
     """
@@ -59,6 +60,31 @@ def get_paml_paths(username="miltr339"):
             }
     }
     return tables
+
+
+def get_BRH_paths(username="miltr339"):
+    """
+    blast best reciprocal hits of Cmac and all other species, to determine how far back the gene of interest is conserved
+    """
+    tables = {
+        "T_castaneum" : f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/C_maculatus_T_castaneum_BRHs.tsv",
+        "T_freemani" : f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/C_maculatus_T_freemani_BRHs.tsv",
+        "C_magnifica" : f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/C_maculatus_C_magnifica_BRHs.tsv",
+        "C_septempunctata" : f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/C_maculatus_C_septempunctata_BRHs.tsv",
+        "A_obtectus" : f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/C_maculatus_A_obtectus_BRHs.tsv",
+        "B_siliquastri" : f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/C_maculatus_B_siliquastri_BRHs.tsv",
+        "C_chinensis" : f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/C_maculatus_C_chinensis_BRHs.tsv",
+    }
+    dist_dict = {
+        "T_castaneum" : 4,
+        "T_freemani" : 4,
+        "C_magnifica" : 4,
+        "C_septempunctata" : 4,
+        "A_obtectus" : 3,
+        "B_siliquastri" : 2,
+        "C_chinensis" : 1,
+    }
+    return tables, dist_dict
 
 
 def read_ortholog_dNdS(summary_path, excl_list = [], pair_split_string="_"):
@@ -145,9 +171,24 @@ def read_LFC(summary_path):
     return out_dict
 
 
+def read_BRHs(brhs_paths_dict):
+    """
+    read all Cmac BRHs into a dict like
+    {
+        species1 : [Cmac,transcript,IDs,that,have,a,BRH,with,this,species,...],
+        species2 : [more,Cmac,transcript,IDs,...]
+    }
+    also mind that the IDs are transcripts and have the tailing '_1'
+    """
+    out_dict = {}
+    for pair_species,path_to_table in brhs_paths_dict.items():
+        brh_df = pd.read_csv(path_to_table, sep="\t", names=["C_maculatus", pair_species])
+        out_dict[pair_species] = [match[:-2] for match in brh_df['C_maculatus'].values.tolist()]
+        
+    return out_dict
 
 
-def make_summary_table(lookup_table_path, DE_paths_dict, paml_paths_dict, chromosome, focal_species = "C_maculatus", excl_species=["T_castaneum", "C_septempunctata"], outfile_name = "orthologs_DE_summary.txt"):
+def make_summary_table(lookup_table_path, DE_paths_dict, paml_paths_dict, chromosome, brhs_lists, distances_dict, focal_species = "C_maculatus", excl_species=["T_castaneum", "C_septempunctata"], outfile_name = "orthologs_DE_summary.txt"):
     """
     make the summary table for either A or X chromosome with the columns
     * all Cmac-orthologs 
@@ -177,7 +218,8 @@ def make_summary_table(lookup_table_path, DE_paths_dict, paml_paths_dict, chromo
         "LFC_abdomen",
         "FDR_pval_abdomen",
         "LFC_head+thorax",
-        "FDR_pval_head+thorax"
+        "FDR_pval_head+thorax",
+        "level_most_dist_ortholog"
     ]
     header_line = "\t".join(header)
     header_line = f"{header_line}\n"
@@ -266,11 +308,16 @@ def make_summary_table(lookup_table_path, DE_paths_dict, paml_paths_dict, chromo
             except:
                 raise RuntimeError(f"could not parse dNdS from {pair} ortholog {ortholog_num}! \n\tthis is what was read: {dNdS_ortholog}")
 
+            ### most distant ortholog of the focal gene
+            ortholog_species = [species for species,ortholog_list in brhs_lists.items() if focal_transcript in ortholog_list]
+            ortholog_levels = [distances_dict[species] for species in ortholog_species]
+            max_dist_level = max(ortholog_levels)
+
             ## make outfile line
             outfile_line_orthologs = f"{line_focal_species}\t{other_species}\t{ortholog_num}\t{focal_transcript}\t{other_transcript}"
             outfile_line_paml = f"{pos_sel}\t{dN}\t{dS}\t{dNdS}"
             outfile_line_LFC = f"{focal_gene}\t{abd_LFC}\t{abd_FDR}\t{ht_LFC}\t{ht_FDR}"
-            outfile_line_all = f"{outfile_line_orthologs}\t{outfile_line_paml}\t{outfile_line_LFC}\n"
+            outfile_line_all = f"{outfile_line_orthologs}\t{outfile_line_paml}\t{outfile_line_LFC}\t{max_dist_level}\n"
 
             outfile.write(outfile_line_all)
             # break
@@ -285,15 +332,19 @@ if __name__=="__main__":
     lookup_tables_dict = get_lookup_tables(username=username)
     DE_paths_dict = get_DE_paths(username=username)
     paml_paths_dict = get_paml_paths(username=username)
-
+    brh_tables_paths, distances_dict = get_BRH_paths(username=username)
+    brhs_list = read_BRHs(brh_tables_paths)
+    
     chromosomes = ["A", "X"]
 
-    for chromosome in chromosomes:
-        print(f"\n//////////////////////// {chromosome} ////////////////////////")
-        make_summary_table(lookup_table_path=lookup_tables_dict[chromosome], 
-            DE_paths_dict=DE_paths_dict, 
-            paml_paths_dict=paml_paths_dict[chromosome], 
-            chromosome=chromosome, 
-            focal_species = "C_maculatus", excl_species=["T_castaneum", "C_septempunctata"],
-            outfile_name=f"{outdir_tables}/DE_summary_table_{chromosome}_chr.tsv")
-        
+    if True:
+        for chromosome in chromosomes:
+            print(f"\n//////////////////////// {chromosome} ////////////////////////")
+            make_summary_table(lookup_table_path=lookup_tables_dict[chromosome], 
+                DE_paths_dict=DE_paths_dict, 
+                paml_paths_dict=paml_paths_dict[chromosome], 
+                chromosome=chromosome, 
+                focal_species = "C_maculatus", excl_species=["T_castaneum", "C_septempunctata"],
+                brhs_lists = brhs_list, distances_dict = distances_dict,
+                outfile_name=f"{outdir_tables}/DE_summary_table_{chromosome}_chr.tsv")
+            
