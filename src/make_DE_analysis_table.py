@@ -23,8 +23,8 @@ def get_lookup_tables(username="miltr339"):
     tables that contain the information about which orthologs have which transcripts in them
     """
     tables={
-        "X" : f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/ortholog_IDs_X_transcript_IDs_association.txt",
-        "A" : f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/ortholog_IDs_A_transcript_IDs_association.txt",
+        "X" : f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/ortholog_IDs_X_transcript_IDs_association.txt",
+        "A" : f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/ortholog_IDs_A_transcript_IDs_association.txt",
     }
     return tables
 
@@ -50,12 +50,12 @@ def get_paml_paths(username="miltr339"):
     """
     tables = {
         "A" : {
-            "sites" : f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/site_classes_summary_A-linked.txt",
-            "dNdS" : f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/dNdS_by_ortholog_A-linked_updated_species.txt",
+            "sites" : f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/site_classes_summary_A-linked.txt",
+            "dNdS" : f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/dNdS_by_ortholog_A-linked_updated_species.txt",
             },
         "X" : {
-            "sites" : f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/site_classes_summary_X-linked.txt",
-            "dNdS" : f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/dNdS_by_ortholog_X-linked_updated_species.txt",
+            "sites" : f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/site_classes_summary_X-linked.txt",
+            "dNdS" : f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/dNdS_by_ortholog_X-linked_updated_species.txt",
             }
     }
     return tables
