@@ -284,9 +284,10 @@ def make_line_vectors(slope, intercept, x_data, y_data):
     return x,y
 
 
-def plot_dS_vs_dNdS(A_dict:dict, X_dict:dict, filename = "dS_vs_dNdS.png", dark_mode=False, max_dS=2, max_dNdS=2):
+def plot_dS_vs_dNdS(A_dict:dict, X_dict:dict, filename = "dS_vs_dNdS.png", dark_mode=False, max_dS=2, max_dNdS=2, plot_dN=True):
     """
     plot a grid of scatterplots of dS vs. dNdS in X and autosomes for each pair
+    if plot_dN then the dNdS values are back-transformed to dNdS
     """
 
     if dark_mode:
@@ -373,8 +374,12 @@ def plot_dS_vs_dNdS(A_dict:dict, X_dict:dict, filename = "dS_vs_dNdS.png", dark_
         # remove dS>max_dS and dNdS>max_dNDS from both (remove dNdS also if dS is removed and vice versa)
         dS_A = [dS for i, dS in enumerate(dS_A_all) if dNdS_A_all[i] < max_dNdS and dS < max_dS]
         dS_X = [dS for i, dS in enumerate(dS_X_all) if dNdS_X_all[i] < max_dNdS and dS < max_dS]
-        dNdS_A = [dNdS for i, dNdS in enumerate(dNdS_A_all) if dS_A_all[i] < max_dS and dNdS < max_dNdS]
-        dNdS_X = [dNdS for i, dNdS in enumerate(dNdS_X_all) if dS_X_all[i] < max_dS and dNdS < max_dNdS]
+        if plot_dN:
+            dNdS_A = [dNdS*dS_A_all[i] for i, dNdS in enumerate(dNdS_A_all) if dS_A_all[i] < max_dS and dNdS < max_dNdS]
+            dNdS_X = [dNdS*dS_X_all[i] for i, dNdS in enumerate(dNdS_X_all) if dS_X_all[i] < max_dS and dNdS < max_dNdS]
+        else:
+            dNdS_A = [dNdS for i, dNdS in enumerate(dNdS_A_all) if dS_A_all[i] < max_dS and dNdS < max_dNdS]
+            dNdS_X = [dNdS for i, dNdS in enumerate(dNdS_X_all) if dS_X_all[i] < max_dS and dNdS < max_dNdS]
         assert len(dS_A) == len(dNdS_A)
         assert len(dS_X) == len(dNdS_X)
 
@@ -403,26 +408,31 @@ def plot_dS_vs_dNdS(A_dict:dict, X_dict:dict, filename = "dS_vs_dNdS.png", dark_
         axes[col,row].tick_params(axis='x', labelsize=fs)
         axes[col,row].tick_params(axis='y', labelsize=fs)
         axes[species_count-1,row].set_xlabel("dS", fontsize = fs)
-        axes[col,0].set_ylabel("dNdS", fontsize = fs)
+        if plot_dN:
+            axes[col,0].set_ylabel("dNdS", fontsize = fs)
+        else:
+            axes[col,0].set_ylabel("dN", fontsize = fs)
         axes[col,row].set_xlim(-0.08,2.08)
-        ## linear regression
-        slope_A, intercept_A, normal_residuals_A = calculate_dS_dNdS_lin_reg(dS_list = dS_A, dNdS_list = dNdS_A, species_pair= pair)
-        slope_X, intercept_X, normal_residuals_X = calculate_dS_dNdS_lin_reg(dS_list = dS_X, dNdS_list = dNdS_X, species_pair= pair)
-        linreg_x_A, linreg_y_A = make_line_vectors(slope=slope_A, intercept=intercept_A, x_data=dS_A, y_data=dNdS_A)
-        linreg_x_X, linreg_y_X = make_line_vectors(slope=slope_X, intercept=intercept_X, x_data=dS_X, y_data=dNdS_X)
+        
+        if plot_dN==False:
+            ## linear regression
+            slope_A, intercept_A, normal_residuals_A = calculate_dS_dNdS_lin_reg(dS_list = dS_A, dNdS_list = dNdS_A, species_pair= pair)
+            slope_X, intercept_X, normal_residuals_X = calculate_dS_dNdS_lin_reg(dS_list = dS_X, dNdS_list = dNdS_X, species_pair= pair)
+            linreg_x_A, linreg_y_A = make_line_vectors(slope=slope_A, intercept=intercept_A, x_data=dS_A, y_data=dNdS_A)
+            linreg_x_X, linreg_y_X = make_line_vectors(slope=slope_X, intercept=intercept_X, x_data=dS_X, y_data=dNdS_X)
 
-        if normal_residuals_A:
-            linestyle_A = ":"
-        else:
-            linestyle_A = "-"
-        if normal_residuals_X:
-            linestyle_X = ":"
-        else:
-            linestyle_X = "-"
+            if normal_residuals_A:
+                linestyle_A = ":"
+            else:
+                linestyle_A = "-"
+            if normal_residuals_X:
+                linestyle_X = ":"
+            else:
+                linestyle_X = "-"
 
-        axes[col,row].plot(linreg_x_A, linreg_y_A, color = colors_dict["A_line"], linewidth=2, label=f"slope: {slope_A:.3f}", linestyle=linestyle_A)    
-        axes[col,row].plot(linreg_x_X, linreg_y_X, color = colors_dict["X_line"], linewidth=2, label=f"slope: {slope_X:.3f}", linestyle=linestyle_X)
-        axes[col,row].legend(fontsize=fs*0.75)
+            axes[col,row].plot(linreg_x_A, linreg_y_A, color = colors_dict["A_line"], linewidth=2, label=f"slope: {slope_A:.3f}", linestyle=linestyle_A)    
+            axes[col,row].plot(linreg_x_X, linreg_y_X, color = colors_dict["X_line"], linewidth=2, label=f"slope: {slope_X:.3f}", linestyle=linestyle_X)
+            axes[col,row].legend(fontsize=fs*0.75)
 
         axes[row,row].axis('off')
         axes[col,col].axis('off')
@@ -431,7 +441,10 @@ def plot_dS_vs_dNdS(A_dict:dict, X_dict:dict, filename = "dS_vs_dNdS.png", dark_
         # if species1 == "D_carinulata" or species2 == "D_carinulata":
         #     print(f"sample sizes, n_A = {n_A}, n_X = {n_X}, data X  = {data_X}")
     
-    fig.suptitle(f"Bruchini: dS vs. dNdS and dS violin plot, filtered dS < {max_dS} and dNdS < {max_dNdS}\n ", fontsize = fs*1.25)
+    if plot_dN:
+        fig.suptitle(f"Bruchini: dS vs. dNdS and dS violin plot, filtered dS < {max_dS} and dNdS < {max_dNdS}\n ", fontsize = fs*1.25)
+    else:
+        fig.suptitle(f"Bruchini: dS vs. dN, and dS violin plot, filtered dS < {max_dS} and dNdS < {max_dNdS}\n ", fontsize = fs*1.25)
     # Adjust layout to prevent overlap  (left, bottom, right, top)
     plt.tight_layout(rect=[0.01, 0, 1, 1])
 
@@ -446,7 +459,7 @@ def plot_dS_vs_dNdS(A_dict:dict, X_dict:dict, filename = "dS_vs_dNdS.png", dark_
 
 
 
-def plot_dS_vs_dNdS_one_pair(A_dict:dict, X_dict:dict, filename = "dS_vs_dNdS.png", dark_mode=False, max_dS=2, max_dNdS=2):
+def plot_dS_vs_dNdS_one_pair(A_dict:dict, X_dict:dict, filename = "dS_vs_dNdS.png", dark_mode=False, max_dS=2, max_dNdS=2, plot_dN=True):
     """
     plot a grid of scatterplots of dS vs. dNdS in X and autosomes for each pair
     """
@@ -509,8 +522,12 @@ def plot_dS_vs_dNdS_one_pair(A_dict:dict, X_dict:dict, filename = "dS_vs_dNdS.pn
         # remove dS>max_dS and dNdS>max_dNDS from both (remove dNdS also if dS is removed and vice versa)
         dS_A = [dS for i, dS in enumerate(dS_A_all) if dNdS_A_all[i] < max_dNdS and dS < max_dS]
         dS_X = [dS for i, dS in enumerate(dS_X_all) if dNdS_X_all[i] < max_dNdS and dS < max_dS]
-        dNdS_A = [dNdS for i, dNdS in enumerate(dNdS_A_all) if dS_A_all[i] < max_dS and dNdS < max_dNdS]
-        dNdS_X = [dNdS for i, dNdS in enumerate(dNdS_X_all) if dS_X_all[i] < max_dS and dNdS < max_dNdS]
+        if plot_dN:
+            dNdS_A = [dNdS*dS_A_all[i] for i, dNdS in enumerate(dNdS_A_all) if dS_A_all[i] < max_dS and dNdS < max_dNdS]
+            dNdS_X = [dNdS*dS_X_all[i] for i, dNdS in enumerate(dNdS_X_all) if dS_X_all[i] < max_dS and dNdS < max_dNdS]
+        else:
+            dNdS_A = [dNdS for i, dNdS in enumerate(dNdS_A_all) if dS_A_all[i] < max_dS and dNdS < max_dNdS]
+            dNdS_X = [dNdS for i, dNdS in enumerate(dNdS_X_all) if dS_X_all[i] < max_dS and dNdS < max_dNdS]
         assert len(dS_A) == len(dNdS_A)
         assert len(dS_X) == len(dNdS_X)
 
@@ -535,7 +552,10 @@ def plot_dS_vs_dNdS_one_pair(A_dict:dict, X_dict:dict, filename = "dS_vs_dNdS.pn
         axes[0].tick_params(axis='x', labelsize=fs)
         axes[0].tick_params(axis='y', labelsize=fs)
         axes[0].set_xlabel("dS", fontsize = fs)
-        axes[0].set_ylabel("dNdS", fontsize = fs)
+        if plot_dN:
+            axes[0].set_ylabel("dN", fontsize = fs)
+        else:
+            axes[0].set_ylabel("dNdS", fontsize = fs)
         axes[0].set_xlim(-0.08,2.08)
         ## linear regression
         slope_A, intercept_A, normal_residuals_A = calculate_dS_dNdS_lin_reg(dS_list = dS_A, dNdS_list = dNdS_A, species_pair= pair)
