@@ -200,7 +200,7 @@ def plot_dosage_compensation(summary_paths, annotation, assembly_index, X_list, 
     print(f"plot saved in current working directory as: {outfile} and {filename_tr}")
 
 
-def plot_sex_bias_bar_chart(summary_paths, annotation, X_list, outfile = ""):
+def plot_sex_bias_bar_chart(summary_paths, annotation, X_list, sig_p_level = 0.001, minLFC = 1,outfile = ""):
     """
     plot a bar chart to show proportion of significantly male or female biased genes on X or A chromosome
     """
@@ -219,8 +219,6 @@ def plot_sex_bias_bar_chart(summary_paths, annotation, X_list, outfile = ""):
     ## get p-values
     pval_dict_abdomen = dict(zip(filtered_abdomen["geneID"], filtered_abdomen["FDR"]))
     pval_dict_head_thorax = dict(zip(filtered_head_thorax["geneID"], filtered_head_thorax["FDR"]))
-
-    sig_p_level = 0.001
 
     ## parse gene position data
     annotation_dict = gff.parse_gff3_general(annotation)
@@ -250,35 +248,46 @@ def plot_sex_bias_bar_chart(summary_paths, annotation, X_list, outfile = ""):
         gene = annotation_dict[geneID]
 
         if gene.contig in X_list:
+            ## X-linked
             if pval_dict_abdomen[geneID]<sig_p_level:
-                if LFC_dict_abdomen[geneID] >0:
-                    abdomen_summary_X["sig_female"]+=1
-                else:
+                if LFC_dict_abdomen[geneID] > minLFC:
+                    abdomen_summary_X["sig_female"]+=1 #female biased
+                elif LFC_dict_abdomen[geneID] < -1*minLFC:
                     abdomen_summary_X["sig_male"]+=1
+                else:
+                    abdomen_summary_X["unbiased"]+=1
             else:
                 abdomen_summary_X["unbiased"]+=1
 
             if pval_dict_head_thorax[geneID]<sig_p_level:
-                if LFC_dict_head_thorax[geneID] >0:
+                if LFC_dict_head_thorax[geneID] > minLFC:
                     head_thorax_summary_X["sig_female"]+=1
-                else:
+                elif LFC_dict_head_thorax[geneID] < -1*minLFC:
                     head_thorax_summary_X["sig_male"]+=1
+                else:
+                    head_thorax_summary_X["unbiased"]+=1
             else:
                 head_thorax_summary_X["unbiased"]+=1
+        
         else:
+            ## A-linked
             if pval_dict_abdomen[geneID]<sig_p_level:
-                if LFC_dict_abdomen[geneID] >0:
+                if LFC_dict_abdomen[geneID] > minLFC:
                     abdomen_summary_A["sig_female"]+=1
-                else:
+                elif LFC_dict_abdomen[geneID] < -1*minLFC:
                     abdomen_summary_A["sig_male"]+=1
+                else:
+                    abdomen_summary_A["unbiased"]+=1
             else:
                 abdomen_summary_A["unbiased"]+=1
 
             if pval_dict_head_thorax[geneID]<sig_p_level:
-                if LFC_dict_head_thorax[geneID] >0:
+                if LFC_dict_head_thorax[geneID] > minLFC:
                     head_thorax_summary_A["sig_female"]+=1
-                else:
+                elif LFC_dict_head_thorax[geneID] < -1*minLFC:
                     head_thorax_summary_A["sig_male"]+=1
+                else:
+                    head_thorax_summary_A["unbiased"]+=1
             else:
                 head_thorax_summary_A["unbiased"]+=1
 
@@ -302,7 +311,7 @@ def plot_sex_bias_bar_chart(summary_paths, annotation, X_list, outfile = ""):
     width=0.4
     x_subtr=width*1.1/2.0
     x_coords = [1-x_subtr,1+x_subtr, 2-x_subtr,2+x_subtr]
-    fig, ax = plt.subplots(1, 1, figsize=(16, 10)) 
+    fig, ax = plt.subplots(1, 1, figsize=(16, 11)) 
 
     colors_dict ={
         "sig_female" : "#DC4141", # scarlet rush
@@ -357,8 +366,13 @@ def plot_sex_bias_bar_chart(summary_paths, annotation, X_list, outfile = ""):
     ax.tick_params(axis='y', labelsize=fs)
     ax.tick_params(axis='x', labelsize=fs) 
 
-    plt.legend(reverse=True, fontsize=fs*0.8, loc="lower left", title=f"sig. threshold\np<{sig_p_level}", title_fontsize=fs*0.8)
-    plt.title(f"Percent of female/male/unbiased genes", fontsize=fs*1.2)
+    if minLFC == 0:
+        leg_title = f"sig. threshold\np<{sig_p_level}"
+    else:
+        leg_title = f"sig. thresholds:\np<{sig_p_level} and\n|log2FC|>{minLFC}"
+    plt.legend(reverse=True, fontsize=fs*0.8, loc="lower left", 
+               title=leg_title, title_fontsize=fs*0.8)
+    plt.title(f"Percent of male/female/unbiased genes", fontsize=fs*1.2)
     plt.tight_layout(rect=[0, 0.05, 1, 1])
 
     # transparent background
@@ -381,9 +395,11 @@ if __name__ == "__main__":
     Cmac_X_contigs_list = get_Cmac_superscaffolded_XY_contigs()["X"]
 
     if False:
-        plot_dosage_compensation(summary_paths=DE_paths, annotation=Cmac_annotation, assembly_index=Cmac_assembly, X_list=Cmac_X_contigs_list, 
+        plot_dosage_compensation(summary_paths=DE_paths, annotation=Cmac_annotation, assembly_index=Cmac_assembly, 
+            X_list=Cmac_X_contigs_list, 
             outfile=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/X_sex_bias.png")
 
     if True:
         plot_sex_bias_bar_chart(summary_paths=DE_paths, annotation=Cmac_annotation, X_list=Cmac_X_contigs_list, 
+            sig_p_level = 0.05, minLFC = 0.5,
             outfile=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/all_sex_bias_proportion.png")
