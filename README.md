@@ -598,16 +598,16 @@ I had a bad time with DESeq2, and I will be using edgeR. The main point is to do
 
 number of sex-biased genes in female-male contrast:
 
-|               | abdomen       | head+thorax   |
-| ------------- | ------------- | ------------- |
-| downregulated | 3265          | 1331          |
-| unbiased      | 5279          | 9201          |
-| upregulated   | 2793          | 805           |
+|               | abdomen       | head+thorax   | sex bias      |
+| ------------- | ------------- | ------------- | ------------- |
+| downregulated | 3265          | 1331          | male-biased   |
+| unbiased      | 5279          | 9201          |               |
+| upregulated   | 2793          | 805           | female-biased |
 
 
 I have exported the results of this analysis into a table with the log2FC, FDR-corrected p-value and gene ID. I have then partitioned the sex bias by X or A for both tissues. 
 
-**!!!The numbers here don't match the table above!!! TODO why?**
+**!!!The numbers here don't match the table above!!!** Unsure what the exact parameters are that edgeR uses to determine the signficantly sex-biased genes in the female/male contrast. Mostly the trend holds though, the abdomen is more female-biased (less dosage compensated), Head+thorax has more unbiased genes overall. However, the abdomen has more female-biased genes overall according to the plot, but more male-biased (downregulated) genes according to the table.
 
 <p float="left">
   <img src="data/DE_analysis/all_sex_bias_proportion_white_bg.png" width="75%" />

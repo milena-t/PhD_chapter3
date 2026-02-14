@@ -362,7 +362,8 @@ def plot_sex_bias_bar_chart(summary_paths, annotation, X_list, sig_p_level = 0.0
     ax.tick_params(axis='x', labelsize=fs, rotation=90)
 
     ax.set_xlabel('')
-    ax.set_ylabel(f"Percentage of all genes", fontsize = fs)
+    # ax.set_ylabel(f"Percentage of all genes", fontsize = fs)
+    ax.set_ylabel('')
     ax.tick_params(axis='y', labelsize=fs)
     ax.tick_params(axis='x', labelsize=fs) 
 
@@ -394,12 +395,12 @@ if __name__ == "__main__":
     DE_paths = get_DE_paths(username=username)
     Cmac_X_contigs_list = get_Cmac_superscaffolded_XY_contigs()["X"]
 
-    if True:
+    if False:
         plot_dosage_compensation(summary_paths=DE_paths, annotation=Cmac_annotation, assembly_index=Cmac_assembly, 
             X_list=Cmac_X_contigs_list, 
             outfile=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/X_sex_bias.png")
 
-    if False:
+    if True:
         plot_sex_bias_bar_chart(summary_paths=DE_paths, annotation=Cmac_annotation, X_list=Cmac_X_contigs_list, 
-            sig_p_level = 0.05, minLFC = 0.5,
+            sig_p_level = 0.001, minLFC = 0.5,
             outfile=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/all_sex_bias_proportion.png")
