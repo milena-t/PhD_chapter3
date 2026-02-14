@@ -31,60 +31,29 @@ T_castaneum_proteins=/proj/naiss2023-6-65/Milena/chapter3/protein_data/T_castane
 T_freemani_proteins=/proj/naiss2023-6-65/Milena/chapter3/protein_data/T_freemani_original_header.faa
 C_septempunctata_proteins=/proj/naiss2023-6-65/Milena/chapter3/protein_data/C_septempunctata_original_header.faa
 C_magnifica_proteins=/proj/naiss2023-6-65/Milena/chapter3/protein_data/C_magnifica_original_header.faa
+D_melanogaster_proteins=/proj/naiss2023-6-65/Milena/chapter3/protein_data/D_melanogaster_original_header.faa
 
 OUTDIR=/proj/naiss2023-6-65/Milena/chapter3/all_vs_all_blastp
 
 ## --> re-run for new proteinfiles!
 
 ## make databases
-# for SPECIES1 in $T_freemani_proteins # $D_carinulata_proteins # $C_maculatus_proteins # $A_obtectus_proteins $B_siliquastri_proteins $C_chinensis_proteins
-# do
-#     makeblastdb -in $SPECIES1 -dbtype prot
-#     echo " ---> done database ${SPECIES1}"
-# done
+for SPECIES1 in $D_melanogaster_proteins # $D_carinulata_proteins # $C_maculatus_proteins # $A_obtectus_proteins $B_siliquastri_proteins $C_chinensis_proteins
+do
+    makeblastdb -in $SPECIES1 -dbtype prot
+    echo " ---> done database ${SPECIES1}"
+done
 
 ## -->
 
 
-for SPECIES1 in $T_castaneum_proteins $T_freemani_proteins $C_maculatus_proteins # $C_septempunctata_proteins $C_magnifica_proteins # $A_obtectus_proteins $B_siliquastri_proteins $C_chinensis_proteins $D_sublineata_proteins $D_carinulata_proteins
+for SPECIES1 in $D_melanogaster_proteins $C_maculatus_proteins # $C_septempunctata_proteins $C_magnifica_proteins # $A_obtectus_proteins $B_siliquastri_proteins $C_chinensis_proteins $D_sublineata_proteins $D_carinulata_proteins
 do  
 
     SPECIES1_name="${SPECIES1##*/}"
     SPECIES1_name="${SPECIES1_name%.*}"
 
-    for SPECIES2 in $T_castaneum_proteins $T_freemani_proteins $C_maculatus_proteins # $C_septempunctata_proteins $C_magnifica_proteins # $D_sublineata_proteins $D_carinulata_proteins # $A_obtectus_proteins $B_siliquastri_proteins $C_chinensis_proteins $C_maculatus_proteins $T_castaneum_proteins 
-    do
-
-        SPECIES2_name="${SPECIES2##*/}"
-        SPECIES2_name="${SPECIES2_name%.*}"
-
-        # if [[ "${SPECIES1_name}" == "${SPECIES2_name}" ]]
-        # then
-        #     continue
-        # fi
-
-        OUT_1v2="${OUTDIR}/${SPECIES1_name}_vs_${SPECIES2_name}.blast"
-        OUT_2v1="${OUTDIR}/${SPECIES2_name}_vs_${SPECIES1_name}.blast"
-
-        echo "RUN: blastp -query $SPECIES1 -db $SPECIES2 -out $OUT_1v2 -num_threads 5 -num_alignments 5 -evalue 1e-10  -outfmt 6"
-        blastp -query $SPECIES1 -db $SPECIES2 -out $OUT_1v2 -num_threads 5 -num_alignments 5 -evalue 1e-10  -outfmt 6
-        echo " =========> ${OUT_1v2} done!"
-
-        # reverse already happens automatically in the nested for loop no need to implement explicitly
-        # echo "RUN: blastp -query $SPECIES2 -db $SPECIES1 -out $OUT_2v1 -num_threads 5 -num_alignments 5 -evalue 1e-10  -outfmt 6"
-        # blastp -query $SPECIES2 -db $SPECIES1 -out $OUT_2v1 -num_threads 5 -num_alignments 5 -evalue 1e-10  -outfmt 6
-        # echo " =========> ${OUT_2v1} done!"
-
-    done
-done
-
-for SPECIES1 in $C_septempunctata_proteins $C_magnifica_proteins $C_maculatus_proteins # $A_obtectus_proteins $B_siliquastri_proteins $C_chinensis_proteins $D_sublineata_proteins $D_carinulata_proteins
-do  
-
-    SPECIES1_name="${SPECIES1##*/}"
-    SPECIES1_name="${SPECIES1_name%.*}"
-
-    for SPECIES2 in $C_septempunctata_proteins $C_magnifica_proteins $C_maculatus_proteins # $D_sublineata_proteins $D_carinulata_proteins # $A_obtectus_proteins $B_siliquastri_proteins $C_chinensis_proteins $C_maculatus_proteins $T_castaneum_proteins 
+    for SPECIES2 in $D_melanogaster_proteins $C_maculatus_proteins # $C_septempunctata_proteins $C_magnifica_proteins # $D_sublineata_proteins $D_carinulata_proteins # $A_obtectus_proteins $B_siliquastri_proteins $C_chinensis_proteins $C_maculatus_proteins $T_castaneum_proteins 
     do
 
         SPECIES2_name="${SPECIES2##*/}"
