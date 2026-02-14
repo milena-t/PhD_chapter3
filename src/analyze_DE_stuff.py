@@ -157,8 +157,8 @@ def plot_dosage_compensation(summary_paths, annotation, assembly_index, X_list, 
             print(f"\t * head+thorax mean log2FC: {ht_mean:.3f}, SEM: {ht_sem:.3f}")
             ax.axhline(y=a_mean, xmin=mean_min/total_x_length, xmax=mean_max/total_x_length, color=colors_dict["abdomen"], linestyle="-") 
             ax.axhline(y=ht_mean, xmin=mean_min/total_x_length, xmax=mean_max/total_x_length, color=colors_dict["head+thorax"], linestyle="-") 
-            ax.axhspan(ymin=a_mean-a_sem, ymax=a_mean+a_sem, xmin=mean_min/total_x_length, xmax=mean_max/total_x_length,color=colors_dict["abdomen"],  alpha=.5, linewidth = 0)
-            ax.axhspan(ymin=ht_mean-ht_sem, ymax=ht_mean+ht_sem, xmin=mean_min/total_x_length, xmax=mean_max/total_x_length, color=colors_dict["head+thorax"], alpha=.5, linewidth = 0)
+            ax.axhspan(ymin=a_mean-a_sem, ymax=a_mean+a_sem, xmin=mean_min/total_x_length, xmax=mean_max/total_x_length,color=colors_dict["abdomen"],  alpha=0.3, linewidth = 0)
+            ax.axhspan(ymin=ht_mean-ht_sem, ymax=ht_mean+ht_sem, xmin=mean_min/total_x_length, xmax=mean_max/total_x_length, color=colors_dict["head+thorax"], alpha=0.3, linewidth = 0)
 
 
     ## set x axis labels and ticks correctly with contig names and stuff
@@ -202,7 +202,7 @@ def plot_dosage_compensation(summary_paths, annotation, assembly_index, X_list, 
 
 def plot_sex_bias_bar_chart(summary_paths, annotation, X_list, sig_p_level = 0.001, minLFC = 1,outfile = ""):
     """
-    plot a bar chart to show proportion of significantly male or female biased genes on X or A chromosome
+0 3  plot a bar chart to show proportion of significantly male or female biased genes on X or A chromosome
     """
 
     summary_data_abdomen = pd.read_csv(summary_paths["abdomen"], sep = "\t", index_col=False)
@@ -394,12 +394,12 @@ if __name__ == "__main__":
     DE_paths = get_DE_paths(username=username)
     Cmac_X_contigs_list = get_Cmac_superscaffolded_XY_contigs()["X"]
 
-    if False:
+    if True:
         plot_dosage_compensation(summary_paths=DE_paths, annotation=Cmac_annotation, assembly_index=Cmac_assembly, 
             X_list=Cmac_X_contigs_list, 
             outfile=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/X_sex_bias.png")
 
-    if True:
+    if False:
         plot_sex_bias_bar_chart(summary_paths=DE_paths, annotation=Cmac_annotation, X_list=Cmac_X_contigs_list, 
             sig_p_level = 0.05, minLFC = 0.5,
             outfile=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/all_sex_bias_proportion.png")
