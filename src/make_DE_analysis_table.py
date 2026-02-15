@@ -51,12 +51,14 @@ def get_paml_paths(username="miltr339"):
     """
     tables = {
         "A" : {
-            "sites" : f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/site_classes_summary_A-linked.txt",
+            "sites" : f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/site_classes_summary_A_BH_corrected.txt",
             "dNdS" : f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/dNdS_by_ortholog_A-linked_updated_species.txt",
+
             },
         "X" : {
-            "sites" : f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/site_classes_summary_X-linked.txt",
+            "sites" : f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/site_classes_summary_X_BH_corrected.txt",
             "dNdS" : f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/dNdS_by_ortholog_X-linked_updated_species.txt",
+
             }
     }
     return tables

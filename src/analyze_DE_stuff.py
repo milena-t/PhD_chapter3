@@ -384,6 +384,10 @@ def plot_sex_bias_bar_chart(summary_paths, annotation, X_list, sig_p_level = 0.0
     print(f"plot saved in current working directory as: {outfile} and {filename_tr}")
 
 
+def check_pos_sel_DE(summary_table_path):
+    """
+    check if according to the summary table
+    """
 
 
 
