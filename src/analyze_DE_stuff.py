@@ -3,7 +3,7 @@ analyze the info from the big summary tables generated with PhD_chapter3/src/mak
 """
 
 import parse_gff as gff
-from Bio import SeqIO
+from tqdm import tqdm
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
@@ -566,6 +566,107 @@ def check_DE_phylogeny_rank_conserved(summary_paths_AX_dict:dict, outfile = "", 
 
 
 
+def make_dNdS_and_logFC_list_for_plotting(summary_file_df, min_p):
+    """
+    make a list of lists like [ [dNdS_values] , [logFC_values] ]
+    """
+    if min_p == 0:
+        dNdS_numeric = pd.to_numeric(summary_file_df["dN/dS"], errors='coerce')
+        # Keep only rows where conversion succeeded
+        valid_rows = dNdS_numeric.notna()
+        filtered_df=summary_file_df[valid_rows]
+
+        abdomen_pairs = [filtered_df["dN/dS"].astype(float).tolist(), filtered_df["LFC_abdomen"].astype(float).tolist()]
+        head_thorax_pairs = [filtered_df["dN/dS"].astype(float).tolist(), filtered_df["LFC_head+thorax"].astype(float).tolist()]
+    else:
+        filtered_abdomen = summary_file_df[pd.notna(summary_file_df["LFC_abdomen"])]
+        filtered_head_thorax = summary_file_df[pd.notna(summary_file_df["LFC_head+thorax"])]
+
+        abdomen_pairs = [[],[]]
+        head_thorax_pairs = [[],[]]
+        for dNdS, log2FC_val,pval  in zip(filtered_abdomen["dN/dS"], filtered_abdomen["LFC_abdomen"], filtered_abdomen["FDR_pval_abdomen"]):
+            if pval<min_p:
+                try:                    
+                    abdomen_pairs[0].append(float(dNdS))
+                    abdomen_pairs[1].append(float(log2FC_val))
+                except:
+                    pass
+                    # print(f"abdomen dNdS: {dNdS},  \tlog2FC: {log2FC_val}")
+        for dNdS, log2FC_val,pval  in zip(filtered_head_thorax["dN/dS"], filtered_head_thorax["LFC_head+thorax"], filtered_head_thorax["FDR_pval_head+thorax"]):
+            if pval<min_p:
+                try:                    
+                    head_thorax_pairs[0].append(float(dNdS))
+                    head_thorax_pairs[1].append(float(log2FC_val))
+                except:
+                    pass
+                    # print(f"head+horax dNdS: {dNdS},  \tlog2FC: {log2FC_val}")
+
+    print(f"dimensions abdomen: {len(abdomen_pairs[0])} dNdS values, \t{len(abdomen_pairs[1])} logFC values")
+    print(f"dimensions head+thorax: {len(head_thorax_pairs[0])} dNdS values, \t{len(head_thorax_pairs[1])} logFC values")
+
+    return abdomen_pairs, head_thorax_pairs
+
+
+def plot_dNdS_vs_logFC(summary_paths_AX_dict, outfile = "", sig_p_threshold = 0):
+
+    summary_data_A = pd.read_csv(summary_paths_AX_dict["A"], sep = "\t", index_col=False)
+    summary_data_X = pd.read_csv(summary_paths_AX_dict["X"], sep = "\t", index_col=False)
+    
+    print(f"/////////// A ///////////")
+    abdomen_pairs_A, head_thorax_pairs_A = make_dNdS_and_logFC_list_for_plotting(summary_data_A, min_p = sig_p_threshold)
+    print(f"/////////// X ///////////")
+    abdomen_pairs_X, head_thorax_pairs_X = make_dNdS_and_logFC_list_for_plotting(summary_data_X, min_p = sig_p_threshold)
+
+    fs = 25 # font size
+
+    # set figure aspect ratio
+    aspect_ratio = 20 / 12
+    height_pixels = 1200  # Height in pixels
+    width_pixels = int(height_pixels * aspect_ratio)  # Width in pixels
+
+    fig, ax = plt.subplots(1,2,figsize=(width_pixels / 100, height_pixels / 100), dpi=100)
+
+    colors_dict = {
+        # "A" : "#4d7298", # uniform_unfiltered blue
+        "A" : "#F2933A", # uniform_filtered orange
+        "A_line" : "#D36D0D", # darker orange
+        "X" : "#b82946", # native red
+        "X_line" : "#861D32" #dark red
+    }
+
+    def plot_tissue(pairs_A, pairs_X, col, fs, colors_dict=colors_dict, title = ""):
+        ax[col].scatter(pairs_A[0], pairs_A[1], color = colors_dict["A"], label=f"Autosomes")#, s=35)
+        ax[col].scatter(pairs_X[0], pairs_X[1], color = colors_dict["X"], label=f"X-chromosome")#, s=35)
+        ax[col].tick_params(axis='x', labelsize=fs)
+        ax[col].tick_params(axis='y', labelsize=fs)
+        ax[col].set_title(title, fontsize=fs)
+        if col==1:
+            ax[col].legend(fontsize=fs, markerscale=3)
+        # axes[0,col].set_xlabel("dS", fontsize = fs)
+        # axes[0,col].set_ylabel("dN", fontsize = fs)
+
+    print(f"...plotting left abdominal")
+    plot_tissue(abdomen_pairs_A, abdomen_pairs_X, col=0, fs=fs, colors_dict=colors_dict, title = "Abdominal tissues")
+    print(f"...plotting right head+thorax")
+    plot_tissue(head_thorax_pairs_A, head_thorax_pairs_X, col=1, fs=fs, colors_dict=colors_dict, title = "Head+Thorax tissues")
+    
+    fig.supxlabel(f"dN/dS", fontsize = fs)
+    if sig_p_threshold>0:
+        fig.supylabel(f"Log2FC female-male (p<{sig_p_threshold})", fontsize = fs)
+    else:
+        fig.supylabel(f"Log2FC female-male", fontsize = fs)
+
+    # layout (left, bottom, right, top)
+    # plt.tight_layout(rect=[0, 0.05, 1, 1])
+
+    # transparent background
+    plt.savefig(outfile, dpi = 100, transparent = True)
+    # non-transparent background
+    filename_tr = outfile.replace(".png", "_white_bg.png")
+    plt.savefig(filename_tr, dpi = 100, transparent = False)
+    print(f"plot saved in current working directory as: {outfile} and {filename_tr}")
+
+
 if __name__ == "__main__":
     
     username = "milena"
@@ -586,7 +687,7 @@ if __name__ == "__main__":
             sig_p_level = 0.001, minLFC = 0.5,
             outfile=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/all_sex_bias_proportion.png")
 
-    if True:
+    if False:
         abs_logFC = False
         check_DE_phylogeny_rank_conserved(summary_paths_AX_dict=summary_paths,
             outfile=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/conservation_rank_all_sex_bias_proportion.png",
@@ -594,3 +695,11 @@ if __name__ == "__main__":
         check_DE_phylogeny_rank_conserved(summary_paths_AX_dict=summary_paths,
             outfile=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/conservation_rank_sig_sex_bias_proportion.png",
             abs_LFC=abs_logFC, sig_p_threshold=0.05)
+
+    if True:
+        plot_dNdS_vs_logFC(summary_paths_AX_dict=summary_paths,
+            outfile=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/dNdS_vs_sig_logFC.png",
+            sig_p_threshold=0.05)
+        plot_dNdS_vs_logFC(summary_paths_AX_dict=summary_paths,
+            outfile=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/dNdS_vs_logFC.png",
+            sig_p_threshold=0)
