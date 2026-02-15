@@ -4,7 +4,7 @@ BLAST_OUTDIR_UPPMAX=/proj/naiss2023-6-65/Milena/chapter3/all_vs_all_blastp
 BLAST_OUTDIR=/Users/miltr339/work/pairwise_blast_chapter_2_3
 # SCRIPT_DIR=/Users/miltr339/work/PhD_code/PhD_chapter2/src
 SCRIPT_DIR=/proj/naiss2023-6-65/Milena/chapter2/PhD_chapter2/src
-
+USERNAME=milena
 
 # python3 $SCRIPT_DIR/get_blast_BRH.py $BLAST_OUTDIR/T_castaneum_original_header_vs_T_freemani_original_header.blast $BLAST_OUTDIR/T_freemani_original_header_vs_T_castaneum_original_header.blast
 # python3 $SCRIPT_DIR/get_blast_BRH.py $BLAST_OUTDIR/C_magnifica_original_header_vs_C_septempunctata_original_header.blast $BLAST_OUTDIR/C_septempunctata_original_header_vs_C_magnifica_original_header.blast
@@ -16,14 +16,13 @@ SCRIPT_DIR=/proj/naiss2023-6-65/Milena/chapter2/PhD_chapter2/src
 # python3 $SCRIPT_DIR/get_blast_BRH.py $BLAST_OUTDIR_UPPMAX/C_maculatus_superscaffolded_original_header_vs_A_obtectus_original_header.blast $BLAST_OUTDIR_UPPMAX/A_obtectus_original_header_vs_C_maculatus_superscaffolded_original_header.blast C_maculatus_A_obtectus_BRHs.tsv
 # python3 $SCRIPT_DIR/get_blast_BRH.py $BLAST_OUTDIR_UPPMAX/C_maculatus_superscaffolded_original_header_vs_B_siliquastri_original_header.blast $BLAST_OUTDIR_UPPMAX/B_siliquastri_original_header_vs_C_maculatus_superscaffolded_original_header.blast C_maculatus_B_siliquastri_BRHs.tsv
 # python3 $SCRIPT_DIR/get_blast_BRH.py $BLAST_OUTDIR_UPPMAX/C_maculatus_superscaffolded_original_header_vs_C_chinensis_original_header.blast $BLAST_OUTDIR_UPPMAX/C_chinensis_original_header_vs_C_maculatus_superscaffolded_original_header.blast C_maculatus_C_chinensis_BRHs.tsv
+# python3 $SCRIPT_DIR/get_blast_BRH.py $BLAST_OUTDIR_UPPMAX/C_maculatus_superscaffolded_original_header_vs_D_melanogaster_original_header.blast $BLAST_OUTDIR_UPPMAX/D_melanogaster_original_header_vs_C_maculatus_superscaffolded_original_header.blast C_maculatus_D_melanogaster_BRHs.tsv
 
-# rsync -axP milenatr@pelle.uppmax.uu.se:/proj/naiss2023-6-65/Milena/chapter3/additional_BRHs/C_maculatus_T_castaneum_BRHs.tsv /Users/miltr339/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/C_maculatus_T_castaneum_BRHs.tsv
-# rsync -axP milenatr@pelle.uppmax.uu.se:/proj/naiss2023-6-65/Milena/chapter3/additional_BRHs/C_maculatus_T_freemani_BRHs.tsv /Users/miltr339/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/C_maculatus_T_freemani_BRHs.tsv
-# rsync -axP milenatr@pelle.uppmax.uu.se:/proj/naiss2023-6-65/Milena/chapter3/additional_BRHs/C_maculatus_C_magnifica_BRHs.tsv /Users/miltr339/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/C_maculatus_C_magnifica_BRHs.tsv
-# rsync -axP milenatr@pelle.uppmax.uu.se:/proj/naiss2023-6-65/Milena/chapter3/additional_BRHs/C_maculatus_C_septempunctata_BRHs.tsv /Users/miltr339/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/C_maculatus_C_septempunctata_BRHs.tsv
-# rsync -axP milenatr@pelle.uppmax.uu.se:/proj/naiss2023-6-65/Milena/chapter3/additional_BRHs/C_maculatus_A_obtectus_BRHs.tsv /Users/miltr339/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/C_maculatus_A_obtectus_BRHs.tsv
-# rsync -axP milenatr@pelle.uppmax.uu.se:/proj/naiss2023-6-65/Milena/chapter3/additional_BRHs/C_maculatus_B_siliquastri_BRHs.tsv /Users/miltr339/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/C_maculatus_B_siliquastri_BRHs.tsv
-# rsync -axP milenatr@pelle.uppmax.uu.se:/proj/naiss2023-6-65/Milena/chapter3/additional_BRHs/C_maculatus_C_chinensis_BRHs.tsv /Users/miltr339/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/C_maculatus_C_chinensis_BRHs.tsv
-
-python3 $SCRIPT_DIR/get_blast_BRH.py $BLAST_OUTDIR_UPPMAX/C_maculatus_superscaffolded_original_header_vs_D_melanogaster_original_header.blast $BLAST_OUTDIR_UPPMAX/D_melanogaster_original_header_vs_C_maculatus_superscaffolded_original_header.blast C_maculatus_D_melanogaster_BRHs.tsv
-rsync -axP milenatr@pelle.uppmax.uu.se:/proj/naiss2023-6-65/Milena/chapter3/additional_BRHs/C_maculatus_D_melanogaster_BRHs.tsv /Users/miltr339/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/C_maculatus_D_melanogaster_BRHs.tsv
+rsync -axP milenatr@pelle.uppmax.uu.se:/proj/naiss2023-6-65/Milena/chapter3/additional_BRHs/C_maculatus_T_castaneum_BRHs.tsv /Users/${USERNAME}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/C_maculatus_T_castaneum_BRHs.tsv
+rsync -axP milenatr@pelle.uppmax.uu.se:/proj/naiss2023-6-65/Milena/chapter3/additional_BRHs/C_maculatus_T_freemani_BRHs.tsv /Users/${USERNAME}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/C_maculatus_T_freemani_BRHs.tsv
+rsync -axP milenatr@pelle.uppmax.uu.se:/proj/naiss2023-6-65/Milena/chapter3/additional_BRHs/C_maculatus_C_magnifica_BRHs.tsv /Users/${USERNAME}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/C_maculatus_C_magnifica_BRHs.tsv
+rsync -axP milenatr@pelle.uppmax.uu.se:/proj/naiss2023-6-65/Milena/chapter3/additional_BRHs/C_maculatus_C_septempunctata_BRHs.tsv /Users/${USERNAME}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/C_maculatus_C_septempunctata_BRHs.tsv
+rsync -axP milenatr@pelle.uppmax.uu.se:/proj/naiss2023-6-65/Milena/chapter3/additional_BRHs/C_maculatus_A_obtectus_BRHs.tsv /Users/${USERNAME}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/C_maculatus_A_obtectus_BRHs.tsv
+rsync -axP milenatr@pelle.uppmax.uu.se:/proj/naiss2023-6-65/Milena/chapter3/additional_BRHs/C_maculatus_B_siliquastri_BRHs.tsv /Users/${USERNAME}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/C_maculatus_B_siliquastri_BRHs.tsv
+rsync -axP milenatr@pelle.uppmax.uu.se:/proj/naiss2023-6-65/Milena/chapter3/additional_BRHs/C_maculatus_C_chinensis_BRHs.tsv /Users/${USERNAME}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/C_maculatus_C_chinensis_BRHs.tsv
+rsync -axP milenatr@pelle.uppmax.uu.se:/proj/naiss2023-6-65/Milena/chapter3/additional_BRHs/C_maculatus_D_melanogaster_BRHs.tsv /Users/${USERNAME}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/C_maculatus_D_melanogaster_BRHs.tsv

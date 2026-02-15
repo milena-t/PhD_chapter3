@@ -67,6 +67,7 @@ def get_BRH_paths(username="miltr339"):
     blast best reciprocal hits of Cmac and all other species, to determine how far back the gene of interest is conserved
     """
     tables = {
+        "D_melanogaster" : f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/C_maculatus_D_melanogaster_BRHs.tsv",
         "T_castaneum" : f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/C_maculatus_T_castaneum_BRHs.tsv",
         "T_freemani" : f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/C_maculatus_T_freemani_BRHs.tsv",
         "C_magnifica" : f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/C_maculatus_C_magnifica_BRHs.tsv",
@@ -76,6 +77,7 @@ def get_BRH_paths(username="miltr339"):
         "C_chinensis" : f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/C_maculatus_C_chinensis_BRHs.tsv",
     }
     dist_dict = {
+        "D_melanogaster" : 5,
         "T_castaneum" : 4,
         "T_freemani" : 4,
         "C_magnifica" : 4,
@@ -327,7 +329,7 @@ def make_summary_table(lookup_table_path, DE_paths_dict, paml_paths_dict, chromo
 if __name__=="__main__":
     
     ### load data
-    username="miltr339"
+    username="milena"
     outdir_tables=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables"
     lookup_tables_dict = get_lookup_tables(username=username)
     DE_paths_dict = get_DE_paths(username=username)
