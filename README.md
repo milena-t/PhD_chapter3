@@ -642,6 +642,31 @@ I calculated the standard error of the mean (SEM) with `scipy.stats.sem` which t
 	 * abdomen mean log2FC: -0.910, SEM: 1.759
 	 * head+thorax mean log2FC: 4.023, SEM: 1.668
 
+
+## sex bias and ortholog conservation
+
+I have assigned each Cmac ortholog a "conservation rank" depending on the most distant species in which there is a 1-to-1 ortholog for this gene. Most genes are highly conserved with orthologs all the way in *D. melanogaster*. The ranks are these: 
+
+```python 
+ranks_dict = {
+        "D_melanogaster" : 5,
+        "T_castaneum" : 4, "T_freemani" : 4,"C_magnifica" : 4,"C_septempunctata" : 4,
+        "A_obtectus" : 3,
+        "B_siliquastri" : 2,
+        "C_chinensis" : 1,
+    }
+```
+
+We expect X-linked genes to be more dosage compensated the more conserved they are, because dosage compensation has had more time to evolve. it kind of looks like there is a trend downwards in female-bias for A/X and both tissues, but with the large difference in sample size it is difficult to tell. TODO how do i analyze this properly statistically?
+
+<p float="left">
+  <img src="data/DE_analysis/conservation_rank_all_sex_bias_proportion.png" width="100%" />
+</p>
+<p float="left">
+  <img src="data/DE_analysis/conservation_rank_sig_sex_bias_proportion.png" width="100%" />
+</p>
+
+
 ## combining sex-biased expression with molecular rate and positive selection
 
 TODO
