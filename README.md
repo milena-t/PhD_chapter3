@@ -679,11 +679,15 @@ only significantly sex-biased genes (FDR-pval < 0.05) again split by the directi
 
 ### dNdS vs. sex bias
 
-Unsure how to interpret this one for now, it is sunday 21.00
-
+I am splitting the dNdS into a plot that combines all dNdS values (where some transcript are shown in duplicate due to differing dNdS values in different comparisons), and separate plots for all species. I am only showing transcripts where the log2FC is significant.
 
 <p float="left">
-  <img src="data/DE_analysis/dNdS_vs_sig_logFC_white_bg.png" width="100%" />
+  <img src="data/DE_analysis/dNdS_all_species_vs_sig_logFC_white_bg.png" width="49%" />
+  <img src="data/DE_analysis/dNdS_A_obtectus_vs_sig_logFC_white_bg.png" width="49%" />
+</p>
+<p float="left">
+  <img src="data/DE_analysis/dNdS_B_siliquastri_vs_sig_logFC_white_bg.png" width="49%" />
+  <img src="data/DE_analysis/dNdS_C_chinensis_vs_sig_logFC_white_bg.png" width="49%" />
 </p>
 
 

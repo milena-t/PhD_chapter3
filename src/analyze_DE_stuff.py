@@ -202,7 +202,7 @@ def plot_dosage_compensation(summary_paths, annotation, assembly_index, X_list, 
 
 def plot_sex_bias_bar_chart(summary_paths, annotation, X_list, sig_p_level = 0.001, minLFC = 1,outfile = ""):
     """
-0 3  plot a bar chart to show proportion of significantly male or female biased genes on X or A chromosome
+    plot a bar chart to show proportion of significantly male or female biased genes on X or A chromosome
     """
 
     summary_data_abdomen = pd.read_csv(summary_paths["abdomen"], sep = "\t", index_col=False)
@@ -388,22 +388,21 @@ def make_phylogeny_rank_dict(summary_file_df, min_p):
     """
     make a dict with rank orders like { 1 : [list, of, Log2FC, numbers] ,  2 [more, log2FC, numbers] , ... }
     """
-    filtered_abdomen = summary_file_df[pd.notna(summary_file_df["LFC_abdomen"])]
-    filtered_head_thorax = summary_file_df[pd.notna(summary_file_df["LFC_head+thorax"])]
+    filtered_df = summary_file_df.drop_duplicates(subset=['focal_transcript']) # remove duplicate data points
     
     LFC_dict_abdomen = { i : [] for i in range(1,6)}
     LFC_dict_head_thorax = { i : [] for i in range(1,6)}
 
     if min_p == 0:
-        for p_rank, log2FC_val  in zip(filtered_abdomen["level_most_dist_ortholog"], filtered_abdomen["LFC_abdomen"]):
+        for p_rank, log2FC_val  in zip(filtered_df["level_most_dist_ortholog"], filtered_df["LFC_abdomen"]):
             LFC_dict_abdomen[p_rank].append(log2FC_val)
-        for p_rank, log2FC_val  in zip(filtered_head_thorax["level_most_dist_ortholog"], filtered_head_thorax["LFC_head+thorax"]):
+        for p_rank, log2FC_val  in zip(filtered_df["level_most_dist_ortholog"], filtered_df["LFC_head+thorax"]):
             LFC_dict_head_thorax[p_rank].append(log2FC_val)
     else:
-        for p_rank, log2FC_val,pval  in zip(filtered_abdomen["level_most_dist_ortholog"], filtered_abdomen["LFC_abdomen"], filtered_abdomen["FDR_pval_abdomen"]):
+        for p_rank, log2FC_val,pval  in zip(filtered_df["level_most_dist_ortholog"], filtered_df["LFC_abdomen"], filtered_df["FDR_pval_abdomen"]):
             if pval<min_p:
                 LFC_dict_abdomen[p_rank].append(log2FC_val)
-        for p_rank, log2FC_val,pval  in zip(filtered_head_thorax["level_most_dist_ortholog"], filtered_head_thorax["LFC_head+thorax"], filtered_head_thorax["FDR_pval_head+thorax"]):
+        for p_rank, log2FC_val,pval  in zip(filtered_df["level_most_dist_ortholog"], filtered_df["LFC_head+thorax"], filtered_df["FDR_pval_head+thorax"]):
             if pval<min_p:
                 LFC_dict_head_thorax[p_rank].append(log2FC_val)
 
@@ -566,10 +565,21 @@ def check_DE_phylogeny_rank_conserved(summary_paths_AX_dict:dict, outfile = "", 
 
 
 
-def make_dNdS_and_logFC_list_for_plotting(summary_file_df, min_p):
+def make_dNdS_and_logFC_list_for_plotting(summary_file_df, min_p, filter_species = ""):
     """
     make a list of lists like [ [dNdS_values] , [logFC_values] ]
+    if filter_species = "" then only one instances of each transcript is kept, no matter what ortholog species it is. if there is multiple then the closes ortholog is kept
+    Otherwise only transcripts that are orthologs with filter_species are shown
     """
+    if filter_species == "":
+        # keep only first instance of each transcript (some transcripts show up multiple times if there's orthologs in Cchi, Bsil and Aobt) 
+        # this means that if there is multiple dNdS values for the same comparison, only the closest is shown
+        # summary_file_df = summary_file_df.drop_duplicates(subset=['focal_transcript']) 
+        pass
+
+    else:
+        summary_file_df = summary_file_df[summary_file_df['other_species'] == filter_species]
+
     if min_p == 0:
         dNdS_numeric = pd.to_numeric(summary_file_df["dN/dS"], errors='coerce')
         # Keep only rows where conversion succeeded
@@ -607,17 +617,17 @@ def make_dNdS_and_logFC_list_for_plotting(summary_file_df, min_p):
     return abdomen_pairs, head_thorax_pairs
 
 
-def plot_dNdS_vs_logFC(summary_paths_AX_dict, outfile = "", sig_p_threshold = 0):
+def plot_dNdS_vs_logFC(summary_paths_AX_dict, outfile = "", sig_p_threshold = 0, ortholog_species = ""):
 
     summary_data_A = pd.read_csv(summary_paths_AX_dict["A"], sep = "\t", index_col=False)
     summary_data_X = pd.read_csv(summary_paths_AX_dict["X"], sep = "\t", index_col=False)
     
     print(f"/////////// A ///////////")
-    abdomen_pairs_A, head_thorax_pairs_A = make_dNdS_and_logFC_list_for_plotting(summary_data_A, min_p = sig_p_threshold)
+    abdomen_pairs_A, head_thorax_pairs_A = make_dNdS_and_logFC_list_for_plotting(summary_data_A, min_p = sig_p_threshold, filter_species=ortholog_species)
     print(f"/////////// X ///////////")
-    abdomen_pairs_X, head_thorax_pairs_X = make_dNdS_and_logFC_list_for_plotting(summary_data_X, min_p = sig_p_threshold)
+    abdomen_pairs_X, head_thorax_pairs_X = make_dNdS_and_logFC_list_for_plotting(summary_data_X, min_p = sig_p_threshold, filter_species=ortholog_species)
 
-    fs = 25 # font size
+    fs = 35 # font size
 
     # set figure aspect ratio
     aspect_ratio = 20 / 12
@@ -645,9 +655,7 @@ def plot_dNdS_vs_logFC(summary_paths_AX_dict, outfile = "", sig_p_threshold = 0)
         # axes[0,col].set_xlabel("dS", fontsize = fs)
         # axes[0,col].set_ylabel("dN", fontsize = fs)
 
-    print(f"...plotting left abdominal")
     plot_tissue(abdomen_pairs_A, abdomen_pairs_X, col=0, fs=fs, colors_dict=colors_dict, title = "Abdominal tissues")
-    print(f"...plotting right head+thorax")
     plot_tissue(head_thorax_pairs_A, head_thorax_pairs_X, col=1, fs=fs, colors_dict=colors_dict, title = "Head+Thorax tissues")
     
     fig.supxlabel(f"dN/dS", fontsize = fs)
@@ -656,20 +664,23 @@ def plot_dNdS_vs_logFC(summary_paths_AX_dict, outfile = "", sig_p_threshold = 0)
     else:
         fig.supylabel(f"Log2FC female-male", fontsize = fs)
 
+    if ortholog_species != "":
+        species_lab = ortholog_species.replace("_", ". ")
+        fig.suptitle(f"dN/dS values of C. maculatus and {species_lab}", fontsize = fs)
     # layout (left, bottom, right, top)
     # plt.tight_layout(rect=[0, 0.05, 1, 1])
 
     # transparent background
-    plt.savefig(outfile, dpi = 100, transparent = True)
+    plt.savefig(outfile, dpi = 300, transparent = True)
     # non-transparent background
     filename_tr = outfile.replace(".png", "_white_bg.png")
-    plt.savefig(filename_tr, dpi = 100, transparent = False)
+    plt.savefig(filename_tr, dpi = 300, transparent = False)
     print(f"plot saved in current working directory as: {outfile} and {filename_tr}")
 
 
 if __name__ == "__main__":
     
-    username = "milena"
+    username = "miltr339"
     Cmac_annotation = f"/Users/{username}/work/native_annotations/all_native_annot/C_maculatus_superscaffolded_LomeRNA_braker_isoform_filtered.gff"
     # milenatr@pelle.uppmax.uu.se:/proj/naiss2023-6-65/Milena/annotation_pipeline/Cmac_Lome_superscaffolded_comparison/Cmac_Lome_diverse/Cmac_Lome_diverse/braker/braker_isoform_filtered.gff C_maculatus_superscaffolded_LomeRNA_braker_isoform_filtered.gff
     Cmac_assembly = f"/Users/{username}/work/assemblies_masked_uniform/C_maculatus_superscaffolded_genomic_fasta.masked.fai" # I only need contig lengths so use assembly index
@@ -697,9 +708,19 @@ if __name__ == "__main__":
             abs_LFC=abs_logFC, sig_p_threshold=0.05)
 
     if True:
-        plot_dNdS_vs_logFC(summary_paths_AX_dict=summary_paths,
-            outfile=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/dNdS_vs_sig_logFC.png",
-            sig_p_threshold=0.05)
-        plot_dNdS_vs_logFC(summary_paths_AX_dict=summary_paths,
-            outfile=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/dNdS_vs_logFC.png",
-            sig_p_threshold=0)
+        ortholog_species = {
+            "" : "all_species",
+            "C_chinensis" : "C_chinensis", 
+            "B_siliquastri" : "B_siliquastri",
+            "A_obtectus" : "A_obtectus"
+        }
+        for species, plot_name in ortholog_species.items():
+            if species !="":
+                continue
+            print(f"\n --> {plot_name} comparison")
+            plot_dNdS_vs_logFC(summary_paths_AX_dict=summary_paths,
+                outfile=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/dNdS_{plot_name}_vs_sig_logFC.png",
+                sig_p_threshold=0.05, ortholog_species=species)
+            plot_dNdS_vs_logFC(summary_paths_AX_dict=summary_paths,
+                outfile=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/dNdS_{plot_name}_vs_logFC.png",
+                sig_p_threshold=0, ortholog_species=species)
