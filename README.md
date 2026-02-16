@@ -477,16 +477,18 @@ The right is all the permutation tests. the pink line is the measured `dNdS_A - 
 
 ## dS: phylogenetic distances
 
-In many cases, orthologs are too diverged to properly estimat dS, which greatly impacts the dNdS ratio. I therefore also look at dS both to assess the reliability of the estimates, and also to see if there is a difference in neutral substitution rate between X and A.
+In many cases, orthologs are too diverged to properly estimate dS, which greatly impacts the dNdS ratio. I therefore also look at dN and dS separately to assess the reliability of the estimates, and also to see if there is a difference in neutral substitution rate between X and A. (not shown here: very distant comparisons such as between the groups results in a saturation of dS values, where the estimation in paml breaks down and many values are estimated to 3. Therefore I have decided to only do within-group comparisons and filter both dS and dNdS to <2.
 
 <p float="center">
-  <img src="data/fastX_ortholog_ident/dS_vs_dNdS_scatterplot_bruchini_white_bg.png" width="75%" />
+  <img src="data/fastX_ortholog_ident/dS_vs_dN_scatterplot_bruchini_white_bg.png" width="75%" />
 </p>
 
 <p float="left">
-  <img src="data/fastX_ortholog_ident/dS_vs_dNdS_scatterplot_coccinella_white_bg.png" width="49%" />
-  <img src="data/fastX_ortholog_ident/dS_vs_dNdS_scatterplot_tribolium_white_bg.png" width="49%" />
+  <img src="data/fastX_ortholog_ident/dS_vs_dN_scatterplot_coccinella_white_bg.png" width="49%" />
+  <img src="data/fastX_ortholog_ident/dS_vs_dN_scatterplot_tribolium_white_bg.png" width="49%" />
 </p>
+
+Overall, the dS is lower on X in all cases, and since dS is assumed to be neutral, this is likely an effect of the average lower mutation rate on X compared to A (due to the elevated mutation rate in the male germline). It is also noteable that the dS scatter is mostly constrained to <1 in closely related sister species (*Callosobruchus*, *Tribolium*, *Coccinella*), and increases closer to 2 in more distant comparisons in the bruchids (*C. maculatus* vs. *B. siliquastri* and *C. maculatus* vs. *A. obtectus*). I implemented an option to calculate a linear regression slope of the dS/dN scatterplots, but there does not seem to be consistend ot meaningful differences in slope between X and A, and this may not be the most reliable analysis anyways since the independence of dS and dN is not quite clear to me.
 
 ## paml site models and LRT
 
