@@ -210,86 +210,124 @@ def plot_sex_bias_bar_chart(summary_paths, annotation, X_list, sig_p_level = 0.0
     filtered_abdomen = summary_data_abdomen[pd.notna(summary_data_abdomen["logFC"])]
     filtered_head_thorax = summary_data_head_thorax[pd.notna(summary_data_head_thorax["logFC"])]
 
+    if True:
+        pval_filtered_abdomen = summary_data_abdomen[summary_data_abdomen["FDR"]<0.05]
+        pval_filtered_head_thorax = summary_data_head_thorax[summary_data_head_thorax["FDR"]<0.05]
+        print(f"  abdomen p<0.05: {len(pval_filtered_abdomen)}")
+        print(f"  head_thorax p<0.05: {len(pval_filtered_head_thorax)}")
+        
+
     ## get LFC information for every gene for plotting { transcriptID : LFC_float }
     ## the data is LFC female-male, so positive values are female-biased
+    ### dict means that the geneIDs are unique, only the LAST occurence of any geneID is retained
     LFC_dict_abdomen = dict(zip(filtered_abdomen["geneID"], filtered_abdomen["logFC"]))
     LFC_dict_head_thorax = dict(zip(filtered_head_thorax["geneID"], filtered_head_thorax["logFC"]))
+    print(f"{len(LFC_dict_abdomen)} genes:logFC in total in abdomen")
+    print(f"{len(LFC_dict_head_thorax)} genes:logFC in total in head_thorax")
     assert sorted(list(LFC_dict_abdomen.keys())) == sorted(list(LFC_dict_head_thorax.keys())) # check that there is data for all transcripts in both
 
     ## get p-values
     pval_dict_abdomen = dict(zip(filtered_abdomen["geneID"], filtered_abdomen["FDR"]))
     pval_dict_head_thorax = dict(zip(filtered_head_thorax["geneID"], filtered_head_thorax["FDR"]))
+    print(f"{len(pval_dict_abdomen)} genes:pvalues in total in abdomen")
+    print(f"{len(pval_dict_head_thorax)} genes:pvalues in total in head_thorax")
+    assert len(pval_dict_abdomen)==len(pval_dict_head_thorax)
+    total_num_genes = len(pval_dict_head_thorax)
+
 
     ## parse gene position data
     annotation_dict = gff.parse_gff3_general(annotation)
+
+    X_counts = 0
+    A_counts = 0
+    
+    def sort_X_A(annotation_dict, X_list, geneID_dict):
+        """
+        take the X_list and sort the input dict into two, one for X and one for A
+        """
+        X_genes = []
+        A_genes = []
+
+        for geneID in geneID_dict.keys():
+            gene = annotation_dict[geneID]
+            if gene.contig in X_list:
+                X_genes.append(geneID)
+            else:
+                A_genes.append(geneID)
+        print(f"{len(A_genes)} A genes, {len(X_genes)} X genes\t = {len(A_genes)+len(X_genes)} total, len of input is {len(geneID_dict)}")
+
+        assert len(A_genes)+len(X_genes)==len(geneID_dict)
+        return X_genes,A_genes
+
+    def get_sig_diff(LFC_dict,pval_dict, pval = sig_p_level, lfc = minLFC):
+        """
+        get a list of genes that is significantly upregulated (log2FC>lfc) or downregulated (log2FC< -lfc) 
+        """
+        up_list = []
+        down_list = []
+        unbiased = []
+        lfc_down = -1*lfc
+        assert LFC_dict.keys() == pval_dict.keys()
+        for geneID in LFC_dict.keys():
+            if pval_dict[geneID] < pval:
+                if LFC_dict[geneID] > lfc:
+                    up_list.append(geneID)
+                elif LFC_dict[geneID] < lfc_down:
+                    down_list.append(geneID)
+                else:
+                    unbiased.append(geneID)
+            else:
+                unbiased.append(geneID)
+
+        return up_list, down_list, unbiased
+
+    abdomen_up_list, abdomen_down_list, abdomen_unbiased = get_sig_diff(LFC_dict=LFC_dict_abdomen, pval_dict=pval_dict_abdomen, pval=sig_p_level, lfc=minLFC)
+    head_thorax_up_list, head_thorax_down_list, head_thorax_unbiased = get_sig_diff(LFC_dict=LFC_dict_head_thorax, pval_dict=pval_dict_head_thorax, pval=sig_p_level, lfc=minLFC)
+    
+    print(f"abdomen \t --> upregulated: {len(abdomen_up_list)}, downregulated: {len(abdomen_down_list)}, unbiased: {len(abdomen_unbiased)} = {len(abdomen_up_list)+len(abdomen_down_list)+len(abdomen_unbiased)}")
+    print(f"head+thorax \t --> upregulated: {len(head_thorax_up_list)}, downregulated: {len(head_thorax_down_list)}, unbiased: {len(head_thorax_unbiased)} = {len(head_thorax_up_list)+len(head_thorax_down_list)+len(head_thorax_unbiased)}")
+
+    X_genes,A_genes=sort_X_A(annotation_dict, X_list,LFC_dict_abdomen)# sort the geneIDs into X and A, they should be the same in any of the data dictionaries so it doesn't matter which one I use
+    
+    LFC_dict_abdomen_X={gene : LFC_dict_abdomen[gene] for gene in X_genes}
+    LFC_dict_abdomen_A={gene : LFC_dict_abdomen[gene] for gene in A_genes}
+    LFC_dict_head_thorax_X={gene : LFC_dict_head_thorax[gene] for gene in X_genes}
+    LFC_dict_head_thorax_A={gene : LFC_dict_head_thorax[gene] for gene in A_genes}
+    pval_dict_abdomen_X={gene : pval_dict_abdomen[gene] for gene in X_genes}
+    pval_dict_abdomen_A={gene : pval_dict_abdomen[gene] for gene in A_genes}
+    pval_dict_head_thorax_X={gene : pval_dict_head_thorax[gene] for gene in X_genes}
+    pval_dict_head_thorax_A={gene : pval_dict_head_thorax[gene] for gene in A_genes}
+
+    abdomen_X_up_list, abdomen_X_down_list, abdomen_X_unbiased = get_sig_diff(LFC_dict=LFC_dict_abdomen_X, pval_dict=pval_dict_abdomen_X, pval=sig_p_level, lfc=minLFC)
+    abdomen_A_up_list, abdomen_A_down_list, abdomen_A_unbiased = get_sig_diff(LFC_dict=LFC_dict_abdomen_A, pval_dict=pval_dict_abdomen_A, pval=sig_p_level, lfc=minLFC)
+    head_thorax_X_up_list, head_thorax_X_down_list, head_thorax_X_unbiased = get_sig_diff(LFC_dict=LFC_dict_head_thorax_X, pval_dict=pval_dict_head_thorax_X, pval=sig_p_level, lfc=minLFC)
+    head_thorax_A_up_list, head_thorax_A_down_list, head_thorax_A_unbiased = get_sig_diff(LFC_dict=LFC_dict_head_thorax_A, pval_dict=pval_dict_head_thorax_A, pval=sig_p_level, lfc=minLFC)
+    
+    # checl that in both tissues all A/X and up/un/down genes still sum to total_num_genes
+    assert len(abdomen_X_up_list)+len(abdomen_X_down_list)+len(abdomen_X_unbiased)+len(abdomen_A_up_list)+len(abdomen_A_down_list)+len(abdomen_A_unbiased) == total_num_genes
+    assert len(head_thorax_X_up_list)+len(head_thorax_X_down_list)+len(head_thorax_X_unbiased)+len(head_thorax_A_up_list)+len(head_thorax_A_down_list)+len(head_thorax_A_unbiased) == total_num_genes
+
+    # sex bias contrast is female - male, therefore "downregulated" is when male>female and therefore male-biased
     head_thorax_summary_A = {
-        "sig_male" : 0,
-        "sig_female" : 0,
-        "unbiased" : 0
+        "sig_male" : len(head_thorax_A_down_list),
+        "sig_female" : len(head_thorax_A_up_list),
+        "unbiased" : len(head_thorax_A_unbiased)
     }
     head_thorax_summary_X = {
-        "sig_male" : 0,
-        "sig_female" : 0,
-        "unbiased" : 0
+        "sig_male" : len(head_thorax_X_down_list),
+        "sig_female" : len(head_thorax_X_up_list),
+        "unbiased" : len(head_thorax_X_unbiased)
     }
     abdomen_summary_A = {
-        "sig_male" : 0,
-        "sig_female" : 0,
-        "unbiased" : 0
+        "sig_male" : len(abdomen_A_down_list),
+        "sig_female" : len(abdomen_A_up_list),
+        "unbiased" : len(abdomen_A_unbiased)
     }
     abdomen_summary_X = {
-        "sig_male" : 0,
-        "sig_female" : 0,
-        "unbiased" : 0
+        "sig_male" : len(abdomen_X_down_list),
+        "sig_female" : len(abdomen_X_up_list),
+        "unbiased" : len(abdomen_X_unbiased)
     }
-
-    # { contig : {} for contig in X_list} # dict with { contig : { transcriptID : [start,end], ... }  }
-    for geneID in LFC_dict_abdomen.keys():
-        gene = annotation_dict[geneID]
-
-        if gene.contig in X_list:
-            ## X-linked
-            if pval_dict_abdomen[geneID]<sig_p_level:
-                if LFC_dict_abdomen[geneID] > minLFC:
-                    abdomen_summary_X["sig_female"]+=1 #female biased
-                elif LFC_dict_abdomen[geneID] < -1*minLFC:
-                    abdomen_summary_X["sig_male"]+=1
-                else:
-                    abdomen_summary_X["unbiased"]+=1
-            else:
-                abdomen_summary_X["unbiased"]+=1
-
-            if pval_dict_head_thorax[geneID]<sig_p_level:
-                if LFC_dict_head_thorax[geneID] > minLFC:
-                    head_thorax_summary_X["sig_female"]+=1
-                elif LFC_dict_head_thorax[geneID] < -1*minLFC:
-                    head_thorax_summary_X["sig_male"]+=1
-                else:
-                    head_thorax_summary_X["unbiased"]+=1
-            else:
-                head_thorax_summary_X["unbiased"]+=1
-        
-        else:
-            ## A-linked
-            if pval_dict_abdomen[geneID]<sig_p_level:
-                if LFC_dict_abdomen[geneID] > minLFC:
-                    abdomen_summary_A["sig_female"]+=1
-                elif LFC_dict_abdomen[geneID] < -1*minLFC:
-                    abdomen_summary_A["sig_male"]+=1
-                else:
-                    abdomen_summary_A["unbiased"]+=1
-            else:
-                abdomen_summary_A["unbiased"]+=1
-
-            if pval_dict_head_thorax[geneID]<sig_p_level:
-                if LFC_dict_head_thorax[geneID] > minLFC:
-                    head_thorax_summary_A["sig_female"]+=1
-                elif LFC_dict_head_thorax[geneID] < -1*minLFC:
-                    head_thorax_summary_A["sig_male"]+=1
-                else:
-                    head_thorax_summary_A["unbiased"]+=1
-            else:
-                head_thorax_summary_A["unbiased"]+=1
 
     # print(f"head_thorax_summary_A: {head_thorax_summary_A}")
     # print(f"head_thorax_summary_X: {head_thorax_summary_X}")
@@ -297,7 +335,8 @@ def plot_sex_bias_bar_chart(summary_paths, annotation, X_list, sig_p_level = 0.0
     # print(f"abdomen_summary_X: {abdomen_summary_X}")
 
     ## summary by tissues:
-    for key, desc in {"sig_female":"upregulated", "sig_male":"downregulated","unbiased":"unbiased"}.items():
+    print(f"{X_counts} X-linked genes and {A_counts} A-linked genes = {X_counts+A_counts}")
+    for key, desc in {"sig_female":"upregulated" ,"unbiased":"unbiased", "sig_male":"downregulated"}.items():
         print(f"** {key} ({desc})")
         print(f"\tabdomen A+X -->\t\t{abdomen_summary_A[key]} + {abdomen_summary_X[key]} = {abdomen_summary_A[key]+abdomen_summary_X[key]}")
         print(f"\thead_thorax A+X -->\t{head_thorax_summary_A[key]} + {head_thorax_summary_X[key]} = {head_thorax_summary_A[key]+head_thorax_summary_X[key]}")
@@ -416,14 +455,14 @@ def make_phylogeny_rank_dict(summary_file_df, min_p):
 
 
 
-def check_DE_phylogeny_rank_conserved(summary_paths_AX_dict:dict, outfile = "", abs_LFC=False, sig_p_threshold = 0, sep_MF=True):
+def check_DE_phylogeny_rank_conserved(summary_paths_AX_list:dict, outfile = "", abs_LFC=False, sig_p_threshold = 0, sep_MF=True):
     """
     check if genes with a higher phylogeny conservarion rank have higher log2FC values 
     if abs_LFC=True then do abs() around LFC to assess general sex bias and don't differentiate male-female contrast
     """
 
-    summary_data_A = pd.read_csv(summary_paths_AX_dict["A"], sep = "\t", index_col=False)
-    summary_data_X = pd.read_csv(summary_paths_AX_dict["X"], sep = "\t", index_col=False)
+    summary_data_A = pd.read_csv(summary_paths_AX_list["A"], sep = "\t", index_col=False)
+    summary_data_X = pd.read_csv(summary_paths_AX_list["X"], sep = "\t", index_col=False)
 
     LFC_dict_abdomen_A, LFC_dict_head_thorax_A = make_phylogeny_rank_dict(summary_data_A, min_p = sig_p_threshold)
     LFC_dict_abdomen_X, LFC_dict_head_thorax_X = make_phylogeny_rank_dict(summary_data_X, min_p = sig_p_threshold)
@@ -623,10 +662,10 @@ def make_dNdS_and_logFC_list_for_plotting(summary_file_df, min_p, filter_species
     return abdomen_pairs, head_thorax_pairs
 
 
-def plot_dNdS_vs_logFC(summary_paths_AX_dict, outfile = "", sig_p_threshold = 0, ortholog_species = ""):
+def plot_dNdS_vs_logFC(summary_paths_AX_list, outfile = "", sig_p_threshold = 0, ortholog_species = ""):
 
-    summary_data_A = pd.read_csv(summary_paths_AX_dict["A"], sep = "\t", index_col=False)
-    summary_data_X = pd.read_csv(summary_paths_AX_dict["X"], sep = "\t", index_col=False)
+    summary_data_A = pd.read_csv(summary_paths_AX_list["A"], sep = "\t", index_col=False)
+    summary_data_X = pd.read_csv(summary_paths_AX_list["X"], sep = "\t", index_col=False)
     
     print(f"/////////// A ///////////")
     abdomen_pairs_A, head_thorax_pairs_A = make_dNdS_and_logFC_list_for_plotting(summary_data_A, min_p = sig_p_threshold, filter_species=ortholog_species)
@@ -707,10 +746,10 @@ if __name__ == "__main__":
 
     if False:
         abs_logFC = False
-        check_DE_phylogeny_rank_conserved(summary_paths_AX_dict=summary_paths,
+        check_DE_phylogeny_rank_conserved(summary_paths_AX_list=summary_paths,
             outfile=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/conservation_rank_all_sex_bias_proportion.png",
             abs_LFC=abs_logFC, sig_p_threshold=0)
-        check_DE_phylogeny_rank_conserved(summary_paths_AX_dict=summary_paths,
+        check_DE_phylogeny_rank_conserved(summary_paths_AX_list=summary_paths,
             outfile=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/conservation_rank_sig_sex_bias_proportion.png",
             abs_LFC=abs_logFC, sig_p_threshold=0.05)
 
@@ -725,9 +764,9 @@ if __name__ == "__main__":
             if species !="":
                 continue
             print(f"\n --> {plot_name} comparison")
-            plot_dNdS_vs_logFC(summary_paths_AX_dict=summary_paths,
+            plot_dNdS_vs_logFC(summary_paths_AX_list=summary_paths,
                 outfile=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/dNdS_{plot_name}_vs_sig_logFC.png",
                 sig_p_threshold=0.05, ortholog_species=species)
-            plot_dNdS_vs_logFC(summary_paths_AX_dict=summary_paths,
+            plot_dNdS_vs_logFC(summary_paths_AX_list=summary_paths,
                 outfile=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/dNdS_{plot_name}_vs_logFC.png",
                 sig_p_threshold=0, ortholog_species=species)

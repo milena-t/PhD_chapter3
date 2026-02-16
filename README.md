@@ -607,6 +607,12 @@ summary(de<-decideTestsDGE(lrt_a, p.value=0.05, lfc=1))
 # head+thorax
 lrt_h <- glmLRT(fit, contrast=my.contrasts[,"Sex_h"])
 summary(de<-decideTestsDGE(lrt_h, p.value=0.05, lfc=1))
+# reproduce numbers with topTags --> works!
+SexbAbd <- topTags(lrt_a, n=Inf, p.value=0.05)	
+SexbAbd_dat <-SexbAbd@.Data[[1]] 
+length(SexbAbd_dat$logFC) # 9353
+SexbAbd_up <- SexbAbd_dat[SexbAbd_dat$logFC > 1, ] # 2793
+SexbAbd_do <- SexbAbd_dat[SexbAbd_dat$logFC < -1, ] # 3265
 ```
 
 |               | abdomen       | head+thorax   | sex bias      |
@@ -623,11 +629,28 @@ SexbAbd <- topTags(lrt_a, n=Inf)
 SexbHT <- topTags(lrt_h, n=Inf)
 ```
 
-**!!!The numbers here don't match the table above!!!** Unsure what the exact parameters are that edgeR uses to determine the signficantly sex-biased genes in the female/male contrast. Mostly the trend holds though, the abdomen is more female-biased (less dosage compensated), Head+thorax has more unbiased genes overall. However, the abdomen has more female-biased genes overall according to the data below, but more male-biased (downregulated) genes according to the table above.
+However, if I try to partition these tables for significantly sex-biased genes in the same way as above. It all sums up to 11337 genes in both cases, but the sex bias is somehow assigned differently. I am using the same parameters (`p_value < 0.05` and `lfc>1` in both cases, and the default multiple testing correction is the same in `decideTestsDGE()` and in `topTags()`).
+
+I have traced the error as far back as the p-value filtering, when I do only abdominal data and filter for `FDR < 0.05` (FDR is the name of the multiple-testing corrected p-value column), then I get two different results in R and in python (pandas df)
+
+```r
+SexbAbd <- topTags(lrt_a, n=Inf, p.value=0.05)	
+SexbAbd_dat <-SexbAbd@.Data[[1]] 
+length(SexbAbd_dat$logFC) # 9353
+```
+
+```python
+pval_filtered_abdomen = summary_data_abdomen[summary_data_abdomen["FDR"]<0.05]
+len(pval_filtered_abdomen) # 8305
+```
+
+--> CONCLUSION?????
 
 <p float="left">
   <img src="data/DE_analysis/all_sex_bias_proportion_white_bg.png" width="75%" />
 </p>
+
+
 
 ### Dosage compensation
 
