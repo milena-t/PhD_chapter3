@@ -600,6 +600,15 @@ I had a bad time with DESeq2, and I will be using edgeR. The main point is to do
 
 number of sex-biased genes in female-male contrast:
 
+```r
+# abdomen
+lrt_a <- glmLRT(fit, contrast=my.contrasts[,"Sex_a"])
+summary(de<-decideTestsDGE(lrt_a, p.value=0.05, lfc=1))
+# head+thorax
+lrt_h <- glmLRT(fit, contrast=my.contrasts[,"Sex_h"])
+summary(de<-decideTestsDGE(lrt_h, p.value=0.05, lfc=1))
+```
+
 |               | abdomen       | head+thorax   | sex bias      |
 | ------------- | ------------- | ------------- | ------------- |
 | downregulated | 3265          | 1331          | male-biased   |
@@ -607,9 +616,14 @@ number of sex-biased genes in female-male contrast:
 | upregulated   | 2793          | 805           | female-biased |
 
 
-I have exported the results of this analysis into a table with the log2FC, FDR-corrected p-value and gene ID. I have then partitioned the sex bias by X or A for both tissues. 
+I have exported the results of this analysis into a table using `topTags()` with the log2FC, BH-corrected p-value (same correction method as `decideTestsDGE()`) and gene ID.
 
-**!!!The numbers here don't match the table above!!!** Unsure what the exact parameters are that edgeR uses to determine the signficantly sex-biased genes in the female/male contrast. Mostly the trend holds though, the abdomen is more female-biased (less dosage compensated), Head+thorax has more unbiased genes overall. However, the abdomen has more female-biased genes overall according to the plot, but more male-biased (downregulated) genes according to the table.
+```r
+SexbAbd <- topTags(lrt_a, n=Inf)
+SexbHT <- topTags(lrt_h, n=Inf)
+```
+
+**!!!The numbers here don't match the table above!!!** Unsure what the exact parameters are that edgeR uses to determine the signficantly sex-biased genes in the female/male contrast. Mostly the trend holds though, the abdomen is more female-biased (less dosage compensated), Head+thorax has more unbiased genes overall. However, the abdomen has more female-biased genes overall according to the data below, but more male-biased (downregulated) genes according to the table above.
 
 <p float="left">
   <img src="data/DE_analysis/all_sex_bias_proportion_white_bg.png" width="75%" />
@@ -691,7 +705,7 @@ I am splitting the dNdS into a plot that combines all dNdS values (where some tr
   <img src="data/DE_analysis/dNdS_C_chinensis_vs_sig_logFC_white_bg.png" width="49%" />
 </p>
 
-Can't really see any difference between species or anything else interesting.
+Can't really see any difference between species or anything else interesting that differentiates the plots from each other. In general, the abdomen is more female biased
 
 
 
@@ -699,7 +713,9 @@ Can't really see any difference between species or anything else interesting.
 
 
 # old analysis with *Diorhaba*
- I suspect that *D. carinulata* has a misidentified X chromosome, which leaves it only three 1-to-1 orthologs. I looked into it a bit here, in case it is X turnover. I would need actual lab evidence to conclude that thoug I think, since the X is so conserved in all the other *Coleoptera* I have here.
+
+
+I had previously included another pair of sister species: *D.sublineata* and *D. carinulata*. I suspect that *D. carinulata* has a misidentified X chromosome, which leaves it only three X-linked 1-to-1 orthologs between them. I looked into it a bit here, in case it is X turnover. I would need actual lab evidence to conclude that though I think, since the X is so conserved in all the other *Coleoptera* I have here, and I would need coverage or PCR evidence to be sure that the X-identified contig in *D. carinulata* is right.
 
 <details>
   <summary>See old analysis</summary>

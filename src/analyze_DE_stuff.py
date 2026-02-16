@@ -291,10 +291,16 @@ def plot_sex_bias_bar_chart(summary_paths, annotation, X_list, sig_p_level = 0.0
             else:
                 head_thorax_summary_A["unbiased"]+=1
 
-    print(f"head_thorax_summary_A: {head_thorax_summary_A}")
-    print(f"head_thorax_summary_X: {head_thorax_summary_X}")
-    print(f"abdomen_summary_A: {abdomen_summary_A}")
-    print(f"abdomen_summary_X: {abdomen_summary_X}")
+    # print(f"head_thorax_summary_A: {head_thorax_summary_A}")
+    # print(f"head_thorax_summary_X: {head_thorax_summary_X}")
+    # print(f"abdomen_summary_A: {abdomen_summary_A}")
+    # print(f"abdomen_summary_X: {abdomen_summary_X}")
+
+    ## summary by tissues:
+    for key, desc in {"sig_female":"upregulated", "sig_male":"downregulated","unbiased":"unbiased"}.items():
+        print(f"** {key} ({desc})")
+        print(f"\tabdomen A+X -->\t\t{abdomen_summary_A[key]} + {abdomen_summary_X[key]} = {abdomen_summary_A[key]+abdomen_summary_X[key]}")
+        print(f"\thead_thorax A+X -->\t{head_thorax_summary_A[key]} + {head_thorax_summary_X[key]} = {head_thorax_summary_A[key]+head_thorax_summary_X[key]}")
 
     ## make percentages for plot 
     sum_head_thorax_summary_A=sum(list(head_thorax_summary_A.values()))
@@ -693,9 +699,10 @@ if __name__ == "__main__":
             X_list=Cmac_X_contigs_list, 
             outfile=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/X_sex_bias.png")
 
-    if False:
+    if True:
+        ## the settings in decideTestsDGE() in edgeR are: p.value=0.05, lfc=1
         plot_sex_bias_bar_chart(summary_paths=DE_paths, annotation=Cmac_annotation, X_list=Cmac_X_contigs_list, 
-            sig_p_level = 0.001, minLFC = 0.5,
+            sig_p_level = 0.05, minLFC = 1,
             outfile=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/all_sex_bias_proportion.png")
 
     if False:
@@ -707,7 +714,7 @@ if __name__ == "__main__":
             outfile=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/conservation_rank_sig_sex_bias_proportion.png",
             abs_LFC=abs_logFC, sig_p_threshold=0.05)
 
-    if True:
+    if False:
         ortholog_species = {
             "" : "all_species",
             "C_chinensis" : "C_chinensis", 
