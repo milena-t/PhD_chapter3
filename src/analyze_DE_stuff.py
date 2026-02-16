@@ -215,7 +215,6 @@ def plot_sex_bias_bar_chart(summary_paths, annotation, X_list, sig_p_level = 0.0
         pval_filtered_head_thorax = summary_data_head_thorax[summary_data_head_thorax["FDR"]<0.05]
         print(f"  abdomen p<0.05: {len(pval_filtered_abdomen)}")
         print(f"  head_thorax p<0.05: {len(pval_filtered_head_thorax)}")
-        
 
     ## get LFC information for every gene for plotting { transcriptID : LFC_float }
     ## the data is LFC female-male, so positive values are female-biased
@@ -391,7 +390,7 @@ def plot_sex_bias_bar_chart(summary_paths, annotation, X_list, sig_p_level = 0.0
             bar.get_x() + bar.get_width() / 2,
             # Vertically, add the height of the bar to the start of the bar,
             # along with the offset.
-            bar.get_height() + bar.get_y() -7,
+            bar.get_height() + bar.get_y() -4,
             # This is actual value we'll show.
             vals[i],
             # Center the labels and style them a bit.
@@ -738,7 +737,7 @@ if __name__ == "__main__":
             X_list=Cmac_X_contigs_list, 
             outfile=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/X_sex_bias.png")
 
-    if True:
+    if False:
         ## the settings in decideTestsDGE() in edgeR are: p.value=0.05, lfc=1
         plot_sex_bias_bar_chart(summary_paths=DE_paths, annotation=Cmac_annotation, X_list=Cmac_X_contigs_list, 
             sig_p_level = 0.05, minLFC = 1,
@@ -753,7 +752,7 @@ if __name__ == "__main__":
             outfile=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/conservation_rank_sig_sex_bias_proportion.png",
             abs_LFC=abs_logFC, sig_p_threshold=0.05)
 
-    if False:
+    if True:
         ortholog_species = {
             "" : "all_species",
             "C_chinensis" : "C_chinensis", 

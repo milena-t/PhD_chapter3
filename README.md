@@ -598,7 +598,7 @@ I had a bad time with DESeq2, and I will be using edgeR. The main point is to do
   <img src="data/DE_analysis/edgeR_analysis/DE_tissues.png" width="75%" />
 </p>
 
-number of sex-biased genes in female-male contrast:
+number of sex-biased genes in female-male contrast according to R:
 
 ```r
 # abdomen
@@ -607,12 +607,6 @@ summary(de<-decideTestsDGE(lrt_a, p.value=0.05, lfc=1))
 # head+thorax
 lrt_h <- glmLRT(fit, contrast=my.contrasts[,"Sex_h"])
 summary(de<-decideTestsDGE(lrt_h, p.value=0.05, lfc=1))
-# reproduce numbers with topTags --> works!
-SexbAbd <- topTags(lrt_a, n=Inf, p.value=0.05)	
-SexbAbd_dat <-SexbAbd@.Data[[1]] 
-length(SexbAbd_dat$logFC) # 9353
-SexbAbd_up <- SexbAbd_dat[SexbAbd_dat$logFC > 1, ] # 2793
-SexbAbd_do <- SexbAbd_dat[SexbAbd_dat$logFC < -1, ] # 3265
 ```
 
 |               | abdomen       | head+thorax   | sex bias      |
@@ -622,6 +616,7 @@ SexbAbd_do <- SexbAbd_dat[SexbAbd_dat$logFC < -1, ] # 3265
 | upregulated   | 2793          | 805           | female-biased |
 
 
+
 I have exported the results of this analysis into a table using `topTags()` with the log2FC, BH-corrected p-value (same correction method as `decideTestsDGE()`) and gene ID.
 
 ```r
@@ -629,22 +624,19 @@ SexbAbd <- topTags(lrt_a, n=Inf)
 SexbHT <- topTags(lrt_h, n=Inf)
 ```
 
-However, if I try to partition these tables for significantly sex-biased genes in the same way as above. It all sums up to 11337 genes in both cases, but the sex bias is somehow assigned differently. I am using the same parameters (`p_value < 0.05` and `lfc>1` in both cases, and the default multiple testing correction is the same in `decideTestsDGE()` and in `topTags()`).
+numbers split by X and A in python are identical to the ones from R:
 
-I have traced the error as far back as the p-value filtering, when I do only abdominal data and filter for `FDR < 0.05` (FDR is the name of the multiple-testing corrected p-value column), then I get two different results in R and in python (pandas df)
-
-```r
-SexbAbd <- topTags(lrt_a, n=Inf, p.value=0.05)	
-SexbAbd_dat <-SexbAbd@.Data[[1]] 
-length(SexbAbd_dat$logFC) # 9353
+```text
+** sig_female (upregulated)
+	abdomen A+X     -->		2681 + 112 = 2793
+	head_thorax A+X --> 	784 + 21 = 805
+** unbiased (unbiased)
+	abdomen A+X     -->		5031 + 248 = 5279
+	head_thorax A+X --> 	8812 + 389 = 9201
+** sig_male (downregulated)
+	abdomen A+X     -->		3186 + 79 = 3265
+	head_thorax A+X -->	  1302 + 29 = 1331
 ```
-
-```python
-pval_filtered_abdomen = summary_data_abdomen[summary_data_abdomen["FDR"]<0.05]
-len(pval_filtered_abdomen) # 8305
-```
-
---> CONCLUSION?????
 
 <p float="left">
   <img src="data/DE_analysis/all_sex_bias_proportion_white_bg.png" width="75%" />

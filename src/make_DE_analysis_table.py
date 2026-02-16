@@ -331,7 +331,7 @@ def make_summary_table(lookup_table_path, DE_paths_dict, paml_paths_dict, chromo
 if __name__=="__main__":
     
     ### load data
-    username="milena"
+    username="miltr339"
     outdir_tables=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables"
     lookup_tables_dict = get_lookup_tables(username=username)
     DE_paths_dict = get_DE_paths(username=username)
