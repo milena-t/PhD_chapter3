@@ -219,8 +219,8 @@ def violinplot_pair_single(data_A_X, col, n_A, n_X, mean_A, mean_X, axes, colors
         axes[col].hlines(y=1, xmin=0.5, xmax=2.5, linewidth=2, linestyle = ":", color="#818181")
     else:
         axes[col].set_ylim([0,ymax])
-        axes[col].text(1-0.3, 2.05, f"n={n_A}\nmedian={mean_A:.3f}", fontsize = fs, color = colors_dict["A"])
-        axes[col].text(2-0.3, 2.05, f"n={n_X}\nmedian={mean_X:.3f}", fontsize = fs, color = colors_dict["X"])
+        axes[col].text(1-0.5, 2, f"n={n_A}\nmedian={mean_A:.3f}", fontsize = fs*0.9, color = colors_dict["A"])
+        axes[col].text(2-0.45, 2, f"n={n_X}\nmedian={mean_X:.3f}", fontsize = fs*0.9, color = colors_dict["X"])
     
     axes[col].hlines(y=mean_A, xmin=0.5, xmax=2.5, linewidth=2, color=colors_dict["A"])
     axes[col].hlines(y=mean_X, xmin=0.5, xmax=2.5, linewidth=2, color=colors_dict["X"])

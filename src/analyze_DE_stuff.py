@@ -351,7 +351,7 @@ def plot_sex_bias_bar_chart(summary_paths, annotation, X_list, sig_p_level = 0.0
     abdomen_percentage_X = {cat : val*100.0/sum_abdomen_summary_X for cat,val in abdomen_summary_X.items()}
 
     ### plot stacked bar chart
-    fs = 25
+    fs = 30
     width=0.4
     x_subtr=width*1.1/2.0
     x_coords = [1-x_subtr,1+x_subtr, 2-x_subtr,2+x_subtr]
@@ -390,14 +390,14 @@ def plot_sex_bias_bar_chart(summary_paths, annotation, X_list, sig_p_level = 0.0
             bar.get_x() + bar.get_width() / 2,
             # Vertically, add the height of the bar to the start of the bar,
             # along with the offset.
-            bar.get_height() + bar.get_y() -4,
+            bar.get_height() + bar.get_y() -fs*0.15,
             # This is actual value we'll show.
             vals[i],
             # Center the labels and style them a bit.
             ha='center',
             color='w',
             weight='bold',
-            size=fs*0.9
+            size=fs*0.8
         )
 
     ax.yaxis.set_major_formatter(FuncFormatter(lambda x, pos: '' if x > 100 and x<1 else f'{int(x)}%'))
@@ -671,7 +671,7 @@ def plot_dNdS_vs_logFC(summary_paths_AX_list, outfile = "", sig_p_threshold = 0,
     print(f"/////////// X ///////////")
     abdomen_pairs_X, head_thorax_pairs_X = make_dNdS_and_logFC_list_for_plotting(summary_data_X, min_p = sig_p_threshold, filter_species=ortholog_species)
 
-    fs = 35 # font size
+    fs = 45 # font size
 
     # set figure aspect ratio
     aspect_ratio = 20 / 12
@@ -695,7 +695,7 @@ def plot_dNdS_vs_logFC(summary_paths_AX_list, outfile = "", sig_p_threshold = 0,
         ax[col].tick_params(axis='y', labelsize=fs)
         ax[col].set_title(title, fontsize=fs)
         if col==1:
-            ax[col].legend(fontsize=fs, markerscale=3)
+            ax[col].legend(fontsize=fs*0.9, markerscale=3)
         # axes[0,col].set_xlabel("dS", fontsize = fs)
         # axes[0,col].set_ylabel("dN", fontsize = fs)
 
@@ -760,12 +760,10 @@ if __name__ == "__main__":
             "A_obtectus" : "A_obtectus"
         }
         for species, plot_name in ortholog_species.items():
-            if species !="":
-                continue
             print(f"\n --> {plot_name} comparison")
             plot_dNdS_vs_logFC(summary_paths_AX_list=summary_paths,
                 outfile=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/dNdS_{plot_name}_vs_sig_logFC.png",
                 sig_p_threshold=0.05, ortholog_species=species)
-            plot_dNdS_vs_logFC(summary_paths_AX_list=summary_paths,
-                outfile=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/dNdS_{plot_name}_vs_logFC.png",
-                sig_p_threshold=0, ortholog_species=species)
+            # plot_dNdS_vs_logFC(summary_paths_AX_list=summary_paths,
+            #     outfile=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/dNdS_{plot_name}_vs_logFC.png",
+            #     sig_p_threshold=0, ortholog_species=species)

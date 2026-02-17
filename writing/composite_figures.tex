@@ -21,6 +21,7 @@
 
 \usepackage{listings}
 \usepackage{color}
+\usepackage[percent]{overpic}
 
 \definecolor{dkgreen}{rgb}{0,0.6,0}
 \definecolor{gray}{rgb}{0.5,0.5,0.5}
@@ -151,13 +152,12 @@
 \begin{figure}[H]
 
     \begin{subfigure}[t]{\textwidth}
-    %\makebox[0pt][l]{\hspace{200pt}\textbf{A}}
-    \begin{picture}(0,0)
-   	  		\put(30,-30){\textbf{A}} % adjust the x and y values here
-		\end{picture}
+        \begin{picture}(0,0)
+            \put(30,100){\textbf{A}} % adjust the x and y values here
+        \end{picture}
         \begin{center}
         \includegraphics[width=\linewidth]{../data/fastX_ortholog_ident/LRT_site_model_plot_bruchini.png}
-        \end{center}        
+        \end{center}   
         %\caption{ } \label{OG_stats:num_genes}
     \end{subfigure}
 
@@ -196,12 +196,18 @@
 
 
 \begin{figure}[H]
+    
+    \begin{subfigure}[t]{\linewidth}
+        \begin{overpic}[width=0.9\linewidth]{../data/DE_analysis/X_sex_bias.png}
+            \put(1,62){\textbf{A}}
+        \end{overpic}
+    \end{subfigure}
 
     \begin{subfigure}[t]{0.49\linewidth}
 	    %\raggedleft
 	    %\makebox[0pt][l]{\hspace{30pt}\textbf{C}}
 	    \begin{picture}(0,0)
-   	  		\put(30,-5){\textbf{a}} % adjust the x and y values here
+   	  		\put(30,-5){\textbf{B}} % adjust the x and y values here
 		\end{picture}
 	    \begin{center}
         \includegraphics[width=0.95\linewidth]{../data/DE_analysis/all_sex_bias_proportion.png}
@@ -211,7 +217,7 @@
     \begin{subfigure}[t]{0.49\linewidth}
     %\makebox[0pt][l]{\hspace{30pt}\textbf{D}}
     \begin{picture}(0,0)
-   	  		\put(30,-5){\textbf{B}} % adjust the x and y values here
+   	  		\put(30,-5){\textbf{C}} % adjust the x and y values here
 		\end{picture}
 	    \begin{center}
         \includegraphics[width=0.95\linewidth]{../data/DE_analysis/dNdS_A_obtectus_vs_sig_logFC.png}
@@ -225,7 +231,7 @@
 	    %\raggedleft
 	    %\makebox[0pt][l]{\hspace{30pt}\textbf{C}}
 	    \begin{picture}(0,0)
-   	  		\put(30,-5){\textbf{C}} % adjust the x and y values here
+   	  		\put(30,-5){\textbf{D}} % adjust the x and y values here
 		\end{picture}
 	    \begin{center}
         \includegraphics[width=0.95\linewidth]{../data/DE_analysis/dNdS_B_siliquastri_vs_sig_logFC.png}
@@ -235,7 +241,7 @@
     \begin{subfigure}[t]{0.49\linewidth}
     %\makebox[0pt][l]{\hspace{30pt}\textbf{D}}
     \begin{picture}(0,0)
-   	  		\put(30,-5){\textbf{D}} % adjust the x and y values here
+   	  		\put(30,-5){\textbf{E}} % adjust the x and y values here
 		\end{picture}
 	    \begin{center}
         \includegraphics[width=0.95\linewidth]{../data/DE_analysis/dNdS_C_chinensis_vs_sig_logFC.png}
@@ -243,8 +249,13 @@
         %\caption{ } \label{OG_stats:GF_vs_rep}
     \end{subfigure}
     
-    
-    \caption{\textbf{Differential expression analysis.} We are utilizing the log2 fold change (LFC) information from genes in \textit{C. maculatus} and combining it with d$_N$/d$_S$ between these genes and their 1-to-1 orthologs in other bruchids. \textbf{A}: number of sex biased genes in abdominal (reproductive) tissues and head and thorax (somatic) tissues. \textbf{B-D}: Scatterplot of significantly differentially expressed genes showing d$_N$/d$_S$ of \textit{A. obtectus} (\textbf{B}), \textit{B. siliquastri} (\textbf{C}) and \textit{C. chinensis} (\textbf{D}) respectively.
+    \caption{\textbf{Differential expression analysis.} 
+    We are utilizing the log2 fold change (og2LFC) information from genes in \textit{C. maculatus} and combining it with d$_N$/d$_S$ between these genes 
+    and their 1-to-1 orthologs in other bruchids. The log2FC contrast is always female-male,therefore positive values indicate female-bias and negative values indicate male-bias.
+    \textbf{A}: log2FC of all genes on X-linked contigs in somatic (head+thorax) and reproductive (abdominal) tissues. 
+    \textbf{B}: number of sex biased genes in abdominal (reproductive) tissues and head and thorax (somatic) tissues. 
+    \textbf{C-E}: Scatterplot of significantly differentially expressed genes showing d$_N$/d$_S$ of 
+    \textit{A. obtectus} (\textbf{C}), \textit{B. siliquastri} (\textbf{D}) and \textit{C. chinensis} (\textbf{E}) respectively.
     }\label{DE_analysis}
     
 \end{figure}

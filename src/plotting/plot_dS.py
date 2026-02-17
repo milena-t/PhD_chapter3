@@ -486,7 +486,7 @@ def plot_dS_vs_dNdS_one_pair(A_dict:dict, X_dict:dict, filename = "dS_vs_dNdS.pn
     assert species_count==2
     cols = species_count
     fig, axes = plt.subplots(1, cols, figsize=(16, 8)) # for more than three rows
-    fs = 23
+    fs = 30
     # plt.rcParams['text.usetex'] = True
 
     colors_dict = {
@@ -618,7 +618,7 @@ if __name__ == "__main__":
         species_excl = ["D_carinulata", "D_sublineata", "T_castaneum", "T_freemani", "C_septempunctata", "C_magnifica"]
         filename =f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/dS_vs_dN_scatterplot_bruchini.png"
     # coccinella
-    elif True:
+    elif False:
         species_excl = ["D_carinulata", "D_sublineata", "T_castaneum", "T_freemani", "B_siliquastri", "A_obtectus", "C_maculatus", "C_chinensis"]
         filename =f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/dS_vs_dN_scatterplot_coccinella.png"
     # tribolium
