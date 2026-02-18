@@ -55,50 +55,7 @@
 \begin{document}
 \pagenumbering{gobble}
 
-
-
-\begin{figure}[H]
-
-    \begin{subfigure}[t]{\textwidth}
-    %\makebox[0pt][l]{\hspace{200pt}\textbf{A}}
-    \begin{picture}(0,0)
-   	  		\put(30,-30){\textbf{A}} % adjust the x and y values here
-		\end{picture}
-        \begin{center}
-        \includegraphics[width=\linewidth]{../data/fastX_ortholog_ident/fastX_permutation_bruchini.png}
-        \end{center}        
-        %\caption{ } \label{OG_stats:num_genes}
-    \end{subfigure}
-
-    \hfill
-
-    \begin{subfigure}[t]{0.49\linewidth}
-	    %\raggedleft
-	    %\makebox[0pt][l]{\hspace{30pt}\textbf{C}}
-	    \begin{picture}(0,0)
-   	  		\put(30,-5){\textbf{B}} % adjust the x and y values here
-		\end{picture}
-	    \begin{center}
-        \includegraphics[width=0.95\linewidth]{../data/fastX_ortholog_ident/fastX_permutation_coccinella.png}
-        \end{center}        
-        %\caption{ } \label{OG_stats:GF_vs_GS}
-    \end{subfigure}
-    \begin{subfigure}[t]{0.49\linewidth}
-    %\makebox[0pt][l]{\hspace{30pt}\textbf{D}}
-    \begin{picture}(0,0)
-   	  		\put(30,-5){\textbf{C}} % adjust the x and y values here
-		\end{picture}
-	    \begin{center}
-        \includegraphics[width=0.95\linewidth]{../data/fastX_ortholog_ident/fastX_permutation_tribolium.png}
-        \end{center}        
-        %\caption{ } \label{OG_stats:GF_vs_rep}
-    \end{subfigure}
-    
-    
-    \caption{\textbf{d$_N$/d$_S$ ratio and permutation tests for significance.} Pairwise comparisons between members of three species groups with violin plots of d$_N$/d$_S$ values for X-linked and autosomal 1-to-1 orthologs, and permutation tests (10000 permutations) to assess significance. All pairwise comparisons show significantly lower d$_N$/d$_S$ values on X-linked orthologs. The within-family comparisons are performed for three species groups: \textit{Bruchini} (\textbf{A}), \textit{Coccinella} (\textbf{B}) and \textit{Tribolium} (\textbf{C}).
-    }\label{dNdS_ratios}
-    
-\end{figure}
+% pdflatex -pdf composite_figures.tex
 
 
 
@@ -146,6 +103,56 @@
     
 \end{figure}
 
+\begin{figure}[H]
+
+    \begin{subfigure}[t]{\textwidth}
+    %\makebox[0pt][l]{\hspace{200pt}\textbf{A}}
+    \begin{picture}(0,0)
+   	  		\put(30,-30){\textbf{A}} % adjust the x and y values here
+		\end{picture}
+        \begin{center}
+        \includegraphics[width=\linewidth]{../data/fastX_ortholog_ident/fastX_permutation_bruchini.png}
+        \end{center}        
+        %\caption{ } \label{OG_stats:num_genes}
+    \end{subfigure}
+
+    \hfill
+
+    \begin{subfigure}[t]{0.49\linewidth}
+	    %\raggedleft
+	    %\makebox[0pt][l]{\hspace{30pt}\textbf{C}}
+	    \begin{picture}(0,0)
+   	  		\put(30,-5){\textbf{B}} % adjust the x and y values here
+		\end{picture}
+	    \begin{center}
+        \includegraphics[width=0.95\linewidth]{../data/fastX_ortholog_ident/fastX_permutation_coccinella.png}
+        \end{center}        
+        %\caption{ } \label{OG_stats:GF_vs_GS}
+    \end{subfigure}
+    \begin{subfigure}[t]{0.49\linewidth}
+    %\makebox[0pt][l]{\hspace{30pt}\textbf{D}}
+    \begin{picture}(0,0)
+   	  		\put(30,-5){\textbf{C}} % adjust the x and y values here
+		\end{picture}
+	    \begin{center}
+        \includegraphics[width=0.95\linewidth]{../data/fastX_ortholog_ident/fastX_permutation_tribolium.png}
+        \end{center}        
+        %\caption{ } \label{OG_stats:GF_vs_rep}
+    \end{subfigure}
+    
+    
+    \caption{\textbf{d$_N$/d$_S$ ratio and permutation tests for significance.} 
+    Pairwise comparisons between members of three species groups with violin plots of d$_N$/d$_S$ values 
+    for X-linked and autosomal 1-to-1 orthologs, and permutation tests (10000 permutations) to assess significance. 
+    The permutation test show frequency histograms of median differences between autosomal and X-linked d$_N$/d$_S$, 
+    with the shaded area showing the 95\% confidence interval according to a normal distribution. 
+    The vertical pink line shows the true observed difference in mean between autosomal and X-linked d$_N$/d$_S$.
+    All pairwise comparisons show significantly lower d$_N$/d$_S$ values on X-linked orthologs. 
+    The within-family comparisons are performed for three species groups: 
+    \textit{Bruchini} (\textbf{A}), \textit{Coccinella} (\textbf{B}) and \textit{Tribolium} (\textbf{C}).
+    }\label{dNdS_ratios}
+    
+\end{figure}
 
 
 
@@ -186,7 +193,15 @@
     \end{subfigure}
     
     
-    \caption{\textbf{positively selected orthologs split into autosomal or X-linked.} Positively selected genes are determined via likelihood ratio test comparison between paml site models M1a and M2a. The within-family comparisons are performed for three species groups: \textit{Bruchini} (\textbf{A}), \textit{Coccinella} (\textbf{B}) and \textit{Tribolium} (\textbf{C}).
+    \caption{\textbf{positively selected orthologs split into autosomal or X-linked.} 
+    Positively selected genes are determined via likelihood ratio test comparison between paml site models M1a and M2a. 
+    The permutation tests show frequency histograms of median differences between the percentage of orthologs for 10000 
+    permutations with positively selected codons between autosomal and X-linked orthologs, with the shaded area showing 
+    the 95\% confidence interval according to a normal distribution. 
+    The vertical pink line shows the true observed difference in percentage of orthologs with positively selected
+    codons between autosomal and X-linked orthologs.
+    \textit{Bruchini} (\textbf{A}), show an enrichment of positively selected X-linked orthologs in all pairwise comparisons, 
+    while \textit{Coccinella} (\textbf{B}) and \textit{Tribolium} (\textbf{C}) show no significant difference.
     }\label{site_models}
     
 \end{figure}
