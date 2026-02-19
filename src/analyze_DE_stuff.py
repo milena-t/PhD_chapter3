@@ -724,7 +724,7 @@ def plot_dNdS_vs_logFC(summary_paths_AX_list, outfile = "", sig_p_threshold = 0,
 
 if __name__ == "__main__":
     
-    username = "miltr339"
+    username = "milena"
     Cmac_annotation = f"/Users/{username}/work/native_annotations/all_native_annot/C_maculatus_superscaffolded_LomeRNA_braker_isoform_filtered.gff"
     # milenatr@pelle.uppmax.uu.se:/proj/naiss2023-6-65/Milena/annotation_pipeline/Cmac_Lome_superscaffolded_comparison/Cmac_Lome_diverse/Cmac_Lome_diverse/braker/braker_isoform_filtered.gff C_maculatus_superscaffolded_LomeRNA_braker_isoform_filtered.gff
     Cmac_assembly = f"/Users/{username}/work/assemblies_masked_uniform/C_maculatus_superscaffolded_genomic_fasta.masked.fai" # I only need contig lengths so use assembly index
@@ -743,7 +743,7 @@ if __name__ == "__main__":
             sig_p_level = 0.05, minLFC = 1,
             outfile=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/all_sex_bias_proportion.png")
 
-    if False:
+    if True:
         abs_logFC = False
         check_DE_phylogeny_rank_conserved(summary_paths_AX_list=summary_paths,
             outfile=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/conservation_rank_all_sex_bias_proportion.png",
@@ -752,7 +752,7 @@ if __name__ == "__main__":
             outfile=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/conservation_rank_sig_sex_bias_proportion.png",
             abs_LFC=abs_logFC, sig_p_threshold=0.05)
 
-    if True:
+    if False:
         ortholog_species = {
             "" : "all_species",
             "C_chinensis" : "C_chinensis", 

@@ -2,7 +2,9 @@
 
 ## Other code
 
-I wrote a lot of code for this a year ago here: https://github.com/milena-t/calculate_orthogroup_dNdS
+When Lila worked on this we identified orthologs with orthofinder and used only orthologs that were single-copy gene families all across the phylogeny. I wrote the pipeline to calculate dNdS with codeml based on orthofinder single-copy orthologs here: https://github.com/milena-t/calculate_orthogroup_dNdS
+
+This is not what I am using here since I am using best reciprocal hits blast for 1-to-1 ortholog identification. See instead `src/blast_BRH/calculate_pairwise_dNdS.py` for the main script, and a bunch of wrapper script to automate and properly parallelize the paml runs on the HPC cluster.
 
 ## Notes
 
