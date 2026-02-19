@@ -317,6 +317,8 @@ SATC R package (TODO cite): src/SATC_analysis_sex_chr_ident.Rmd
 
 
 * **Diorhabada** 
+  <details>
+    <summary>not used in main analysis</summary>
   * [Diorhabda sublineata](https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_026230105.1/)
   ```python
   { X : ['NC_079485.1'],
@@ -328,6 +330,7 @@ SATC R package (TODO cite): src/SATC_analysis_sex_chr_ident.Rmd
     Y : ['NC_079473.1']} 
   ``` 
   * There is also Diabrotica undecimpunctata but it does not have sex chromosomes identified, but it does have a giant genome at 1.7Gb
+  </details>
 
 * **Tribolium**
   * [Tribolium castaneum](https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_031307605.1/)

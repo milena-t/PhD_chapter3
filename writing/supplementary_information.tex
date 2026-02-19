@@ -1,0 +1,138 @@
+\documentclass{article}
+
+% Set page size and margins
+\usepackage[a4paper,top=2cm,bottom=2cm,left=2.5cm,right=2.5cm,marginparwidth=1.75cm]{geometry}
+
+% Useful packages
+
+\usepackage{graphicx}
+%\usepackage[draft]{graphicx}
+
+\usepackage{amsmath}
+\usepackage{wrapfig}
+\usepackage{subcaption}
+\usepackage{caption}
+\usepackage{float}
+\usepackage{multicol}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+\usepackage{lscape} 
+
+\renewcommand\arraystretch{1.25}
+
+\usepackage{listings}
+\usepackage{color}
+\usepackage[percent]{overpic}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstset{frame=tb,
+  language=R,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\small\ttfamily},
+  numbers=none,
+  numberstyle=\tiny\color{gray},
+  keywordstyle=\color{blue},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=3
+}
+
+%\numberwithout{figure}{section}
+\counterwithout*{figure}{section} % this is the only way i got the figure number and in-text reference to match, no idea what kind of black magic is happening here though
+
+
+\title{How many genes are in a gene family? Uniform annotation methods for comparative genomics}
+\author{Milena Trabert, Lila Maladesky, Elina Immonen}
+\date{May 2025}
+
+\begin{document}
+\renewcommand{\arraystretch}{1.5}
+\pagenumbering{gobble}
+\renewcommand{\thetable}{S\arabic{table}}
+\renewcommand{\thefigure}{S\arabic{figure}}
+
+
+\section*{Supplementary information}
+
+\subsection*{Genome annotation}
+
+\begin{table}[H]
+    \centering
+    \caption{BUSCO scores for \textit{C. magnifica}, \textit{T. freemani} and \textit{C. maculatus} genome annotations}
+    \label{SItab:BUSCO}
+    \begin{tabular}{l |c |c | c}
+        BUSCO category & \textit{C. magnifica} &  \textit{T. freemani} & \textit{C. maculatus} \\
+        \hline
+        \hline	   
+        Complete BUSCOs & 972 (96.0\%) & 978 (96.6\%) & 999 (98.7\%) \\
+        \hline
+        Complete and single-copy BUSCOs & 877 (86.6\%) & 896 (88.5\%) & 731 (72.2\%) \\
+        \hline
+        Complete and duplicated BUSCOs & 95	(9.4\%) & 82 (8.1\%) & 268 (26.5\%) \\
+        \hline
+        Fragmented BUSCOs & 9 (0.9\%) & 14 (1.4\%) & 6 (0.6\%) \\
+        \hline
+        Missing BUSCOs & 32	(3.1\%) & 21 (2.0\%) & 8 (0.7\%) \\
+        \hline
+        Total BUSCO groups searched & 1013	 & 1013 & 1013 \\
+    \end{tabular}
+\end{table}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\linewidth]{../data/annotation_evaluation/single_exon_genes_white_bg.png}
+    \caption{Number of genes with highlighted proportion of single exon genes in all species included.}
+    \label{SIfig:gene_nos}
+\end{figure}
+
+\subsection*{Synteny}
+
+\subsubsection*{\textit{B. siliquastri} vs. \textit{A. obtectus}}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{../data/synteny_plots/plot_ctl_Aobt_Bsil.png}
+    \caption{Synteny plot of \textit{B. siliquastri} (left) and \textit{A. obtectus} (right), the X-chromosomes are bs9 for \textit{B. siliquastri} 
+    and ao1950 for \textit{A. obtectus} (second from the bottom).}
+    \label{SIfig:synteny_BsilAobt}
+\end{figure}
+
+\subsubsection*{\textit{C. maculatus} vs. \textit{A. obtectus}}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{../data/synteny_plots/plot_ctl_Cmac_Aobt.png}
+    \caption{Synteny plot of \textit{A. obtectus} (left) and \textit{C. maculatus} (right), the X-chromosomes are cm124 for \textit{C. maculatus} 
+    and ao1950 for \textit{A. obtectus} (second from the top).}
+    \label{SIfig:synteny_CmacAobt}
+\end{figure}
+
+\subsubsection*{\textit{C. magnifica} vs. \textit{C. septempunctata}}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{../data/synteny_plots/plot_ctl_Csep_Cmag.png}
+    \caption{Synteny plot of \textit{C. magnifica} (left) and \textit{C. septempunctata} (right), the X-chromosomes are mc64 for \textit{C. magnifica} 
+    and cs7 for \textit{C. septempunctata} (second from the bottom).}
+    \label{SIfig:synteny_CmagCsep}
+\end{figure}
+
+\subsubsection*{\textit{T. castaneum} vs. \textit{T. freemani}}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{../data/synteny_plots/plot_ctl_Csep_Cmag.png}
+    \caption{Synteny plot of \textit{T. castaneum} (left) and \textit{T. freemani} (right), the X-chromosomes are tc36 for \textit{T. castaneum} 
+    and tf4 for \textit{T. freemani} (first from the bottom).}
+    \label{SIfig:synteny_TcasTfre}
+\end{figure}
+
+
+\end{document}
