@@ -8,7 +8,8 @@
 #SBATCH --mail-user milena.trabert@ebc.uu.se
 
 # Bioinfo tools not needed on pelle
-module load bioinfo-tools java/OpenJDK_24+36
+# module load java/OpenJDK_24+36
+module load Java/21.0.7
 
 cd /proj/naiss2023-6-65/Milena/chapter2/MCScanX-1_0_0/downstream_analyses
 
@@ -19,6 +20,14 @@ java dual_synteny_plotter \
     -o /proj/naiss2023-6-65/Milena/chapter3/MCScanX/chrysomelidae/plots/plot_ctl_Cmac_Bsil.png
 
 echo "--> done Cmac Bsil"
+
+java dual_synteny_plotter \
+    -g /proj/naiss2023-6-65/Milena/chapter3/MCScanX/chrysomelidae/all_species.gff \
+    -s /proj/naiss2023-6-65/Milena/chapter3/MCScanX/chrysomelidae/all_species.collinearity \
+    -c /proj/naiss2023-6-65/Milena/chapter3/PhD_chapter3/bash/plot_MCScanX/plot_ctl_Csep_Bsil.ctl \
+    -o /proj/naiss2023-6-65/Milena/chapter3/MCScanX/chrysomelidae/plots/plot_ctl_Csep_Bsil.png
+
+echo "--> done Csep Bsil"
 
 java dual_synteny_plotter \
     -g /proj/naiss2023-6-65/Milena/chapter3/MCScanX/chrysomelidae/all_species.gff \
