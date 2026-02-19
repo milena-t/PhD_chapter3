@@ -127,7 +127,7 @@ if __name__ == "__main__":
     for chromosome, path in table_paths_dict.items():
         print(f" --> {chromosome}")
         outfile_path = path.replace(".tsv", "_conservation_rank_analysis.tsv")
-        make_rank_summary_table(path, outfile_path=outfile_path, min_LFC=0, p_threshold=0.05)
+        make_rank_summary_table(path, outfile_path=outfile_path, min_LFC=1, p_threshold=0.05)
         summary_table_paths[chromosome] = outfile_path
 
     plot_outfile_name=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/DE_conservation_rank_proportions.png"
