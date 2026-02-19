@@ -107,23 +107,25 @@ def make_category_proportion_plot(rank_summary_path_A:str, rank_summary_path_X:s
     def make_percentage_dict(counts_dict, df):
         unique_ranks = sorted(list(df["conservation_rank"].unique()))
         perc_dict = { rank : {"abdomen" : {"female_biased" : 0,"male_biased" : 0,"unbiased" : 0},"head_thorax" : {"female_biased" : 0,"male_biased" : 0,"unbiased" : 0}} for rank in range(1,max(unique_ranks)+1)}
+        gene_numbers_dict = { rank : 0 for rank in range(1,max(unique_ranks)+1)}
         
         for row_rank in perc_dict.keys():
             num_genes = df[df["conservation_rank"]==row_rank].shape[0]
             print(f"{row_rank} : {num_genes} genes")
+            gene_numbers_dict[row_rank] = num_genes
             perc_dict[row_rank]["abdomen"] = { sex_bias : 100*float(val)/float(num_genes) for sex_bias,val in counts_dict[row_rank]["abdomen"].items()}
             perc_dict[row_rank]["head_thorax"] = { sex_bias : 100*float(val)/float(num_genes) for sex_bias,val in counts_dict[row_rank]["head_thorax"].items()}
         
         print(perc_dict)
-        return perc_dict
+        return perc_dict, gene_numbers_dict
 
 
     X_sums_dict = modify_counts_dict(X_df)
     print(f"\n ---> X rank percentages dict")
-    X_perc_dict = make_percentage_dict(X_sums_dict, X_df)
+    X_perc_dict,X_num_genes_rank = make_percentage_dict(X_sums_dict, X_df)
     A_sums_dict = modify_counts_dict(A_df)
     print(f"\n ---> A rank percentages dict")
-    A_perc_dict = make_percentage_dict(A_sums_dict, A_df)
+    A_perc_dict,A_num_genes_rank = make_percentage_dict(A_sums_dict, A_df)
     assert len(X_perc_dict) == len(A_perc_dict)
 
     ### plot stacked bar chart
@@ -131,15 +133,16 @@ def make_category_proportion_plot(rank_summary_path_A:str, rank_summary_path_X:s
     width=0.2
     x_gap = 0.025
     # x_subtr=width*1.1/2.0
-    x_coords = (list(range(1,len(X_sums_dict.keys())+1)))
+    x_coords = list(range(1,len(X_sums_dict.keys())+1))
+
     x_coords_bars = [
         value
         for x in x_coords
         for value in (
             x - width*1.5 - x_gap,
             x - width*0.5 - x_gap,
-            x + width*0.5 - x_gap,
-            x + width*1.5 - x_gap,
+            x + width*0.5 + x_gap,
+            x + width*1.5 + x_gap,
         )
     ]
     fig, ax = plt.subplots(1, 1, figsize=(22, 11)) 
@@ -152,7 +155,7 @@ def make_category_proportion_plot(rank_summary_path_A:str, rank_summary_path_X:s
         },
         "head_thorax" : { # colors in a lighter shade than abdomen
             "female_biased" : "#E86D6D", # coral rush
-            "male_biased" : "#5E5F7A", # wisteria blue
+            "male_biased" : "#9DAAE9", # wisteria blue
             "unbiased" : "#5E5F7A", # dusty grape
         }
     }
@@ -166,17 +169,25 @@ def make_category_proportion_plot(rank_summary_path_A:str, rank_summary_path_X:s
         "head_thorax" : "somatic"
     }
 
-    bottom = [0,0,0,0]*4
+    bottom = [0,0,0,0]*5
     subcat_tissue = ["abdomen","head_thorax"]
-    chr_labels = [f"{chr}:{tissue}" for tissue in subcat_tissue for chr in ["A","X"]]
-    bar_labels = [f"{conserved_rank}:{sublabel}" for sublabel in chr_labels for conserved_rank in x_coords]
+    chr_labels = [f"{labels_dict[tissue]}:{chr}" for chr in ["A","X"] for tissue in subcat_tissue]
+    bar_labels = [
+        (
+            f"{sublabel} ({A_num_genes_rank[conserved_rank]})"
+            if "A" in sublabel
+            else f"{sublabel} ({X_num_genes_rank[conserved_rank]})"
+        )
+        for conserved_rank in x_coords
+        for sublabel in chr_labels
+    ]
+
 
     # stack bars from bottom to top
-    for sex_bias in colors_dict["abdomen"].keys():
+    for sex_bias in reversed(colors_dict["abdomen"].keys()):
         print(f"\t * {sex_bias}")
         # alternate the colors for the abdomen/ht bars
         colors_list = [colors_dict["abdomen"][sex_bias] if i%2==0 else colors_dict["head_thorax"][sex_bias] for i, _ in enumerate(range(len(bottom))) ]
-        
         # make bar height for the four bars in all the conservation rank categories
         y_coords = []
         for conserved_rank in x_coords:
@@ -184,17 +195,25 @@ def make_category_proportion_plot(rank_summary_path_A:str, rank_summary_path_X:s
             y_coords.extend([A_perc_dict[conserved_rank]["head_thorax"][sex_bias]]) 
             y_coords.extend([X_perc_dict[conserved_rank]["abdomen"][sex_bias]])
             y_coords.extend([X_perc_dict[conserved_rank]["head_thorax"][sex_bias]])
-        assert len(x_coords_bars)==len(y_coords)
 
+        assert len(x_coords_bars)==len(y_coords)==len(colors_list)
         ax.bar(x_coords_bars, y_coords, width = width, bottom=bottom, color= colors_list)
         
         bottom = [bottom[i]+y_coords[i] for i in range(len(y_coords))]
 
-    # ax.yaxis.set_major_formatter(FuncFormatter(lambda x, pos: '' if x > 100 and x<1 else f'{int(x)}%'))
-    ax.set_xticks(ticks=x_coords, labels=bar_labels)
+    ax.yaxis.set_major_formatter(FuncFormatter(lambda x, pos: '' if x > 100 and x<1 else f'{int(x)}%'))
+
     ax.tick_params(axis='y', labelsize=fs)
-    ax.tick_params(axis='x', labelsize=fs, rotation=90)
+    ax.tick_params(axis='x', labelsize=fs*0.75, rotation=90)
     ax.set_xticks(ticks=x_coords_bars, labels=bar_labels)
+
+    ax2 = ax.secondary_xaxis('bottom')
+    ax2.set_xticks(x_coords)
+    ax2.set_xticklabels(x_coords, fontsize=fs*1.2)
+    ax2.spines['bottom'].set_position(('outward', 180))   
+    ax2.xaxis.set_ticks_position('none')
+    ax2.spines['bottom'].set_visible(False)
+    ax2.tick_params(axis='x', labelsize=fs*1.2)
     
     plt.tight_layout(rect=[0, 0.05, 1, 1])
     # transparent background
@@ -219,7 +238,10 @@ if __name__ == "__main__":
         make_rank_summary_table(path, outfile_path=outfile_path, min_LFC=1, p_threshold=0.05)
         summary_table_paths[chromosome] = outfile_path
 
-    plot_outfile_name=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/DE_conservation_rank_proportions.png"
-    make_category_proportion_plot(rank_summary_path_A=summary_table_paths["A"], 
+    if True:
+
+        plot_outfile_name=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/DE_conservation_rank_proportions.png"
+        make_category_proportion_plot(rank_summary_path_A=summary_table_paths["A"], 
                                   rank_summary_path_X=summary_table_paths["X"],
                                   outfile=plot_outfile_name)
+                                  

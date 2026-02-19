@@ -695,19 +695,9 @@ ranks_dict = {
 
 We expect X-linked genes to be more dosage compensated the more conserved they are, because dosage compensation has had more time to evolve. it kind of looks like there is a trend downwards in female-bias for A/X and both tissues, but with the large difference in sample size it is difficult to tell. TODO how do i analyze this properly statistically?
 
-
-All genes, split by the direction of sex bias (logFC smaller or larger than 0):
-
 <p float="left">
-  <img src="data/DE_analysis/conservation_rank_all_sex_bias_proportion_white_bg.png" width="100%" />
+  <img src="data/DE_analysis/DE_conservation_rank_proportions_white_bg.png" width="100%" />
 </p>
-
-only significantly sex-biased genes (FDR-pval < 0.05) again split by the direction of sex bias
-
-<p float="left">
-  <img src="data/DE_analysis/conservation_rank_sig_sex_bias_proportion_white_bg.png" width="100%" />
-</p>
-
 
 ## combining sex-biased expression with molecular rate and positive selection
 
