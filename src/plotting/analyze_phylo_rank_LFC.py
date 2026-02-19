@@ -11,6 +11,8 @@ Make a table for the phylogenetic rank analyses that has all the cmac genes in a
 import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.ticker import FuncFormatter
+import statsmodels.api as sm
+from statsmodels.miscmodels.ordinal_model import OrderedModel
 
 def get_full_table_path(username="miltr339"):
     out_dict = {
@@ -69,23 +71,25 @@ def make_rank_summary_table(full_table_path:str, outfile_path:str, min_LFC=1,p_t
     print(f"counts head+thorax: {counts_dict_ht}")
 
         
+
+def categorize_SB_int(SB_int:int):
+    if SB_int==0:
+        return "unbiased"
+    elif SB_int==-1:
+        return "male_biased"
+    elif SB_int==1:
+        return "female_biased"
+    else:
+        raise RuntimeError(f"{SB_int} could not be categorized")
+
+        
 def make_category_proportion_plot(rank_summary_path_A:str, rank_summary_path_X:str, outfile:str):
     """
     plot a stacked bar to show the proportion of male/female/unbiased for X and A, and for abdominal and head+thorax
     """
-    sum_dict = {"abdomen" : {"female_biased" : 0,"male_biased" : 0,"unbiased" : 0},"head_thorax" : {"female_biased" : 0,"male_biased" : 0,"unbiased" : 0}}
+    
     X_df = pd.read_csv(rank_summary_path_X, sep="\t")
     A_df = pd.read_csv(rank_summary_path_A, sep="\t")
-
-    def categorize_SB_int(SB_int:int):
-        if SB_int==0:
-            return "unbiased"
-        elif SB_int==-1:
-            return "male_biased"
-        elif SB_int==1:
-            return "female_biased"
-        else:
-            raise RuntimeError(f"{SB_int} could not be categorized")
     
     def modify_counts_dict(df):
         unique_ranks = df["conservation_rank"].unique()
@@ -224,6 +228,45 @@ def make_category_proportion_plot(rank_summary_path_A:str, rank_summary_path_X:s
     print(f"plot saved in current working directory as: {outfile} and {filename_tr}")
 
 
+
+def make_log_reg_table(rank_summary_path_A, rank_summary_path_X):
+    """
+    make one table of A and X with the columns:
+    * conservation rank
+    * female biased (bin)
+    * unbiased (bin)
+    * male based (bin)
+    * chromosome (A/X)
+    """
+    X_df = pd.read_csv(rank_summary_path_X, sep="\t")
+    A_df = pd.read_csv(rank_summary_path_A, sep="\t")
+    # add columns for chromosome cat
+    X_df["chromosome"] = [1]*X_df.shape[0]
+    A_df["chromosome"] = [0]*A_df.shape[0]
+
+    df = pd.concat([A_df,X_df], ignore_index=True)
+    print(df)
+
+    ### ordinal logistic regression
+    df['interaction'] = df['conservation_rank'] * df['chromosome']
+    explanatory = df[['interaction','conservation_rank','chromosome']]
+    response_abdomen = df['abdomen_sex_bias_category']
+    response_head_thorax = df['head_thorax_sex_bias_category']
+
+    print(f"\n////////////////// ABDOMEN //////////////////")
+    model = OrderedModel(response_abdomen, explanatory, distr='logit')
+    result = model.fit(method='bfgs', disp=False)
+    print(result.summary())
+
+
+    print(f"\n////////////////// HEAD+THORAX //////////////////")
+    model = OrderedModel(response_head_thorax, explanatory, distr='logit')
+    result = model.fit(method='bfgs', disp=False)
+    print(result.summary())
+
+
+
+
 if __name__ == "__main__":
     username = "miltr339"
 
@@ -235,13 +278,17 @@ if __name__ == "__main__":
         #     continue
         print(f" --> {chromosome}")
         outfile_path = path.replace(".tsv", "_conservation_rank_analysis.tsv")
-        make_rank_summary_table(path, outfile_path=outfile_path, min_LFC=1, p_threshold=0.05)
+        # make_rank_summary_table(path, outfile_path=outfile_path, min_LFC=1, p_threshold=0.05)
         summary_table_paths[chromosome] = outfile_path
 
-    if True:
+    if False:
 
         plot_outfile_name=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/DE_conservation_rank_proportions.png"
         make_category_proportion_plot(rank_summary_path_A=summary_table_paths["A"], 
                                   rank_summary_path_X=summary_table_paths["X"],
                                   outfile=plot_outfile_name)
-                                  
+
+    if True:
+        ### statistical analysis with logistic regression
+        make_log_reg_table(rank_summary_path_A=summary_table_paths["A"], 
+                        rank_summary_path_X=summary_table_paths["X"])

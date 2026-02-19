@@ -693,11 +693,61 @@ ranks_dict = {
     }
 ```
 
-We expect X-linked genes to be more dosage compensated the more conserved they are, because dosage compensation has had more time to evolve. it kind of looks like there is a trend downwards in female-bias for A/X and both tissues, but with the large difference in sample size it is difficult to tell. TODO how do i analyze this properly statistically?
+We expect X-linked genes to be more dosage compensated the more conserved they are, because dosage compensation has had more time to evolve. We see the opposite trend, with sex bias decreasing for increasing conservation rank. Also, it kind of looks like there is a trend downwards in female-bias for A/X and both tissues, but with the large difference in sample size it is difficult to tell.
 
 <p float="left">
   <img src="data/DE_analysis/DE_conservation_rank_proportions_white_bg.png" width="100%" />
 </p>
+
+### ordinal logistic regression
+
+explanatory variables are chromosome type, conservation rank, and their interaction. Response variables are the sex-biased expression categories (-1=male, 0=unbiased, 1=female). Unsure how to interpret this now check tomorrow. seems everything is significant??
+
+```text
+////////////////// ABDOMEN //////////////////
+                                 OrderedModel Results                                
+=====================================================================================
+Dep. Variable:     abdomen_sex_bias_category   Log-Likelihood:                -11096.
+Model:                          OrderedModel   AIC:                         2.220e+04
+Method:                   Maximum Likelihood   BIC:                         2.224e+04
+Date:                       Thu, 19 Feb 2026                                         
+Time:                               17:38:04                                         
+No. Observations:                      11133                                         
+Df Residuals:                          11128                                         
+Df Model:                                  3                                         
+=====================================================================================
+                        coef    std err          z      P>|z|      [0.025      0.975]
+-------------------------------------------------------------------------------------
+interaction          -0.3214      0.133     -2.413      0.016      -0.582      -0.060
+conservation_rank     0.3848      0.019     20.046      0.000       0.347       0.422
+chromosome            1.6375      0.635      2.581      0.010       0.394       2.881
+-1/0                  0.5421      0.084      6.461      0.000       0.378       0.707
+0/1                   0.8919      0.011     79.196      0.000       0.870       0.914
+=====================================================================================
+
+////////////////// HEAD+THORAX //////////////////
+                                   OrderedModel Results                                  
+=========================================================================================
+Dep. Variable:     head_thorax_sex_bias_category   Log-Likelihood:                -6015.0
+Model:                              OrderedModel   AIC:                         1.204e+04
+Method:                       Maximum Likelihood   BIC:                         1.208e+04
+Date:                           Thu, 19 Feb 2026                                         
+Time:                                   17:38:04                                         
+No. Observations:                          11133                                         
+Df Residuals:                              11128                                         
+Df Model:                                      3                                         
+=====================================================================================
+                        coef    std err          z      P>|z|      [0.025      0.975]
+-------------------------------------------------------------------------------------
+interaction          -0.4102      0.192     -2.132      0.033      -0.787      -0.033
+conservation_rank     0.3654      0.025     14.515      0.000       0.316       0.415
+chromosome            1.9447      0.915      2.126      0.034       0.152       3.738
+-1/0                 -0.6507      0.107     -6.098      0.000      -0.860      -0.442
+0/1                   1.6149      0.010    160.773      0.000       1.595       1.635
+=====================================================================================
+```
+
+
 
 ## combining sex-biased expression with molecular rate and positive selection
 
