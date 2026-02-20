@@ -681,6 +681,7 @@ I calculated the standard error of the mean (SEM) with `scipy.stats.sem` which t
 
 ## sex bias and ortholog conservation
 
+
 I have assigned each Cmac ortholog a "conservation rank" depending on the most distant species in which there is a 1-to-1 ortholog for this gene. Most genes are highly conserved with orthologs all the way in *D. melanogaster*. The ranks are these: 
 
 ```python 
@@ -695,11 +696,13 @@ ranks_dict = {
 
 We expect X-linked genes to be more dosage compensated the more conserved they are, because dosage compensation has had more time to evolve. We see the opposite trend, with sex bias decreasing for increasing conservation rank. Also, it kind of looks like there is a trend downwards in female-bias for A/X and both tissues, but with the large difference in sample size it is difficult to tell.
 
+### 1. sex bias categories
+
 <p float="left">
   <img src="data/DE_analysis/DE_conservation_rank_proportions_white_bg.png" width="100%" />
 </p>
 
-### ordinal logistic regression
+#### ordinal logistic regression
 
 explanatory variables are chromosome type, conservation rank, and their interaction. Response variables are the sex-biased expression categories (-1=male, 0=unbiased, 1=female). Unsure how to interpret this now check tomorrow. seems everything is significant??
 
@@ -747,7 +750,13 @@ chromosome            1.9447      0.915      2.126      0.034       0.152       
 =====================================================================================
 ```
 
+### 2. magnitude of significant sex bias
 
+When only looking at the expression of significantly sex biased genes we can see that the magnitude of sex bias decreases with age.
+
+<p float="left">
+  <img src="data/DE_analysis/conservation_rank_sig_sex_bias_proportion_white_bg.png" width="100%" />
+</p>
 
 ## combining sex-biased expression with molecular rate and positive selection
 
