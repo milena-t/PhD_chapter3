@@ -750,6 +750,8 @@ chromosome            1.9447      0.915      2.126      0.034       0.152       
 =====================================================================================
 ```
 
+All exp. variables and their interaction are significant.
+
 ### 2. magnitude of significant sex bias
 
 When only looking at the expression of significantly sex biased genes we can see that the magnitude of sex bias decreases with age.
@@ -761,6 +763,45 @@ When only looking at the expression of significantly sex biased genes we can see
 
 #### median quantile expression test
 
+I specified the model like `LFC ~ level_most_dist_ortholog * C(chromosome)` with one model for abdomen LFC and one for head+thorax, where chromosome is a categorical variable, and level_most_dist_ortholog is treated as discrete numerical. The model was run using `statsmodels.formula.api.quantreg()`.
+
+```text
+////////////////// ABDOMEN //////////////////
+                         QuantReg Regression Results                          
+==============================================================================
+Dep. Variable:            LFC_abdomen   Pseudo R-squared:              0.05747
+Model:                       QuantReg   Bandwidth:                      0.4450
+Method:                 Least Squares   Sparsity:                        4.018
+Date:                Fri, 20 Feb 2026   No. Observations:                 8288
+Time:                        15:10:54   Df Residuals:                     8284
+                                        Df Model:                            3
+===============================================================================================================
+                                                  coef    std err          t      P>|t|      [0.025      0.975]
+---------------------------------------------------------------------------------------------------------------
+Intercept                                      -4.2940      0.111    -38.850      0.000      -4.511      -4.077
+C(chromosome)[T.1]                              5.1598      0.822      6.273      0.000       3.547       6.772
+level_most_dist_ortholog                        0.9516      0.025     38.584      0.000       0.903       1.000
+level_most_dist_ortholog:C(chromosome)[T.1]    -1.0348      0.172     -5.999      0.000      -1.373      -0.697
+===============================================================================================================
+
+////////////////// HEAD+THORAX //////////////////
+                         QuantReg Regression Results                          
+==============================================================================
+Dep. Variable:        LFC_head_thorax   Pseudo R-squared:              0.01980
+Model:                       QuantReg   Bandwidth:                      0.2911
+Method:                 Least Squares   Sparsity:                        1.648
+Date:                Fri, 20 Feb 2026   No. Observations:                 5205
+Time:                        15:10:54   Df Residuals:                     5201
+                                        Df Model:                            3
+===============================================================================================================
+                                                  coef    std err          t      P>|t|      [0.025      0.975]
+---------------------------------------------------------------------------------------------------------------
+Intercept                                      -1.5999      0.056    -28.567      0.000      -1.710      -1.490
+C(chromosome)[T.1]                              1.0018      0.457      2.191      0.029       0.105       1.898
+level_most_dist_ortholog                        0.2521      0.013     20.067      0.000       0.227       0.277
+level_most_dist_ortholog:C(chromosome)[T.1]    -0.2103      0.095     -2.209      0.027      -0.397      -0.024
+===============================================================================================================
+```
 
 
 ## combining sex-biased expression with molecular rate and positive selection

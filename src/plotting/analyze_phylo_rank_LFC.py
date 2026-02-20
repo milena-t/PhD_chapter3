@@ -13,6 +13,8 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import FuncFormatter
 import statsmodels.api as sm
 from statsmodels.miscmodels.ordinal_model import OrderedModel
+from sklearn.linear_model import QuantileRegressor
+import statsmodels.formula.api as smf
 from plot_basic_DE_stuff import get_summary_paths
 
 def get_full_table_path(username="miltr339"):
@@ -458,6 +460,40 @@ def check_DE_phylogeny_rank_conserved(summary_paths_AX_list:dict, outfile = "", 
     print(f"plot saved in current working directory as: {outfile} and {filename_tr}")
 
 
+def logFC_quantile_regression(summary_table_path:str, p_val_threshold= 0.05):
+    X_df = pd.read_csv(summary_table_path["X"], sep = "\t", index_col=False)
+    A_df = pd.read_csv(summary_table_path["A"], sep = "\t", index_col=False)
+     # add columns for chromosome cat
+    X_df["chromosome"] = [1]*X_df.shape[0]
+    A_df["chromosome"] = [0]*A_df.shape[0]
+
+    df_duplicates = pd.concat([A_df,X_df], ignore_index=True)
+    df_all = df_duplicates.drop_duplicates(subset=['focal_transcript']) # remove duplicate data points -> log2FC is the same for all instances of the focal transcript
+    
+
+    ## abdominal df
+    if p_val_threshold >0:
+        df = df_all[df_all["FDR_pval_abdomen"]<p_val_threshold]
+    else:
+        df = df_all
+    # model_a = smf.quantreg("LFC_abdomen ~ C(level_most_dist_ortholog) * C(chromosome)", df)
+    model_a = smf.quantreg("LFC_abdomen ~ level_most_dist_ortholog * C(chromosome)", df)
+    result_a = model_a.fit(q=0.5)
+    print(f"\n////////////////// ABDOMEN //////////////////")
+    print(result_a.summary())
+
+    ## head_thorax 
+    if p_val_threshold >0:
+        df = df_all[df_all["FDR_pval_head+thorax"]<p_val_threshold]
+    else:
+        df = df_all
+    ## rename the head thorax column because this does not play well with the formula specification
+    df = df.rename(columns={'LFC_head+thorax': 'LFC_head_thorax'})
+    # model_ht = smf.quantreg("LFC_head_thorax ~ C(level_most_dist_ortholog) * C(chromosome)", df)
+    model_ht = smf.quantreg("LFC_head_thorax ~ level_most_dist_ortholog * C(chromosome)", df)
+    result_ht = model_ht.fit(q=0.5)
+    print(f"\n////////////////// HEAD+THORAX //////////////////")
+    print(result_ht.summary())
 
 
 if __name__ == "__main__":
@@ -487,10 +523,14 @@ if __name__ == "__main__":
     
     if True:
         summary_paths = get_summary_paths(username=username)
-        abs_logFC = False
-        check_DE_phylogeny_rank_conserved(summary_paths_AX_list=summary_paths,
-            outfile=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/conservation_rank_all_sex_bias_proportion.png",
-            abs_LFC=abs_logFC, sig_p_threshold=0)
-        check_DE_phylogeny_rank_conserved(summary_paths_AX_list=summary_paths,
-            outfile=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/conservation_rank_sig_sex_bias_proportion.png",
-            abs_LFC=abs_logFC, sig_p_threshold=0.05)
+        if False:
+            ## plotting the bar chart
+            abs_logFC = False
+            check_DE_phylogeny_rank_conserved(summary_paths_AX_list=summary_paths,
+                outfile=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/conservation_rank_all_sex_bias_proportion.png",
+                abs_LFC=abs_logFC, sig_p_threshold=0)
+            check_DE_phylogeny_rank_conserved(summary_paths_AX_list=summary_paths,
+                outfile=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/conservation_rank_sig_sex_bias_proportion.png",
+                abs_LFC=abs_logFC, sig_p_threshold=0.05)
+        ## statistical analysis
+        logFC_quantile_regression(summary_paths)
