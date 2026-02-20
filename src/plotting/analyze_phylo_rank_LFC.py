@@ -369,16 +369,26 @@ def check_DE_phylogeny_rank_conserved(summary_paths_AX_list:dict, outfile = "", 
             female_biased = [x for x in lst if x > 0]
             sex_biased_lists.extend([male_biased, female_biased])
 
-        tick_labels = [f"{i // 2 + 1}\n({len(vals)})" for i,vals in enumerate(sex_biased_lists)]
-        tick_pos = range(1,len(tick_labels)+1)
-        bp = ax[row,col].boxplot(sex_biased_lists, patch_artist=True)
+        # tick_labels = [f"{i // 2 + 1}\n({len(vals)})" for i,vals in enumerate(sex_biased_lists)]
+        tick_labels = [f"({len(vals)})" for i,vals in enumerate(sex_biased_lists)] # plot conservation rank label on separate axis
+        pos_adjust=0.2
+        tick_pos = [i+pos_adjust if i%2==1 else i-pos_adjust for i in range(1,len(tick_labels)+1)]
+        bp = ax[row,col].boxplot(sex_biased_lists, positions=tick_pos, patch_artist=True)
 
         # set axis labels
         tick_fs_factor = 0.6
         ax[row,col].set_xticks(ticks = tick_pos, labels = tick_labels, fontsize=fs*tick_fs_factor)
-        ax[row,col].tick_params(axis='x', labelsize=fs*tick_fs_factor)
+        ax[row,col].tick_params(axis='x', labelsize=fs*tick_fs_factor, rotation = 90)
         ax[row,col].tick_params(axis='y', labelsize=fs*0.9)
         ax[row,col].set_title(title, fontsize=fs)
+
+        ax2 = ax[row,col].secondary_xaxis('bottom')
+        ax2.set_xticks([i+0.5 for i in range(1,10,2)])
+        ax2.set_xticklabels([i for i in range(1,6)], fontsize=fs)
+        ax2.spines['bottom'].set_position(('outward', 40))   
+        ax2.xaxis.set_ticks_position('none')
+        ax2.spines['bottom'].set_visible(False)
+        ax2.tick_params(axis='x', labelsize=fs)
 
         ## modify boxplot colors
         for i, box in enumerate(bp['boxes']):
@@ -428,7 +438,7 @@ def check_DE_phylogeny_rank_conserved(summary_paths_AX_list:dict, outfile = "", 
         plot_DE_subplot_sep_MF(LFC_lists_head_thorax_A, row=0, col=1, fs=fs, title=f"Autosomes: head+thorax", colors_dict=colors, abs_logFC=abs_LFC)
         plot_DE_subplot_sep_MF(LFC_lists_abdomen_X, row=1, col=0, fs=fs, title=f"X-chromosome: abdomen", colors_dict=colors, abs_logFC=abs_LFC)
         plot_DE_subplot_sep_MF(LFC_lists_head_thorax_X, row=1, col=1, fs=fs, title=f"X-chromosome: head+thorax", colors_dict=colors, abs_logFC=abs_LFC)
-        fig.supxlabel(f"conservation rank\n(number of genes)", fontsize = fs)
+        fig.supxlabel(f"(number of genes)\nconservation rank of C. maculatus ortholog", fontsize = fs)
     else:
         plot_DE_subplot(LFC_lists_abdomen_A, row=0, col=0, fs=fs, title=f"Autosomes: abdomen", colors_dict=colors, abs_logFC=abs_LFC)
         plot_DE_subplot(LFC_lists_head_thorax_A, row=0, col=1, fs=fs, title=f"Autosomes: head+thorax", colors_dict=colors, abs_logFC=abs_LFC)
@@ -456,15 +466,15 @@ if __name__ == "__main__":
     table_paths_dict = get_full_table_path(username=username)
     summary_table_paths = {}
 
-    for chromosome, path in table_paths_dict.items():
-        # if chromosome=="X":
-        #     continue
-        print(f" --> {chromosome}")
-        outfile_path = path.replace(".tsv", "_conservation_rank_analysis.tsv")
-        # make_rank_summary_table(path, outfile_path=outfile_path, min_LFC=1, p_threshold=0.05)
-        summary_table_paths[chromosome] = outfile_path
-
     if False:
+        for chromosome, path in table_paths_dict.items():
+            # if chromosome=="X":
+            #     continue
+            print(f" --> {chromosome}")
+            outfile_path = path.replace(".tsv", "_conservation_rank_analysis.tsv")
+            # make_rank_summary_table(path, outfile_path=outfile_path, min_LFC=1, p_threshold=0.05)
+            summary_table_paths[chromosome] = outfile_path
+
 
         plot_outfile_name=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/DE_conservation_rank_proportions.png"
         make_category_proportion_plot(rank_summary_path_A=summary_table_paths["A"], 
