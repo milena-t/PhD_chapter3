@@ -308,12 +308,11 @@ def check_DE_phylogeny_rank_conserved(summary_paths_AX_list:dict, outfile = "", 
     LFC_dict_abdomen_A, LFC_dict_head_thorax_A = make_phylogeny_rank_dict(summary_data_A, min_p = sig_p_threshold)
     LFC_dict_abdomen_X, LFC_dict_head_thorax_X = make_phylogeny_rank_dict(summary_data_X, min_p = sig_p_threshold)
 
-    if abs_LFC:
+    if abs_LFC and sep_MF==False:
         LFC_lists_abdomen_A = [[abs(val) for val in vals_list] for vals_list in LFC_dict_abdomen_A.values()]
         LFC_lists_head_thorax_A = [[abs(val) for val in vals_list] for vals_list in LFC_dict_head_thorax_A.values()]
         LFC_lists_abdomen_X = [[abs(val) for val in vals_list] for vals_list in LFC_dict_abdomen_X.values()]
         LFC_lists_head_thorax_X = [[abs(val) for val in vals_list] for vals_list in LFC_dict_head_thorax_X.values()]
-        y_label = f"|log2FC|"
     else:
         LFC_lists_abdomen_A = [vals_list for vals_list in LFC_dict_abdomen_A.values()]
         LFC_lists_head_thorax_A = [vals_list for vals_list in LFC_dict_head_thorax_A.values()]
@@ -321,9 +320,11 @@ def check_DE_phylogeny_rank_conserved(summary_paths_AX_list:dict, outfile = "", 
         LFC_lists_head_thorax_X = [vals_list for vals_list in LFC_dict_head_thorax_X.values()]
         y_label = f"log2FC for female-male"
     
+    if abs_logFC:
+        y_label = f"|log2FC|"
+    
     if sig_p_threshold>0:
         y_label = f"{y_label}, p<{sig_p_threshold}"
-
 
     #### plot 2x2 boxplots
     
@@ -366,10 +367,16 @@ def check_DE_phylogeny_rank_conserved(summary_paths_AX_list:dict, outfile = "", 
         
         ## split into male- and female biased for separate boxplots
         sex_biased_lists = []
-        for lst in lists:
-            male_biased = [x for x in lst if x < 0]
-            female_biased = [x for x in lst if x > 0]
-            sex_biased_lists.extend([male_biased, female_biased])
+        if abs_logFC:
+            for lst in lists:
+                male_biased = [abs(x) for x in lst if x < 0]
+                female_biased = [x for x in lst if x > 0]
+                sex_biased_lists.extend([male_biased, female_biased])
+        else:
+            for lst in lists:
+                male_biased = [x for x in lst if x < 0]
+                female_biased = [x for x in lst if x > 0]
+                sex_biased_lists.extend([male_biased, female_biased])
 
         # tick_labels = [f"{i // 2 + 1}\n({len(vals)})" for i,vals in enumerate(sex_biased_lists)]
         tick_labels = [f"({len(vals)})" for i,vals in enumerate(sex_biased_lists)] # plot conservation rank label on separate axis
@@ -447,10 +454,10 @@ def check_DE_phylogeny_rank_conserved(summary_paths_AX_list:dict, outfile = "", 
         plot_DE_subplot(LFC_lists_abdomen_X, row=1, col=0, fs=fs, title=f"X-chromosome: abdomen", colors_dict=colors, abs_logFC=abs_LFC)
         plot_DE_subplot(LFC_lists_head_thorax_X, row=1, col=1, fs=fs, title=f"X-chromosome: head+thorax", colors_dict=colors, abs_logFC=abs_LFC)
         fig.supxlabel(f"conservation rank, and (number of genes)", fontsize = fs)
-    fig.supylabel(y_label, fontsize = fs)
+    fig.supylabel(y_label, fontsize = fs, x=0.0, y=0.625)
 
     # layout (left, bottom, right, top)
-    plt.tight_layout(rect=[0, 0.05, 1, 1])
+    plt.tight_layout(rect=[0.0, 0.05, 1, 1])
 
     # transparent background
     plt.savefig(outfile, dpi = 300, transparent = True)
@@ -460,7 +467,7 @@ def check_DE_phylogeny_rank_conserved(summary_paths_AX_list:dict, outfile = "", 
     print(f"plot saved in current working directory as: {outfile} and {filename_tr}")
 
 
-def logFC_quantile_regression(summary_table_path:str, p_val_threshold= 0.05):
+def logFC_quantile_regression(summary_table_path:str, p_val_threshold= 0.05, sep_MF=True, abs_LFC=False):
     X_df = pd.read_csv(summary_table_path["X"], sep = "\t", index_col=False)
     A_df = pd.read_csv(summary_table_path["A"], sep = "\t", index_col=False)
      # add columns for chromosome cat
@@ -470,30 +477,82 @@ def logFC_quantile_regression(summary_table_path:str, p_val_threshold= 0.05):
     df_duplicates = pd.concat([A_df,X_df], ignore_index=True)
     df_all = df_duplicates.drop_duplicates(subset=['focal_transcript']) # remove duplicate data points -> log2FC is the same for all instances of the focal transcript
     
+    
+    if sep_MF:
+        ## abdominal df
+        if p_val_threshold >0:
+            df = df_all[df_all["FDR_pval_abdomen"]<p_val_threshold]
+        else:
+            df = df_all
+        ## make one test for female biased and one for male biase separately in each tissue
+        df_f = df[df["LFC_abdomen"]>0]
+        df_m = df[df["LFC_abdomen"]<0]
 
-    ## abdominal df
-    if p_val_threshold >0:
-        df = df_all[df_all["FDR_pval_abdomen"]<p_val_threshold]
-    else:
-        df = df_all
-    # model_a = smf.quantreg("LFC_abdomen ~ C(level_most_dist_ortholog) * C(chromosome)", df)
-    model_a = smf.quantreg("LFC_abdomen ~ level_most_dist_ortholog * C(chromosome)", df)
-    result_a = model_a.fit(q=0.5)
-    print(f"\n////////////////// ABDOMEN //////////////////")
-    print(result_a.summary())
+        ## abdomen
+        model_a_f = smf.quantreg("LFC_abdomen ~ level_most_dist_ortholog * C(chromosome)", df_f)
+        if abs_LFC:
+            df_m["LFC_abdomen_abs"] = df_m["LFC_abdomen"]*-1 # make all vals positive so that the coefficients are comparable
+            # this gives a warning but does work
+            model_a_m = smf.quantreg("LFC_abdomen_abs ~ level_most_dist_ortholog * C(chromosome)", df_m)
+        else:
+            model_a_m = smf.quantreg("LFC_abdomen ~ level_most_dist_ortholog * C(chromosome)", df_m)
+        result_a_f = model_a_f.fit(q=0.5)
+        result_a_m = model_a_m.fit(q=0.5)
+        print(f"\n////////////////// ABDOMEN -- FEMALE-BIASED //////////////////")
+        print(result_a_f.summary())
+        print(f"\n////////////////// ABDOMEN -- MALE-BIASED //////////////////")
+        print(result_a_m.summary())
 
-    ## head_thorax 
-    if p_val_threshold >0:
-        df = df_all[df_all["FDR_pval_head+thorax"]<p_val_threshold]
+
+        ## head_thorax 
+        if p_val_threshold >0:
+            df = df_all[df_all["FDR_pval_head+thorax"]<p_val_threshold]
+        else:
+            df = df_all
+
+        ## rename the head thorax column because this does not play well with the formula specification
+        df = df.rename(columns={'LFC_head+thorax': 'LFC_head_thorax'})
+        
+        df_f = df[df["LFC_head_thorax"]>0]
+        df_m = df[df["LFC_head_thorax"]<0]
+        
+        model_ht_f = smf.quantreg("LFC_head_thorax ~ level_most_dist_ortholog * C(chromosome)", df_f)
+        if abs_LFC:
+            df_m["LFC_head_thorax_abs"] = df_m["LFC_head_thorax"]*-1 # make all vals positive so that the coefficients are comparable
+            model_ht_m = smf.quantreg("LFC_head_thorax_abs ~ level_most_dist_ortholog * C(chromosome)", df_m)
+        else:
+            model_ht_m = smf.quantreg("LFC_head_thorax ~ level_most_dist_ortholog * C(chromosome)", df_m)
+        result_ht_f = model_ht_f.fit(q=0.5)
+        result_ht_m = model_ht_m.fit(q=0.5)
+        print(f"\n\n////////////////// HEAD+THORAX -- FEMALE-BIASED //////////////////")
+        print(result_ht_f.summary())
+        print(f"\n////////////////// HEAD+THORAX -- MALE-BIASED //////////////////")
+        print(result_ht_m.summary())
+
     else:
-        df = df_all
-    ## rename the head thorax column because this does not play well with the formula specification
-    df = df.rename(columns={'LFC_head+thorax': 'LFC_head_thorax'})
-    # model_ht = smf.quantreg("LFC_head_thorax ~ C(level_most_dist_ortholog) * C(chromosome)", df)
-    model_ht = smf.quantreg("LFC_head_thorax ~ level_most_dist_ortholog * C(chromosome)", df)
-    result_ht = model_ht.fit(q=0.5)
-    print(f"\n////////////////// HEAD+THORAX //////////////////")
-    print(result_ht.summary())
+        ## abdominal df
+        if p_val_threshold >0:
+            df = df_all[df_all["FDR_pval_abdomen"]<p_val_threshold]
+        else:
+            df = df_all
+        # model_a = smf.quantreg("LFC_abdomen ~ C(level_most_dist_ortholog) * C(chromosome)", df)
+        model_a = smf.quantreg("LFC_abdomen ~ level_most_dist_ortholog * C(chromosome)", df)
+        result_a = model_a.fit(q=0.5)
+        print(f"\n////////////////// ABDOMEN //////////////////")
+        print(result_a.summary())
+
+        ## head_thorax 
+        if p_val_threshold >0:
+            df = df_all[df_all["FDR_pval_head+thorax"]<p_val_threshold]
+        else:
+            df = df_all
+        ## rename the head thorax column because this does not play well with the formula specification
+        df = df.rename(columns={'LFC_head+thorax': 'LFC_head_thorax'})
+        # model_ht = smf.quantreg("LFC_head_thorax ~ C(level_most_dist_ortholog) * C(chromosome)", df)
+        model_ht = smf.quantreg("LFC_head_thorax ~ level_most_dist_ortholog * C(chromosome)", df)
+        result_ht = model_ht.fit(q=0.5)
+        print(f"\n////////////////// HEAD+THORAX //////////////////")
+        print(result_ht.summary())
 
 
 if __name__ == "__main__":
@@ -523,9 +582,9 @@ if __name__ == "__main__":
     
     if True:
         summary_paths = get_summary_paths(username=username)
+        abs_logFC = True
         if False:
             ## plotting the bar chart
-            abs_logFC = False
             check_DE_phylogeny_rank_conserved(summary_paths_AX_list=summary_paths,
                 outfile=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/conservation_rank_all_sex_bias_proportion.png",
                 abs_LFC=abs_logFC, sig_p_threshold=0)
@@ -533,4 +592,4 @@ if __name__ == "__main__":
                 outfile=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/conservation_rank_sig_sex_bias_proportion.png",
                 abs_LFC=abs_logFC, sig_p_threshold=0.05)
         ## statistical analysis
-        logFC_quantile_regression(summary_paths)
+        logFC_quantile_regression(summary_paths, abs_LFC=abs_logFC)
