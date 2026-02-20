@@ -592,4 +592,4 @@ if __name__ == "__main__":
                 outfile=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/conservation_rank_sig_sex_bias_proportion.png",
                 abs_LFC=abs_logFC, sig_p_threshold=0.05)
         ## statistical analysis
-        logFC_quantile_regression(summary_paths, abs_LFC=abs_logFC)
+        logFC_quantile_regression(summary_paths, abs_LFC=abs_logFC, p_val_threshold=0)

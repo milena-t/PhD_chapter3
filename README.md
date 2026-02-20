@@ -757,56 +757,61 @@ All exp. variables and their interaction are significant.
 When only looking at the expression of significantly sex biased genes we can see that the magnitude of sex bias decreases with age.
 
 <p float="left">
-  <img src="data/DE_analysis/conservation_rank_sig_sex_bias_proportion_white_bg.png" width="100%" />
+  <img src="data/DE_analysis/conservation_rank_all_sex_bias_proportion_white_bg.png" width="100%" />
 </p>
 
 
 #### median quantile expression test
 
-I specified the model like `LFC ~ level_most_dist_ortholog * C(chromosome)` with one model for abdomen LFC and one for head+thorax, where chromosome is a categorical variable, and level_most_dist_ortholog is treated as discrete numerical. The model was run using `statsmodels.formula.api.quantreg()`.
+I specified the model like `LFC ~ level_most_dist_ortholog * C(chromosome)` with one model for abdomen LFC and one for head+thorax, where chromosome is a categorical variable, and level_most_dist_ortholog is treated as discrete numerical. I test male and female bias seperately, and it is always absolute Log2FC values, so that the male value is positive as well. The model was run using `statsmodels.formula.api.quantreg()`.
+
+Mind that the tests are split differently than the plot above! the tests are tissue x sex-bias, and the plot is tissue x chromosome!
 
 ```text
 ////////////////// ABDOMEN -- FEMALE-BIASED //////////////////
 ===============================================================================================================
                                                   coef    std err          t      P>|t|      [0.025      0.975]
 ---------------------------------------------------------------------------------------------------------------
-Intercept                                       2.6091      0.102     25.626      0.000       2.409       2.809
-C(chromosome)[T.1]                              2.6731      0.623      4.289      0.000       1.451       3.895
-level_most_dist_ortholog                       -0.3065      0.022    -14.029      0.000      -0.349      -0.264
-level_most_dist_ortholog:C(chromosome)[T.1]    -0.5623      0.131     -4.300      0.000      -0.819      -0.306
+Intercept                                       2.2544      0.096     23.546      0.000       2.067       2.442
+C(chromosome)[T.1]                              2.5838      0.607      4.256      0.000       1.394       3.774
+level_most_dist_ortholog                       -0.2723      0.021    -13.268      0.000      -0.313      -0.232
+level_most_dist_ortholog:C(chromosome)[T.1]    -0.5404      0.127     -4.261      0.000      -0.789      -0.292
 ===============================================================================================================
 
 ////////////////// ABDOMEN -- MALE-BIASED //////////////////
 ===============================================================================================================
                                                   coef    std err          t      P>|t|      [0.025      0.975]
 ---------------------------------------------------------------------------------------------------------------
-Intercept                                       4.2339      0.106     39.879      0.000       4.026       4.442
-C(chromosome)[T.1]                              0.1998      0.878      0.228      0.820      -1.522       1.921
-level_most_dist_ortholog                       -0.6178      0.025    -24.967      0.000      -0.666      -0.569
-level_most_dist_ortholog:C(chromosome)[T.1]    -0.0783      0.184     -0.426      0.670      -0.439       0.282
+Intercept                                       4.0283      0.092     43.919      0.000       3.848       4.208
+C(chromosome)[T.1]                             -0.0035      0.766     -0.005      0.996      -1.504       1.497
+level_most_dist_ortholog                       -0.6368      0.021    -30.190      0.000      -0.678      -0.595
+level_most_dist_ortholog:C(chromosome)[T.1]    -0.0183      0.160     -0.114      0.909      -0.332       0.295
 ===============================================================================================================
+```
+The trend in expression change is significant for the conservation rank, it decreases with age. in Female-biased genes there is also a significant difference between X-linked and autosomal genes, as well as their interaction with conservation rank. In male-biased genes the chromosome linkage does not make a difference for the expression change with conservation level.
 
-
+```text
 ////////////////// HEAD+THORAX -- FEMALE-BIASED //////////////////
 ===============================================================================================================
                                                   coef    std err          t      P>|t|      [0.025      0.975]
 ---------------------------------------------------------------------------------------------------------------
-Intercept                                       2.1703      0.091     23.805      0.000       1.991       2.349
-C(chromosome)[T.1]                              2.1757      0.679      3.206      0.001       0.845       3.507
-level_most_dist_ortholog                       -0.2996      0.020    -15.034      0.000      -0.339      -0.260
-level_most_dist_ortholog:C(chromosome)[T.1]    -0.4395      0.144     -3.057      0.002      -0.722      -0.158
+Intercept                                       0.9944      0.046     21.656      0.000       0.904       1.084
+C(chromosome)[T.1]                              0.8333      0.290      2.870      0.004       0.264       1.403
+level_most_dist_ortholog                       -0.1348      0.010    -13.473      0.000      -0.154      -0.115
+level_most_dist_ortholog:C(chromosome)[T.1]    -0.1867      0.061     -3.049      0.002      -0.307      -0.067
 ===============================================================================================================
 
 ////////////////// HEAD+THORAX -- MALE-BIASED //////////////////
 ===============================================================================================================
                                                   coef    std err          t      P>|t|      [0.025      0.975]
 ---------------------------------------------------------------------------------------------------------------
-Intercept                                       2.5340      0.050     51.077      0.000       2.437       2.631
-C(chromosome)[T.1]                             -1.3069      0.422     -3.096      0.002      -2.135      -0.479
-level_most_dist_ortholog                       -0.3930      0.011    -34.799      0.000      -0.415      -0.371
-level_most_dist_ortholog:C(chromosome)[T.1]     0.2650      0.087      3.040      0.002       0.094       0.436
+Intercept                                       1.5451      0.033     46.318      0.000       1.480       1.610
+C(chromosome)[T.1]                             -0.7290      0.294     -2.477      0.013      -1.306      -0.152
+level_most_dist_ortholog                       -0.2395      0.007    -32.045      0.000      -0.254      -0.225
+level_most_dist_ortholog:C(chromosome)[T.1]     0.1481      0.061      2.428      0.015       0.029       0.268
 ===============================================================================================================
 ```
+All significant: expression depends on both X or A-linkage as well as conservation rank and their interaction. mind the missing data and low sample size esp. for X-linked genes though, see plot.
 
 
 ## combining sex-biased expression with molecular rate and positive selection
