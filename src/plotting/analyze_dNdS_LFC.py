@@ -76,15 +76,21 @@ def statistical_analysis(full_table_paths_dict, table_outfile=""):
         filt_df = filt_df[filt_df[f"{partner}_dNdS"].notna()]
         print(f"* {partner}")
 
-        zeros_test = (a_df_f[f"{partner}_dNdS"] <= 0).sum()
-        zeros_test2 = (filt_df[f"{partner}_dNdS"] <= 0).sum()
-        print(f"\ttest if all dNdS=0 was removed: {zeros_test} -> {zeros_test2} (should go down to zero)")
-        dNdS_nan_test = a_df_f[f"{partner}_dNdS"].isna().sum()
-        dNdS_nan_test2 = filt_df[f"{partner}_dNdS"].isna().sum()
-        print(f"\ttest if all dNdS=nan was removed: {dNdS_nan_test} -> {dNdS_nan_test2} (should go down to zero)")
-        LFC_nan_test = a_df_f[f"LFC_abdomen"].isna().sum()
-        LFC_nan_test2 = filt_df[f"LFC_abdomen"].isna().sum()
-        print(f"\ttest if all logFC=nan was removed: {LFC_nan_test} -> {LFC_nan_test2} (should go down to zero)")
+        def test_filtering(colname):
+            print(f"   {colname} filtering:")
+            zeros_test = (a_df_f[f"{colname}"] <= 0).sum()
+            zeros_test2 = (filt_df[f"{colname}"] <= 0).sum()
+            print(f"\ttest if all 0 was removed: {zeros_test} -> {zeros_test2} (should go down to zero)")
+            nan_test = a_df_f[f"{colname}"].isna().sum()
+            nan_test2 = filt_df[f"{colname}"].isna().sum()
+            print(f"\ttest if all nan was removed: {nan_test} -> {nan_test2} (should go down to zero)")
+            infinity = np.isfinite(filt_df[f"{colname}"]).all()
+            print(f"\tall values <inf :  {infinity}")
+
+        test_filtering(f"{partner}_dNdS")
+        test_filtering(f"LFC_abdomen")
+        test_filtering(f"chromosome")
+        test_filtering(f"level_most_dist_ortholog")
 
         ols = smf.ols("np.log(B_siliquastri_dNdS) ~ LFC_abdomen + C(chromosome) + level_most_dist_ortholog", data=filt_df).fit()
         print(f"  - ols : {ols.aic}")
