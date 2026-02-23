@@ -244,8 +244,8 @@ def make_log_reg_table(rank_summary_path_A, rank_summary_path_X):
     X_df = pd.read_csv(rank_summary_path_X, sep="\t")
     A_df = pd.read_csv(rank_summary_path_A, sep="\t")
     # add columns for chromosome cat
-    X_df["chromosome"] = [1]*X_df.shape[0]
-    A_df["chromosome"] = [0]*A_df.shape[0]
+    X_df["chromosome"] = ["X"]*X_df.shape[0]
+    A_df["chromosome"] = ["A"]*A_df.shape[0]
 
     df = pd.concat([A_df,X_df], ignore_index=True)
     print(df)
@@ -471,8 +471,8 @@ def logFC_quantile_regression(summary_table_path:str, p_val_threshold= 0.05, sep
     X_df = pd.read_csv(summary_table_path["X"], sep = "\t", index_col=False)
     A_df = pd.read_csv(summary_table_path["A"], sep = "\t", index_col=False)
      # add columns for chromosome cat
-    X_df["chromosome"] = [1]*X_df.shape[0]
-    A_df["chromosome"] = [0]*A_df.shape[0]
+    X_df["chromosome"] = ["X"]*X_df.shape[0]
+    A_df["chromosome"] = ["A"]*A_df.shape[0]
 
     df_duplicates = pd.concat([A_df,X_df], ignore_index=True)
     df_all = df_duplicates.drop_duplicates(subset=['focal_transcript']) # remove duplicate data points -> log2FC is the same for all instances of the focal transcript
