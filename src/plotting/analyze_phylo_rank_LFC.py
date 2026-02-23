@@ -522,8 +522,8 @@ def logFC_quantile_regression(summary_table_path:str, p_val_threshold= 0.05, sep
             model_ht_m = smf.quantreg("LFC_head_thorax_abs ~ level_most_dist_ortholog * C(chromosome)", df_m)
         else:
             model_ht_m = smf.quantreg("LFC_head_thorax ~ level_most_dist_ortholog * C(chromosome)", df_m)
-        result_ht_f = model_ht_f.fit(q=0.5)
-        result_ht_m = model_ht_m.fit(q=0.5)
+        result_ht_f = model_ht_f.fit(q=0.5) # q=0.5 means we estimate the median
+        result_ht_m = model_ht_m.fit(q=0.5) # q=0.5 means we estimate the median
         print(f"\n\n////////////////// HEAD+THORAX -- FEMALE-BIASED //////////////////")
         print(result_ht_f.summary())
         print(f"\n////////////////// HEAD+THORAX -- MALE-BIASED //////////////////")
@@ -559,9 +559,10 @@ if __name__ == "__main__":
     username = "miltr339"
 
     table_paths_dict = get_full_table_path(username=username)
-    summary_table_paths = {}
 
     if False:
+        ### statistical analysis of sex-bias categories 
+        summary_table_paths = {}
         for chromosome, path in table_paths_dict.items():
             # if chromosome=="X":
             #     continue
@@ -576,11 +577,12 @@ if __name__ == "__main__":
                                   rank_summary_path_X=summary_table_paths["X"],
                                   outfile=plot_outfile_name)
 
-        ### statistical analysis with logistic regression for binary categories
+        ### statistical analysis with logistic regression for binary categories of female/male or unbiased
         make_log_reg_table(rank_summary_path_A=summary_table_paths["A"], 
                         rank_summary_path_X=summary_table_paths["X"])
     
     if True:
+        ### statistical analysis of continuous log2FC values
         summary_paths = get_summary_paths(username=username)
         abs_logFC = True
         if False:
