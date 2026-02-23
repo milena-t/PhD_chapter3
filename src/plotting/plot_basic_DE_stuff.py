@@ -160,6 +160,10 @@ def plot_dosage_compensation(summary_paths, annotation, assembly_index, X_list, 
             ax.axhspan(ymin=a_mean-a_sem, ymax=a_mean+a_sem, xmin=mean_min/total_x_length, xmax=mean_max/total_x_length,color=colors_dict["abdomen"],  alpha=0.3, linewidth = 0)
             ax.axhspan(ymin=ht_mean-ht_sem, ymax=ht_mean+ht_sem, xmin=mean_min/total_x_length, xmax=mean_max/total_x_length, color=colors_dict["head+thorax"], alpha=0.3, linewidth = 0)
 
+    ## plot lines for log2FC=1 to show the significance threshold for sex-biased gene expression
+    linegrey = "#C5C5C5"
+    ax.axhline(y=1, color=linegrey, linestyle="--", linewidth=3)#, label = f"min. log2FC for significance") 
+    ax.axhline(y=-1, color=linegrey, linestyle="--", linewidth=3) 
 
     ## set x axis labels and ticks correctly with contig names and stuff
     ax.xaxis.set_major_formatter(FuncFormatter(lambda x, pos: '' if x < 0.01 else f'{x / 1e6:.0f} Mb'))
@@ -544,7 +548,7 @@ def plot_dNdS_vs_logFC(summary_paths_AX_list, outfile = "", sig_p_threshold = 0,
 
 if __name__ == "__main__":
     
-    username = "milena"
+    username = "miltr339"
     Cmac_annotation = f"/Users/{username}/work/native_annotations/all_native_annot/C_maculatus_superscaffolded_LomeRNA_braker_isoform_filtered.gff"
     # milenatr@pelle.uppmax.uu.se:/proj/naiss2023-6-65/Milena/annotation_pipeline/Cmac_Lome_superscaffolded_comparison/Cmac_Lome_diverse/Cmac_Lome_diverse/braker/braker_isoform_filtered.gff C_maculatus_superscaffolded_LomeRNA_braker_isoform_filtered.gff
     Cmac_assembly = f"/Users/{username}/work/assemblies_masked_uniform/C_maculatus_superscaffolded_genomic_fasta.masked.fai" # I only need contig lengths so use assembly index
@@ -552,7 +556,7 @@ if __name__ == "__main__":
     DE_paths = get_DE_paths(username=username)
     Cmac_X_contigs_list = get_Cmac_superscaffolded_XY_contigs()["X"]
 
-    if False:
+    if True:
         plot_dosage_compensation(summary_paths=DE_paths, annotation=Cmac_annotation, assembly_index=Cmac_assembly, 
             X_list=Cmac_X_contigs_list, 
             outfile=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/X_sex_bias.png")
