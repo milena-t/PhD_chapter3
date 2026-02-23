@@ -9,6 +9,7 @@ from scipy import stats
 import statsmodels.api as sm
 import statsmodels.formula.api as smf
 import matplotlib.pyplot as plt
+import patsy
 
 def get_full_table_path(username="miltr339"):
     out_dict = {
@@ -53,7 +54,7 @@ def reorder_df_to_have_dNdS_cols(full_table_paths_dict, outfile = ""):
 
 
 
-def statistical_analysis(full_table_paths_dict, table_outfile="", max_dNdS=2):  
+def statistical_analysis_dNdS(full_table_paths_dict, table_outfile="", max_dNdS=2):  
     """
     fit linear regression to see if the response variable (dNdS) is explained by the log2FC in either tissue, with the fixed
     factors of sex chromosome category and conservation rank. NaNs are automatically dropped
@@ -62,7 +63,19 @@ def statistical_analysis(full_table_paths_dict, table_outfile="", max_dNdS=2):
     A_df = pd.read_csv(full_table_paths_dict["A"], sep="\t")
     partners_list = list(set(A_df["other_species"]))
     print(partners_list)
-    df = reorder_df_to_have_dNdS_cols(full_table_paths_dict, outfile=table_outfile)
+
+    reorder_dNdS_partners = False
+    if reorder_dNdS_partners:
+        df = reorder_df_to_have_dNdS_cols(full_table_paths_dict, outfile=table_outfile)
+    else:
+        X_df = pd.read_csv(full_table_paths_dict["X"], sep="\t")
+        A_df = pd.read_csv(full_table_paths_dict["A"], sep="\t")
+
+        X_df["chromosome"] = ["X"]*X_df.shape[0]
+        A_df["chromosome"] = ["A"]*A_df.shape[0]
+
+        df = pd.concat([A_df,X_df], ignore_index=True)
+
     df = df.rename(columns={'LFC_head+thorax': 'LFC_head_thorax'})
     dfs_dict = { 
         "female_biased_abdomen": df[df["LFC_abdomen"] > 0 ],
@@ -74,11 +87,18 @@ def statistical_analysis(full_table_paths_dict, table_outfile="", max_dNdS=2):
     ## test with B_siliquastri_dN/dS
     
     for partner in partners_list:
-        df = dfs_dict["female_biased_abdomen"]
-        filt_df = df[df[f"{partner}_dNdS"]>0]
-        filt_df = filt_df[filt_df[f"{partner}_dNdS"].notna()]
-        filt_df = filt_df[filt_df[f"{partner}_dNdS"] < max_dNdS]
-        print(f"* {partner}")
+        if reorder_dNdS_partners:
+            filt_df = df[df[f"{partner}_dNdS"]>0]
+            filt_df = filt_df[filt_df[f"{partner}_dNdS"].notna()]
+            filt_df = filt_df[filt_df[f"{partner}_dNdS"] < max_dNdS]
+        else:
+            df_ren = df.rename(columns={'dN/dS': f"{partner}_dNdS"})
+            filt_df = df_ren[df_ren["other_species"]==partner]
+            filt_df[f"{partner}_dNdS"] = pd.to_numeric(filt_df[f"{partner}_dNdS"], errors='coerce')
+            filt_df = filt_df[filt_df[f"{partner}_dNdS"]>0]
+            filt_df = filt_df[filt_df[f"{partner}_dNdS"].notna()]
+            filt_df = filt_df[filt_df[f"{partner}_dNdS"] < max_dNdS]
+        print(f"\n////////////////// {partner} //////////////////")
 
         if False:
             ### test filtering stuff and see if there is anything that could make problems
@@ -102,8 +122,16 @@ def statistical_analysis(full_table_paths_dict, table_outfile="", max_dNdS=2):
             test_filtering(f"level_most_dist_ortholog")
 
         if True:
-            formula = f"np.log({partner}_dNdS) ~ (LFC_abdomen + LFC_head_thorax) * C(chromosome) + level_most_dist_ortholog"
+            formula = f"{partner}_dNdS ~ (LFC_abdomen + LFC_head_thorax) * C(chromosome) * level_most_dist_ortholog"
+                ## the syntax with the parentheses (LFC_abdomen + LFC_head_thorax) * C(chromosome) means this:
+                # LFC_abdomen + LFC_head_thorax + C(chromosome) + LFC_abdomen:C(chromosome) + LFC_head_thorax:C(chromosome)
+            test = smf.quantreg(formula=formula, data=filt_df).fit(q=0.5) # q=0.5 means we estimate the median
+            print(test.summary())
+            model="lreg"
+
+        else:
             ### ordinary least-squasres does not have normal residuals!
+            formula = f"np.log({partner}_dNdS) ~ (LFC_abdomen + LFC_head_thorax) * C(chromosome) + level_most_dist_ortholog"
             test = smf.ols(formula=formula, data=filt_df).fit(cov_type="HC3")
             model = "OLS"
             print(test.summary())
@@ -115,7 +143,6 @@ def statistical_analysis(full_table_paths_dict, table_outfile="", max_dNdS=2):
                 plt.xlabel("fitted values")
                 plt.suptitle(f"C. maculatus and {partner} ")
                 plt.show()
-        else:
 
             ## GLM does not work well
             formula = f"{partner}_dNdS ~ (LFC_abdomen + LFC_head_thorax) * C(chromosome) + level_most_dist_ortholog"
@@ -124,31 +151,56 @@ def statistical_analysis(full_table_paths_dict, table_outfile="", max_dNdS=2):
             print(test.summary())
             res = stats.normaltest(test.resid_response)
 
-        if False:
-            # plot residuals distribution
-            # test normal distribution of residuals
-            if res.pvalue <0.05:
-                res_nom = f"{model} residuals NOT normally distributed"
-            else:
-                res_nom = f"{model} residuals normally distributed!"
-            if model=="OLS":
-                plt.hist(res)
-                plt.suptitle(f"C. maculatus and {partner} dNdS {model} regression residuals:\n{res_nom}")
-            else:
-                # here is the reason why GLM does not work well
-                plt.scatter(test.fittedvalues, test.resid_deviance)
-                plt.suptitle(f"C. maculatus and {partner} dNdS {model} regression\npredicted vs. observed values")
-            plt.show()
+            if False:
+                # plot residuals distribution
+                # test normal distribution of residuals
+                if res.pvalue <0.05:
+                    res_nom = f"{model} residuals NOT normally distributed"
+                else:
+                    res_nom = f"{model} residuals normally distributed!"
+                if model=="OLS":
+                    plt.hist(res)
+                    plt.suptitle(f"C. maculatus and {partner} dNdS {model} regression residuals:\n{res_nom}")
+                else:
+                    # here is the reason why GLM does not work well
+                    plt.scatter(test.fittedvalues, test.resid_deviance)
+                    plt.suptitle(f"C. maculatus and {partner} dNdS {model} regression\npredicted vs. observed values")
+                plt.show()
 
-        elif model == "OLS":
-            # test normal distribution of residuals
-            if res.pvalue <0.05:
-                print(f"{model} residuals NOT normally distributed")
-            else:
-                print(f"{model} residuals normally distributed!")
+            elif model == "OLS":
+                # test normal distribution of residuals
+                if res.pvalue <0.05:
+                    print(f"{model} residuals NOT normally distributed")
+                else:
+                    print(f"{model} residuals normally distributed!")
 
         print()
     
+
+def statistical_analysis_pos_sel(full_table_paths_dict):
+    A_df = pd.read_csv(full_table_paths_dict["A"], sep="\t")
+    partners_list = list(set(A_df["other_species"]))
+    print(partners_list)
+
+    X_df = pd.read_csv(full_table_paths_dict["X"], sep="\t")
+    A_df = pd.read_csv(full_table_paths_dict["A"], sep="\t")
+    X_df["chromosome"] = ["X"]*X_df.shape[0]
+    A_df["chromosome"] = ["A"]*A_df.shape[0]
+    df = pd.concat([A_df,X_df], ignore_index=True)
+    df = df.rename(columns={'LFC_head+thorax': 'LFC_head_thorax'})
+
+    for partner in partners_list:
+        print(f"\n////////////////// {partner} //////////////////")
+        filt_df = df[df["other_species"]==partner]
+        filt_df = filt_df[filt_df["positive_selection"] != "NaN"]
+        filt_df = filt_df[filt_df["positive_selection"].notna()]
+        filt_df["positive_selection"] = filt_df["positive_selection"].map({False: 0, True: 1})
+        # print(filt_df["positive_selection"].unique(), filt_df["positive_selection"].dtype)
+
+        formula = f"positive_selection ~ (LFC_abdomen + LFC_head_thorax) * C(chromosome) * level_most_dist_ortholog"
+
+        test = smf.logit(formula=formula, data=filt_df).fit()
+        print(test.summary())
 
 
 
@@ -157,4 +209,12 @@ if __name__ == "__main__":
 
     username = "miltr339"
     full_tables_dict = get_full_table_path(username=username)
-    statistical_analysis(full_tables_dict, table_outfile=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/paml_stats_outfile_table.tsv")
+    reorg_table_outfile = f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/paml_stats_outfile_table.tsv"
+    
+    ## median quantile regression for dNdS
+    # statistical_analysis_dNdS(full_tables_dict, table_outfile=f"")
+
+    ## logistic regression for categorical response (positive selection True/False)
+    statistical_analysis_pos_sel(full_table_paths_dict=full_tables_dict)
+
+
