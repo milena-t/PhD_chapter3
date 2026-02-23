@@ -3,14 +3,14 @@ plot results from dNdS analysis summaries, use dS also as a proxy for baseline m
 """
 
 import numpy as np
-import pandas as pd
+import scipy.stats as sts
 from math import sqrt, isnan
 import matplotlib.pyplot as plt
 import scipy.stats
 from plot_dNdS import get_summary_paths,violinplot_pair_single
 
 
-def read_dNdS_dS_summary_file(summary_path, only_dS, exclude_list = []):
+def read_dNdS_dS_summary_file(summary_path, only_dS, exclude_list = [], max_dS=0):
     """
     read dNdS and dS summary outfiles into a dict by species pair
     out_dict = { pair : {
@@ -51,8 +51,10 @@ def read_dNdS_dS_summary_file(summary_path, only_dS, exclude_list = []):
 
             values_list = [float(dNdS) if dNdS != 0.0 else np.NaN for dNdS in dNdS_vals.split(",")]
             if d_sp[-1] == "dS":
-                if only_dS:
+                if only_dS and max_dS==0:
                     out_dict[pair] = values_list
+                elif only_dS and max_dS>0:
+                    out_dict[pair] = [val for val in values_list if val < max_dS]
                 else:
                     out_dict[pair]["dS"] = values_list
             if d_sp[-1] == "dNdS" and only_dS == False:
@@ -102,6 +104,58 @@ def get_species_list(dNdS_dict):
     species = sorted(list(set(species)))
     assert len(species) == calculate_num_species(dNdS_dict)
     return(species)
+
+
+
+def permute_dNdS(dNdS_A, dNdS_X):
+    """
+    return resampled A and X
+    """
+    n_A = len(dNdS_A)
+    dNdS_all = dNdS_A + dNdS_X
+    permut = np.random.permutation(dNdS_all) ## permutation: sampling without replacement
+    new_A = permut[0:n_A]
+    new_X = permut[n_A:]
+    return new_A, new_X
+
+
+def permutate_dNdS(dNdS_A, dNdS_X, num_permut = 1000, mean=False):
+    """
+    permutate n times and calculate the differences of median between all pairs
+    """
+    medians_diff_list = [np.NaN] * num_permut
+    print(f"... running {num_permut} permutations ...")
+    if mean:
+        for i in range(num_permut):
+            new_A, new_X = permute_dNdS(dNdS_A=dNdS_A, dNdS_X=dNdS_X)
+            m_A = np.nanmedian(new_A)
+            m_X = np.nanmedian(new_X)
+            medians_diff_list[i] = m_A - m_X
+    else: # median
+        for i in range(num_permut):
+            new_A, new_X = permute_dNdS(dNdS_A=dNdS_A, dNdS_X=dNdS_X)
+            m_A = np.nanmean(new_A)
+            m_X = np.nanmean(new_X)
+            medians_diff_list[i] = m_A - m_X
+    
+    return medians_diff_list
+
+
+def calculate_list_CI(values_list:list, cl = 0.95, verbose = False):
+    """
+    calculate 95% confidence interval of a list of float values
+    """
+    mean_coeff = np.mean(values_list)
+    std_coeff = np.std(values_list)
+            
+    # Sample statistics
+    lower, upper = sts.norm.interval(cl, loc = mean_coeff, scale = std_coeff) 
+    norm_coeffs = [mean_coeff,std_coeff, lower, upper]
+    if verbose:
+        print(f"\t\tmean correlation coefficient: {mean_coeff:.3f}, standard deviation {std_coeff:.3f}, 95% confidence interval: [{lower:.3f}, {upper:.3f}]")
+    # ci = sts.t.interval(cl, df=len(values_list)-1, loc=np.mean(values_list), scale=np.std(values_list, ddof=1) / np.sqrt(len(values_list)))
+    return(norm_coeffs)
+
 
 if True:
 
@@ -627,21 +681,38 @@ if __name__ == "__main__":
         filename =f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/dS_vs_dN_scatterplot_tribolium.png"
     
     
-    ## make the violinplots of only dS for each pair
-    if False:
+    ## analysis of only dS for each pair
+    if True:
         print(f"/////////////// A ///////////////")
-        dS_dict_A = read_dNdS_summary_file(summary_paths["A"], only_dS = True)
+        dS_dict_A = read_dNdS_dS_summary_file(summary_paths[data_files["A"][0]], only_dS = True, exclude_list=species_excl,max_dS=2)
         # print(dS_dict_A)
 
         print(f"/////////////// X ///////////////")
-        dS_dict_X = read_dNdS_summary_file(summary_paths["X"], only_dS = True)
+        dS_dict_X = read_dNdS_dS_summary_file(summary_paths[data_files["X"][0]], only_dS = True, exclude_list=species_excl,max_dS=2)
         # print(dS_dict_X)
         
         species = get_species_list(dS_dict_A)
         plot_dS_violins(A_dict=dS_dict_A, X_dict=dS_dict_X,filename=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/dS_violin_plot.png")
     
+        if True:
+            ## bootstrap significance test
+            num_permutations = 10000
+
+            for pair in dS_dict_A.keys():
+                dS_A = dS_dict_A[pair]
+                dS_X = dS_dict_X[pair]
+                median_diffs = np.nanmedian(dS_A) - np.nanmedian(dS_X)
+                bootstraps = permutate_dNdS(dNdS_A=dS_A, dNdS_X=dS_X, num_permut=num_permutations)
+                mean_cor,std_cor,lower_CI,upper_CI = calculate_list_CI(bootstraps)
+                mean_boot = np.mean(bootstraps)
+                if median_diffs<lower_CI or median_diffs>upper_CI:
+                    print(f" *  {pair} --> \t median(dNdS_A)-median(dNdS_X) = {median_diffs:.3f}, mean bootstrap diff = {mean_boot:.5f} with CI [{lower_CI:.5f},{upper_CI:.5f}] --> SIGNIFICANT")
+                else:
+                    print(f" *  {pair} --> \t median(dNdS_A)-median(dNdS_X) = {median_diffs:.3f}, mean bootstrap diff = {mean_boot:.5f} with CI [{lower_CI:.5f},{upper_CI:.5f}] --> (nonsignificant)")
+
+
     ## make the scatterplots
-    if True:
+    if False:
         print(f"reading A ...")
         dS_dict_A = read_dNdS_dS_summary_file(summary_paths[data_files["A"][0]], only_dS = False, exclude_list=species_excl)
         # print(dS_dict_A)
@@ -650,9 +721,9 @@ if __name__ == "__main__":
         dS_dict_X = read_dNdS_dS_summary_file(summary_paths[data_files["X"][0]], only_dS = False, exclude_list=species_excl)
         # print(dS_dict_X)
         
+        ## plotting
         species = get_species_list(dS_dict_A)
         if len(species)>2:
             plot_dS_vs_dNdS(A_dict=dS_dict_A, X_dict=dS_dict_X,filename=filename, max_dS=2, max_dNdS=2, ymax=2.35)
         else:
             plot_dS_vs_dNdS_one_pair(A_dict=dS_dict_A, X_dict=dS_dict_X,filename=filename, max_dS=2, max_dNdS=2, ymax=2.35)
-    

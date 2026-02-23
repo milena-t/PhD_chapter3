@@ -493,7 +493,27 @@ In many cases, orthologs are too diverged to properly estimate dS, which greatly
   <img src="data/fastX_ortholog_ident/dS_vs_dN_scatterplot_tribolium_white_bg.png" width="49%" />
 </p>
 
-Overall, the dS is lower on X in all cases, and since dS is assumed to be neutral, this is likely an effect of the average lower mutation rate on X compared to A (due to the elevated mutation rate in the male germline). It is also noteable that the dS scatter is mostly constrained to <1 in closely related sister species (*Callosobruchus*, *Tribolium*, *Coccinella*), and increases closer to 2 in more distant comparisons in the bruchids (*C. maculatus* vs. *B. siliquastri* and *C. maculatus* vs. *A. obtectus*). I implemented an option to calculate a linear regression slope of the dS/dN scatterplots, but there does not seem to be consistend ot meaningful differences in slope between X and A, and this may not be the most reliable analysis anyways since the independence of dS and dN is not quite clear to me.
+Overall, the dS is lower on X in all cases, and since dS is assumed to be neutral, this is likely an effect of the average lower mutation rate on X compared to A (due to the elevated mutation rate in the male germline). I have run the same permutation test as for the dNdS analysis, it's just not plotted here. All pairs show significant differences except *Tribolium*.
+
+***Bruchini***
+```text
+A_obtectus_C_maculatus --> 	   median(dNdS_A)-median(dNdS_X) = 0.098, mean bootstrap diff =  0.00014 with CI [-0.03081,0.03110] --> SIGNIFICANT
+C_chinensis_C_maculatus --> 	 median(dNdS_A)-median(dNdS_X) = 0.050, mean bootstrap diff =  0.00019 with CI [-0.01798,0.01836] --> SIGNIFICANT
+B_siliquastri_C_maculatus -->  median(dNdS_A)-median(dNdS_X) = 0.120, mean bootstrap diff =  0.00004 with CI [-0.02476,0.02484] --> SIGNIFICANT
+A_obtectus_C_chinensis --> 	   median(dNdS_A)-median(dNdS_X) = 0.072, mean bootstrap diff =  0.00009 with CI [-0.03635,0.03653] --> SIGNIFICANT
+A_obtectus_B_siliquastri --> 	 median(dNdS_A)-median(dNdS_X) = 0.093, mean bootstrap diff = -0.00010 with CI [-0.02889,0.02868] --> SIGNIFICANT
+B_siliquastri_C_chinensis -->  median(dNdS_A)-median(dNdS_X) = 0.097, mean bootstrap diff = -0.00001 with CI [-0.02696,0.02695] --> SIGNIFICANT
+```
+
+***Coccinella* and *Tribolium***
+
+```text
+C_magnifica_C_septempunctata --> 	 median(dNdS_A)-median(dNdS_X) = 0.048, mean bootstrap diff = -0.00007 with CI [-0.01728,0.01715] --> SIGNIFICANT
+T_castaneum_T_freemani --> 	       median(dNdS_A)-median(dNdS_X) = -0.002, mean bootstrap diff = 0.00002 with CI [-0.01600,0.01603] --> (nonsignificant)
+```
+
+
+It is also noteable that the dS scatter is mostly constrained to <1 in closely related sister species (*Callosobruchus*, *Tribolium*, *Coccinella*), and increases closer to 2 in more distant comparisons in the bruchids (*C. maculatus* vs. *B. siliquastri* and *C. maculatus* vs. *A. obtectus*). I implemented an option to calculate a linear regression slope of the dS/dN scatterplots, but there does not seem to be consistend ot meaningful differences in slope between X and A, and this may not be the most reliable analysis anyways since the independence of dS and dN is not quite clear to me.
 
 ## paml site models and LRT
 
