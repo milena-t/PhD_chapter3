@@ -951,107 +951,63 @@ Conservation rank goes from 1 to 5, with 5 being highly conserved (up to drosoph
 
 ### logistic regression for positive selection
 
-Since it's only two categories, I am using basic logistic regression and not the ordinal one like for the significantly sex-biased categories as above. The initial regression formula is `positive_selection ~ (LFC_abdomen + LFC_head_thorax) * C(chromosome) * level_most_dist_ortholog` and its not looking great:
+Since it's only two categories, I am using basic logistic regression and not the ordinal one like for the significantly sex-biased categories as above. The initial regression formula is the same as above except the response is now the positive selection category. I test again with the wald-test and I can drop all three-way interactions for all speices, and for obtectus I can even drop all two-way interactions and also exclude the conservation rank.
 
-NO significance except the intercept, only exceptions are:
-* *C. chinensis*:
-  * level_most_dist_ortholog (negative coefficient -> higher conservation has less positive selection, which i guess makes sense?)
-  * LFC_abdomen:level_most_dist_ortholog (p=0.50)
-* *B. siliquastri* (with conservation rank):
-  * LFC_head_thorax:C(chromosome)\[T.X\] (p=0.50)
+* main factor chromosome is significant in *C. chinensis* and *A. obtectus*, and barely not in *B. siliquastri*. The coefficient is positive, showing a higher proportion of positively selected genes on the X.
+* the sex bias direction is significant for both tissues in *A. obtectus*, only for the abdomen in *B. siliquastri* and only head+thorax in *C. chinensis*. coefficients are always negative (male-bias has lower prop. of positively selected sites) except head+thorax in *A. obtectus*.
+  * when a SB tissue is significant in *B. siliquastri* and *C. chinensis* then this interaction with the conservation rank is also significant
+* logFC (magnitude of sex-bias) is never significant!
+* conservation rank is very significant in *C. chinensis* and *B. siliquastri* (but excluded according to wald-test in *A. obtectus*)
 
-I am running the wald test again to see if there are some parameters that can be cut, and it seems like that conservation rank is not significantly improving the model fit for *B. siliquastri* and *A. obtectus* and so I will exclude it for these species, making the formula `positive_selection ~ (LFC_abdomen + LFC_head_thorax) * C(chromosome)`. This makes chromosome category a main factor (positive coefficient, meaning a higher proportion of positively selected genes on X), but everything else stays insignificant.
-
-How do i interpret this properly? for the closest relative, a higher conservation rank of the ortholog means lower proportion of positively selected genes, but it does not change between the chromosomes. for the more distant species, the chromosome becomes significant suddenly and the conservation rank has no influence any more?
 
 ```text
-////////////////// C_chinensis ////////////////// (wald test p-value = 0.0154)
-===============================================================================================================================
-                                                                  coef    std err          z      P>|z|      [0.025      0.975]
--------------------------------------------------------------------------------------------------------------------------------
-Intercept                                                      -1.3644      0.173     -7.904      0.000      -1.703      -1.026
-C(chromosome)[T.X]                                             -0.3561      1.419     -0.251      0.802      -3.137       2.425
-LFC_abdomen                                                     0.1268      0.076      1.668      0.095      -0.022       0.276
-LFC_abdomen:C(chromosome)[T.X]                                 -0.0374      0.838     -0.045      0.964      -1.679       1.605
-LFC_head_thorax                                                -0.0708      0.135     -0.525      0.600      -0.335       0.194
-LFC_head_thorax:C(chromosome)[T.X]                             -0.1281      1.168     -0.110      0.913      -2.418       2.161
-level_most_dist_ortholog                                       -0.0913      0.038     -2.422      0.015      -0.165      -0.017
-C(chromosome)[T.X]:level_most_dist_ortholog                     0.1857      0.296      0.627      0.530      -0.394       0.766
-LFC_abdomen:level_most_dist_ortholog                           -0.0359      0.018     -1.960      0.050      -0.072    6.24e-06
-LFC_abdomen:C(chromosome)[T.X]:level_most_dist_ortholog         0.0128      0.181      0.071      0.944      -0.342       0.368
-LFC_head_thorax:level_most_dist_ortholog                        0.0282      0.033      0.856      0.392      -0.036       0.093
-LFC_head_thorax:C(chromosome)[T.X]:level_most_dist_ortholog    -0.0630      0.260     -0.242      0.808      -0.572       0.446
-===============================================================================================================================
+////////////////// C_chinensis ////////////////// (wald test p-value = 0.0001 for excluding all three-way interactions)
+========================================================================================================================
+                                                           coef    std err          z      P>|z|      [0.025      0.975]
+------------------------------------------------------------------------------------------------------------------------
+  Intercept                                             -0.5357      0.309     -1.735      0.083      -1.141       0.070
+  C(SB_abdomen)[T.male]                                 -0.4417      0.408     -1.083      0.279      -1.241       0.358
+* C(SB_head_thorax)[T.male]                             -1.1973      0.404     -2.965      0.003      -1.989      -0.406
+* C(chromosome)[T.X]                                     0.6126      0.139      4.404      0.000       0.340       0.885
+  LFC_abdomen                                           -0.0526      0.085     -0.621      0.535      -0.219       0.114
+  LFC_head_thorax                                        0.1285      0.137      0.940      0.347      -0.139       0.396
+* level_most_dist_ortholog                              -0.2860      0.068     -4.232      0.000      -0.418      -0.154
+  C(SB_abdomen)[T.male]:level_most_dist_ortholog         0.1489      0.088      1.690      0.091      -0.024       0.322
+* C(SB_head_thorax)[T.male]:level_most_dist_ortholog     0.2386      0.088      2.723      0.006       0.067       0.410
+  LFC_abdomen:level_most_dist_ortholog                   0.0192      0.021      0.920      0.357      -0.022       0.060
+  LFC_head_thorax:level_most_dist_ortholog              -0.0430      0.035     -1.245      0.213      -0.111       0.025
+========================================================================================================================
 
-////////////////// B_siliquastri ////////////////// (wald test p-value = 0.167)
-======================================================================================================
-                                         coef    std err          z      P>|z|      [0.025      0.975]
-------------------------------------------------------------------------------------------------------
-Intercept                             -2.4062      0.040    -60.276      0.000      -2.484      -2.328
-C(chromosome)[T.X]                     0.3687      0.172      2.142      0.032       0.031       0.706
-LFC_abdomen                            0.0168      0.023      0.718      0.473      -0.029       0.063
-LFC_abdomen:C(chromosome)[T.X]        -0.1523      0.113     -1.349      0.177      -0.373       0.069
-LFC_head_thorax                        0.0353      0.044      0.793      0.428      -0.052       0.122
-LFC_head_thorax:C(chromosome)[T.X]     0.2922      0.190      1.539      0.124      -0.080       0.664
-======================================================================================================
+////////////////// B_siliquastri ////////////////// (wald test p-value = 0.0004 for excluding all three-way interactions)
+========================================================================================================================
+                                                           coef    std err          z      P>|z|      [0.025      0.975]
+------------------------------------------------------------------------------------------------------------------------
+  Intercept                                             -0.7968      0.428     -1.863      0.062      -1.635       0.041
+* C(SB_abdomen)[T.male]                                 -1.7895      0.587     -3.048      0.002      -2.940      -0.639
+  C(SB_head_thorax)[T.male]                             -0.3307      0.585     -0.565      0.572      -1.477       0.816
+. C(chromosome)[T.X]                                     0.3306      0.172      1.927      0.054      -0.006       0.667
+  LFC_abdomen                                           -0.0365      0.126     -0.289      0.772      -0.284       0.211
+  LFC_head_thorax                                        0.0104      0.228      0.046      0.964      -0.436       0.457
+* level_most_dist_ortholog                              -0.3448      0.094     -3.680      0.000      -0.529      -0.161
+* C(SB_abdomen)[T.male]:level_most_dist_ortholog         0.4370      0.126      3.465      0.001       0.190       0.684
+  C(SB_head_thorax)[T.male]:level_most_dist_ortholog     0.0668      0.126      0.530      0.596      -0.180       0.314
+  LFC_abdomen:level_most_dist_ortholog                  -0.0016      0.031     -0.052      0.959      -0.062       0.059
+  LFC_head_thorax:level_most_dist_ortholog              -0.0166      0.057     -0.292      0.770      -0.128       0.095
+========================================================================================================================
 
-////////////////// A_obtectus ////////////////// (wald test p-value = 0.787)
-======================================================================================================
-                                         coef    std err          z      P>|z|      [0.025      0.975]
-------------------------------------------------------------------------------------------------------
-Intercept                             -3.0609      0.053    -57.854      0.000      -3.165      -2.957
-C(chromosome)[T.X]                     0.5107      0.230      2.225      0.026       0.061       0.961
-LFC_abdomen                            0.0585      0.033      1.797      0.072      -0.005       0.122
-LFC_abdomen:C(chromosome)[T.X]         0.1176      0.138      0.850      0.395      -0.153       0.389
-LFC_head_thorax                       -0.0324      0.060     -0.536      0.592      -0.151       0.086
-LFC_head_thorax:C(chromosome)[T.X]    -0.6387      0.369     -1.732      0.083      -1.361       0.084
-======================================================================================================
+////////////////// A_obtectus ////////////////// (wald test p-value = 0.0007 for excluding all interactions and conservation rank)
+===============================================================================================
+                                  coef    std err          z      P>|z|      [0.025      0.975]
+-----------------------------------------------------------------------------------------------
+* Intercept                    -3.0414      0.093    -32.547      0.000      -3.225      -2.858
+* C(SB_abdomen)[T.male]        -0.2524      0.116     -2.184      0.029      -0.479      -0.026
+* C(SB_head_thorax)[T.male]     0.2631      0.117      2.245      0.025       0.033       0.493
+* C(chromosome)[T.X]            0.6507      0.193      3.378      0.001       0.273       1.028
+  LFC_abdomen                  -0.0623      0.041     -1.536      0.125      -0.142       0.017
+  LFC_head_thorax               0.0365      0.069      0.526      0.599      -0.100       0.173
+===============================================================================================
 
 ```
-
-
-<details>
-  <summary>other species with conservation rank as fixed factor</summary>
-
-```text
-////////////////// B_siliquastri //////////////////
-===============================================================================================================================
-                                                                  coef    std err          z      P>|z|      [0.025      0.975]
--------------------------------------------------------------------------------------------------------------------------------
-Intercept                                                      -2.0571      0.247     -8.332      0.000      -2.541      -1.573
-C(chromosome)[T.X]                                             -1.0660      2.007     -0.531      0.595      -5.000       2.868
-LFC_abdomen                                                     0.1946      0.104      1.865      0.062      -0.010       0.399
-LFC_abdomen:C(chromosome)[T.X]                                  0.7786      0.732      1.064      0.288      -0.656       2.213
-LFC_head_thorax                                                 0.0690      0.196      0.352      0.724      -0.315       0.453
-LFC_head_thorax:C(chromosome)[T.X]                             -4.0592      2.067     -1.963      0.050      -8.111      -0.007
-level_most_dist_ortholog                                       -0.0742      0.054     -1.382      0.167      -0.179       0.031
-C(chromosome)[T.X]:level_most_dist_ortholog                     0.3054      0.413      0.740      0.459      -0.503       1.114
-LFC_abdomen:level_most_dist_ortholog                           -0.0438      0.025     -1.748      0.080      -0.093       0.005
-LFC_abdomen:C(chromosome)[T.X]:level_most_dist_ortholog        -0.2102      0.162     -1.296      0.195      -0.528       0.108
-LFC_head_thorax:level_most_dist_ortholog                       -0.0107      0.047     -0.226      0.821      -0.103       0.082
-LFC_head_thorax:C(chromosome)[T.X]:level_most_dist_ortholog     0.9504      0.430      2.213      0.027       0.108       1.792
-===============================================================================================================================
-
-////////////////// A_obtectus //////////////////
-===============================================================================================================================
-                                                                  coef    std err          z      P>|z|      [0.025      0.975]
--------------------------------------------------------------------------------------------------------------------------------
-Intercept                                                      -3.1559      0.373     -8.470      0.000      -3.886      -2.426
-C(chromosome)[T.X]                                             -0.2016      2.268     -0.089      0.929      -4.647       4.243
-LFC_abdomen                                                     0.1192      0.174      0.686      0.493      -0.221       0.460
-LFC_abdomen:C(chromosome)[T.X]                                 -0.1769      0.856     -0.207      0.836      -1.855       1.501
-LFC_head_thorax                                                -0.0151      0.324     -0.047      0.963      -0.649       0.619
-LFC_head_thorax:C(chromosome)[T.X]                             -0.0218      2.467     -0.009      0.993      -4.858       4.814
-level_most_dist_ortholog                                        0.0217      0.080      0.270      0.787      -0.136       0.179
-C(chromosome)[T.X]:level_most_dist_ortholog                     0.1417      0.470      0.301      0.763      -0.780       1.063
-LFC_abdomen:level_most_dist_ortholog                           -0.0153      0.041     -0.373      0.709      -0.096       0.065
-LFC_abdomen:C(chromosome)[T.X]:level_most_dist_ortholog         0.0689      0.189      0.365      0.715      -0.301       0.439
-LFC_head_thorax:level_most_dist_ortholog                       -0.0048      0.077     -0.063      0.950      -0.156       0.146
-LFC_head_thorax:C(chromosome)[T.X]:level_most_dist_ortholog    -0.1376      0.538     -0.256      0.798      -1.192       0.917
-===============================================================================================================================
-```
-</details>
-
 
 
 # old analysis with *Diorhaba*
