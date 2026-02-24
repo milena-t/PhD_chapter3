@@ -859,9 +859,63 @@ I am using `quantreg` again, like for the log2FC again, with the formula `dNdS ~
 
 Conclusions, results are surprisingly variable between species pairs:
 
-* chromosome is individually significant in *C. chinensis* and *A. obtectus* but **unsignificant** in *B. siliquastri* !!! The basic dNdS permutation test in the beginning has a very strong significance for the *B. siliquastri* vs. *C. maculatus* comparison. 
+* chromosome is individually significant in *C. chinensis* and *A. obtectus* but **unsignificant** in *B. siliquastri* !!! The basic dNdS permutation test in the beginning has a very strong significance for the *B. siliquastri* vs. *C. maculatus* comparison.
 * in *C. maculatus* nothing involving the logFC is significant, but in *B. siliquastri* and *A. obtectus* both tissues individual LogFC and some interactions are significant
-* The conservation rank (`level_most_dist_ortholog` with higher numbers being more conserved) is individually significant in all species 
+* The conservation rank (`level_most_dist_ortholog` with higher numbers being more conserved) is individually significant in all species as well as some interactions with logFC.
+
+when I take out the conservation rank from the test, I see the expected results for the chromosome, with significant p-values and negative coefficients. I compare the sum of squared residuals (SSR) of either model specification to see if they are improved and use the (Wald test)[https://www.statology.org/wald-test-python/] to test if the coefficient for `level_most_dist_ortholog` is significantly different from 0 to see if it makes a contribution to the model (and can therefore not be dropped). Since it is a strongly significant contribution to an improved model fit in all cases, I interpret the results like this: 
+
+* there is a main chromosome effect, but a large part of the variance of dNdS is also explained by the gene conservation. the chromosome:conservation_rank interaction means that the dNdS changes differently between chromosomes and also differently along the conservation rank within each chromosome category, but this is only significant in *C. chinensis*.
+* The X chromosome is very syntenic and conserved in a way that the autosomes are not, and while we are only comparing closely related species, the X has a higher proportion of top-conservation-rank genes compared to the autosome overall, which would also contribute to the slower X
+  * 1 -->	A = 2.823%	 X = 0.688%
+  * 2 -->	A = 3.076%	 X = 1.835%
+  * 3 -->	A = 12.097%	 X = 4.358%
+  * 4 -->	A = 24.119%	 X = 13.073%
+  * 5 -->	A = 57.885%	 X = 80.046%
+
+
+<details>
+  <summary>See stats without chromosome</summary>
+
+```text
+////////////////// C_chinensis //////////////////
+======================================================================================================
+                                         coef    std err          t      P>|t|      [0.025      0.975]
+------------------------------------------------------------------------------------------------------
+Intercept                              0.0780      0.001     69.123      0.000       0.076       0.080
+C(chromosome)[T.X]                    -0.0129      0.006     -2.120      0.034      -0.025      -0.001
+LFC_abdomen                           -0.0062      0.001     -9.357      0.000      -0.007      -0.005
+LFC_abdomen:C(chromosome)[T.X]         0.0013      0.004      0.292      0.770      -0.007       0.010
+LFC_head_thorax                        0.0054      0.001      4.301      0.000       0.003       0.008
+LFC_head_thorax:C(chromosome)[T.X]     0.0059      0.008      0.724      0.469      -0.010       0.022
+======================================================================================================
+
+////////////////// B_siliquastri //////////////////
+======================================================================================================
+                                         coef    std err          t      P>|t|      [0.025      0.975]
+------------------------------------------------------------------------------------------------------
+Intercept                              0.0756      0.001     89.491      0.000       0.074       0.077
+C(chromosome)[T.X]                    -0.0143      0.004     -3.381      0.001      -0.023      -0.006
+LFC_abdomen                           -0.0038      0.000     -8.020      0.000      -0.005      -0.003
+LFC_abdomen:C(chromosome)[T.X]        -0.0053      0.003     -1.832      0.067      -0.011       0.000
+LFC_head_thorax                        0.0048      0.001      5.221      0.000       0.003       0.007
+LFC_head_thorax:C(chromosome)[T.X]     0.0199      0.005      3.622      0.000       0.009       0.031
+======================================================================================================
+
+////////////////// A_obtectus //////////////////
+======================================================================================================
+                                         coef    std err          t      P>|t|      [0.025      0.975]
+------------------------------------------------------------------------------------------------------
+Intercept                              0.0687      0.001     89.169      0.000       0.067       0.070
+C(chromosome)[T.X]                    -0.0192      0.004     -5.007      0.000      -0.027      -0.012
+LFC_abdomen                           -0.0039      0.000     -8.715      0.000      -0.005      -0.003
+LFC_abdomen:C(chromosome)[T.X]         0.0036      0.003      1.385      0.166      -0.002       0.009
+LFC_head_thorax                        0.0050      0.001      5.835      0.000       0.003       0.007
+LFC_head_thorax:C(chromosome)[T.X]     0.0008      0.005      0.163      0.871      -0.009       0.011
+======================================================================================================
+```
+</details>
+
 
 ```test
 ////////////////// C_chinensis //////////////////
@@ -881,8 +935,12 @@ Conclusions, results are surprisingly variable between species pairs:
   LFC_head_thorax:level_most_dist_ortholog                        0.0017      0.001      1.637      0.102      -0.000       0.004
   LFC_head_thorax:C(chromosome)[T.X]:level_most_dist_ortholog    -0.0075      0.009     -0.824      0.410      -0.025       0.010
 =================================================================================================================================
+SSR with conservation rank: 92.1884779453566
+SSR without conservation rank: 106.94429273521783
+wald test: <F test: F=1078.414684550139, p=2.653529895764503e-222, df_denom=8.19e+03, df_num=1>
 
-////////////////// B_siliquastri //////////////////   -->   !!!! chromosome not significant !!!!
+
+////////////////// B_siliquastri //////////////////   -->   !!!! chromosome not significant and positive coefficient !!!!
 =================================================================================================================================
                                                                     coef    std err          t      P>|t|      [0.025      0.975]
 ---------------------------------------------------------------------------------------------------------------------------------
@@ -899,6 +957,9 @@ Conclusions, results are surprisingly variable between species pairs:
 * LFC_head_thorax:level_most_dist_ortholog                       -0.0020      0.001     -2.237      0.025      -0.004      -0.000
   LFC_head_thorax:C(chromosome)[T.X]:level_most_dist_ortholog     0.0118      0.007      1.693      0.090      -0.002       0.025
 =================================================================================================================================
+SSR with conservation rank: 59.182702658567145
+SSR without conservation rank: 70.31500611857074
+wald test: <F test: F=1256.5948451977774, p=2.348191872233784e-257, df_denom=8.77e+03, df_num=1>
 
 ////////////////// A_obtectus //////////////////
 =================================================================================================================================
@@ -917,8 +978,11 @@ Conclusions, results are surprisingly variable between species pairs:
   LFC_head_thorax:level_most_dist_ortholog                       -0.0018      0.001     -1.880      0.060      -0.004     7.8e-05
   LFC_head_thorax:C(chromosome)[T.X]:level_most_dist_ortholog    -0.0069      0.007     -1.048      0.295      -0.020       0.006
 =================================================================================================================================
+SSR with conservation rank: 52.59615186070548
+SSR without conservation rank: 63.21803865340776
+wald test: <F test: F=1415.3094537196616, p=1.4878248259942567e-287, df_denom=8.89e+03, df_num=1>
 ```
-</details>
+
 
 
 ### plots
@@ -927,10 +991,12 @@ Conclusions, results are surprisingly variable between species pairs:
 
 green is A and violet is X. Also keep in mind that the conservation rank is 1:C_chinensis and 2:B_siliquastri, so the lowest possible rank for *A. obtectus* is 3.
 
+This seems mostly in line with statistical results. 
+
 <p float="left">
-  <img src="data/DE_analysis/dNdS_vs_conservation_rankC_chinensis_white_bg.png" width="50%" />
+  <img src="data/DE_analysis/dNdS_vs_conservation_rankC_chinensis_white_bg.png" width="49%" />
   <img src="data/DE_analysis/dNdS_vs_conservation_rankB_siliquastri_white_bg.png" width="50%" />
-  <img src="data/DE_analysis/dNdS_vs_conservation_rankA_obtectus_white_bg.png" width="50%" />
+  <img src="data/DE_analysis/dNdS_vs_conservation_rankA_obtectus_white_bg.png" width="49%" />
 </p>
 
 ### logistic regression for positive selection

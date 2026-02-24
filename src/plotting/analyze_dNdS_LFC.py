@@ -126,7 +126,16 @@ def statistical_analysis_dNdS(full_table_paths_dict, table_outfile="", max_dNdS=
                 ## the syntax with the parentheses (LFC_abdomen + LFC_head_thorax) * C(chromosome) means this:
                 # LFC_abdomen + LFC_head_thorax + C(chromosome) + LFC_abdomen:C(chromosome) + LFC_head_thorax:C(chromosome)
             test = smf.quantreg(formula=formula, data=filt_df).fit(q=0.5) # q=0.5 means we estimate the median
-            print(test.summary())
+            
+            ## test godness of fit without conservation rank
+            formula_simple = f"{partner}_dNdS ~ (LFC_abdomen + LFC_head_thorax) * C(chromosome)"
+            test_simple = smf.quantreg(formula=formula_simple, data=filt_df).fit(q=0.5) # q=0.5 means we estimate the median
+            print(f"SSR with conservation rank: {test.ssr}")
+            print(f"SSR without conservation rank: {test_simple.ssr}")
+            wald_test = test.wald_test("level_most_dist_ortholog = 0", scalar = True)
+            print(f"wald test: {wald_test}")
+            print()
+
             model="lreg"
 
         else:
@@ -205,15 +214,18 @@ def statistical_analysis_pos_sel(full_table_paths_dict):
 
 
 
-def make_phylogeny_rank_dict(summary_file_df, focal_species, max_dNdS=2):
+def make_phylogeny_rank_dict(summary_file_df, focal_species="", max_dNdS=2):
     """
     make a dict with rank orders like { 1 : [list, of, dNdS, numbers] ,  2 [more, dNdS, numbers] , ... }
     """
-    filtered_df = summary_file_df[summary_file_df["other_species"] == focal_species]
-    if max_dNdS >0:
-        filtered_df = filtered_df[filtered_df["dN/dS"]<max_dNdS]
-    filtered_df["dN/dS"] = pd.to_numeric(filtered_df["dN/dS"], errors='coerce')
-    filtered_df = filtered_df.dropna(subset="dN/dS")
+    if focal_species!="":
+        filtered_df = summary_file_df[summary_file_df["other_species"] == focal_species]
+        if max_dNdS >0:
+            filtered_df = filtered_df[filtered_df["dN/dS"]<max_dNdS]
+        filtered_df["dN/dS"] = pd.to_numeric(filtered_df["dN/dS"], errors='coerce')
+        filtered_df = filtered_df.dropna(subset="dN/dS")
+    else:
+        filtered_df = summary_file_df
     
     dNdS_dict = { i : [] for i in range(1,6)}
 
@@ -341,6 +353,21 @@ def plot_dNdS_rank_conserved(summary_paths_AX_list:dict, outfile = "", maxdNdS =
         print(f"plot saved in current working directory as: {outfile_partner} and {filename_tr}")
 
 
+def compare_conservation_rank_proportions(summary_paths_AX):
+
+    summary_data_A = pd.read_csv(summary_paths_AX["A"], sep = "\t", index_col=False)
+    summary_data_X = pd.read_csv(summary_paths_AX["X"], sep = "\t", index_col=False)
+    unique_A=summary_data_A.drop_duplicates(subset=["focal_transcript"])
+    unique_X=summary_data_X.drop_duplicates(subset=["focal_transcript"])
+    total_A = unique_A.shape[0]
+    total_X = unique_X.shape[0]
+
+    counts_A = {rank : f"{100*len(list)/total_A:.3f}%" for rank, list in make_phylogeny_rank_dict(unique_A, focal_species="", max_dNdS=0).items()}
+    counts_X = {rank : f"{100*len(list)/total_X:.3f}%" for rank, list in make_phylogeny_rank_dict(unique_X, focal_species="", max_dNdS=0).items()}
+
+    print(f"count proportions of conservation ranks in A and X:")
+    for rank in counts_A.keys():
+        print(f"{rank} -->\tA = {counts_A[rank]}\t X = {counts_X[rank]}")
 
 
 
@@ -350,10 +377,11 @@ if __name__ == "__main__":
     full_tables_dict = get_full_table_path(username=username)
     reorg_table_outfile = f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/paml_stats_outfile_table.tsv"
     
-    if False:
+    if True:
         ###################################################
-        ## median quantile regression for dNdS
+        ## median quantile regression for dNdS as continuous response
         statistical_analysis_dNdS(full_tables_dict, table_outfile=f"")
+        compare_conservation_rank_proportions(full_tables_dict)
         ###################################################
 
     if False:
@@ -362,7 +390,7 @@ if __name__ == "__main__":
         statistical_analysis_pos_sel(full_table_paths_dict=full_tables_dict)
         ###################################################
 
-    if True:
+    if False:
         ###################################################
         ## plotting 
         filename=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/dNdS_vs_conservation_rank.png"
