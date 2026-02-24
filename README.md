@@ -861,7 +861,7 @@ Conclusions, results are surprisingly variable between species pairs:
 
 * chromosome is individually significant in *C. chinensis* and *A. obtectus* but **unsignificant** in *B. siliquastri* !!! The basic dNdS permutation test in the beginning has a very strong significance for the *B. siliquastri* vs. *C. maculatus* comparison. 
 * in *C. maculatus* nothing involving the logFC is significant, but in *B. siliquastri* and *A. obtectus* both tissues individual LogFC and some interactions are significant
-* The conservation rank (`level_most_dist_ortholog` with higher numbers being more conserved) is individually significant in all species, but 
+* The conservation rank (`level_most_dist_ortholog` with higher numbers being more conserved) is individually significant in all species 
 
 ```test
 ////////////////// C_chinensis //////////////////
@@ -921,6 +921,17 @@ Conclusions, results are surprisingly variable between species pairs:
 </details>
 
 
+### plots
+
+#### dN/dS by chromosome and conservation rank
+
+green is A and violet is X 
+
+<p float="left">
+  <img src="PhD_chapter3/data/DE_analysis/dNdS_vs_conservation_rankC_chinensis_white_bg.png" width="32%" />
+  <img src="PhD_chapter3/data/DE_analysis/dNdS_vs_conservation_rankB_siliquastri_white_bg.png" width="32%" />
+  <img src="PhD_chapter3/data/DE_analysis/dNdS_vs_conservation_rankA_obtectus_white_bg.png" width="32%" />
+</p>
 
 ### logistic regression for positive selection
 

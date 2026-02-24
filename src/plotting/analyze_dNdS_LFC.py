@@ -205,16 +205,165 @@ def statistical_analysis_pos_sel(full_table_paths_dict):
 
 
 
+def make_phylogeny_rank_dict(summary_file_df, focal_species, max_dNdS=2):
+    """
+    make a dict with rank orders like { 1 : [list, of, dNdS, numbers] ,  2 [more, dNdS, numbers] , ... }
+    """
+    filtered_df = summary_file_df[summary_file_df["other_species"] == focal_species]
+    if max_dNdS >0:
+        filtered_df = filtered_df[filtered_df["dN/dS"]<max_dNdS]
+    filtered_df["dN/dS"] = pd.to_numeric(filtered_df["dN/dS"], errors='coerce')
+    filtered_df = filtered_df.dropna(subset="dN/dS")
+    
+    dNdS_dict = { i : [] for i in range(1,6)}
+
+    for p_rank, log2FC_val  in zip(filtered_df["level_most_dist_ortholog"], filtered_df["dN/dS"]):
+        dNdS_dict[p_rank].append(log2FC_val)
+
+    return dNdS_dict
+
+
+def plot_dNdS_rank_conserved(summary_paths_AX_list:dict, outfile = "", maxdNdS = 0):
+    """
+    check if genes with a higher phylogeny conservarion rank have higher log2FC values 
+    if abs_LFC=True then do abs() around LFC to assess general sex bias and don't differentiate male-female contrast
+    """
+
+    summary_data_A = pd.read_csv(summary_paths_AX_list["A"], sep = "\t", index_col=False)
+    summary_data_X = pd.read_csv(summary_paths_AX_list["X"], sep = "\t", index_col=False)
+    partner_species = list(set(summary_data_X["other_species"]))
+    partner_lists_A = {partner : [] for partner in partner_species}
+    partner_lists_X = {partner : [] for partner in partner_species}
+
+    for partner in partner_species:
+        partner_lists_A[partner] = make_phylogeny_rank_dict(summary_data_A, focal_species=partner, max_dNdS=maxdNdS)
+        partner_lists_X[partner] = make_phylogeny_rank_dict(summary_data_X, focal_species=partner, max_dNdS=maxdNdS)
+
+    
+    y_label = f"dNdS"
+    if maxdNdS>0:
+        y_label = f"dNdS (max. < {maxdNdS})"
+    
+    fs = 30 # font size
+
+    # set figure aspect ratio
+    aspect_ratio = 12 / 8
+    height_pixels = 1000  # Height in pixels
+    width_pixels = int(height_pixels * aspect_ratio)  # Width in pixels
+
+
+    def plot_dNdS_subplot(lists_A, lists_X, fs, title, colors_dict, lw=2):
+        
+        ## make A and X lists alternating to plot
+        AX_lists = []
+        for rank in lists_A.keys():
+            AX_lists.extend([lists_A[rank], lists_X[rank]])
+        
+        # tick_labels = [f"{i // 2 + 1}\n({len(vals)})" for i,vals in enumerate(sex_biased_lists)]
+        tick_labels = [f"({len(vals)})" for i,vals in enumerate(AX_lists)] # plot conservation rank label on separate axis
+        pos_adjust=0.2
+        tick_pos = [i+pos_adjust if i%2==1 else i-pos_adjust for i in range(1,len(tick_labels)+1)]
+        bp = ax.boxplot(AX_lists, positions=tick_pos, patch_artist=True)
+
+        # set axis labels
+        tick_fs_factor = 0.75
+        ax.set_xticks(ticks = tick_pos, labels = tick_labels, fontsize=fs*tick_fs_factor, rotation=45, ha='right')
+        ax.tick_params(axis='x', labelsize=fs*tick_fs_factor)#, rotation = 90)
+        ax.tick_params(axis='y', labelsize=fs*0.9)
+        ax.set_title(title, fontsize=fs)
+
+        ax2 = ax.secondary_xaxis('bottom')
+        ax2.set_xticks([i+0.5 for i in range(1,10,2)])
+        ax2.set_xticklabels([i for i in range(1,6)], fontsize=fs)
+        ax2.spines['bottom'].set_position(('outward', 60))   
+        ax2.xaxis.set_ticks_position('none')
+        ax2.spines['bottom'].set_visible(False)
+        ax2.tick_params(axis='x', labelsize=fs)
+
+        ## modify boxplot colors
+        for i, box in enumerate(bp['boxes']):
+            if i%2==0:
+                box.set(facecolor=colors_dict["fill"], edgecolor=colors_dict["edge"], linewidth=2)
+            else:
+                box.set(facecolor=colors_dict["X_fill"], edgecolor=colors_dict["X_edge"], linewidth=2)
+        for i, median in enumerate(bp['medians']):
+            if i%2==0:
+                median.set(color=colors_dict['medians'], linewidth=lw)
+            else:
+                median.set(color=colors_dict['X_medians'], linewidth=lw)
+        for i, whisker in enumerate(bp['whiskers']):
+            # print(f"whisker: {i}")
+            if i//2 % 2==0:
+                whisker.set(color=colors_dict['edge'], linestyle='-',linewidth=lw)
+            else:
+                whisker.set(color=colors_dict['X_edge'], linestyle='-',linewidth=lw)
+        for i, cap in enumerate(bp['caps']):
+            if i//2 % 2==0:
+                cap.set(color=colors_dict['edge'],linewidth=lw)
+            else:
+                cap.set(color=colors_dict['X_edge'],linewidth=lw)
+        for i, flier in enumerate(bp['fliers']):
+            if i%2==0:
+                flier.set(marker='.', markerfacecolor=colors_dict['edge'], markeredgecolor=colors_dict['edge'])
+            else:
+                flier.set(marker='.', markerfacecolor=colors_dict['X_edge'], markeredgecolor=colors_dict['X_edge'])
+
+    colors = {
+        "fill" : "#246A73", # stormy teal
+        "edge" : "#174C54", # dark teal
+        "medians" : "#54A6A2", # tropical teal
+        # "lines" : "#7D93B5", # lavender grey
+        "X_fill" : "#7E3A7E", # grape soda
+        "X_edge" : "#672B67", # velvet purple
+        "X_medians" : "#C877C8", # orchid mist
+        # "X_lines" : "#7D93B5" # lavender grey
+    }
+
+
+    for partner in partner_species:
+        fig, ax = plt.subplots(figsize=(width_pixels / 100, height_pixels / 100), dpi=100)
+        print(f"/////////////////////// {partner} ///////////////////////")
+        partner_title=partner.replace("_", ". ")
+        plot_title = f"C. maculatus vs. {partner_title} pairwise comparison"
+        plot_dNdS_subplot(lists_A=partner_lists_A[partner], lists_X=partner_lists_X[partner], fs=fs, title=plot_title, colors_dict=colors)
+        fig.supxlabel(f"(number of genes)\nconservation rank of C. maculatus ortholog", fontsize = fs)
+        fig.supylabel(y_label, fontsize = fs, x=0.0, y=0.625)
+
+        # layout (left, bottom, right, top)
+        plt.tight_layout(rect=[0.0, 0.05, 1, 1])
+
+        outfile_partner = outfile.replace(".png", f"{partner}.png")
+        # transparent background
+        plt.savefig(outfile_partner, dpi = 300, transparent = True)
+        # non-transparent background
+        filename_tr = outfile_partner.replace(".png", "_white_bg.png")
+        plt.savefig(filename_tr, dpi = 300, transparent = False)
+        print(f"plot saved in current working directory as: {outfile_partner} and {filename_tr}")
+
+
+
+
+
 if __name__ == "__main__":
 
     username = "miltr339"
     full_tables_dict = get_full_table_path(username=username)
     reorg_table_outfile = f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/paml_stats_outfile_table.tsv"
     
-    ## median quantile regression for dNdS
-    # statistical_analysis_dNdS(full_tables_dict, table_outfile=f"")
+    if False:
+        ###################################################
+        ## median quantile regression for dNdS
+        statistical_analysis_dNdS(full_tables_dict, table_outfile=f"")
+        ###################################################
 
-    ## logistic regression for categorical response (positive selection True/False)
-    statistical_analysis_pos_sel(full_table_paths_dict=full_tables_dict)
+    if False:
+        ###################################################
+        ## logistic regression for categorical response (positive selection True/False)
+        statistical_analysis_pos_sel(full_table_paths_dict=full_tables_dict)
+        ###################################################
 
-
+    if True:
+        ###################################################
+        ## plotting 
+        filename=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/dNdS_vs_conservation_rank.png"
+        plot_dNdS_rank_conserved(summary_paths_AX_list= full_tables_dict, outfile = filename, maxdNdS = 0)
