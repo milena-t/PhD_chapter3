@@ -988,8 +988,6 @@ This seems mostly in line with statistical results.
 
 Conservation rank goes from 1 to 5, with 5 being highly conserved (up to drosophila) and 1 being only conserved to *C. chinensis*. I am splitting the dNdS into a plot that combines all dNdS values (where some transcript are shown in duplicate due to differing dNdS values in different comparisons, the first plot with no heading), and separate plots for all species. I am only showing transcripts where the log2FC is significant. 
 
-Generally, abdominal genes show a larger magnitude of male bias, and also it looks like they have more genes with a low conservation rank. 
-
 <p float="left">
   <img src="data/DE_analysis/dNdS_all_species_vs_sig_logFC_by_rank_white_bg.png" width="49%" />
   <img src="data/DE_analysis/dNdS_A_obtectus_vs_sig_logFC_by_rank_white_bg.png" width="49%" />
@@ -998,6 +996,8 @@ Generally, abdominal genes show a larger magnitude of male bias, and also it loo
   <img src="data/DE_analysis/dNdS_B_siliquastri_vs_sig_logFC_by_rank_white_bg.png" width="49%" />
   <img src="data/DE_analysis/dNdS_C_chinensis_vs_sig_logFC_by_rank_white_bg.png" width="49%" />
 </p>
+
+* Generally, abdominal genes show a larger magnitude of male bias, and also it looks like they have more genes with a low conservation rank. 
 
 
 <p float="left">
@@ -1009,6 +1009,7 @@ Generally, abdominal genes show a larger magnitude of male bias, and also it loo
   <img src="data/DE_analysis/dNdS_C_chinensis_vs_sig_logFC_white_bg.png" width="49%" />
 </p>
 
+* Head+thorax tissues for X-linked genes have more male-biased genes, for abdominal genes it's pretty equal  
 
 
 ### logistic regression for positive selection
