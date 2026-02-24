@@ -207,9 +207,15 @@ def statistical_analysis_pos_sel(full_table_paths_dict):
         # print(filt_df["positive_selection"].unique(), filt_df["positive_selection"].dtype)
 
         formula = f"positive_selection ~ (LFC_abdomen + LFC_head_thorax) * C(chromosome) * level_most_dist_ortholog"
-
         test = smf.logit(formula=formula, data=filt_df).fit()
-        print(test.summary())
+
+        formula_simple = f"positive_selection ~ (LFC_abdomen + LFC_head_thorax) * C(chromosome)"
+        test_simple = smf.logit(formula=formula_simple, data=filt_df).fit()
+
+        wald_test = test.wald_test("level_most_dist_ortholog = 0", scalar = True)
+        print(f"wald test: {wald_test}")
+
+        print(test_simple.summary())
 
 
 
@@ -377,14 +383,14 @@ if __name__ == "__main__":
     full_tables_dict = get_full_table_path(username=username)
     reorg_table_outfile = f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/paml_stats_outfile_table.tsv"
     
-    if True:
+    if False:
         ###################################################
         ## median quantile regression for dNdS as continuous response
         statistical_analysis_dNdS(full_tables_dict, table_outfile=f"")
         compare_conservation_rank_proportions(full_tables_dict)
         ###################################################
 
-    if False:
+    if True:
         ###################################################
         ## logistic regression for categorical response (positive selection True/False)
         statistical_analysis_pos_sel(full_table_paths_dict=full_tables_dict)
