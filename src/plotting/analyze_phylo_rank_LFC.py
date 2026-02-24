@@ -320,7 +320,7 @@ def check_DE_phylogeny_rank_conserved(summary_paths_AX_list:dict, outfile = "", 
         LFC_lists_head_thorax_X = [vals_list for vals_list in LFC_dict_head_thorax_X.values()]
         y_label = f"log2FC for female-male"
     
-    if abs_logFC:
+    if abs_LFC:
         y_label = f"|log2FC|"
     
     if sig_p_threshold>0:
@@ -386,15 +386,15 @@ def check_DE_phylogeny_rank_conserved(summary_paths_AX_list:dict, outfile = "", 
 
         # set axis labels
         tick_fs_factor = 0.6
-        ax[row,col].set_xticks(ticks = tick_pos, labels = tick_labels, fontsize=fs*tick_fs_factor)
-        ax[row,col].tick_params(axis='x', labelsize=fs*tick_fs_factor, rotation = 90)
+        ax[row,col].set_xticks(ticks = tick_pos, labels = tick_labels, fontsize=fs*tick_fs_factor, rotation=45, ha='right')
+        ax[row,col].tick_params(axis='x', labelsize=fs*tick_fs_factor)#, rotation = 90)
         ax[row,col].tick_params(axis='y', labelsize=fs*0.9)
         ax[row,col].set_title(title, fontsize=fs)
 
         ax2 = ax[row,col].secondary_xaxis('bottom')
         ax2.set_xticks([i+0.5 for i in range(1,10,2)])
         ax2.set_xticklabels([i for i in range(1,6)], fontsize=fs)
-        ax2.spines['bottom'].set_position(('outward', 40))   
+        ax2.spines['bottom'].set_position(('outward', 50))   
         ax2.xaxis.set_ticks_position('none')
         ax2.spines['bottom'].set_visible(False)
         ax2.tick_params(axis='x', labelsize=fs)
@@ -585,7 +585,7 @@ if __name__ == "__main__":
         ### statistical analysis of continuous log2FC values
         summary_paths = get_summary_paths(username=username)
         abs_logFC = True
-        if False:
+        if True:
             ## plotting the bar chart
             check_DE_phylogeny_rank_conserved(summary_paths_AX_list=summary_paths,
                 outfile=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/conservation_rank_all_sex_bias_proportion.png",
@@ -593,5 +593,6 @@ if __name__ == "__main__":
             check_DE_phylogeny_rank_conserved(summary_paths_AX_list=summary_paths,
                 outfile=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/conservation_rank_sig_sex_bias_proportion.png",
                 abs_LFC=abs_logFC, sig_p_threshold=0.05)
-        ## statistical analysis
-        logFC_quantile_regression(summary_paths, abs_LFC=abs_logFC, p_val_threshold=0)
+        else:
+            ## statistical analysis
+            logFC_quantile_regression(summary_paths, abs_LFC=abs_logFC, p_val_threshold=0)
