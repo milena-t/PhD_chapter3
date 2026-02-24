@@ -928,9 +928,9 @@ Conclusions, results are surprisingly variable between species pairs:
 green is A and violet is X 
 
 <p float="left">
-  <img src="data/DE_analysis/dNdS_vs_conservation_rankC_chinensis_white_bg.png" width="32%" />
-  <img src="data/DE_analysis/dNdS_vs_conservation_rankB_siliquastri_white_bg.png" width="32%" />
-  <img src="data/DE_analysis/dNdS_vs_conservation_rankA_obtectus_white_bg.png" width="32%" />
+  <img src="data/DE_analysis/dNdS_vs_conservation_rankC_chinensis_white_bg.png" width="60%" />
+  <img src="data/DE_analysis/dNdS_vs_conservation_rankB_siliquastri_white_bg.png" width="60%" />
+  <img src="data/DE_analysis/dNdS_vs_conservation_rankA_obtectus_white_bg.png" width="60%" />
 </p>
 
 ### logistic regression for positive selection
