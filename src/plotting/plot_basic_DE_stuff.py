@@ -498,7 +498,7 @@ def plot_dNdS_vs_logFC(summary_paths_AX_list, outfile = "", sig_p_threshold = 0,
     fs = 45 # font size
 
     # set figure aspect ratio
-    aspect_ratio = 20 / 12
+    aspect_ratio = 25 / 12
     height_pixels = 1200  # Height in pixels
     width_pixels = int(height_pixels * aspect_ratio)  # Width in pixels
 
@@ -513,8 +513,8 @@ def plot_dNdS_vs_logFC(summary_paths_AX_list, outfile = "", sig_p_threshold = 0,
     }
 
     def plot_tissue(pairs_A, pairs_X, col, fs, colors_dict=colors_dict, title = ""):
-        ax[col].scatter(pairs_A[0], pairs_A[1], color = colors_dict["A"], label=f"Autosomes")#, s=35)
-        ax[col].scatter(pairs_X[0], pairs_X[1], color = colors_dict["X"], label=f"X-chromosome")#, s=35)
+        ax[col].scatter(pairs_A[1], pairs_A[0], color = colors_dict["A"], label=f"Autosomes")#, s=35)
+        ax[col].scatter(pairs_X[1], pairs_X[0], color = colors_dict["X"], label=f"X-chromosome")#, s=35)
         ax[col].tick_params(axis='x', labelsize=fs)
         ax[col].tick_params(axis='y', labelsize=fs)
         ax[col].set_title(title, fontsize=fs)
@@ -526,11 +526,11 @@ def plot_dNdS_vs_logFC(summary_paths_AX_list, outfile = "", sig_p_threshold = 0,
     plot_tissue(abdomen_pairs_A, abdomen_pairs_X, col=0, fs=fs, colors_dict=colors_dict, title = "Abdominal tissues")
     plot_tissue(head_thorax_pairs_A, head_thorax_pairs_X, col=1, fs=fs, colors_dict=colors_dict, title = "Head+Thorax tissues")
     
-    fig.supxlabel(f"dN/dS", fontsize = fs)
+    fig.supylabel(f"dN/dS", fontsize = fs)
     if sig_p_threshold>0:
-        fig.supylabel(f"Log2FC female-male (p<{sig_p_threshold})", fontsize = fs)
+        fig.supxlabel(f"Log2FC female-male (p<{sig_p_threshold})", fontsize = fs)
     else:
-        fig.supylabel(f"Log2FC female-male", fontsize = fs)
+        fig.supxlabel(f"Log2FC female-male", fontsize = fs)
 
     if ortholog_species != "":
         species_lab = ortholog_species.replace("_", ". ")
@@ -546,6 +546,112 @@ def plot_dNdS_vs_logFC(summary_paths_AX_list, outfile = "", sig_p_threshold = 0,
     print(f"plot saved in current working directory as: {outfile} and {filename_tr}")
 
 
+def plot_dNdS_vs_logFC_by_conservation(summary_paths_AX_list, outfile = "", sig_p_threshold = 0, ortholog_species = ""):
+
+    A_df = pd.read_csv(summary_paths_AX_list["A"], sep = "\t", index_col=False)
+    X_df = pd.read_csv(summary_paths_AX_list["X"], sep = "\t", index_col=False)
+    # add columns for chromosome cat
+    X_df["chromosome"] = ["X"]*X_df.shape[0]
+    A_df["chromosome"] = ["A"]*A_df.shape[0]
+
+    df_duplicates = pd.concat([A_df,X_df], ignore_index=True)
+    if ortholog_species == "":
+        df = df_duplicates.drop_duplicates(subset=['focal_transcript'])
+    else:
+        df = df_duplicates[df_duplicates["other_species"] == ortholog_species]
+    
+
+    def make_phylogeny_rank_dict(summary_file_df, min_p, max_dNdS = 2):
+        """
+        make a dict with rank orders like { 1 : [list, of, Log2FC, numbers] ,  2 [more, log2FC, numbers] , ... }
+        """
+        filtered_df = summary_file_df.drop_duplicates(subset=['focal_transcript']) # remove duplicate data points
+        filtered_df[f"dN/dS"] = pd.to_numeric(filtered_df[f"dN/dS"], errors='coerce')
+        filtered_df = filtered_df[filtered_df[f"dN/dS"]>0]
+        filtered_df = filtered_df[filtered_df[f"dN/dS"].notna()]
+        filtered_df = filtered_df[filtered_df[f"dN/dS"] < max_dNdS]
+        
+        LFC_dict_abdomen = { i : {"LFC" : [] , "dNdS" : []} for i in range(1,6)}
+        LFC_dict_head_thorax = { i : {"LFC" : [] , "dNdS" : []} for i in range(1,6)}
+
+        if min_p == 0:
+            for p_rank, log2FC_val, dNdS  in zip(filtered_df["level_most_dist_ortholog"], filtered_df["LFC_abdomen"],filtered_df["dN/dS"]):
+                LFC_dict_abdomen[p_rank]["LFC"].append(log2FC_val)
+                LFC_dict_abdomen[p_rank]["dNdS"].append(dNdS)
+            for p_rank, log2FC_val, dNdS  in zip(filtered_df["level_most_dist_ortholog"], filtered_df["LFC_head+thorax"],filtered_df["dN/dS"]):
+                LFC_dict_head_thorax[p_rank]["LFC"].append(log2FC_val)
+                LFC_dict_head_thorax[p_rank]["dNdS"].append(dNdS)
+        else:
+            for p_rank, log2FC_val,pval, dNdS  in zip(filtered_df["level_most_dist_ortholog"], filtered_df["LFC_abdomen"], filtered_df["FDR_pval_abdomen"],filtered_df["dN/dS"]):
+                if pval<min_p:
+                    LFC_dict_abdomen[p_rank]["LFC"].append(log2FC_val)
+                    LFC_dict_abdomen[p_rank]["dNdS"].append(dNdS)
+            for p_rank, log2FC_val,pval, dNdS  in zip(filtered_df["level_most_dist_ortholog"], filtered_df["LFC_head+thorax"], filtered_df["FDR_pval_head+thorax"],filtered_df["dN/dS"]):
+                if pval<min_p:
+                    LFC_dict_head_thorax[p_rank]["LFC"].append(log2FC_val)
+                    LFC_dict_head_thorax[p_rank]["dNdS"].append(dNdS)
+
+        return LFC_dict_abdomen, LFC_dict_head_thorax
+
+
+    rank_dict_abdomen, rank_dict_head_thorax = make_phylogeny_rank_dict(df, min_p=sig_p_threshold)
+
+    fs = 45 # font size
+
+    # set figure aspect ratio
+    aspect_ratio = 25 / 12
+    height_pixels = 1200  # Height in pixels
+    width_pixels = int(height_pixels * aspect_ratio)  # Width in pixels
+
+    colors_dict = {
+        5 : "#1a1423", # darkest
+        4 : "#4D3960",
+        3 : "#774c60",
+        2 : "#b75d69",
+        1 : "#eacdc2", # lightest
+    }
+
+    fig, ax = plt.subplots(1,2,figsize=(width_pixels / 100, height_pixels / 100), dpi=100)
+
+    def plot_tissue(dNdS, log2FC, col, fs, color, rank, title = ""):
+        ax[col].scatter(log2FC, dNdS, color = color, label=f"{rank}")#, s=35)
+        ax[col].tick_params(axis='x', labelsize=fs)
+        ax[col].tick_params(axis='y', labelsize=fs)
+        ax[col].set_title(title, fontsize=fs)
+        if col==1:
+            ax[col].legend(fontsize=fs*0.9, markerscale=3)
+        # axes[0,col].set_xlabel("dS", fontsize = fs)
+        # axes[0,col].set_ylabel("dN", fontsize = fs)
+
+    for rank in reversed(range(1,6)): # count from 5 back so that the points are layered correctly
+        dNdS_abdomen = rank_dict_abdomen[rank]["dNdS"]
+        dNdS_ht = rank_dict_head_thorax[rank]["dNdS"]
+        LFC_abdomen = rank_dict_abdomen[rank]["LFC"]
+        LFC_ht = rank_dict_head_thorax[rank]["LFC"]
+        plot_tissue(dNdS=dNdS_abdomen, log2FC=LFC_abdomen, col=0, fs=fs, color=colors_dict[rank], rank=rank, title = "Abdominal tissues")
+        plot_tissue(dNdS=dNdS_ht, log2FC=LFC_ht, col=1, fs=fs, color=colors_dict[rank], rank=rank, title = "Head+Thorax tissues")
+    
+    fig.supylabel(f"dN/dS", fontsize = fs)
+    if sig_p_threshold>0:
+        fig.supxlabel(f"Log2FC female-male (p<{sig_p_threshold})", fontsize = fs)
+    else:
+        fig.supxlabel(f"Log2FC female-male", fontsize = fs)
+
+    if ortholog_species != "":
+        species_lab = ortholog_species.replace("_", ". ")
+        fig.suptitle(f"dN/dS values of C. maculatus and {species_lab}", fontsize = fs)
+    # layout (left, bottom, right, top)
+    # plt.tight_layout(rect=[0, 0.05, 1, 1])
+
+    # transparent background
+    plt.savefig(outfile, dpi = 300, transparent = True)
+    # non-transparent background
+    filename_tr = outfile.replace(".png", "_white_bg.png")
+    plt.savefig(filename_tr, dpi = 300, transparent = False)
+    print(f"plot saved in current working directory as: {outfile} and {filename_tr}")
+
+
+
 if __name__ == "__main__":
     
     username = "miltr339"
@@ -556,7 +662,7 @@ if __name__ == "__main__":
     DE_paths = get_DE_paths(username=username)
     Cmac_X_contigs_list = get_Cmac_superscaffolded_XY_contigs()["X"]
 
-    if True:
+    if False:
         plot_dosage_compensation(summary_paths=DE_paths, annotation=Cmac_annotation, assembly_index=Cmac_assembly, 
             X_list=Cmac_X_contigs_list, 
             outfile=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/X_sex_bias.png")
@@ -568,7 +674,7 @@ if __name__ == "__main__":
             outfile=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/all_sex_bias_proportion.png")
 
 
-    if False:
+    if True:
         ortholog_species = {
             "" : "all_species",
             "C_chinensis" : "C_chinensis", 
@@ -577,9 +683,17 @@ if __name__ == "__main__":
         }
         for species, plot_name in ortholog_species.items():
             print(f"\n --> {plot_name} comparison")
-            plot_dNdS_vs_logFC(summary_paths_AX_list=summary_paths,
-                outfile=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/dNdS_{plot_name}_vs_sig_logFC.png",
-                sig_p_threshold=0.05, ortholog_species=species)
-            # plot_dNdS_vs_logFC(summary_paths_AX_list=summary_paths,
-            #     outfile=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/dNdS_{plot_name}_vs_logFC.png",
-            #     sig_p_threshold=0, ortholog_species=species)
+
+            if False:
+                ### plot with colors for X/A
+                plot_dNdS_vs_logFC(summary_paths_AX_list=summary_paths,
+                    outfile=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/dNdS_{plot_name}_vs_sig_logFC.png",
+                    sig_p_threshold=0.05, ortholog_species=species)
+                plot_dNdS_vs_logFC(summary_paths_AX_list=summary_paths,
+                    outfile=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/dNdS_{plot_name}_vs_logFC.png",
+                    sig_p_threshold=0, ortholog_species=species)
+            else:
+                ### plot with colors for conservation rank
+                plot_dNdS_vs_logFC_by_conservation(summary_paths_AX_list=summary_paths, 
+                    outfile=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/dNdS_{plot_name}_vs_sig_logFC_by_rank.png",
+                    sig_p_threshold = 0.05, ortholog_species = species)

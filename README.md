@@ -866,13 +866,14 @@ Conclusions, results are surprisingly variable between species pairs:
 when I take out the conservation rank from the test, I see the expected results for the chromosome, with significant p-values and negative coefficients. I compare the sum of squared residuals (SSR) of either model specification to see if they are improved and use the (Wald test)[https://www.statology.org/wald-test-python/] to test if the coefficient for `level_most_dist_ortholog` is significantly different from 0 to see if it makes a contribution to the model (and can therefore not be dropped). Since it is a strongly significant contribution to an improved model fit in all cases, I interpret the results like this: 
 
 * there is a main chromosome effect, but a large part of the variance of dNdS is also explained by the gene conservation. the chromosome:conservation_rank interaction means that the dNdS changes differently between chromosomes and also differently along the conservation rank within each chromosome category, but this is only significant in *C. chinensis*.
-* The X chromosome is very syntenic and conserved in a way that the autosomes are not, and while we are only comparing closely related species, the X has a higher proportion of top-conservation-rank genes compared to the autosome overall, which would also contribute to the slower X
+* We find overall that the conservation rank has a negative coefficient, so higher conservation rank is lower dNdS. The X chromosome is very syntenic and conserved in a way that the autosomes are not, and while we are only comparing closely related species, the X has a higher proportion of top-conservation-rank genes compared to the autosome overall, which would also contribute to the slower X, since we find a significant association between high conservation rank and low dNdS.
   * 1 -->	A = 2.823%	 X = 0.688%
   * 2 -->	A = 3.076%	 X = 1.835%
   * 3 -->	A = 12.097%	 X = 4.358%
   * 4 -->	A = 24.119%	 X = 13.073%
   * 5 -->	A = 57.885%	 X = 80.046%
-
+* logFC becomes a significant main effect for *B. siliquastri* and *A. obtectus* but not *C. chinensis*, where the abdomen has a negative coefficient and head+thorax has a positive one.  unclear what the deal with the opposite direction here is.
+  * if logFC is significant, then the interaction with conservation rank is also significant (unlike the interaction with chromosome!). unclear what this means.
 
 <details>
   <summary>See stats without chromosome</summary>
@@ -995,9 +996,23 @@ This seems mostly in line with statistical results.
 
 <p float="left">
   <img src="data/DE_analysis/dNdS_vs_conservation_rankC_chinensis_white_bg.png" width="49%" />
-  <img src="data/DE_analysis/dNdS_vs_conservation_rankB_siliquastri_white_bg.png" width="50%" />
+  <img src="data/DE_analysis/dNdS_vs_conservation_rankB_siliquastri_white_bg.png" width="49%" />
   <img src="data/DE_analysis/dNdS_vs_conservation_rankA_obtectus_white_bg.png" width="49%" />
 </p>
+
+
+#### logFC vs. dNdS colored by conservation rank
+
+<p float="left">
+  <img src="data/DE_analysis/dNdS_all_species_vs_sig_logFC_by_rank_white_bg.png" width="49%" />
+  <img src="data/DE_analysis/dNdS_A_obtectus_vs_sig_logFC_by_rank_white_bg.png" width="49%" />
+</p>
+<p float="left">
+  <img src="data/DE_analysis/dNdS_B_siliquastri_vs_sig_logFC_by_rank_white_bg.png" width="49%" />
+  <img src="data/DE_analysis/dNdS_C_chinensis_vs_sig_logFC_by_rank_white_bg.png" width="49%" />
+</p>
+
+
 
 ### logistic regression for positive selection
 
