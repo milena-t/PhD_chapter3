@@ -70,19 +70,16 @@ def statistical_analysis_dNdS(full_table_paths_dict, table_outfile="", max_dNdS=
     else:
         X_df = pd.read_csv(full_table_paths_dict["X"], sep="\t")
         A_df = pd.read_csv(full_table_paths_dict["A"], sep="\t")
-
         X_df["chromosome"] = ["X"]*X_df.shape[0]
         A_df["chromosome"] = ["A"]*A_df.shape[0]
 
-        df = pd.concat([A_df,X_df], ignore_index=True)
-
+    df = pd.concat([A_df,X_df], ignore_index=True)
     df = df.rename(columns={'LFC_head+thorax': 'LFC_head_thorax'})
-    dfs_dict = { 
-        "female_biased_abdomen": df[df["LFC_abdomen"] > 0 ],
-        "male_biased_abdomen" : df[df["LFC_abdomen"] < 0  ],
-        "female_biased_head_thorax": df[df["LFC_head_thorax"] > 0 ],
-        "male_biased_head_thorax" : df[df["LFC_head_thorax"] < 0 ]
-    }
+    df["SB_abdomen"] = np.where(df["LFC_abdomen"] <= 0, "male", "female")
+    df["SB_head_thorax"] = np.where(df["LFC_head_thorax"] <= 0, "male", "female")
+    df["LFC_abdomen"] = abs(df["LFC_abdomen"])
+    df["LFC_head_thorax"] = abs(df["LFC_head_thorax"])
+
     ## test for goodness of fit between the ols with log and glm with gamma distribution models
     ## test with B_siliquastri_dN/dS
     
@@ -122,18 +119,60 @@ def statistical_analysis_dNdS(full_table_paths_dict, table_outfile="", max_dNdS=
             test_filtering(f"level_most_dist_ortholog")
 
         if True:
-            formula = f"{partner}_dNdS ~ (LFC_abdomen + LFC_head_thorax) * C(chromosome) * level_most_dist_ortholog"
-                ## the syntax with the parentheses (LFC_abdomen + LFC_head_thorax) * C(chromosome) means this:
+            ## has three-way interaction
+            if False:
+                formula = f"{partner}_dNdS ~ (LFC_abdomen + LFC_head_thorax + C(SB_abdomen) + C(SB_head_thorax)) * C(chromosome) * level_most_dist_ortholog"
+                # the syntax with the parentheses (LFC_abdomen + LFC_head_thorax) * C(chromosome) means this:
                 # LFC_abdomen + LFC_head_thorax + C(chromosome) + LFC_abdomen:C(chromosome) + LFC_head_thorax:C(chromosome)
+                interactions_test_string = """
+                LFC_head_thorax:C(chromosome)[T.X]:level_most_dist_ortholog = 0,
+                LFC_abdomen:C(chromosome)[T.X]:level_most_dist_ortholog = 0,
+                C(SB_abdomen)[T.male]:C(chromosome)[T.X]:level_most_dist_ortholog = 0,
+                C(SB_head_thorax)[T.male]:C(chromosome)[T.X]:level_most_dist_ortholog = 0
+                """
+            elif True:
+                ## no three-way interactions and also no interactions between LFC and SB because i am pretty sure that would be useless
+                # formula = f"{partner}_dNdS ~ (LFC_abdomen + LFC_head_thorax + C(SB_abdomen) + C(SB_head_thorax) + C(chromosome) + level_most_dist_ortholog) ** 2"
+                
+                ## interactions with chromosome type -> nonsignificant!
+                formula = f"""
+                {partner}_dNdS ~ (LFC_abdomen + LFC_head_thorax + C(SB_abdomen) + C(SB_head_thorax)) 
+                + C(chromosome) + level_most_dist_ortholog 
+                + (LFC_abdomen + LFC_head_thorax + C(SB_abdomen) + C(SB_head_thorax)) : C(chromosome)
+                + (LFC_abdomen + LFC_head_thorax + C(SB_abdomen) + C(SB_head_thorax)) : level_most_dist_ortholog
+                """
+                interactions_test_string = """
+                C(SB_abdomen)[T.male]:C(chromosome)[T.X]=0,
+                C(SB_head_thorax)[T.male]:C(chromosome)[T.X]=0,
+                LFC_abdomen:C(chromosome)[T.X]=0,
+                LFC_head_thorax:C(chromosome)[T.X]=0
+                """
+                
+                ## interactions with conservation rank -> significant!
+                formula = f"""
+                {partner}_dNdS ~ (LFC_abdomen + LFC_head_thorax + C(SB_abdomen) + C(SB_head_thorax)) 
+                + C(chromosome) + level_most_dist_ortholog 
+                + (LFC_abdomen + LFC_head_thorax + C(SB_abdomen) + C(SB_head_thorax)) : level_most_dist_ortholog
+                """
+                interactions_test_string = """
+                C(SB_abdomen)[T.male]:level_most_dist_ortholog=0,
+                C(SB_head_thorax)[T.male]:level_most_dist_ortholog=0,
+                LFC_abdomen:level_most_dist_ortholog=0,
+                LFC_head_thorax:level_most_dist_ortholog=0
+                """
+               
+
             test = smf.quantreg(formula=formula, data=filt_df).fit(q=0.5) # q=0.5 means we estimate the median
             
             ## test godness of fit without conservation rank
-            formula_simple = f"{partner}_dNdS ~ (LFC_abdomen + LFC_head_thorax) * C(chromosome)"
+            formula_simple = f"{partner}_dNdS ~ (LFC_abdomen + LFC_head_thorax + C(SB_abdomen) + C(SB_head_thorax)) * C(chromosome)"
             test_simple = smf.quantreg(formula=formula_simple, data=filt_df).fit(q=0.5) # q=0.5 means we estimate the median
             print(f"SSR with conservation rank: {test.ssr}")
             print(f"SSR without conservation rank: {test_simple.ssr}")
-            wald_test = test.wald_test("level_most_dist_ortholog = 0", scalar = True)
-            print(f"wald test: {wald_test}")
+            
+            wald_test = test.wald_test(interactions_test_string, scalar = True)
+            print(f"wald test for all three-way interactions: {wald_test}")
+            print(test.summary())
             print()
 
             model="lreg"
@@ -383,14 +422,14 @@ if __name__ == "__main__":
     full_tables_dict = get_full_table_path(username=username)
     reorg_table_outfile = f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/paml_stats_outfile_table.tsv"
     
-    if False:
+    if True:
         ###################################################
         ## median quantile regression for dNdS as continuous response
         statistical_analysis_dNdS(full_tables_dict, table_outfile=f"")
         compare_conservation_rank_proportions(full_tables_dict)
         ###################################################
 
-    if True:
+    if False:
         ###################################################
         ## logistic regression for categorical response (positive selection True/False)
         statistical_analysis_pos_sel(full_table_paths_dict=full_tables_dict)
