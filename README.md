@@ -905,8 +905,8 @@ C(chromosome)[T.X]:level_most_dist_ortholog     0.0148      0.007      2.250    
 This plot shows the median within all the categories considered by the median regression above and can help with interpreting it. It is only for *C. chinensis* since we decided that the sex-bias data becomes to unreliable for more distant pairwise dN/dS, because sex-bias can evolve very rapidly.
 
 <p float="left">
-  <img src="data/DE_analysis/dNdS_vs_conservation_rank_boxplot_abdomen_white_bg.png" width="100%" />
-  <img src="data/DE_analysis/dNdS_vs_conservation_rank_boxplot_head_thorax_white_bg.png" width="100%" />
+  <img src="data/DE_analysis/dNdS_vs_conservation_rank_boxplot_abdomen_white_bg.png" width="80%" />
+  <img src="data/DE_analysis/dNdS_vs_conservation_rank_boxplot_head_thorax_white_bg.png" width="80%" />
 </p>
 
 #### dN/dS by chromosome and conservation rank
