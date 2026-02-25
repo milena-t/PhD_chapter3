@@ -800,7 +800,7 @@ level_most_dist_ortholog                                             -0.4066    
 level_most_dist_ortholog:C(SB_abdomen)[T.male]                        0.3816      0.022     17.192      0.000       0.338       0.425
 level_most_dist_ortholog:C(chromosome)[T.X]                          -0.3734      0.070     -5.347      0.000      -0.510      -0.236
 level_most_dist_ortholog:C(SB_abdomen)[T.male]:C(chromosome)[T.X]     0.3721      0.138      2.701      0.007       0.102       0.642
-=====================================================================================================================================```
+=====================================================================================================================================
 ```
 
 ```text
@@ -818,7 +818,6 @@ level_most_dist_ortholog:C(chromosome)[T.X]                               0.1990
 level_most_dist_ortholog:C(SB_head_thorax)[T.male]:C(chromosome)[T.X]    -0.1835      0.109     -1.683      0.092      -0.397       0.030
 =========================================================================================================================================```
 ```
-
 
 ## combining sex-biased expression with molecular rate and positive selection
 
