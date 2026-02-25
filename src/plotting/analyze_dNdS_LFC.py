@@ -459,9 +459,9 @@ def boxplot_dNdS(full_table_paths_dict, outfile, maxdNdS=2, partner_species="C_c
     nested_vals_dict_ht = make_phylogeny_rank_nested_dict(df, tissue="head_thorax", max_dNdS=maxdNdS)
 
     
-    y_label = f"dNdS"
+    y_label = f"dN/dS"
     if maxdNdS>0:
-        y_label = f"dNdS (max. < {maxdNdS})"
+        y_label = f"dN/dS (max. {maxdNdS})"
     
     fs = 30 # font size
 
