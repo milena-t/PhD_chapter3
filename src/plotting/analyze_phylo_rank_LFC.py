@@ -11,7 +11,7 @@ Make a table for the phylogenetic rank analyses that has all the cmac genes in a
 import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.ticker import FuncFormatter
-import statsmodels.api as sm
+import numpy as np
 from statsmodels.miscmodels.ordinal_model import OrderedModel
 from sklearn.linear_model import QuantileRegressor
 import statsmodels.formula.api as smf
@@ -475,7 +475,12 @@ def logFC_quantile_regression(summary_table_path:str, p_val_threshold= 0.05, sep
     A_df["chromosome"] = ["A"]*A_df.shape[0]
 
     df_duplicates = pd.concat([A_df,X_df], ignore_index=True)
-    df_all = df_duplicates.drop_duplicates(subset=['focal_transcript']) # remove duplicate data points -> log2FC is the same for all instances of the focal transcript
+    df = df_duplicates.rename(columns={'LFC_head+thorax': 'LFC_head_thorax'})
+    df["SB_abdomen"] = np.where(df["LFC_abdomen"] <= 0, "male", "female")
+    df["SB_head_thorax"] = np.where(df["LFC_head_thorax"] <= 0, "male", "female")
+    df["LFC_abdomen"] = abs(df["LFC_abdomen"])
+    df["LFC_head_thorax"] = abs(df["LFC_head_thorax"])
+    df_all = df.drop_duplicates(subset=['focal_transcript']) # remove duplicate data points -> log2FC is the same for all instances of the focal transcript
     
     
     if sep_MF:
@@ -484,24 +489,11 @@ def logFC_quantile_regression(summary_table_path:str, p_val_threshold= 0.05, sep
             df = df_all[df_all["FDR_pval_abdomen"]<p_val_threshold]
         else:
             df = df_all
-        ## make one test for female biased and one for male biase separately in each tissue
-        df_f = df[df["LFC_abdomen"]>0]
-        df_m = df[df["LFC_abdomen"]<0]
 
         ## abdomen
-        model_a_f = smf.quantreg("LFC_abdomen ~ level_most_dist_ortholog * C(chromosome)", df_f)
-        if abs_LFC:
-            df_m["LFC_abdomen_abs"] = df_m["LFC_abdomen"]*-1 # make all vals positive so that the coefficients are comparable
-            # this gives a warning but does work
-            model_a_m = smf.quantreg("LFC_abdomen_abs ~ level_most_dist_ortholog * C(chromosome)", df_m)
-        else:
-            model_a_m = smf.quantreg("LFC_abdomen ~ level_most_dist_ortholog * C(chromosome)", df_m)
-        result_a_f = model_a_f.fit(q=0.5)
-        result_a_m = model_a_m.fit(q=0.5)
-        print(f"\n////////////////// ABDOMEN -- FEMALE-BIASED //////////////////")
-        print(result_a_f.summary())
-        print(f"\n////////////////// ABDOMEN -- MALE-BIASED //////////////////")
-        print(result_a_m.summary())
+        test_a = smf.quantreg("LFC_abdomen ~ level_most_dist_ortholog * C(chromosome)", df).fit(q=0.5)
+        print(f"\n////////////////// ABDOMEN //////////////////")
+        print(test_a.summary())
 
 
         ## head_thorax 
@@ -512,6 +504,7 @@ def logFC_quantile_regression(summary_table_path:str, p_val_threshold= 0.05, sep
 
         ## rename the head thorax column because this does not play well with the formula specification
         df = df.rename(columns={'LFC_head+thorax': 'LFC_head_thorax'})
+        df = df.rename(columns={'FDR_pval_head+thorax': 'FDR_pval_head_thorax'})
         
         df_f = df[df["LFC_head_thorax"]>0]
         df_m = df[df["LFC_head_thorax"]<0]
@@ -585,7 +578,7 @@ if __name__ == "__main__":
         ### statistical analysis of continuous log2FC values
         summary_paths = get_summary_paths(username=username)
         abs_logFC = True
-        if True:
+        if False:
             ## plotting the bar chart
             check_DE_phylogeny_rank_conserved(summary_paths_AX_list=summary_paths,
                 outfile=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/conservation_rank_all_sex_bias_proportion.png",

@@ -53,6 +53,20 @@ def reorder_df_to_have_dNdS_cols(full_table_paths_dict, outfile = ""):
     return unique_df
 
 
+def make_sex_bias_cat_row(row, tissue = "abdomen"):
+    if row[f"LFC_{tissue}"] < 1:
+        if row[f"FDR_pval_{tissue}"]<0.05:
+            return "male"
+        else:
+            return "unbiased"
+    elif row[f"LFC_{tissue}"] >1:
+        if row[f"FDR_pval_{tissue}"]<0.05:
+            return "female"
+        else:
+            return "unbiased"
+    else:
+        return "unbiased"
+
 
 def statistical_analysis_dNdS(full_table_paths_dict, table_outfile="", max_dNdS=2):  
     """
@@ -75,13 +89,13 @@ def statistical_analysis_dNdS(full_table_paths_dict, table_outfile="", max_dNdS=
 
     df = pd.concat([A_df,X_df], ignore_index=True)
     df = df.rename(columns={'LFC_head+thorax': 'LFC_head_thorax'})
-    df["SB_abdomen"] = np.where(df["LFC_abdomen"] <= 0, "male", "female")
-    df["SB_head_thorax"] = np.where(df["LFC_head_thorax"] <= 0, "male", "female")
+    df = df.rename(columns={'FDR_pval_head+thorax': 'FDR_pval_head_thorax'})
+
+    df["SB_abdomen"] = df.apply(make_sex_bias_cat_row, axis=1, args=("abdomen",))
+    df["SB_head_thorax"] = df.apply(make_sex_bias_cat_row, axis=1, args=("head_thorax",))
     df["LFC_abdomen"] = abs(df["LFC_abdomen"])
     df["LFC_head_thorax"] = abs(df["LFC_head_thorax"])
-
-    ## test for goodness of fit between the ols with log and glm with gamma distribution models
-    ## test with B_siliquastri_dN/dS
+    print(df)
     
     for partner in partners_list:
         if reorder_dNdS_partners:
@@ -119,110 +133,47 @@ def statistical_analysis_dNdS(full_table_paths_dict, table_outfile="", max_dNdS=
             test_filtering(f"level_most_dist_ortholog")
 
         if True:
-            ## has three-way interaction --> nonsignificant!
-            if False:
-                formula = f"{partner}_dNdS ~ (LFC_abdomen + LFC_head_thorax + C(SB_abdomen) + C(SB_head_thorax)) * C(chromosome) * level_most_dist_ortholog"
+                
+            if "C_chinensis" in partner:
+                # only significantly sex-biased genes -> remove LFC
+                formula_a = f"{partner}_dNdS ~  C(SB_abdomen)  * C(chromosome) * level_most_dist_ortholog"
+                formula_ht = f"{partner}_dNdS ~  C(SB_head_thorax)  * C(chromosome) * level_most_dist_ortholog"
+                
+                print(f"\n------------> abdomen")
+                test = smf.quantreg(formula=formula_a, data=filt_df).fit(q=0.5) # q=0.5 means we estimate the median
+                print(test.summary())
+                print(f"\n------------> head+thorax")
+                test = smf.quantreg(formula=formula_ht, data=filt_df).fit(q=0.5) # q=0.5 means we estimate the median
+                print(test.summary())
+            else:
+                formula = f"{partner}_dNdS ~  C(chromosome) * level_most_dist_ortholog"
                 # the syntax with the parentheses (LFC_abdomen + LFC_head_thorax) * C(chromosome) means this:
                 # LFC_abdomen + LFC_head_thorax + C(chromosome) + LFC_abdomen:C(chromosome) + LFC_head_thorax:C(chromosome)
-                interactions_test_string = """
-                LFC_head_thorax:C(chromosome)[T.X]:level_most_dist_ortholog = 0,
-                LFC_abdomen:C(chromosome)[T.X]:level_most_dist_ortholog = 0,
-                C(SB_abdomen)[T.male]:C(chromosome)[T.X]:level_most_dist_ortholog = 0,
-                C(SB_head_thorax)[T.male]:C(chromosome)[T.X]:level_most_dist_ortholog = 0
-                """
-            elif True:
-                ## no three-way interactions and also no interactions between LFC and SB because i am pretty sure that would be useless
-                # formula = f"{partner}_dNdS ~ (LFC_abdomen + LFC_head_thorax + C(SB_abdomen) + C(SB_head_thorax) + C(chromosome) + level_most_dist_ortholog) ** 2"
-                
-                ## interactions with chromosome type -> nonsignificant!
-                formula = f"""
-                {partner}_dNdS ~ (LFC_abdomen + LFC_head_thorax + C(SB_abdomen) + C(SB_head_thorax)) 
-                + C(chromosome) + level_most_dist_ortholog 
-                + (LFC_abdomen + LFC_head_thorax + C(SB_abdomen) + C(SB_head_thorax)) : C(chromosome)
-                + (LFC_abdomen + LFC_head_thorax + C(SB_abdomen) + C(SB_head_thorax)) : level_most_dist_ortholog
-                """
-                interactions_test_string = """
-                C(SB_abdomen)[T.male]:C(chromosome)[T.X]=0,
-                C(SB_head_thorax)[T.male]:C(chromosome)[T.X]=0,
-                LFC_abdomen:C(chromosome)[T.X]=0,
-                LFC_head_thorax:C(chromosome)[T.X]=0
-                """
-                
-                ## interactions with conservation rank -> significant!
-                formula = f"""
-                {partner}_dNdS ~ (LFC_abdomen + LFC_head_thorax + C(SB_abdomen) + C(SB_head_thorax)) 
-                + C(chromosome) + level_most_dist_ortholog 
-                + (LFC_abdomen + LFC_head_thorax + C(SB_abdomen) + C(SB_head_thorax)) : level_most_dist_ortholog
-                """
-                interactions_test_string = """
-                C(SB_abdomen)[T.male]:level_most_dist_ortholog=0,
-                C(SB_head_thorax)[T.male]:level_most_dist_ortholog=0,
-                LFC_abdomen:level_most_dist_ortholog=0,
-                LFC_head_thorax:level_most_dist_ortholog=0
-                """
-               
-
-            test = smf.quantreg(formula=formula, data=filt_df).fit(q=0.5) # q=0.5 means we estimate the median
+ 
+                test = smf.quantreg(formula=formula, data=filt_df).fit(q=0.5) # q=0.5 means we estimate the median
+                print(test.summary())
             
-            ## test godness of fit without conservation rank
-            formula_simple = f"{partner}_dNdS ~ (LFC_abdomen + LFC_head_thorax + C(SB_abdomen) + C(SB_head_thorax)) * C(chromosome)"
-            test_simple = smf.quantreg(formula=formula_simple, data=filt_df).fit(q=0.5) # q=0.5 means we estimate the median
-            print(f"SSR with conservation rank: {test.ssr}")
-            print(f"SSR without conservation rank: {test_simple.ssr}")
-            
-            wald_test = test.wald_test(interactions_test_string, scalar = True)
-            print(f"wald test for all three-way interactions: {wald_test}")
-            print(test.summary())
-            print()
+                try:
+                    # test three-way interactions relevance with 
+                    interactions_test_string = """
+                    LFC_head_thorax:C(chromosome)[T.X]:level_most_dist_ortholog = 0,
+                    LFC_abdomen:C(chromosome)[T.X]:level_most_dist_ortholog = 0,
+                    C(SB_abdomen)[T.male]:C(chromosome)[T.X]:level_most_dist_ortholog = 0,
+                    C(SB_head_thorax)[T.male]:C(chromosome)[T.X]:level_most_dist_ortholog = 0
+                    """
+                    wald_test = test.wald_test(interactions_test_string, scalar = True)
+                    print(f"wald test for all three-way interactions: {wald_test}")
+                except:
+                    print("no Wald test could be performed")
 
-            model="lreg"
+                if "B_siliquastri" in partner:
+                    print(f"\n---------------> test without conservation rank to see if excluding it makes chromosome significant")
+                    # do one test without age rank to see if chromosome becomes significant to explain the results from the permutation test
+                    formula = f"{partner}_dNdS ~  C(chromosome)"
+                    test = smf.quantreg(formula=formula, data=filt_df).fit(q=0.5) # q=0.5 means we estimate the median
+                    print(test.summary())
+            print("\n")
 
-        else:
-            ### ordinary least-squasres does not have normal residuals!
-            formula = f"np.log({partner}_dNdS) ~ (LFC_abdomen + LFC_head_thorax) * C(chromosome) + level_most_dist_ortholog"
-            test = smf.ols(formula=formula, data=filt_df).fit(cov_type="HC3")
-            model = "OLS"
-            print(test.summary())
-            res = stats.normaltest(test.resid)
-            if False:
-                plt.scatter(x=test.fittedvalues, y=test.resid)
-                plt.axhline(0, color="red")
-                plt.ylabel("residuals")
-                plt.xlabel("fitted values")
-                plt.suptitle(f"C. maculatus and {partner} ")
-                plt.show()
-
-            ## GLM does not work well
-            formula = f"{partner}_dNdS ~ (LFC_abdomen + LFC_head_thorax) * C(chromosome) + level_most_dist_ortholog"
-            test = smf.glm(formula=formula,data=filt_df,family=sm.families.Gamma(link=sm.families.links.Log())).fit()
-            model = "GLM"
-            print(test.summary())
-            res = stats.normaltest(test.resid_response)
-
-            if False:
-                # plot residuals distribution
-                # test normal distribution of residuals
-                if res.pvalue <0.05:
-                    res_nom = f"{model} residuals NOT normally distributed"
-                else:
-                    res_nom = f"{model} residuals normally distributed!"
-                if model=="OLS":
-                    plt.hist(res)
-                    plt.suptitle(f"C. maculatus and {partner} dNdS {model} regression residuals:\n{res_nom}")
-                else:
-                    # here is the reason why GLM does not work well
-                    plt.scatter(test.fittedvalues, test.resid_deviance)
-                    plt.suptitle(f"C. maculatus and {partner} dNdS {model} regression\npredicted vs. observed values")
-                plt.show()
-
-            elif model == "OLS":
-                # test normal distribution of residuals
-                if res.pvalue <0.05:
-                    print(f"{model} residuals NOT normally distributed")
-                else:
-                    print(f"{model} residuals normally distributed!")
-
-        print()
     
 
 def statistical_analysis_pos_sel(full_table_paths_dict):
@@ -236,8 +187,9 @@ def statistical_analysis_pos_sel(full_table_paths_dict):
     A_df["chromosome"] = ["A"]*A_df.shape[0]
     df = pd.concat([A_df,X_df], ignore_index=True)
     df = df.rename(columns={'LFC_head+thorax': 'LFC_head_thorax'})
-    df["SB_abdomen"] = np.where(df["LFC_abdomen"] <= 0, "male", "female")
-    df["SB_head_thorax"] = np.where(df["LFC_head_thorax"] <= 0, "male", "female")
+    df = df.rename(columns={'FDR_pval_head+thorax': 'FDR_pval_head_thorax'})
+    df["SB_abdomen"] = df.apply(make_sex_bias_cat_row, axis=1, args=("abdomen",))
+    df["SB_head_thorax"] = df.apply(make_sex_bias_cat_row, axis=1, args=("head_thorax",))
     df["LFC_abdomen"] = abs(df["LFC_abdomen"])
     df["LFC_head_thorax"] = abs(df["LFC_head_thorax"])
 
@@ -248,70 +200,55 @@ def statistical_analysis_pos_sel(full_table_paths_dict):
         filt_df = filt_df[filt_df["positive_selection"].notna()]
         filt_df["positive_selection"] = filt_df["positive_selection"].map({False: 0, True: 1})
         
-        ## use wald-test to see if i can drop some interactions:
-        ## has three-way interaction --> nonsignificant in chinensis!
-        if False:
+        if True:
             formula = f"positive_selection ~ (LFC_abdomen + LFC_head_thorax + C(SB_abdomen) + C(SB_head_thorax)) * C(chromosome) * level_most_dist_ortholog"
+
+            # when adjusting to the same as contninuous dNdS -> remove LFC and merge significant and nonsignificant into one category where there are three factor levels
+
             # the syntax with the parentheses (LFC_abdomen + LFC_head_thorax) * C(chromosome) means this:
             # LFC_abdomen + LFC_head_thorax + C(chromosome) + LFC_abdomen:C(chromosome) + LFC_head_thorax:C(chromosome)
-            interactions_test_string = """
-            LFC_head_thorax:C(chromosome)[T.X]:level_most_dist_ortholog = 0,
-            LFC_abdomen:C(chromosome)[T.X]:level_most_dist_ortholog = 0,
-            C(SB_abdomen)[T.male]:C(chromosome)[T.X]:level_most_dist_ortholog = 0,
-            C(SB_head_thorax)[T.male]:C(chromosome)[T.X]:level_most_dist_ortholog = 0
-            """
-        else:
-            ## no three-way interactions and also no interactions between LFC and SB because i am pretty sure that would be useless
-            # formula = f"positive_selection ~ (LFC_abdomen + LFC_head_thorax + C(SB_abdomen) + C(SB_head_thorax) + C(chromosome) + level_most_dist_ortholog) ** 2"
-            
-            ## interactions with chromosome type -> nonsignificant!
-            if False:
-                formula = f"""
-                positive_selection ~ (LFC_abdomen + LFC_head_thorax + C(SB_abdomen) + C(SB_head_thorax)) 
-                + C(chromosome) + level_most_dist_ortholog 
-                + (LFC_abdomen + LFC_head_thorax + C(SB_abdomen) + C(SB_head_thorax)) : C(chromosome)
-                + (LFC_abdomen + LFC_head_thorax + C(SB_abdomen) + C(SB_head_thorax)) : level_most_dist_ortholog
-                """
-                interactions_test_string = """
-                C(SB_abdomen)[T.male]:C(chromosome)[T.X]=0,
-                C(SB_head_thorax)[T.male]:C(chromosome)[T.X]=0,
-                LFC_abdomen:C(chromosome)[T.X]=0,
-                LFC_head_thorax:C(chromosome)[T.X]=0
-                """
-            elif partner != "A_obtectus":    
-                formula = f"""
-                positive_selection ~ (LFC_abdomen + LFC_head_thorax + C(SB_abdomen) + C(SB_head_thorax)) 
-                + C(chromosome) + level_most_dist_ortholog 
-                + (LFC_abdomen + LFC_head_thorax + C(SB_abdomen) + C(SB_head_thorax)) : level_most_dist_ortholog
-                """
-                ## interactions with conservation rank -> significant in Cchi and Bsil!
-                interactions_test_string = """
-                C(SB_abdomen)[T.male]:level_most_dist_ortholog=0,
-                C(SB_head_thorax)[T.male]:level_most_dist_ortholog=0,
-                LFC_abdomen:level_most_dist_ortholog=0,
-                LFC_head_thorax:level_most_dist_ortholog=0
-                """
+            if "C_chinensis" in partner:
+                # only significantly sex-biased genes -> remove LFC
+                formula_a = f"positive_selection ~  C(SB_abdomen)  * C(chromosome) * level_most_dist_ortholog"
+                formula_ht = f"positive_selection ~  C(SB_head_thorax)  * C(chromosome) * level_most_dist_ortholog"
+                formula_no = f"positive_selection ~  C(chromosome) * level_most_dist_ortholog"
+                formula_nono = f"positive_selection ~  C(chromosome)"
+                
+                print(f"\n------------> abdomen")
+                test = smf.logit(formula=formula_a, data=filt_df).fit()
+                print(test.summary())
+                print(f"\n------------> head+thorax")
+                test = smf.logit(formula=formula_ht, data=filt_df).fit()
+                print(test.summary())
+                print(f"\n------------> no sex bias")
+                test = smf.logit(formula=formula_no, data=filt_df).fit()
+                print(test.summary())
+                print(f"\n------------> no conservation rank")
+                test = smf.logit(formula=formula_nono, data=filt_df).fit()
+                print(test.summary())
             else:
-                ## main factor conservation rank -> insignificant in Aobt!
-                formula = f"""
-                positive_selection ~ (LFC_abdomen + LFC_head_thorax + C(SB_abdomen) + C(SB_head_thorax)) 
-                + C(chromosome)
-                """
-                #  + level_most_dist_ortholog 
+                formula = f"positive_selection ~  C(chromosome) * level_most_dist_ortholog"
+                test = smf.logit(formula=formula, data=filt_df).fit()
+                print(test.summary())
+                
+                print(f"\n---------------> test without conservation rank to see if excluding it makes chromosome significant")
+                # do one test without age rank to see if chromosome becomes significant to explain the results from the permutation test
+                formula = f"positive_selection ~  C(chromosome)"
+                test = smf.logit(formula=formula, data=filt_df).fit()
+                print(test.summary())
+
+            try:
                 interactions_test_string = """
-                C(chromosome)[T.X]=0
+                LFC_head_thorax:C(chromosome)[T.X]:level_most_dist_ortholog = 0,
+                LFC_abdomen:C(chromosome)[T.X]:level_most_dist_ortholog = 0,
+                C(SB_abdomen)[T.male]:C(chromosome)[T.X]:level_most_dist_ortholog = 0,
+                C(SB_head_thorax)[T.male]:C(chromosome)[T.X]:level_most_dist_ortholog = 0
                 """
+                wald_test = test.wald_test(interactions_test_string, scalar = True)
+                print(f"wald test: {wald_test}")
+            except:
+                pass
 
-
-        test = smf.logit(formula=formula, data=filt_df).fit()
-
-        formula_simple = f"positive_selection ~ (LFC_abdomen + LFC_head_thorax) * C(chromosome)"
-        test_simple = smf.logit(formula=formula_simple, data=filt_df).fit()
-
-        wald_test = test.wald_test(interactions_test_string, scalar = True)
-        print(f"wald test: {wald_test}")
-
-        print(test.summary())
 
 
 
@@ -483,7 +420,7 @@ if __name__ == "__main__":
         ###################################################
         ## median quantile regression for dNdS as continuous response
         statistical_analysis_dNdS(full_tables_dict, table_outfile=f"")
-        compare_conservation_rank_proportions(full_tables_dict)
+        # compare_conservation_rank_proportions(full_tables_dict)
         ###################################################
 
     if True:
