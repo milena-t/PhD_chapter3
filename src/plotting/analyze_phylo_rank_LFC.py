@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import FuncFormatter
 import numpy as np
 from statsmodels.miscmodels.ordinal_model import OrderedModel
-from sklearn.linear_model import QuantileRegressor
+import patsy
 import statsmodels.formula.api as smf
 from plot_basic_DE_stuff import get_summary_paths
 
@@ -232,40 +232,38 @@ def make_category_proportion_plot(rank_summary_path_A:str, rank_summary_path_X:s
 
 
 
-def make_log_reg_table(rank_summary_path_A, rank_summary_path_X):
-    """
-    make one table of A and X with the columns:
-    * conservation rank
-    * female biased (bin)
-    * unbiased (bin)
-    * male based (bin)
-    * chromosome (A/X)
-    """
-    X_df = pd.read_csv(rank_summary_path_X, sep="\t")
-    A_df = pd.read_csv(rank_summary_path_A, sep="\t")
-    # add columns for chromosome cat
+def make_log_reg_table(full_table_paths_dict):
+
+    X_df = pd.read_csv(full_table_paths_dict["X"], sep="\t")
+    A_df = pd.read_csv(full_table_paths_dict["A"], sep="\t")
     X_df["chromosome"] = ["X"]*X_df.shape[0]
     A_df["chromosome"] = ["A"]*A_df.shape[0]
 
     df = pd.concat([A_df,X_df], ignore_index=True)
-    print(df)
+    df = df.rename(columns={'LFC_head+thorax': 'LFC_head_thorax'})
+    df = df.rename(columns={'FDR_pval_head+thorax': 'FDR_pval_head_thorax'})
 
-    ### ordinal logistic regression
-    df['interaction'] = df['conservation_rank'] * df['chromosome']
-    explanatory = df[['interaction','conservation_rank','chromosome']]
-    response_abdomen = df['abdomen_sex_bias_category']
-    response_head_thorax = df['head_thorax_sex_bias_category']
+    df["SB_abdomen"] = df.apply(make_sex_bias_cat_row_numeric, axis=1, args=("abdomen",))
+    df["SB_head_thorax"] = df.apply(make_sex_bias_cat_row_numeric, axis=1, args=("head_thorax",))
+    df["LFC_abdomen"] = abs(df["LFC_abdomen"])
+    df["LFC_head_thorax"] = abs(df["LFC_head_thorax"])
+
+    # specify formula
+    formula_a = f"SB_abdomen ~ C(chromosome) * level_most_dist_ortholog"# * LFC_abdomen"
+    formula_ht = f"SB_head_thorax ~ C(chromosome) * level_most_dist_ortholog"# * LFC_head_thorax"
+    y_a, X_a = patsy.dmatrices(formula_a,data=df,return_type="dataframe")
+    y_ht, X_ht = patsy.dmatrices(formula_ht,data=df,return_type="dataframe")
+    X_a = X_a.drop(columns="Intercept")
+    X_ht = X_ht.drop(columns="Intercept")
 
     print(f"\n////////////////// ABDOMEN //////////////////")
-    model = OrderedModel(response_abdomen, explanatory, distr='logit')
-    result = model.fit(method='bfgs', disp=False)
-    print(result.summary())
+    model = OrderedModel(y_a.iloc[:,0], X_a, distr='logit').fit(method='bfgs', disp=False)
+    print(model.summary())
 
 
     print(f"\n////////////////// HEAD+THORAX //////////////////")
-    model = OrderedModel(response_head_thorax, explanatory, distr='logit')
-    result = model.fit(method='bfgs', disp=False)
-    print(result.summary())
+    model = OrderedModel(y_ht.iloc[:,0], X_ht, distr='logit').fit(method='bfgs', disp=False)
+    print(model.summary())
 
 ############################
 
@@ -487,6 +485,21 @@ def make_sex_bias_cat_row(row, tissue = "abdomen"):
     else:
         return "unbiased"
 
+
+def make_sex_bias_cat_row_numeric(row, tissue = "abdomen"):
+    if row[f"LFC_{tissue}"] < 1:
+        if row[f"FDR_pval_{tissue}"]<0.05:
+            return -1
+        else:
+            return 0
+    elif row[f"LFC_{tissue}"] >1:
+        if row[f"FDR_pval_{tissue}"]<0.05:
+            return 1
+        else:
+            return 0
+    else:
+        return 0
+
 def logFC_quantile_regression(summary_table_path:str, p_val_threshold= 0.05, sep_MF=True, abs_LFC=False):
     X_df = pd.read_csv(summary_table_path["X"], sep = "\t", index_col=False)
     A_df = pd.read_csv(summary_table_path["A"], sep = "\t", index_col=False)
@@ -577,7 +590,7 @@ if __name__ == "__main__":
 
     table_paths_dict = get_full_table_path(username=username)
 
-    if False:
+    if True:
         ### statistical analysis of sex-bias categories 
         summary_table_paths = {}
         for chromosome, path in table_paths_dict.items():
@@ -588,17 +601,16 @@ if __name__ == "__main__":
             # make_rank_summary_table(path, outfile_path=outfile_path, min_LFC=1, p_threshold=0.05)
             summary_table_paths[chromosome] = outfile_path
 
-
-        plot_outfile_name=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/DE_conservation_rank_proportions.png"
-        make_category_proportion_plot(rank_summary_path_A=summary_table_paths["A"], 
-                                  rank_summary_path_X=summary_table_paths["X"],
-                                  outfile=plot_outfile_name)
-
-        ### statistical analysis with logistic regression for binary categories of female/male or unbiased
-        make_log_reg_table(rank_summary_path_A=summary_table_paths["A"], 
-                        rank_summary_path_X=summary_table_paths["X"])
+        if False:
+            plot_outfile_name=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/DE_conservation_rank_proportions.png"
+            make_category_proportion_plot(rank_summary_path_A=summary_table_paths["A"], 
+                                      rank_summary_path_X=summary_table_paths["X"],
+                                      outfile=plot_outfile_name)
+        else:
+            ### statistical analysis with logistic regression for binary categories of female/male or unbiased
+            make_log_reg_table(full_table_paths_dict = table_paths_dict)
     
-    if True:
+    else:
         ### statistical analysis of continuous log2FC values
         summary_paths = get_summary_paths(username=username)
         abs_logFC = True
