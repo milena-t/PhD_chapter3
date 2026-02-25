@@ -410,6 +410,200 @@ def compare_conservation_rank_proportions(summary_paths_AX):
 
 
 
+def make_phylogeny_rank_nested_dict(summary_file_df, tissue, max_dNdS=2):
+    """
+    make a dict with rank orders like 
+    { 1 : {
+        "A" : { "male" : [list, of, dNdS, numbers] ,
+                "female" : [more, dNdS, numbers] , 
+                "unbiased" : [...] },
+        "X" : { "male" : [list, of, dNdS, numbers] ,
+                "female" : [more, dNdS, numbers] , 
+                "unbiased" : [...] },
+        },
+      2 : { ... },
+    ...
+    }
+    """
+
+    summary_file_df["dN/dS"] = pd.to_numeric(summary_file_df["dN/dS"], errors='coerce')
+    filtered_df = summary_file_df.dropna(subset="dN/dS")
+    if max_dNdS>0:
+        filtered_df = filtered_df[filtered_df["dN/dS"] < max_dNdS]
+    
+    dNdS_dict = {
+    i: { "A": {"male": [], "female": [], "unbiased": []},
+         "X": {"male": [], "female": [], "unbiased": []} }
+    for i in range(1, 6)}
+
+    for p_rank, SB_cat, dNdS, chr  in zip(filtered_df["level_most_dist_ortholog"], filtered_df[f"SB_{tissue}"],filtered_df["dN/dS"],filtered_df["chromosome"]):
+        dNdS_dict[p_rank][chr][SB_cat].append(dNdS)
+
+    return dNdS_dict
+
+
+def boxplot_dNdS(full_table_paths_dict, outfile, maxdNdS=2, partner_species="C_chinensis"):
+
+    X_df = pd.read_csv(full_table_paths_dict["X"], sep="\t")
+    A_df = pd.read_csv(full_table_paths_dict["A"], sep="\t")
+    X_df["chromosome"] = ["X"]*X_df.shape[0]
+    A_df["chromosome"] = ["A"]*A_df.shape[0]
+    df = pd.concat([A_df,X_df], ignore_index=True)
+    df = df.rename(columns={'LFC_head+thorax': 'LFC_head_thorax'})
+    df = df.rename(columns={'FDR_pval_head+thorax': 'FDR_pval_head_thorax'})
+    df["SB_abdomen"] = df.apply(make_sex_bias_cat_row, axis=1, args=("abdomen",))
+    df["SB_head_thorax"] = df.apply(make_sex_bias_cat_row, axis=1, args=("head_thorax",))
+    df = df[df["other_species"]==partner_species]
+
+    nested_vals_dict_a = make_phylogeny_rank_nested_dict(df, tissue="abdomen", max_dNdS=maxdNdS)
+    nested_vals_dict_ht = make_phylogeny_rank_nested_dict(df, tissue="head_thorax", max_dNdS=maxdNdS)
+
+    
+    y_label = f"dNdS"
+    if maxdNdS>0:
+        y_label = f"dNdS (max. < {maxdNdS})"
+    
+    fs = 30 # font size
+
+    # set figure aspect ratio
+    aspect_ratio = 12 / 8
+    height_pixels = 1000  # Height in pixels
+    width_pixels = int(height_pixels * aspect_ratio)  # Width in pixels
+
+    def plot_dNdS_subplot(AX_dicts, fs, title, colors_dict, lw=2, outfile = "plot.png"):
+
+        fig, ax = plt.subplots(figsize=(width_pixels / 100, height_pixels / 100), dpi=100)
+        SB_order_list =["male","unbiased","female"]
+        
+        color_faces = []
+        color_edges = []
+        color_medians = []
+
+        for SB_cat in SB_order_list:
+            color_faces.append(colors[SB_cat]["fill"])
+            color_edges.append(colors[SB_cat]["edge"])
+            color_medians.append(colors[SB_cat]["medians"])
+        
+        ## make tick labels in the same order as the box plot lists to be sure that everyting is right
+        tick_labels = []
+        AX_lists = []
+        print(f"{title}")
+        for i in range(1,6): # hard-code rank order. dicts are ordered so it should be right by default but just to be sure
+            chr_dict = AX_dicts[i]
+            print(f"rank {i}")
+            for chr in ["A","X"]:
+                print(f"\t - {chr}")
+                SB_dict = chr_dict[chr]
+                for SB_cat in SB_order_list:
+
+                    ### to double check plot coloring and stuff right: plot verbose tick labels!
+                    # num_genes =f"({len(SB_dict[SB_cat])}):{chr}:{SB_cat}"
+                    ### 
+
+                    num_genes =f"({len(SB_dict[SB_cat])})"
+                    print(f"\t\t - {SB_cat} has {num_genes} genes")
+                    tick_labels.append(num_genes)
+                    AX_lists.append(SB_dict[SB_cat])
+
+        ## make tick positions so that the groups of three within each chromosome are closer together
+        tick_pos = [i for i in range(1,len(tick_labels)+1)]
+        box_width = 1/5
+        pos_adjust=box_width*1.3
+        for i in range(len(tick_labels)):
+            if i%3 == 0:
+                tick_pos[i] =1+ i//3 +pos_adjust
+            if i%3 == 1:
+                tick_pos[i] =1+ i//3 
+            if i%3 == 2:
+                tick_pos[i] =1+ i//3 -pos_adjust
+        #print(tick_pos, len(tick_pos))
+        
+        bp = ax.boxplot(AX_lists, positions=tick_pos, widths=box_width, patch_artist=True)
+
+        # set axis labels
+        tick_fs_factor = 0.7
+        ax.set_xticks(ticks = tick_pos, labels = tick_labels, fontsize=fs*tick_fs_factor)#, rotation=45, ha='right')
+        ax.tick_params(axis='x', labelsize=fs*tick_fs_factor, rotation = 90)
+        ax.tick_params(axis='y', labelsize=fs*0.9)
+        ax.set_title(title, fontsize=fs)
+        ax.set_xlim(min(tick_pos)-pos_adjust, max(tick_pos)+pos_adjust)
+
+        ## plot rank labels
+        fs_factor=1.5
+        ax2 = ax.secondary_xaxis('bottom')
+        ax2.set_xticks([i+0.5 for i in range(1,10,2)])
+        ax2.set_xticklabels([i for i in range(1,6)], fontsize=fs*fs_factor)
+        ax2.spines['bottom'].set_position(('outward', 120))   
+        ax2.xaxis.set_ticks_position('none')
+        ax2.spines['bottom'].set_visible(False)
+        ax2.tick_params(axis='x', labelsize=fs*fs_factor)
+
+        ## plot chromosome categories
+        ax3 = ax.secondary_xaxis('bottom')
+        ax3.set_xticks([i for i in range(1,11)])
+        ax3.set_xticklabels(["A" if i%2==1 else "X" for i in range(1,11)], fontsize=fs)
+        ax3.spines['bottom'].set_position(('outward', 80))   
+        ax3.xaxis.set_ticks_position('none')
+        ax3.spines['bottom'].set_visible(False)
+        ax3.tick_params(axis='x', labelsize=fs)
+
+        ## highlight X-chromosomes
+        for i in range(1,11):
+            if i % 2 == 0:  # only the X-sections
+                left = i-box_width-pos_adjust
+                right = i+box_width+pos_adjust
+                ax.axvspan(left, right, color="lightgrey", alpha=0.3, linewidth = 0)
+
+        ## make fancy colors for the boxplot
+        if True:
+            for i, box in enumerate(bp["boxes"]):
+                box.set(facecolor=color_faces[i % 3], edgecolor=color_edges[i % 3], linewidth = lw)
+            for i, median in enumerate(bp['medians']):
+                median.set(color=color_medians[i % 3], linewidth=lw)
+            for i, whisker in enumerate(bp['whiskers']):
+                whisker.set(color = color_edges[i//2 % 3], linewidth = lw, linestyle='-')
+            for i, cap in enumerate(bp['caps']):
+                cap.set(color = color_edges[i//2 % 3], linewidth = lw)
+            for i, flier in enumerate(bp['fliers']):
+                flier.set(markerfacecolor=color_edges[i % 3], markeredgecolor=color_edges[i % 3], linewidth = lw, marker='.')
+
+        fig.supxlabel(f"conservation rank, chromosome location, and (number of genes)", fontsize = fs)
+        fig.supylabel(y_label, fontsize = fs, x=0.0, y=0.625)
+
+        # layout (left, bottom, right, top)
+        plt.tight_layout(rect=[0.0, 0.05, 1, 1])
+
+        # transparent background
+        plt.savefig(outfile, dpi = 300, transparent = True)
+        # non-transparent background
+        filename_tr = outfile.replace(".png", "_white_bg.png")
+        plt.savefig(filename_tr, dpi = 300, transparent = False)
+        print(f"plot saved in current working directory as: {outfile} and {filename_tr}")
+
+    colors = {
+        "male" : {
+            "fill" : "#495E83", # dusk blue
+            "edge" : "#374C6E", # dusk blue darker
+            "medians" : "#A7CCED", # icy blue
+        },
+        "female" : {
+            "fill" : "#AB354A", # cherry rose
+            "edge" : "#771C2C", # dark amaranth
+            "medians" : "#EA9AA9", # cotton candy
+        },
+        "unbiased" : {
+            "fill" : "#816874", # dusty mauve
+            "edge" : "#5B414E", # mauve shadow
+            "medians" : "#C3A7B5" # lilac ash
+        }
+    }
+
+
+    plot_dNdS_subplot(AX_dicts=nested_vals_dict_a, outfile=outfile.replace(".png", f"_abdomen.png"), 
+        title="dN/dS by sex bias for abdominal tissue", colors_dict=colors, fs=fs)
+    plot_dNdS_subplot(AX_dicts=nested_vals_dict_ht,outfile=outfile.replace(".png", f"_head_thorax.png"), 
+        title="dN/dS by sex bias for head+thorax tissue", colors_dict=colors, fs=fs)
+
 if __name__ == "__main__":
 
     username = "miltr339"
@@ -425,12 +619,19 @@ if __name__ == "__main__":
 
     if True:
         ###################################################
+        filename=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/dNdS_vs_conservation_rank_boxplot.png"
+        boxplot_dNdS(full_tables_dict, outfile=filename)
+        ###################################################
+
+
+    if False:
+        ###################################################
         ## logistic regression for categorical response (positive selection True/False)
         statistical_analysis_pos_sel(full_table_paths_dict=full_tables_dict)
         ###################################################
 
     if False:
         ###################################################
-        ## plotting 
+        ## scatterplots dNdS vs logFC 
         filename=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/dNdS_vs_conservation_rank.png"
         plot_dNdS_rank_conserved(summary_paths_AX_list= full_tables_dict, outfile = filename, maxdNdS = 0)
