@@ -270,7 +270,7 @@ def make_log_reg_table(rank_summary_path_A, rank_summary_path_X):
 ############################
 
 
-def make_phylogeny_rank_dict(summary_file_df, min_p):
+def make_phylogeny_rank_dict(summary_file_df, min_p, min_LFC):
     """
     make a dict with rank orders like { 1 : [list, of, Log2FC, numbers] ,  2 [more, log2FC, numbers] , ... }
     """
@@ -286,10 +286,10 @@ def make_phylogeny_rank_dict(summary_file_df, min_p):
             LFC_dict_head_thorax[p_rank].append(log2FC_val)
     else:
         for p_rank, log2FC_val,pval  in zip(filtered_df["level_most_dist_ortholog"], filtered_df["LFC_abdomen"], filtered_df["FDR_pval_abdomen"]):
-            if pval<min_p:
+            if pval<min_p and abs(log2FC_val)>min_LFC:
                 LFC_dict_abdomen[p_rank].append(log2FC_val)
         for p_rank, log2FC_val,pval  in zip(filtered_df["level_most_dist_ortholog"], filtered_df["LFC_head+thorax"], filtered_df["FDR_pval_head+thorax"]):
-            if pval<min_p:
+            if pval<min_p and abs(log2FC_val)>min_LFC:
                 LFC_dict_head_thorax[p_rank].append(log2FC_val)
 
     return LFC_dict_abdomen, LFC_dict_head_thorax
@@ -305,8 +305,13 @@ def check_DE_phylogeny_rank_conserved(summary_paths_AX_list:dict, outfile = "", 
     summary_data_A = pd.read_csv(summary_paths_AX_list["A"], sep = "\t", index_col=False)
     summary_data_X = pd.read_csv(summary_paths_AX_list["X"], sep = "\t", index_col=False)
 
-    LFC_dict_abdomen_A, LFC_dict_head_thorax_A = make_phylogeny_rank_dict(summary_data_A, min_p = sig_p_threshold)
-    LFC_dict_abdomen_X, LFC_dict_head_thorax_X = make_phylogeny_rank_dict(summary_data_X, min_p = sig_p_threshold)
+    if sig_p_threshold >0:
+        min_LFC = 1
+    else:
+        min_LFC = 0
+
+    LFC_dict_abdomen_A, LFC_dict_head_thorax_A = make_phylogeny_rank_dict(summary_data_A, min_p = sig_p_threshold, min_LFC = min_LFC)
+    LFC_dict_abdomen_X, LFC_dict_head_thorax_X = make_phylogeny_rank_dict(summary_data_X, min_p = sig_p_threshold, min_LFC = min_LFC)
 
     if abs_LFC and sep_MF==False:
         LFC_lists_abdomen_A = [[abs(val) for val in vals_list] for vals_list in LFC_dict_abdomen_A.values()]
@@ -324,7 +329,7 @@ def check_DE_phylogeny_rank_conserved(summary_paths_AX_list:dict, outfile = "", 
         y_label = f"|log2FC|"
     
     if sig_p_threshold>0:
-        y_label = f"{y_label}, p<{sig_p_threshold}"
+        y_label = f"{y_label} of sig DE genes (p<{sig_p_threshold}, |log2FC|>{min_LFC})"
 
     #### plot 2x2 boxplots
     
@@ -390,6 +395,7 @@ def check_DE_phylogeny_rank_conserved(summary_paths_AX_list:dict, outfile = "", 
         ax[row,col].tick_params(axis='x', labelsize=fs*tick_fs_factor)#, rotation = 90)
         ax[row,col].tick_params(axis='y', labelsize=fs*0.9)
         ax[row,col].set_title(title, fontsize=fs)
+        ax[row,col].set_ylim(0,16)
 
         ax2 = ax[row,col].secondary_xaxis('bottom')
         ax2.set_xticks([i+0.5 for i in range(1,10,2)])
@@ -467,6 +473,20 @@ def check_DE_phylogeny_rank_conserved(summary_paths_AX_list:dict, outfile = "", 
     print(f"plot saved in current working directory as: {outfile} and {filename_tr}")
 
 
+def make_sex_bias_cat_row(row, tissue = "abdomen"):
+    if row[f"LFC_{tissue}"] < 1:
+        if row[f"FDR_pval_{tissue}"]<0.05:
+            return "male"
+        else:
+            return "unbiased"
+    elif row[f"LFC_{tissue}"] >1:
+        if row[f"FDR_pval_{tissue}"]<0.05:
+            return "female"
+        else:
+            return "unbiased"
+    else:
+        return "unbiased"
+
 def logFC_quantile_regression(summary_table_path:str, p_val_threshold= 0.05, sep_MF=True, abs_LFC=False):
     X_df = pd.read_csv(summary_table_path["X"], sep = "\t", index_col=False)
     A_df = pd.read_csv(summary_table_path["A"], sep = "\t", index_col=False)
@@ -499,6 +519,7 @@ def logFC_quantile_regression(summary_table_path:str, p_val_threshold= 0.05, sep
         ## head_thorax 
         if p_val_threshold >0:
             df = df_all[df_all["FDR_pval_head+thorax"]<p_val_threshold]
+            df = df[df["LFC_head+thorax"]>1 or df["LFC_head+thorax"]<1]
         else:
             df = df_all
 
@@ -509,43 +530,46 @@ def logFC_quantile_regression(summary_table_path:str, p_val_threshold= 0.05, sep
         df_f = df[df["LFC_head_thorax"]>0]
         df_m = df[df["LFC_head_thorax"]<0]
         
-        model_ht_f = smf.quantreg("LFC_head_thorax ~ level_most_dist_ortholog * C(chromosome)", df_f)
+        model_ht_f = smf.quantreg("LFC_head_thorax ~ level_most_dist_ortholog * C(chromosome)", df_f).fit(q=0.5) # q=0.5 means we estimate the median
         if abs_LFC:
             df_m["LFC_head_thorax_abs"] = df_m["LFC_head_thorax"]*-1 # make all vals positive so that the coefficients are comparable
-            model_ht_m = smf.quantreg("LFC_head_thorax_abs ~ level_most_dist_ortholog * C(chromosome)", df_m)
+            model_ht_m = smf.quantreg("LFC_head_thorax_abs ~ level_most_dist_ortholog * C(chromosome)", df_m).fit(q=0.5) # q=0.5 means we estimate the median
         else:
-            model_ht_m = smf.quantreg("LFC_head_thorax ~ level_most_dist_ortholog * C(chromosome)", df_m)
-        result_ht_f = model_ht_f.fit(q=0.5) # q=0.5 means we estimate the median
-        result_ht_m = model_ht_m.fit(q=0.5) # q=0.5 means we estimate the median
+            model_ht_m = smf.quantreg("LFC_head_thorax ~ level_most_dist_ortholog * C(chromosome)", df_m).fit(q=0.5) # q=0.5 means we estimate the median
         print(f"\n\n////////////////// HEAD+THORAX -- FEMALE-BIASED //////////////////")
-        print(result_ht_f.summary())
+        print(model_ht_f.summary())
         print(f"\n////////////////// HEAD+THORAX -- MALE-BIASED //////////////////")
-        print(result_ht_m.summary())
+        print(model_ht_m.summary())
 
     else:
+        df_all = df_all.rename(columns={'LFC_head+thorax': 'LFC_head_thorax'})
+        df_all = df_all.rename(columns={'FDR_pval_head+thorax': 'FDR_pval_head_thorax'})
+        df_all["SB_abdomen"] = df_all.apply(make_sex_bias_cat_row, axis=1, args=("abdomen",))
+        df_all["SB_head_thorax"] = df_all.apply(make_sex_bias_cat_row, axis=1, args=("head_thorax",))
+
         ## abdominal df
         if p_val_threshold >0:
             df = df_all[df_all["FDR_pval_abdomen"]<p_val_threshold]
+            df = df[(df["LFC_abdomen"]>1) | (df["LFC_abdomen"]<1)]
         else:
             df = df_all
-        # model_a = smf.quantreg("LFC_abdomen ~ C(level_most_dist_ortholog) * C(chromosome)", df)
-        model_a = smf.quantreg("LFC_abdomen ~ level_most_dist_ortholog * C(chromosome)", df)
-        result_a = model_a.fit(q=0.5)
+
+        formula = "LFC_abdomen ~ level_most_dist_ortholog * C(SB_abdomen) * C(chromosome)"
+        model_a = smf.quantreg(formula=formula, data=df).fit(q=0.5)
         print(f"\n////////////////// ABDOMEN //////////////////")
-        print(result_a.summary())
+        print(model_a.summary())
 
         ## head_thorax 
         if p_val_threshold >0:
-            df = df_all[df_all["FDR_pval_head+thorax"]<p_val_threshold]
+            df = df_all[df_all["FDR_pval_head_thorax"]<p_val_threshold]
+            df = df[(df["LFC_head_thorax"]>1) | (df["LFC_head_thorax"]<1)]
         else:
             df = df_all
-        ## rename the head thorax column because this does not play well with the formula specification
-        df = df.rename(columns={'LFC_head+thorax': 'LFC_head_thorax'})
-        # model_ht = smf.quantreg("LFC_head_thorax ~ C(level_most_dist_ortholog) * C(chromosome)", df)
-        model_ht = smf.quantreg("LFC_head_thorax ~ level_most_dist_ortholog * C(chromosome)", df)
-        result_ht = model_ht.fit(q=0.5)
+
+        formula = "LFC_head_thorax ~ level_most_dist_ortholog * C(SB_head_thorax) * C(chromosome)"
+        model_ht = smf.quantreg(formula=formula, data= df).fit(q=0.5)
         print(f"\n////////////////// HEAD+THORAX //////////////////")
-        print(result_ht.summary())
+        print(model_ht.summary())
 
 
 if __name__ == "__main__":
@@ -588,4 +612,5 @@ if __name__ == "__main__":
                 abs_LFC=abs_logFC, sig_p_threshold=0.05)
         else:
             ## statistical analysis
-            logFC_quantile_regression(summary_paths, abs_LFC=abs_logFC, p_val_threshold=0)
+            # logFC_quantile_regression(summary_paths, abs_LFC=abs_logFC, p_val_threshold=0.05, sep_MF=False)
+            logFC_quantile_regression(summary_paths, abs_LFC=abs_logFC, p_val_threshold=0.05, sep_MF=False)

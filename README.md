@@ -777,61 +777,47 @@ All exp. variables and their interaction are significant.
 When only looking at the expression of significantly sex biased genes we can see that the magnitude of sex bias decreases with age.
 
 <p float="left">
-  <img src="data/DE_analysis/conservation_rank_all_sex_bias_proportion_white_bg.png" width="100%" />
+  <img src="data/DE_analysis/conservation_rank_sig_sex_bias_proportion_white_bg.png" width="100%" />
 </p>
 
 
 #### median quantile expression test
 
-I specified the model like `LFC ~ level_most_dist_ortholog * C(chromosome)` with one model for abdomen LFC and one for head+thorax, where chromosome is a categorical variable, and level_most_dist_ortholog is treated as discrete numerical. I test male and female bias seperately, and it is always absolute Log2FC values, so that the male value is positive as well. The model was run using `statsmodels.formula.api.quantreg()`.
+I want to investigate if the magnitude of significant sex-bias is influenced by the chromosome linkage or the conservation rank. I separate the analysis for abdomen and head+thorax tissue, and I specify this formula `abs(LFC) ~ level_most_dist_ortholog * C(SB) * C(chromosome)` with LFC being the absolute continuous log2FC, and SB being the significance category (male/unbiased/female, but there is no unbiased data in the significantly differentially expressed genes so it is excluded here. for a model including all genes this would become a three-level factor).
 
-Mind that the tests are split differently than the plot above! the tests are tissue x sex-bias, and the plot is tissue x chromosome!
-
-```text
-////////////////// ABDOMEN -- FEMALE-BIASED //////////////////
-===============================================================================================================
-                                                  coef    std err          t      P>|t|      [0.025      0.975]
----------------------------------------------------------------------------------------------------------------
-Intercept                                       2.2544      0.096     23.546      0.000       2.067       2.442
-C(chromosome)[T.1]                              2.5838      0.607      4.256      0.000       1.394       3.774
-level_most_dist_ortholog                       -0.2723      0.021    -13.268      0.000      -0.313      -0.232
-level_most_dist_ortholog:C(chromosome)[T.1]    -0.5404      0.127     -4.261      0.000      -0.789      -0.292
-===============================================================================================================
-
-////////////////// ABDOMEN -- MALE-BIASED //////////////////
-===============================================================================================================
-                                                  coef    std err          t      P>|t|      [0.025      0.975]
----------------------------------------------------------------------------------------------------------------
-Intercept                                       4.0283      0.092     43.919      0.000       3.848       4.208
-C(chromosome)[T.1]                             -0.0035      0.766     -0.005      0.996      -1.504       1.497
-level_most_dist_ortholog                       -0.6368      0.021    -30.190      0.000      -0.678      -0.595
-level_most_dist_ortholog:C(chromosome)[T.1]    -0.0183      0.160     -0.114      0.909      -0.332       0.295
-===============================================================================================================
-```
-The trend in expression change is significant for the conservation rank, it decreases with age. in Female-biased genes there is also a significant difference between X-linked and autosomal genes, as well as their interaction with conservation rank. In male-biased genes the chromosome linkage does not make a difference for the expression change with conservation level.
+Everything, including all interactions is strongly significant for abdominal data, for head+thorax the three-way interaction `level_most_dist_ortholog:C(SB_head_thorax)[T.male]:C(chromosome)[T.X]` becomes nonsignificant and the two-way interaction `C(SB_head_thorax)[T.male]:C(chromosome)[T.X]` is borderline. generally everything is very significant though.
 
 ```text
-////////////////// HEAD+THORAX -- FEMALE-BIASED //////////////////
-===============================================================================================================
-                                                  coef    std err          t      P>|t|      [0.025      0.975]
----------------------------------------------------------------------------------------------------------------
-Intercept                                       0.9944      0.046     21.656      0.000       0.904       1.084
-C(chromosome)[T.1]                              0.8333      0.290      2.870      0.004       0.264       1.403
-level_most_dist_ortholog                       -0.1348      0.010    -13.473      0.000      -0.154      -0.115
-level_most_dist_ortholog:C(chromosome)[T.1]    -0.1867      0.061     -3.049      0.002      -0.307      -0.067
-===============================================================================================================
-
-////////////////// HEAD+THORAX -- MALE-BIASED //////////////////
-===============================================================================================================
-                                                  coef    std err          t      P>|t|      [0.025      0.975]
----------------------------------------------------------------------------------------------------------------
-Intercept                                       1.5451      0.033     46.318      0.000       1.480       1.610
-C(chromosome)[T.1]                             -0.7290      0.294     -2.477      0.013      -1.306      -0.152
-level_most_dist_ortholog                       -0.2395      0.007    -32.045      0.000      -0.254      -0.225
-level_most_dist_ortholog:C(chromosome)[T.1]     0.1481      0.061      2.428      0.015       0.029       0.268
-===============================================================================================================
+////////////////// ABDOMEN //////////////////
+=====================================================================================================================================
+                                                                        coef    std err          t      P>|t|      [0.025      0.975]
+-------------------------------------------------------------------------------------------------------------------------------------
+Intercept                                                             3.7188      0.042     88.462      0.000       3.636       3.801
+C(SB_abdomen)[T.male]                                                -2.9777      0.104    -28.757      0.000      -3.181      -2.775
+C(chromosome)[T.X]                                                    1.9753      0.326      6.062      0.000       1.337       2.614
+C(SB_abdomen)[T.male]:C(chromosome)[T.X]                             -1.9827      0.664     -2.986      0.003      -3.284      -0.681
+level_most_dist_ortholog                                             -0.4066      0.010    -41.828      0.000      -0.426      -0.388
+level_most_dist_ortholog:C(SB_abdomen)[T.male]                        0.3816      0.022     17.192      0.000       0.338       0.425
+level_most_dist_ortholog:C(chromosome)[T.X]                          -0.3734      0.070     -5.347      0.000      -0.510      -0.236
+level_most_dist_ortholog:C(SB_abdomen)[T.male]:C(chromosome)[T.X]     0.3721      0.138      2.701      0.007       0.102       0.642
+=====================================================================================================================================```
 ```
-All significant: expression depends on both X or A-linkage as well as conservation rank and their interaction. mind the missing data and low sample size esp. for X-linked genes though, see plot.
+
+```text
+////////////////// HEAD+THORAX //////////////////
+=========================================================================================================================================
+                                                                            coef    std err          t      P>|t|      [0.025      0.975]
+-----------------------------------------------------------------------------------------------------------------------------------------
+Intercept                                                                 5.2074      0.041    126.773      0.000       5.127       5.288
+C(SB_head_thorax)[T.male]                                                -4.3702      0.065    -67.609      0.000      -4.497      -4.243
+C(chromosome)[T.X]                                                       -1.0880      0.388     -2.805      0.005      -1.848      -0.328
+C(SB_head_thorax)[T.male]:C(chromosome)[T.X]                              1.0033      0.514      1.953      0.051      -0.004       2.011
+level_most_dist_ortholog                                                 -0.7501      0.010    -74.462      0.000      -0.770      -0.730
+level_most_dist_ortholog:C(SB_head_thorax)[T.male]                        0.6841      0.015     46.480      0.000       0.655       0.713
+level_most_dist_ortholog:C(chromosome)[T.X]                               0.1990      0.084      2.363      0.018       0.034       0.364
+level_most_dist_ortholog:C(SB_head_thorax)[T.male]:C(chromosome)[T.X]    -0.1835      0.109     -1.683      0.092      -0.397       0.030
+=========================================================================================================================================```
+```
 
 
 ## combining sex-biased expression with molecular rate and positive selection
@@ -1093,7 +1079,6 @@ C(chromosome)[T.X]     0.7266      0.189      3.844      0.000       0.356      
 
 
 # old analysis with *Diorhaba*
-
 
 I had previously included another pair of sister species: *D.sublineata* and *D. carinulata*. I suspect that *D. carinulata* has a misidentified X chromosome, which leaves it only three X-linked 1-to-1 orthologs between them. I looked into it a bit here, in case it is X turnover. I would need actual lab evidence to conclude that though I think, since the X is so conserved in all the other *Coleoptera* I have here, and I would need coverage or PCR evidence to be sure that the X-identified contig in *D. carinulata* is right.
 
