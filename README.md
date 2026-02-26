@@ -821,37 +821,37 @@ I am using `quantreg` again, like for the log2FC again, where ! have a continuou
 ```test
 ////////////////// C_chinensis: abdomen //////////////////
 =========================================================================================================================================
-                                                                            coef    std err          t      P>|t|      [0.025      0.975]
+                                                                              coef    std err          t      P>|t|      [0.025      0.975]
 -----------------------------------------------------------------------------------------------------------------------------------------
-* Intercept                                                                 0.3330      0.012     28.090      0.000       0.310       0.356
-* C(SB_abdomen)[T.male]                                                    -0.0611      0.014     -4.494      0.000      -0.088      -0.034
-* C(SB_abdomen)[T.unbiased]                                                -0.0309      0.014     -2.199      0.028      -0.058      -0.003
-* C(chromosome)[T.X]                                                        0.3308      0.089      3.722      0.000       0.157       0.505
-* C(SB_abdomen)[T.male]:C(chromosome)[T.X]                                 -0.5000      0.107     -4.684      0.000      -0.709      -0.291
-* C(SB_abdomen)[T.unbiased]:C(chromosome)[T.X]                             -0.2858      0.116     -2.464      0.014      -0.513      -0.058
-* level_most_dist_ortholog                                                 -0.0514      0.003    -20.019      0.000      -0.056      -0.046
-* C(SB_abdomen)[T.male]:level_most_dist_ortholog                            0.0091      0.003      3.070      0.002       0.003       0.015
-  C(SB_abdomen)[T.unbiased]:level_most_dist_ortholog                        0.0027      0.003      0.888      0.375      -0.003       0.009
-* C(chromosome)[T.X]:level_most_dist_ortholog                              -0.0703      0.019     -3.743      0.000      -0.107      -0.033
-* C(SB_abdomen)[T.male]:C(chromosome)[T.X]:level_most_dist_ortholog         0.1059      0.022      4.716      0.000       0.062       0.150
-* C(SB_abdomen)[T.unbiased]:C(chromosome)[T.X]:level_most_dist_ortholog     0.0587      0.024      2.402      0.016       0.011       0.107
+* Intercept                                                                 0.3330      0.012     28.177      0.000       0.310       0.356
+* C(SB_abdomen)[T.male]                                                    -0.0658      0.014     -4.636      0.000      -0.094      -0.038
+* C(SB_abdomen)[T.unbiased]                                                -0.0448      0.014     -3.315      0.001      -0.071      -0.018
+* C(chromosome)[T.X]                                                        0.3308      0.089      3.733      0.000       0.157       0.505
+* C(SB_abdomen)[T.male]:C(chromosome)[T.X]                                 -0.3065      0.114     -2.697      0.007      -0.529      -0.084
+* C(SB_abdomen)[T.unbiased]:C(chromosome)[T.X]                             -0.4832      0.108     -4.490      0.000      -0.694      -0.272
+* level_most_dist_ortholog                                                 -0.0514      0.003    -20.081      0.000      -0.056      -0.046
+* C(SB_abdomen)[T.male]:level_most_dist_ortholog                            0.0115      0.003      3.610      0.000       0.005       0.018
+. C(SB_abdomen)[T.unbiased]:level_most_dist_ortholog                        0.0051      0.003      1.738      0.082      -0.001       0.011
+* C(chromosome)[T.X]:level_most_dist_ortholog                              -0.0703      0.019     -3.754      0.000      -0.107      -0.034
+* C(SB_abdomen)[T.male]:C(chromosome)[T.X]:level_most_dist_ortholog         0.0657      0.024      2.714      0.007       0.018       0.113
+* C(SB_abdomen)[T.unbiased]:C(chromosome)[T.X]:level_most_dist_ortholog     0.1008      0.023      4.460      0.000       0.056       0.145
 =========================================================================================================================================
 ////////////////// C_chinensis: head+thorax //////////////////
 =============================================================================================================================================
-                                                                                coef    std err          t      P>|t|      [0.025      0.975]
+                                                                                  coef    std err          t      P>|t|      [0.025      0.975]
 ---------------------------------------------------------------------------------------------------------------------------------------------
-* Intercept                                                                     0.3102      0.018     17.175      0.000       0.275       0.346
-  C(SB_head_thorax)[T.male]                                                    -0.0320      0.020     -1.633      0.103      -0.071       0.006
-  C(SB_head_thorax)[T.unbiased]                                                -0.0176      0.019     -0.929      0.353      -0.055       0.020
-* C(chromosome)[T.X]                                                            0.3373      0.177      1.909      0.056      -0.009       0.684
-* C(SB_head_thorax)[T.male]:C(chromosome)[T.X]                                 -0.4431      0.189     -2.346      0.019      -0.813      -0.073
-  C(SB_head_thorax)[T.unbiased]:C(chromosome)[T.X]                             -0.3123      0.185     -1.692      0.091      -0.674       0.049
-* level_most_dist_ortholog                                                     -0.0429      0.004    -10.546      0.000      -0.051      -0.035
-  C(SB_head_thorax)[T.male]:level_most_dist_ortholog                            0.0004      0.004      0.099      0.921      -0.008       0.009
-  C(SB_head_thorax)[T.unbiased]:level_most_dist_ortholog                       -0.0038      0.004     -0.879      0.380      -0.012       0.005
-* C(chromosome)[T.X]:level_most_dist_ortholog                                  -0.0718      0.038     -1.874      0.061      -0.147       0.003
-* C(SB_head_thorax)[T.male]:C(chromosome)[T.X]:level_most_dist_ortholog         0.0925      0.041      2.270      0.023       0.013       0.172
-  C(SB_head_thorax)[T.unbiased]:C(chromosome)[T.X]:level_most_dist_ortholog     0.0653      0.040      1.636      0.102      -0.013       0.144
+* Intercept                                                                     0.3102      0.018     17.028      0.000       0.274       0.346
+  C(SB_head_thorax)[T.male]                                                     0.0126      0.022      0.582      0.560      -0.030       0.055
+. C(SB_head_thorax)[T.unbiased]                                                -0.0359      0.019     -1.891      0.059      -0.073       0.001
+. C(chromosome)[T.X]                                                            0.3373      0.178      1.893      0.058      -0.012       0.687
+* C(SB_head_thorax)[T.male]:C(chromosome)[T.X]                                 -0.5618      0.201     -2.788      0.005      -0.957      -0.167
+* C(SB_head_thorax)[T.unbiased]:C(chromosome)[T.X]                             -0.4099      0.184     -2.224      0.026      -0.771      -0.049
+* level_most_dist_ortholog                                                     -0.0429      0.004    -10.456      0.000      -0.051      -0.035
+  C(SB_head_thorax)[T.male]:level_most_dist_ortholog                           -0.0084      0.005     -1.664      0.096      -0.018       0.001
+  C(SB_head_thorax)[T.unbiased]:level_most_dist_ortholog                        0.0004      0.004      0.092      0.927      -0.008       0.009
+. C(chromosome)[T.X]:level_most_dist_ortholog                                  -0.0718      0.039     -1.858      0.063      -0.148       0.004
+* C(SB_head_thorax)[T.male]:C(chromosome)[T.X]:level_most_dist_ortholog         0.1192      0.044      2.723      0.006       0.033       0.205
+* C(SB_head_thorax)[T.unbiased]:C(chromosome)[T.X]:level_most_dist_ortholog     0.0852      0.040      2.138      0.033       0.007       0.163
 =============================================================================================================================================
 ```
 </details>
@@ -957,6 +957,7 @@ Since it's only two categories, I am using basic logistic regression and not the
 
 #### *C. chinensis* with sex-biased expression
 
+* head+thorax has some coefficients that could not be estimated, TODO check out
 * mostly the abdominal sex-biased expression explains the variance, not the somatic tissues. 
 * conservation rank is significant again
 * the X chromosome is not significant as a major effect and also not in any interactions. It does not become significant when removing the sex bias, only when taking out the conservation rank as well.
@@ -969,36 +970,36 @@ Since it's only two categories, I am using basic logistic regression and not the
 =========================================================================================================================================
                                                                             coef    std err          z      P>|z|      [0.025      0.975]
 -----------------------------------------------------------------------------------------------------------------------------------------
-* Intercept                                                                -0.7410      0.324     -2.290      0.022      -1.375      -0.107
-* C(SB_abdomen)[T.male]                                                    -1.0374      0.385     -2.692      0.007      -1.793      -0.282
-* C(SB_abdomen)[T.unbiased]                                                -0.8090      0.397     -2.039      0.041      -1.587      -0.031
-  C(chromosome)[T.X]                                                       -0.2384      2.551     -0.093      0.926      -5.238       4.762
-  C(SB_abdomen)[T.male]:C(chromosome)[T.X]                                  0.8412      2.967      0.284      0.777      -4.974       6.656
-  C(SB_abdomen)[T.unbiased]:C(chromosome)[T.X]                             -4.0681      4.886     -0.833      0.405     -13.645       5.509
-* level_most_dist_ortholog                                                 -0.2223      0.071     -3.120      0.002      -0.362      -0.083
-* C(SB_abdomen)[T.male]:level_most_dist_ortholog                            0.2248      0.085      2.644      0.008       0.058       0.391
-  C(SB_abdomen)[T.unbiased]:level_most_dist_ortholog                        0.1473      0.089      1.658      0.097      -0.027       0.322
-  C(chromosome)[T.X]:level_most_dist_ortholog                               0.0776      0.542      0.143      0.886      -0.984       1.139
-  C(SB_abdomen)[T.male]:C(chromosome)[T.X]:level_most_dist_ortholog        -0.0474      0.627     -0.076      0.940      -1.275       1.181
-  C(SB_abdomen)[T.unbiased]:C(chromosome)[T.X]:level_most_dist_ortholog     0.9298      1.005      0.925      0.355      -1.039       2.899
+Intercept                                                                -0.7410      0.324     -2.290      0.022      -1.375      -0.107
+C(SB_abdomen)[T.male]                                                    -1.7436      0.420     -4.152      0.000      -2.567      -0.921
+C(SB_abdomen)[T.unbiased]                                                -0.5881      0.377     -1.561      0.119      -1.327       0.151
+C(chromosome)[T.X]                                                       -0.2384      2.551     -0.093      0.926      -5.238       4.762
+C(SB_abdomen)[T.male]:C(chromosome)[T.X]                                  1.8711      3.110      0.602      0.547      -4.224       7.966
+C(SB_abdomen)[T.unbiased]:C(chromosome)[T.X]                             -2.0679      3.302     -0.626      0.531      -8.539       4.404
+level_most_dist_ortholog                                                 -0.2223      0.071     -3.120      0.002      -0.362      -0.083
+C(SB_abdomen)[T.male]:level_most_dist_ortholog                            0.4209      0.095      4.447      0.000       0.235       0.606
+C(SB_abdomen)[T.unbiased]:level_most_dist_ortholog                        0.1032      0.083      1.244      0.213      -0.059       0.266
+C(chromosome)[T.X]:level_most_dist_ortholog                               0.0776      0.542      0.143      0.886      -0.984       1.139
+C(SB_abdomen)[T.male]:C(chromosome)[T.X]:level_most_dist_ortholog        -0.3193      0.663     -0.481      0.630      -1.620       0.981
+C(SB_abdomen)[T.unbiased]:C(chromosome)[T.X]:level_most_dist_ortholog     0.5603      0.691      0.811      0.417      -0.793       1.914
 =========================================================================================================================================
 
 ////////////////// C_chinensis head+thorax ////////////////// 
 =============================================================================================================================================
                                                                                 coef    std err          z      P>|z|      [0.025      0.975]
 ---------------------------------------------------------------------------------------------------------------------------------------------
-* Intercept                                                                    -0.9915      0.498     -1.992      0.046      -1.967      -0.016
-  C(SB_head_thorax)[T.male]                                                    -0.6474      0.553     -1.170      0.242      -1.731       0.437
-  C(SB_head_thorax)[T.unbiased]                                                -0.5462      0.529     -1.032      0.302      -1.584       0.492
-  C(chromosome)[T.X]                                                         -148.5952   4.45e+06  -3.34e-05      1.000   -8.72e+06    8.72e+06
-  C(SB_head_thorax)[T.male]:C(chromosome)[T.X]                                147.7540   4.45e+06   3.32e-05      1.000   -8.72e+06    8.72e+06
-  C(SB_head_thorax)[T.unbiased]:C(chromosome)[T.X]                            148.8022   4.45e+06   3.34e-05      1.000   -8.72e+06    8.72e+06
-  level_most_dist_ortholog                                                     -0.1317      0.114     -1.159      0.247      -0.355       0.091
-  C(SB_head_thorax)[T.male]:level_most_dist_ortholog                            0.0964      0.126      0.768      0.443      -0.150       0.343
-  C(SB_head_thorax)[T.unbiased]:level_most_dist_ortholog                        0.0709      0.121      0.587      0.557      -0.166       0.308
-  C(chromosome)[T.X]:level_most_dist_ortholog                                  29.6332    8.9e+05   3.33e-05      1.000   -1.74e+06    1.74e+06
-  C(SB_head_thorax)[T.male]:C(chromosome)[T.X]:level_most_dist_ortholog       -29.3004    8.9e+05  -3.29e-05      1.000   -1.74e+06    1.74e+06
-  C(SB_head_thorax)[T.unbiased]:C(chromosome)[T.X]:level_most_dist_ortholog   -29.5657    8.9e+05  -3.32e-05      1.000   -1.74e+06    1.74e+06
+Intercept                                                                    -0.9915      0.498     -1.992      0.046      -1.967      -0.016
+C(SB_head_thorax)[T.male]                                                    -0.8651      0.623     -1.388      0.165      -2.087       0.356
+C(SB_head_thorax)[T.unbiased]                                                -0.5150      0.522     -0.986      0.324      -1.539       0.509
+C(chromosome)[T.X]                                                         -148.8151        nan        nan        nan         nan         nan
+C(SB_head_thorax)[T.male]:C(chromosome)[T.X]                                149.9678        nan        nan        nan         nan         nan
+C(SB_head_thorax)[T.unbiased]:C(chromosome)[T.X]                            148.1799        nan        nan        nan         nan         nan
+level_most_dist_ortholog                                                     -0.1317      0.114     -1.159      0.247      -0.355       0.091
+C(SB_head_thorax)[T.male]:level_most_dist_ortholog                            0.1363      0.148      0.924      0.356      -0.153       0.426
+C(SB_head_thorax)[T.unbiased]:level_most_dist_ortholog                        0.0670      0.119      0.563      0.574      -0.166       0.300
+C(chromosome)[T.X]:level_most_dist_ortholog                                  29.6772        nan        nan        nan         nan         nan
+C(SB_head_thorax)[T.male]:C(chromosome)[T.X]:level_most_dist_ortholog       -29.7849        nan        nan        nan         nan         nan
+C(SB_head_thorax)[T.unbiased]:C(chromosome)[T.X]:level_most_dist_ortholog   -29.4117        nan        nan        nan         nan         nan
 =============================================================================================================================================
 
 ////////////////// C_chinensis no sex bias ////////////////// 

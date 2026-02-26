@@ -166,12 +166,11 @@ def statistical_analysis_dNdS(full_table_paths_dict, table_outfile="", max_dNdS=
                 except:
                     print("no Wald test could be performed")
 
-                if "B_siliquastri" in partner:
-                    print(f"\n---------------> test without conservation rank to see if excluding it makes chromosome significant")
-                    # do one test without age rank to see if chromosome becomes significant to explain the results from the permutation test
-                    formula = f"{partner}_dNdS ~  C(chromosome)"
-                    test = smf.quantreg(formula=formula, data=filt_df).fit(q=0.5) # q=0.5 means we estimate the median
-                    print(test.summary())
+                print(f"\n---------------> test without conservation rank to see if excluding it makes chromosome significant")
+                # do one test without age rank to see if chromosome becomes significant to explain the results from the permutation test
+                formula = f"{partner}_dNdS ~  C(chromosome)"
+                test = smf.quantreg(formula=formula, data=filt_df).fit(q=0.5) # q=0.5 means we estimate the median
+                print(test.summary())
             print("\n")
 
     
@@ -612,14 +611,14 @@ if __name__ == "__main__":
     full_tables_dict = get_full_table_path(username=username)
     reorg_table_outfile = f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/paml_stats_outfile_table.tsv"
     
-    if False:
+    if True:
         ###################################################
         ## median quantile regression for dNdS as continuous response
         statistical_analysis_dNdS(full_tables_dict, table_outfile=f"")
         # compare_conservation_rank_proportions(full_tables_dict)
         ###################################################
 
-    if True:
+    if False:
         ###################################################
         filename=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/dNdS_vs_conservation_rank_boxplot.png"
         boxplot_dNdS(full_tables_dict, outfile=filename)
