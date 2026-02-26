@@ -782,9 +782,9 @@ def boxplot_dNdS_merge_rank(full_table_paths_dict, outfile, maxdNdS=2, partner_s
 
 
     plot_dNdS_subplot(AX_dicts=nested_vals_dict_a, outfile=outfile.replace(".png", f"_abdomen.png"), 
-        title="dN/dS by\nsex bias\nabdominal", colors_dict=colors, fs=fs)
+        title="dN/dS abd.", colors_dict=colors, fs=fs)
     plot_dNdS_subplot(AX_dicts=nested_vals_dict_ht,outfile=outfile.replace(".png", f"_head_thorax.png"), 
-        title="dN/dS by\nsex bias\nhead+thorax", colors_dict=colors, fs=fs)
+        title="dN/dS h+t", colors_dict=colors, fs=fs)
 
 
 
