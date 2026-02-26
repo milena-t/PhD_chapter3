@@ -49,6 +49,7 @@ def read_dNdS_summary_file(summary_path, excl_list=[], no_dS = True):
             if pair_excl:
                 continue # skip this pair if at least one member species is in excl_list
             dNdS_list = [float(dNdS) if dNdS != 0.0 else np.NaN for dNdS in dNdS_vals.split(",")]
+            pair = pair.replace("_dNdS", "")
             out_dict[pair] = dNdS_list
 
     return out_dict
@@ -161,7 +162,7 @@ def plot_heatmap(counts_array, species_list, filename = "mean_dNdS.png", title =
     print(f"figure saved here: {filename}")
 
 
-def violinplot_pair(data_A_X, row, col, n_A, n_X, mean_A, mean_X, axes, colors_dict,fs, xticks = ["A", "X"], xlab = "", ymax = 0):
+def violinplot_pair(data_A_X, row, col, n_A, n_X, mean_A, mean_X, axes, colors_dict,fs, xticks = ["A", "X"], xlab = "", ymax = 0, text_x_offset = 0.4):
     ## make general function so i can repeat it easily for the "mirror" species where row and col are switched
     violins = axes[row,col].violinplot(data_A_X, showmeans = False, showextrema = False)
     colors = [colors_dict["A"], colors_dict["X"]]
@@ -182,22 +183,22 @@ def violinplot_pair(data_A_X, row, col, n_A, n_X, mean_A, mean_X, axes, colors_d
     if ymax == 0:
         max_dNdS_add = 0.3
         axes[row, col].set_ylim([0,1+max_dNdS_add])
-        axes[row, col].text(1-0.4, 0.78+max_dNdS_add, f"n={n_A}\nmedian={mean_A:.3f}", fontsize = fs, color = colors_dict["A"])
-        axes[row, col].text(2-0.4, 0.78+max_dNdS_add, f"n={n_X}\nmedian={mean_X:.3f}", fontsize = fs, color = colors_dict["X"])
+        axes[row, col].text(1-text_x_offset, 0.78+max_dNdS_add, f"n={n_A}\nmedian={mean_A:.2f}", fontsize = fs, color = colors_dict["A"])
+        axes[row, col].text(2-text_x_offset, 0.78+max_dNdS_add, f"n={n_X}\nmedian={mean_X:.2f}", fontsize = fs, color = colors_dict["X"])
         axes[row, col].hlines(y=mean_A, xmin=0.5, xmax=2.5, linewidth=2, color=colors_dict["A"])
         axes[row, col].hlines(y=mean_X, xmin=0.5, xmax=2.5, linewidth=2, color=colors_dict["X"])
         axes[row, col].hlines(y=1, xmin=0.5, xmax=2.5, linewidth=2, linestyle = ":", color="#818181")
     else:
         axes[row, col].set_ylim([0,ymax])
-        axes[row, col].text(1-0.4, 0.8*ymax, f"n={n_A}\nmedian={mean_A:.3f}", fontsize = fs, color = colors_dict["A"])
-        axes[row, col].text(2-0.4, 0.8*ymax, f"n={n_X}\nmedian={mean_X:.3f}", fontsize = fs, color = colors_dict["X"])
+        axes[row, col].text(1-text_x_offset, 0.8*ymax, f"n={n_A}\nmedian={mean_A:.2f}", fontsize = fs, color = colors_dict["A"])
+        axes[row, col].text(2-text_x_offset, 0.8*ymax, f"n={n_X}\nmedian={mean_X:.2f}", fontsize = fs, color = colors_dict["X"])
     axes[row, col].set_xticks([1,2])
     axes[row, col].set_xticklabels(xticks)
 
     return violins
 
 
-def violinplot_pair_single(data_A_X, col, n_A, n_X, mean_A, mean_X, axes, colors_dict,fs, xticks = ["A", "X"], xlab = "",ylab='dN/dS', ymax = 0):
+def violinplot_pair_single(data_A_X, col, n_A, n_X, mean_A, mean_X, axes, colors_dict,fs, xticks = ["A", "X"], xlab = "",ylab='dN/dS', ymax = 0,  text_x_offset = 0.4):
     ## make general function so i can repeat it easily for the "mirror" species where row and col are switched
     violins = axes[col].violinplot(data_A_X, showmeans = False, showextrema = False)
     colors = [colors_dict["A"], colors_dict["X"]]
@@ -210,12 +211,12 @@ def violinplot_pair_single(data_A_X, col, n_A, n_X, mean_A, mean_X, axes, colors
     axes[col].set_ylabel(ylab, fontsize = fs)
     axes[col].set_xlabel(xlab, fontsize = fs)
     axes[col].tick_params(axis='x', labelsize=fs)
-    axes[col].tick_params(axis='y', labelsize=fs)
+    axes[col].tick_params(axis='y', labelsize=fs*0.85)
     if ymax == 0:
         max_dNdS_add = 0.3
         axes[col].set_ylim([0,1+max_dNdS_add])
-        axes[col].text(1-0.4, 0.8+max_dNdS_add, f"n={n_A}\nmedian={mean_A:.3f}", fontsize = fs, color = colors_dict["A"])
-        axes[col].text(2-0.4, 0.8+max_dNdS_add, f"n={n_X}\nmedian={mean_X:.3f}", fontsize = fs, color = colors_dict["X"])
+        axes[col].text(1- text_x_offset, 0.8+max_dNdS_add, f"n={n_A}\nmedian={mean_A:.2f}", fontsize = fs, color = colors_dict["A"])
+        axes[col].text(2- text_x_offset, 0.8+max_dNdS_add, f"n={n_X}\nmedian={mean_X:.2f}", fontsize = fs, color = colors_dict["X"])
         axes[col].hlines(y=1, xmin=0.5, xmax=2.5, linewidth=2, linestyle = ":", color="#818181")
     else:
         axes[col].set_ylim([0,ymax])

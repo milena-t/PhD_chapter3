@@ -365,6 +365,260 @@ def plot_dNdS_permutations_one_pair(boot_diff:dict, measure_diff:dict, A_dict:di
     print(f"plot saved in current working directory as: {filename} and {filename_tr}")
 
 
+def plot_dNdS_pos_sel(A_dict_dNdS:dict, X_dict_dNdS:dict, pos_list_A:dict, pos_list_X:dict, filename = "dNdS_pos_sel.png", dark_mode=False, violin_label="dNdS", violin_ymax = 0):
+    """
+    plot a grid of histogram distribution plots for all pairwise comparisons
+    """
+
+    if dark_mode:
+        plt.style.use('dark_background')
+
+    species_list = get_species_list(A_dict_dNdS)
+    print(f"... plotting {len(species_list)} species")
+
+    species_count = len(species_list)
+    species_index = {species : i for i, species in enumerate(species_list)}
+
+    cols = species_count
+    rows = cols
+    if rows>2:
+        fig, axes = plt.subplots(rows, cols, figsize=(27, 25)) # for more than three rows
+    else:
+        fig, axes = plt.subplots(rows, cols, figsize=(15, 10)) # for less than three rows
+    
+    fs = 30
+
+    plt.rcParams['text.usetex'] = True
+
+    colors_dict = {
+        "grey" : "#3A4040", 
+        "bars" : "#7BB7AE", 
+        "line" : "#FE4894",
+        "pdf" : "#3D7068", 
+        "A" : "#F2933A", # uniform_filtered orange
+        "X" : "#b82946", # native red
+    }
+
+    diagonals_done = []
+
+    # sort so that the order stays the same every time. otherwise it changes
+    pairs_sorted = sorted(list(A_dict_dNdS.keys()))
+    for pair in pairs_sorted:
+
+        ### get pair indices for species pair
+        try:
+            gen1, spec1, gen2, spec2 =pair.split("_")
+        except:
+            raise RuntimeError(f"{pair} could not be parsed")
+        species1 = f"{gen1}_{spec1}"
+        row = species_index[species1]
+        species2 = f"{gen2}_{spec2}"
+        col = species_index[species2]
+
+        ## plot center row/col species names
+        # put this here before otherwise the last row/col label never gets reached
+        if row == len(species_list)-1:
+            species1_lab = species1.replace("_", ". ")
+            axes[row,row].text(0.1,0.4,f"{species1_lab}", fontsize = fs*1.4)
+        if col == len(species_list)-1:
+            species2_lab = species2.replace("_", ". ")
+            axes[col,col].text(0.1,0.4,f"{species2_lab}", fontsize = fs*1.4)
+
+        # only do top right matrix
+        axes[row,row].axis('off')
+        axes[col,col].axis('off')
+        if row>col:
+            col_temp = col
+            col = row
+            row = col_temp
+            species2_temp = species2
+            species2 = species1
+            species1 = species2_temp
+        species1_lab = species1.replace("_", ". ")
+        species2_lab = species2.replace("_", ". ")
+
+
+        ## plot species name on diagonals
+        if row not in diagonals_done:
+            # axes[row,row].text(0.8,0.2,f"{species1_lab}", rotation = 90, fontsize = fs*1.3)
+            axes[row,row].text(0.1,0.4,f"{species1_lab}", fontsize = fs*1.4)
+            diagonals_done.append(row)
+    
+        
+        ### plot binary bar charts
+        ## exclude all the NaNs because violinplot can't handle them
+        data_A_nan = np.array(pos_list_A[pair], dtype=float)
+        data_X_nan = np.array(pos_list_X[pair], dtype=float)
+        data_A = [dNdS_A for dNdS_A in data_A_nan if not np.isnan(dNdS_A) ]
+        data_X = [dNdS_X for dNdS_X in data_X_nan if not np.isnan(dNdS_X) ]
+    
+        if len(data_A)==0 or len(data_X)==0:
+            # axes[col,row].axis('off')
+            # axes[col,row].set_title(f'{species1}\n{species2}', fontsize = fs*0.85)
+            continue
+
+        n_A = len(data_A)
+        n_X = len(data_X)
+        mean_A = np.nanmedian(data_A)
+        mean_X = np.nanmedian(data_X)
+
+        data_AX = [data_A, data_X]
+
+        print(f"{row}, {col} : {species1_lab} vs. {species2_lab} --> sig.pos.sel bar plot")
+        
+        site_classes.binary_barplot_pair(data_A=data_A, data_X=data_X, row=row, col=col, n_A=n_A, n_X=n_X, axes=axes, colors_dict=colors_dict, fs = fs, ylab ="pos. sel. genes")
+        
+        ### plot violins
+        ## exclude all the NaNs because violinplot can't handle them
+        try:
+            data_A_nan = np.array(A_dict_dNdS[pair], dtype=float)
+            data_X_nan = np.array(X_dict_dNdS[pair], dtype=float)
+        except:
+            raise RuntimeError(f"data does not have key: {pair}, available keys are:\n{A_dict_dNdS.keys()}")
+        data_A = [dNdS_A for dNdS_A in data_A_nan if not np.isnan(dNdS_A) ]
+        data_X = [dNdS_X for dNdS_X in data_X_nan if not np.isnan(dNdS_X) ]
+    
+        if len(data_A)==0 or len(data_X)==0:
+            # axes[col,row].axis('off')
+            # axes[col,row].set_title(f'{species1}\n{species2}', fontsize = fs*0.85)
+            continue
+
+        n_A = len(data_A)
+        n_X = len(data_X)
+        mean_A = np.nanmedian(data_A)
+        mean_X = np.nanmedian(data_X)
+
+        data_AX = [data_A, data_X]
+
+
+        violinplot_pair(data_A_X=data_AX, row=col, col=row, n_A=n_A, n_X=n_X, mean_A=mean_A, mean_X=mean_X, axes = axes, colors_dict=colors_dict, fs = fs, xlab = violin_label, ymax = violin_ymax, text_x_offset=0.5)
+        # axes[col,row].set_title(f'{species2}\n{species1}', fontsize = fs*0.85)
+        # axes[col,row].set_title(f'{species2}', fontsize = fs)
+
+        print(f"{col}, {row} : {species1_lab} vs. {species2_lab} --> dNdS violin plot\n")
+
+    fig.suptitle(f"Bruchini: A and X dNdS violin plot and pos. selected genes\n ", fontsize = fs*1.5)
+    # Adjust layout to prevent overlap  (left, bottom, right, top)
+    plt.tight_layout(rect=[0.01, 0, 1, 1])
+
+    if dark_mode:
+        filename = filename.replace(".png", "_darkmode.png")
+
+    # transparent background
+    plt.savefig(filename, dpi = 300, transparent = True)
+    # non-transparent background
+    filename_tr = filename.replace(".png", "_white_bg.png")
+    plt.savefig(filename_tr, dpi = 300, transparent = False)
+    print(f"plot saved in current working directory as: {filename} and {filename_tr}")
+
+
+
+def plot_dNdS_pos_sel_one_pair(A_dict_dNdS:dict, X_dict_dNdS:dict, pos_list_A:dict, pos_list_X:dict, filename = "dNdS_pos_sel.png", dark_mode=False, violin_label="dNdS", violin_ymax = 0):
+    """
+    plot a grid of histogram distribution plots for all pairwise comparisons
+    """
+
+    if dark_mode:
+        plt.style.use('dark_background')
+
+    species_list = get_species_list(A_dict_dNdS)
+    print(f"... plotting {len(species_list)} species")
+
+    species_count = len(species_list)
+    assert species_count==2
+    species_index = {species : i for i, species in enumerate(species_list)}
+
+    cols = species_count
+    rows = 1
+    fig, axes = plt.subplots(rows, cols, figsize=(16, 10)) # for less than three rows
+    fs = 35
+    plt.rcParams['text.usetex'] = True
+
+    colors_dict = {
+        "grey" : "#3A4040", 
+        "bars" : "#7BB7AE", 
+        "line" : "#FE4894",
+        "pdf" : "#3D7068", 
+        "A" : "#F2933A", # uniform_filtered orange
+        "X" : "#b82946", # native red
+    }
+
+    pairs_sorted = sorted(list(A_dict_dNdS.keys()))
+    assert len(pairs_sorted) ==1
+    for pair in pairs_sorted:
+        ### get pair indices for species pair
+        try:
+            gen1, spec1, gen2, spec2 =pair.split("_")
+        except:
+            raise RuntimeError(f"{pair} could not be parsed")
+        species1 = f"{gen1}_{spec1}"
+        species2 = f"{gen2}_{spec2}"
+
+        species1_lab = species1.replace("_", ". ")
+        species2_lab = species2.replace("_", ". ")
+        fig.suptitle(f"{species1_lab} vs. {species2_lab}: \nA and X dNdS violin plot and pos. selected genes", fontsize = fs*1.5)
+        
+        ### plot binary bar charts
+
+        ## exclude all the NaNs because violinplot can't handle them
+        data_A_nan = np.array(pos_list_A[pair], dtype=float)
+        data_X_nan = np.array(pos_list_X[pair], dtype=float)
+        data_A = [dNdS_A for dNdS_A in data_A_nan if not np.isnan(dNdS_A) ]
+        data_X = [dNdS_X for dNdS_X in data_X_nan if not np.isnan(dNdS_X) ]
+    
+        if len(data_A)==0 or len(data_X)==0:
+            # axes[col,row].axis('off')
+            # axes[col,row].set_title(f'{species1}\n{species2}', fontsize = fs*0.85)
+            continue
+
+        n_A = len(data_A)
+        n_X = len(data_X)
+        mean_A = np.nanmedian(data_A)
+        mean_X = np.nanmedian(data_X)
+
+        data_AX = [data_A, data_X]
+
+        site_classes.binary_barplot_single_pair(data_A=data_A, data_X=data_X, row=1, n_A=n_A, n_X=n_X, axes=axes, colors_dict=colors_dict, fs = fs, ylab ="pos. sel. genes")
+        print(f"{species1_lab} vs. {species2_lab} --> sig.pos.sel bar plot")
+
+        ### plot violins
+        ## exclude all the NaNs because violinplot can't handle them
+        data_A_nan = np.array(A_dict_dNdS[pair], dtype=float)
+        data_X_nan = np.array(X_dict_dNdS[pair], dtype=float)
+        data_A = [dNdS_A for dNdS_A in data_A_nan if not np.isnan(dNdS_A) ]
+        data_X = [dNdS_X for dNdS_X in data_X_nan if not np.isnan(dNdS_X) ]
+    
+        if len(data_A)==0 or len(data_X)==0:
+            # axes[col,row].axis('off')
+            # axes[col,row].set_title(f'{species1}\n{species2}', fontsize = fs*0.85)
+            continue
+
+        n_A = len(data_A)
+        n_X = len(data_X)
+        mean_A = np.nanmedian(data_A)
+        mean_X = np.nanmedian(data_X)
+
+        data_AX = [data_A, data_X]
+        
+        violinplot_pair_single(data_A_X=data_AX, col=0, n_A=n_A, n_X=n_X, mean_A=mean_A, mean_X=mean_X, axes = axes, colors_dict=colors_dict, fs = fs, xlab = violin_label, ymax = violin_ymax)
+
+        # axes[col,row].set_title(f'{species2}\n{species1}', fontsize = fs*0.85)
+        # axes[col,row].set_title(f'{species2}', fontsize = fs)
+        print(f"{species1_lab} vs. {species2_lab} --> dNdS violin plot\n")        
+
+    # Adjust layout to prevent overlap (left, bottom, right, top)
+    plt.tight_layout(rect=[0, 0.05, 1, 1])
+
+    if dark_mode:
+        filename = filename.replace(".png", "_darkmode.png")
+
+    # transparent background
+    plt.savefig(filename, dpi = 300, transparent = True)
+    # non-transparent background
+    filename_tr = filename.replace(".png", "_white_bg.png")
+    plt.savefig(filename_tr, dpi = 300, transparent = False)
+    print(f"plot saved in current working directory as: {filename} and {filename_tr}")
+
 
 
 if __name__ == """__main__""":

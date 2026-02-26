@@ -259,18 +259,22 @@ def binary_barplot_pair(data_A, data_X, row, col, n_A, n_X, axes, colors_dict, f
     # values in order left to right and bottom bar to top, so A_nonsig, X_nonsig, A_sig, X_sig
     vals = [f"{int(A_nonsig/100)}", f"{int(X_nonsig/100)}", f"{int(A_sig/100)}", f"{int(X_sig/100)}"]
     for i,bar in enumerate(axes[row,col].patches):
+        if i<2:
+            bottom_offset = 5
+        else:
+            bottom_offset = 0
         axes[row,col].text(
             # Put the text in the middle of each bar. get_x returns the start so we add half the width to get to the middle.
             bar.get_x() + bar.get_width() / 2,
             # Vertically, add the height of the bar to the start of the bar, along with the offset.
-            bar.get_height() + bar.get_y() -7,
+            bar.get_height() + bar.get_y() -7 - bottom_offset,
             # This is actual value we'll show.
             vals[i],
             # Center the labels and style them a bit.
             ha='center',
             color='w',
             weight='bold',
-            size=fs*0.8
+            size=fs
         )
     
     axes[row, col].set_xticks([1,2])
@@ -278,7 +282,7 @@ def binary_barplot_pair(data_A, data_X, row, col, n_A, n_X, axes, colors_dict, f
 
     axes[row, col].set_xlabel('')
     if col-row == 1:
-        axes[row, col].set_ylabel(ylab, fontsize = fs*0.8)
+        axes[row, col].set_ylabel(ylab, fontsize = fs)
     else:
         axes[row, col].set_ylabel('')
     axes[row,col].tick_params(axis='y', labelsize=fs)
@@ -311,13 +315,17 @@ def binary_barplot_single_pair(data_A, data_X, row, n_A, n_X, axes, colors_dict,
     # values in order left to right and bottom bar to top, so A_nonsig, X_nonsig, A_sig, X_sig
     vals = [f"{int(A_nonsig/100)}", f"{int(X_nonsig/100)}", f"{int(A_sig/100)}", f"{int(X_sig/100)}"]
     for i,bar in enumerate(axes[row].patches):
+        if i<2:
+            bottom_offset = 5
+        else:
+            bottom_offset = 0
         axes[row].text(
             # Put the text in the middle of each bar. get_x returns the start
             # so we add half the width to get to the middle.
             bar.get_x() + bar.get_width() / 2,
             # Vertically, add the height of the bar to the start of the bar,
             # along with the offset.
-            bar.get_height() + bar.get_y() -7,
+            bar.get_height() + bar.get_y() -7 - bottom_offset,
             # This is actual value we'll show.
             vals[i],
             # Center the labels and style them a bit.
@@ -333,6 +341,7 @@ def binary_barplot_single_pair(data_A, data_X, row, n_A, n_X, axes, colors_dict,
     axes[row].set_ylabel(ylab, fontsize = fs)
     axes[row].tick_params(axis='y', labelsize=fs)
     axes[row].tick_params(axis='x', labelsize=fs) 
+
 
 
 if __name__ == "__main__":
@@ -371,17 +380,20 @@ if __name__ == "__main__":
     summary_paths = get_summary_paths(username=username)
 
     # bruchini
-    if False:
+    if True:
         species_excl = ["D_carinulata", "D_sublineata", "T_castaneum", "T_freemani", "C_septempunctata", "C_magnifica"]
         filename =f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/LRT_site_model_plot_bruchini.png"
+        filename_dNdS =f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/pos_sel_dNdS_summary_plot_bruchini.png"
     # coccinella
     elif False:
         species_excl = ["D_carinulata", "D_sublineata", "T_castaneum", "T_freemani", "B_siliquastri", "A_obtectus", "C_maculatus", "C_chinensis"]
         filename =f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/LRT_site_model_plot_coccinella.png"
+        filename_dNdS =f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/pos_sel_dNdS_summarylot_coccinella.png"
     # tribolium
     elif True:
         species_excl = ["D_carinulata", "D_sublineata", "C_septempunctata", "C_magnifica", "B_siliquastri", "A_obtectus", "C_maculatus", "C_chinensis"]
         filename =f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/LRT_site_model_plot_tribolium.png"
+        filename_dNdS =f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/pos_sel_dNdS_summaryplot_tribolium.png"
 
     summary_dict_A, no_dNdS_A = read_site_classes(summary_paths[data_files["A"][1]], excl_list=species_excl)
     summary_dict_X, no_dNdS_X = read_site_classes(summary_paths[data_files["X"][1]], excl_list=species_excl)
@@ -398,37 +410,57 @@ if __name__ == "__main__":
 
     pairs_list = list(summary_dict_X.keys())
 
-    bootstraps = {pair : [] for pair in pairs_list}
-    mean_num_pos_sel = {pair : np.NaN for pair in pairs_list}
-    
-    ####
-    #  test with 100, takes a bit of time otherwise
-    num_permutations = 10000
-    ####
-
-    for pair in pairs_list:
-        pos_props_A = pos_list_A[pair]
-        pos_props_X = pos_list_X[pair]
-        mean_num_pos_sel[pair] = np.nanmean(pos_props_A) - np.nanmean(pos_props_X)
-        bootstraps[pair] = bootstrap_dNdS.permutate_dNdS(dNdS_A=pos_props_A, dNdS_X=pos_props_X, num_permut=num_permutations)
-        mean_boot = np.mean(bootstraps[pair])
-        print(f" *  {pair} mean({type_plot}_A)-mean({type_plot}_X)  --> \t{mean_num_pos_sel[pair]:.4f}, mean bootstrap diff {mean_boot:.6f}")
+    if False: 
+        ### plot bootstraps
+        bootstraps = {pair : [] for pair in pairs_list}
+        mean_num_pos_sel = {pair : np.NaN for pair in pairs_list}
         
-    if type_plot == "prop":
-        violin_ymax=0.2
-        binary=False
-    else:
-        violin_ymax=0
-        binary=True
+        ####
+        #  test with 100, takes a bit of time otherwise
+        num_permutations = 10000
+        ####
 
-    if len(pairs_list)>1:
-        print(f"plot pairwise matrix ...")
-        bootstrap_dNdS.plot_dNdS_permutations(boot_diff=bootstraps,measure_diff=mean_num_pos_sel, A_dict=pos_list_A, X_dict=pos_list_X, 
-                                            filename=filename, hist_label = f"mean({type_plot}_A)-mean({type_plot}_X)", violin_label=f"{type_plot}. pos. sel.", 
-                                            violin_ymax=violin_ymax, transparent=False, binary=binary)
+        for pair in pairs_list:
+            pos_props_A = pos_list_A[pair]
+            pos_props_X = pos_list_X[pair]
+            mean_num_pos_sel[pair] = np.nanmean(pos_props_A) - np.nanmean(pos_props_X)
+            bootstraps[pair] = bootstrap_dNdS.permutate_dNdS(dNdS_A=pos_props_A, dNdS_X=pos_props_X, num_permut=num_permutations)
+            mean_boot = np.mean(bootstraps[pair])
+            print(f" *  {pair} mean({type_plot}_A)-mean({type_plot}_X)  --> \t{mean_num_pos_sel[pair]:.4f}, mean bootstrap diff {mean_boot:.6f}")
+            
+        if type_plot == "prop":
+            violin_ymax=0.2
+            binary=False
+        else:
+            violin_ymax=0
+            binary=True
+
+        if len(pairs_list)>1:
+            print(f"plot pairwise matrix ...")
+            bootstrap_dNdS.plot_dNdS_permutations(boot_diff=bootstraps,measure_diff=mean_num_pos_sel, A_dict=pos_list_A, X_dict=pos_list_X, 
+                                                filename=filename, hist_label = f"mean({type_plot}_A)-mean({type_plot}_X)", violin_label=f"{type_plot}. pos. sel.", 
+                                                violin_ymax=violin_ymax, transparent=False, binary=binary)
+        else:
+            print(f"plot one pair ...")
+            bootstrap_dNdS.plot_dNdS_permutations_one_pair(boot_diff=bootstraps,measure_diff=mean_num_pos_sel, A_dict=pos_list_A, X_dict=pos_list_X, 
+                                                filename=filename, hist_label = f"mean({type_plot}_A)-mean({type_plot}_X)", violin_label=f"{type_plot}. pos. sel.", 
+                                                violin_ymax=violin_ymax, transparent=False, binary=binary)
     else:
-        print(f"plot one pair ...")
-        bootstrap_dNdS.plot_dNdS_permutations_one_pair(boot_diff=bootstraps,measure_diff=mean_num_pos_sel, A_dict=pos_list_A, X_dict=pos_list_X, 
-                                            filename=filename, hist_label = f"mean({type_plot}_A)-mean({type_plot}_X)", violin_label=f"{type_plot}. pos. sel.", 
-                                            violin_ymax=violin_ymax, transparent=False, binary=binary)
-    
+        ## plot pos sel bar chart and dNdS violin plot at the same time
+        violin_ymax=0
+        data_files = {"A" : ["A_dNdS", "A_LRT"],
+                    "X" : ["X_dNdS", "X_LRT"]}
+        summary_paths = get_summary_paths(username=username)
+        dNdS_dict_A = read_dNdS_summary_file(summary_paths[data_files["A"][0]], excl_list=species_excl)
+        dNdS_dict_X = read_dNdS_summary_file(summary_paths[data_files["X"][0]], excl_list=species_excl)
+        print(dNdS_dict_A.keys())
+        if len(pairs_list)>1:
+            print(f"plot pairwise matrix ...")
+            bootstrap_dNdS.plot_dNdS_pos_sel(A_dict_dNdS=dNdS_dict_A, X_dict_dNdS=dNdS_dict_X, pos_list_A=pos_list_A, pos_list_X=pos_list_X,
+                                                filename=filename_dNdS, violin_label=f"dN/dS", 
+                                                violin_ymax=violin_ymax)
+        else:
+            print(f"plot one pair ...")
+            bootstrap_dNdS.plot_dNdS_pos_sel_one_pair(A_dict_dNdS=dNdS_dict_A, X_dict_dNdS=dNdS_dict_X, pos_list_A=pos_list_A, pos_list_X=pos_list_X,
+                                                filename=filename_dNdS, violin_label=f"dN/dS", 
+                                                violin_ymax=violin_ymax)
