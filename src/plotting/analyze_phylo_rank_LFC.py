@@ -272,7 +272,13 @@ def make_phylogeny_rank_dict(summary_file_df, min_p, min_LFC):
     """
     make a dict with rank orders like { 1 : [list, of, Log2FC, numbers] ,  2 [more, log2FC, numbers] , ... }
     """
-    filtered_df = summary_file_df.drop_duplicates(subset=['focal_transcript']) # remove duplicate data points
+    # dedup_df = summary_file_df.drop_duplicates(subset=['focal_transcript']) # remove duplicate data points
+    dedup_df = summary_file_df[summary_file_df["other_species"] == "C_chinensis"] # keep only chinensis data to make it comparable with later plots
+
+    # Keep only rows where there is a valid dN/dS 
+    dNdS_numeric = pd.to_numeric(dedup_df["dN/dS"], errors='coerce')
+    valid_rows = dNdS_numeric.notna()
+    filtered_df=dedup_df[valid_rows]
     
     LFC_dict_abdomen = { i : [] for i in range(1,6)}
     LFC_dict_head_thorax = { i : [] for i in range(1,6)}
@@ -294,10 +300,11 @@ def make_phylogeny_rank_dict(summary_file_df, min_p, min_LFC):
 
 
 
-def check_DE_phylogeny_rank_conserved(summary_paths_AX_list:dict, outfile = "", abs_LFC=False, sig_p_threshold = 0, sep_MF=True):
+def check_DE_phylogeny_rank_conserved(summary_paths_AX_list:dict, outfile = "", abs_LFC=False, sig_p_threshold = 0, sep_MF=True, only_dNdS=False):
     """
     check if genes with a higher phylogeny conservarion rank have higher log2FC values 
     if abs_LFC=True then do abs() around LFC to assess general sex bias and don't differentiate male-female contrast
+    if only_dNdS include only genes that have a valid dNdS estimate
     """
 
     summary_data_A = pd.read_csv(summary_paths_AX_list["A"], sep = "\t", index_col=False)
@@ -590,7 +597,7 @@ if __name__ == "__main__":
 
     table_paths_dict = get_full_table_path(username=username)
 
-    if True:
+    if False:
         ### statistical analysis of sex-bias categories 
         summary_table_paths = {}
         for chromosome, path in table_paths_dict.items():
@@ -614,14 +621,14 @@ if __name__ == "__main__":
         ### statistical analysis of continuous log2FC values
         summary_paths = get_summary_paths(username=username)
         abs_logFC = True
-        if False:
+        if True:
             ## plotting the bar chart
             check_DE_phylogeny_rank_conserved(summary_paths_AX_list=summary_paths,
                 outfile=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/conservation_rank_all_sex_bias_proportion.png",
-                abs_LFC=abs_logFC, sig_p_threshold=0)
+                abs_LFC=abs_logFC, sig_p_threshold=0, only_dNdS = True)
             check_DE_phylogeny_rank_conserved(summary_paths_AX_list=summary_paths,
                 outfile=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/conservation_rank_sig_sex_bias_proportion.png",
-                abs_LFC=abs_logFC, sig_p_threshold=0.05)
+                abs_LFC=abs_logFC, sig_p_threshold=0.05, only_dNdS = True)
         else:
             ## statistical analysis
             # logFC_quantile_regression(summary_paths, abs_LFC=abs_logFC, p_val_threshold=0.05, sep_MF=False)

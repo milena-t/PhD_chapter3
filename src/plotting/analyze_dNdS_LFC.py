@@ -54,7 +54,7 @@ def reorder_df_to_have_dNdS_cols(full_table_paths_dict, outfile = ""):
 
 
 def make_sex_bias_cat_row(row, tissue = "abdomen"):
-    if row[f"LFC_{tissue}"] < 1:
+    if row[f"LFC_{tissue}"] < -1:
         if row[f"FDR_pval_{tissue}"]<0.05:
             return "male"
         else:
@@ -449,8 +449,10 @@ def boxplot_dNdS(full_table_paths_dict, outfile, maxdNdS=2, partner_species="C_c
     X_df["chromosome"] = ["X"]*X_df.shape[0]
     A_df["chromosome"] = ["A"]*A_df.shape[0]
     df = pd.concat([A_df,X_df], ignore_index=True)
+
     df = df.rename(columns={'LFC_head+thorax': 'LFC_head_thorax'})
     df = df.rename(columns={'FDR_pval_head+thorax': 'FDR_pval_head_thorax'})
+    print(df)
     df["SB_abdomen"] = df.apply(make_sex_bias_cat_row, axis=1, args=("abdomen",))
     df["SB_head_thorax"] = df.apply(make_sex_bias_cat_row, axis=1, args=("head_thorax",))
     df = df[df["other_species"]==partner_species]
@@ -480,9 +482,9 @@ def boxplot_dNdS(full_table_paths_dict, outfile, maxdNdS=2, partner_species="C_c
         color_medians = []
 
         for SB_cat in SB_order_list:
-            color_faces.append(colors[SB_cat]["fill"])
-            color_edges.append(colors[SB_cat]["edge"])
-            color_medians.append(colors[SB_cat]["medians"])
+            color_faces.append(colors_dict[SB_cat]["fill"])
+            color_edges.append(colors_dict[SB_cat]["edge"])
+            color_medians.append(colors_dict[SB_cat]["medians"])
         
         ## make tick labels in the same order as the box plot lists to be sure that everyting is right
         tick_labels = []
@@ -511,12 +513,12 @@ def boxplot_dNdS(full_table_paths_dict, outfile, maxdNdS=2, partner_species="C_c
         pos_adjust=box_width*1.3
         for i in range(len(tick_labels)):
             if i%3 == 0:
-                tick_pos[i] =1+ i//3 +pos_adjust
+                tick_pos[i] =1+ i//3 -pos_adjust
             if i%3 == 1:
                 tick_pos[i] =1+ i//3 
             if i%3 == 2:
-                tick_pos[i] =1+ i//3 -pos_adjust
-        #print(tick_pos, len(tick_pos))
+                tick_pos[i] =1+ i//3 +pos_adjust
+            print(f"{i} : {tick_pos[i]}")
         
         bp = ax.boxplot(AX_lists, positions=tick_pos, widths=box_width, patch_artist=True)
 
