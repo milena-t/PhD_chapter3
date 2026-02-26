@@ -503,7 +503,7 @@ def plot_dS_vs_dNdS(A_dict:dict, X_dict:dict, filename = "dS_vs_dNdS.png", dark_
         #     print(f"sample sizes, n_A = {n_A}, n_X = {n_X}, data X  = {data_X}")
     
     if plot_dN:
-        fig.suptitle(f"Bruchini: dS vs. dNdS and dS violin plot, filtered dS < {max_dS} and dNdS < {max_dNdS}\n ", fontsize = fs*1.25)
+        fig.suptitle(f"Bruchini: dS vs. dN and dS violin plot, filtered dS < {max_dS} and dN < {max_dNdS}\n ", fontsize = fs*1.25)
     else:
         fig.suptitle(f"Bruchini: dS vs. dN, and dS violin plot, filtered dS < {max_dS} and dNdS < {max_dNdS}\n ", fontsize = fs*1.25)
     # Adjust layout to prevent overlap  (left, bottom, right, top)
@@ -564,7 +564,11 @@ def plot_dS_vs_dNdS_one_pair(A_dict:dict, X_dict:dict, filename = "dS_vs_dNdS.pn
         
         species1_lab = species1.replace("_", ". ")
         species2_lab = species2.replace("_", ". ")
-        fig.suptitle(f"{species1_lab} vs. {species2_lab} \ndS vs. dNdS and dS violin plot, filtered dS < {max_dS} and dNdS < {max_dNdS}", fontsize = fs*1.25)
+
+        if plot_dN:
+            fig.suptitle(f"{species1_lab} vs. {species2_lab} \ndS vs. dN and dS violin plot, filtered dS < {max_dS} and dN < {max_dNdS}", fontsize = fs*1.25)
+        else:
+            fig.suptitle(f"{species1_lab} vs. {species2_lab} \ndS vs. dNdS and dS violin plot, filtered dS < {max_dS} and dNdS < {max_dNdS}", fontsize = fs*1.25)
         
         # Extract dS and dNdS
         ## exclude all the NaNs because violinplot can't handle them
@@ -668,7 +672,7 @@ if __name__ == "__main__":
     summary_paths = get_summary_paths(username=username)
 
     # bruchini
-    if False:
+    if True:
         species_excl = ["D_carinulata", "D_sublineata", "T_castaneum", "T_freemani", "C_septempunctata", "C_magnifica"]
         filename =f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/dS_vs_dN_scatterplot_bruchini.png"
     # coccinella
@@ -681,8 +685,8 @@ if __name__ == "__main__":
         filename =f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/dS_vs_dN_scatterplot_tribolium.png"
     
     
-    ## analysis of only dS for each pair
-    if True:
+    ## analysis of only dS for each pair, permutation test
+    if False:
         print(f"/////////////// A ///////////////")
         dS_dict_A = read_dNdS_dS_summary_file(summary_paths[data_files["A"][0]], only_dS = True, exclude_list=species_excl,max_dS=2)
         # print(dS_dict_A)
@@ -695,7 +699,8 @@ if __name__ == "__main__":
         plot_dS_violins(A_dict=dS_dict_A, X_dict=dS_dict_X,filename=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/dS_violin_plot.png")
     
         if True:
-            ## bootstrap significance test
+            ## bootstrap significance test to see if dS is sig. diff. on X vs. A
+            ## this is not plotted, only command line output
             num_permutations = 10000
 
             for pair in dS_dict_A.keys():
@@ -712,7 +717,7 @@ if __name__ == "__main__":
 
 
     ## make the scatterplots
-    if False:
+    else:
         print(f"reading A ...")
         dS_dict_A = read_dNdS_dS_summary_file(summary_paths[data_files["A"][0]], only_dS = False, exclude_list=species_excl)
         # print(dS_dict_A)
