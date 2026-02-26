@@ -960,8 +960,7 @@ Since it's only two categories, I am using basic logistic regression and not the
 
 * head+thorax has some coefficients that could not be estimated when using the full `positive_selection ~  C(SB_head_thorax)  * C(chromosome) * level_most_dist_ortholog` formula. This might be due to overfitting, so I simplify the model a bit to exclude the three-way interactions like this `positive_selection ~  C(SB_head_thorax)  * (C(chromosome) + level_most_dist_ortholog)` only for the head+thorax SB data.
   * everything except intercept is insignificant
-* mostly the abdominal sex-biased expression explains the variance, not the somatic tissues. 
-* conservation rank is significant again
+* abdominal expression is significant for intercept, male-biased expression, conservation rank and male:conservation interaction
 * the X chromosome is not significant as a major effect and also not in any interactions. It does not become significant when removing the sex bias, only when taking out the conservation rank as well.
 
 <details>
