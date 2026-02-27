@@ -295,7 +295,7 @@ def plot_dNdS_rank_conserved(summary_paths_AX_list:dict, outfile = "", maxdNdS =
     if maxdNdS>0:
         y_label = f"dN/dS (max. < {maxdNdS})"
     
-    fs = 25 # font size
+    fs = 30 # font size
 
     # set figure aspect ratio
     aspect_ratio = 8 / 16
@@ -408,7 +408,7 @@ def plot_dNdS_rank_conserved(summary_paths_AX_list:dict, outfile = "", maxdNdS =
         plot_dNdS_subplot(lists_A=partner_lists_A[partner], lists_X=partner_lists_X[partner], fs=fs, row=i,title=plot_title, colors_dict=colors, plot_x_axis=plot_x_axis, ylab=y_label)
         if plot_x_axis:
             # fig.supxlabel(f"(number of genes)\nconservation rank of C. maculatus ortholog", fontsize = fs, labelpad=20)
-            ax[i].set_xlabel(f"(number of genes)\northolog distance", fontsize = fs, labelpad=100)
+            ax[i].set_xlabel(f"(number of genes)\northolog conservation distance", fontsize = fs, labelpad=100)
 
         # layout (left, bottom, right, top)
         plt.tight_layout(rect=[0.0, 0.05, 1, 1])
@@ -992,10 +992,10 @@ if __name__ == "__main__":
         ###################################################
 
     if False:
-        pos_sel = True # if true plot bar charts with proportion of positive selection
+        pos_sel = False # if true plot bar charts with proportion of positive selection
         if False:
             ###################################################
-            ### boxplot for positive selection or dNdS by rank/chromosome/sex bias
+            ### bar plot for positive selection or dNdS by rank/chromosome/sex bias
                            # if false plot boxplot of dNdS values
             if pos_sel:
                 filename=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/pos_sel_vs_conservation_rank_boxplot.png"

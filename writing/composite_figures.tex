@@ -114,69 +114,34 @@
 
 
 
-
 \begin{figure}[H]
-    
+        
+    \begin{minipage}[t]{0.5\textwidth}
+        \vspace{0pt}
+        \llap{\hspace{12pt}\textbf{A}}%
+            \includegraphics[width=0.95\textwidth]{../data/DE_analysis/dNdS_vs_conservation_rank_all_comparisons.png}
+    \end{minipage}%
+    \begin{minipage}[t]{0.24\textwidth}
+        \vspace{0pt}
+        \llap{\hspace{12pt}\textbf{B}}%
+            \includegraphics[width=0.95\textwidth]{../data/DE_analysis/dNdS_merged_conservation_rank_boxplot_abdomen.png}
+    \end{minipage}%
+    \begin{minipage}[t]{0.24\textwidth}
+        \vspace{0pt}
+        \llap{\hspace{12pt}\textbf{C}}%
+        \includegraphics[width=0.95\textwidth]{../data/DE_analysis/dNdS_merged_conservation_rank_boxplot_head_thorax.png}
+    \end{minipage}
 
-    \begin{subfigure}[t]{0.49\linewidth}
-	    %\raggedleft
-	    %\makebox[0pt][l]{\hspace{30pt}\textbf{C}}
-	    \begin{picture}(0,0)
-   	  		\put(30,-5){\textbf{B}} % adjust the x and y values here
-		\end{picture}
-	    \begin{center}
-        \includegraphics[width=0.95\linewidth]{../data/DE_analysis/all_sex_bias_proportion.png}
-        \end{center}        
-        %\caption{ } \label{OG_stats:GF_vs_GS}
-    \end{subfigure}
-    \begin{subfigure}[t]{0.49\linewidth}
-    %\makebox[0pt][l]{\hspace{30pt}\textbf{D}}
-    \begin{picture}(0,0)
-   	  		\put(30,-5){\textbf{C}} % adjust the x and y values here
-		\end{picture}
-	    \begin{center}
-        \includegraphics[width=0.95\linewidth]{../data/DE_analysis/dNdS_A_obtectus_vs_sig_logFC.png}
-        \end{center}        
-        %\caption{ } \label{OG_stats:GF_vs_rep}
-    \end{subfigure}
+
+   	\begin{subfigure}[t]{0.29\textwidth}
+   	\makebox[0pt][l]{\hspace{15pt}\vspace{15pt}\textbf{D}}
+        \centering
+        \includegraphics[width=\textwidth]{example-image-a}
+    \end{subfigure}    
 
     \hfill
-
-    \begin{subfigure}[t]{0.49\linewidth}
-	    %\raggedleft
-	    %\makebox[0pt][l]{\hspace{30pt}\textbf{C}}
-	    \begin{picture}(0,0)
-   	  		\put(30,-5){\textbf{D}} % adjust the x and y values here
-		\end{picture}
-	    \begin{center}
-        \includegraphics[width=0.95\linewidth]{../data/DE_analysis/dNdS_B_siliquastri_vs_sig_logFC.png}
-        \end{center}        
-        %\caption{ } \label{OG_stats:GF_vs_GS}
-    \end{subfigure}
-    \begin{subfigure}[t]{0.49\linewidth}
-    %\makebox[0pt][l]{\hspace{30pt}\textbf{D}}
-    \begin{picture}(0,0)
-   	  		\put(30,-5){\textbf{E}} % adjust the x and y values here
-		\end{picture}
-	    \begin{center}
-        \includegraphics[width=0.95\linewidth]{../data/DE_analysis/dNdS_C_chinensis_vs_sig_logFC.png}
-        \end{center}        
-        %\caption{ } \label{OG_stats:GF_vs_rep}
-    \end{subfigure}
     
-    \caption{\textbf{Differential expression analysis.} 
-    We are utilizing the log2 fold change (og2LFC) information from genes in \textit{C. maculatus} and combining it with 
-    d$_N$/d$_S$ between these genes and their 1-to-1 orthologs in other bruchids. 
-    The log2FC contrast is always female-male,therefore positive values indicate female-bias and negative values 
-    indicate male-bias.
-    \textbf{A}: log2FC of all genes on X-linked contigs in somatic (head+thorax) and reproductive (abdominal) tissues. 
-    Positive log2FC indicates female bias. Vertical lines are the median log2FC for each tissue, and the shaded area is the
-    standard error of that mean. 
-    \textbf{B}: number of sex biased genes in abdominal (reproductive) tissues and head and thorax (somatic) tissues. 
-    \textbf{C-E}: Scatterplot of significantly differentially expressed genes showing d$_N$/d$_S$ of 
-    \textit{A. obtectus} (\textbf{C}), \textit{B. siliquastri} (\textbf{D}) and \textit{C. chinensis} (\textbf{E}) respectively.
-    }\label{DE_analysis}
-    
+    \caption{\textbf{Differential expression analysis}}.
 \end{figure}
 
 
