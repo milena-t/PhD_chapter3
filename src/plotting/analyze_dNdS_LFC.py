@@ -531,8 +531,8 @@ def boxplot_dNdS(full_table_paths_dict, outfile, maxdNdS=2, partner_species="C_c
                         except:
                             AX_lists_neg.append(0)
 
-                        cols_list_sig.append(colors_dict[SB_cat]["fill"])
-                        cols_list_unsig.append(colors_dict[SB_cat]["medians"])
+                        cols_list_sig.append(colors_dict[SB_cat]["sig"])
+                        cols_list_unsig.append(colors_dict[SB_cat]["nonsig"])
 
             ## make tick positions so that the groups of three within each chromosome are closer together
             tick_pos = [i for i in range(1,len(tick_labels)+1)]
@@ -635,7 +635,7 @@ def boxplot_dNdS(full_table_paths_dict, outfile, maxdNdS=2, partner_species="C_c
             if i % 2 == 0:  # only the X-sections
                 left = i-box_width-pos_adjust
                 right = i+box_width+pos_adjust
-                ax.axvspan(left, right, color="#7A6B70", alpha=0.1, linewidth = 0, zorder=0)
+                ax.axvspan(left, right, color="#7A6B70", alpha=0.2, linewidth = 0, zorder=0)
 
         fig.supxlabel(f"conservation rank, chromosome location, and (number of genes)", fontsize = fs)
         fig.supylabel(y_label, fontsize = fs, x=0.0, y=0.625)
@@ -655,16 +655,22 @@ def boxplot_dNdS(full_table_paths_dict, outfile, maxdNdS=2, partner_species="C_c
             "fill" : "#495E83", # dusk blue
             "edge" : "#374C6E", # dusk blue darker
             "medians" : "#A7CCED", # icy blue
+            "sig" : "#3C5786", # dusk blue
+            "nonsig" : "#677CA2", # glaucous
         },
         "female" : {
             "fill" : "#AB354A", # cherry rose
             "edge" : "#771C2C", # dark amaranth
             "medians" : "#EA9AA9", # cotton candy
+            "sig" : "#A4273E", # cherry rose
+            "nonsig" : "#BC5265" # dusty mauve
         },
         "unbiased" : {
             "fill" : "#816874", # dusty mauve
             "edge" : "#5B414E", # mauve shadow
-            "medians" : "#C3A7B5" # lilac ash
+            "medians" : "#C3A7B5", # lilac ash
+            "sig" : "#6B555F", # taupe grey
+            "nonsig" : "#967A88" #dusty mauve
         }
     }
 
