@@ -919,9 +919,7 @@ green is A and violet is X. Also keep in mind that the conservation rank is 1:C_
 This seems mostly in line with statistical results. 
 
 <p float="left">
-  <img src="data/DE_analysis/dNdS_vs_conservation_rankC_chinensis_white_bg.png" width="49%" />
-  <img src="data/DE_analysis/dNdS_vs_conservation_rankB_siliquastri_white_bg.png" width="49%" />
-  <img src="data/DE_analysis/dNdS_vs_conservation_rankA_obtectus_white_bg.png" width="49%" />
+  <img src="data/DE_analysis/dNdS_vs_conservation_rank_all_comparisons_white_bg.png" width="60%" />
 </p>
 
 <details>

@@ -291,19 +291,20 @@ def plot_dNdS_rank_conserved(summary_paths_AX_list:dict, outfile = "", maxdNdS =
         partner_lists_X[partner] = make_phylogeny_rank_dict(summary_data_X, focal_species=partner, max_dNdS=maxdNdS)
 
     
-    y_label = f"dNdS"
+    y_label = f"dN/dS"
     if maxdNdS>0:
-        y_label = f"dNdS (max. < {maxdNdS})"
+        y_label = f"dN/dS (max. < {maxdNdS})"
     
-    fs = 30 # font size
+    fs = 25 # font size
 
     # set figure aspect ratio
-    aspect_ratio = 12 / 8
-    height_pixels = 1000  # Height in pixels
+    aspect_ratio = 8 / 16
+    height_pixels = 1700  # Height in pixels
     width_pixels = int(height_pixels * aspect_ratio)  # Width in pixels
 
+    fig, ax = plt.subplots(3,1,figsize=(width_pixels / 100, height_pixels / 100), dpi=100)
 
-    def plot_dNdS_subplot(lists_A, lists_X, fs, title, colors_dict, lw=2):
+    def plot_dNdS_subplot(lists_A, lists_X, fs, title, colors_dict, row, lw=2, plot_x_axis=True, ylab = ""):
         
         ## make A and X lists alternating to plot
         AX_lists = []
@@ -312,24 +313,41 @@ def plot_dNdS_rank_conserved(summary_paths_AX_list:dict, outfile = "", maxdNdS =
         
         # tick_labels = [f"{i // 2 + 1}\n({len(vals)})" for i,vals in enumerate(sex_biased_lists)]
         tick_labels = [f"({len(vals)})" for i,vals in enumerate(AX_lists)] # plot conservation rank label on separate axis
-        pos_adjust=0.2
+        width = 0.7
+        pos_adjust=width*0.125
         tick_pos = [i+pos_adjust if i%2==1 else i-pos_adjust for i in range(1,len(tick_labels)+1)]
-        bp = ax.boxplot(AX_lists, positions=tick_pos, patch_artist=True)
+        bp = ax[row].boxplot(AX_lists, positions=tick_pos, widths=width, patch_artist=True)
+        ax[row].axhline(y=1, color='#B78F85', linestyle='--', linewidth=lw)
 
         # set axis labels
         tick_fs_factor = 0.75
-        ax.set_xticks(ticks = tick_pos, labels = tick_labels, fontsize=fs*tick_fs_factor, rotation=45, ha='right')
-        ax.tick_params(axis='x', labelsize=fs*tick_fs_factor)#, rotation = 90)
-        ax.tick_params(axis='y', labelsize=fs*0.9)
-        ax.set_title(title, fontsize=fs)
+        if plot_x_axis:
+            ax[row].set_xticks(ticks = tick_pos, labels = tick_labels, fontsize=fs*tick_fs_factor)#, rotation=45, ha='right') # rotation=45 for diagonal direction
+            ax[row].tick_params(axis='x', labelsize=fs*tick_fs_factor, rotation = 90)
+        else:
+            ax[row].set_xticks(ticks = tick_pos, labels = ['' for tick in tick_labels], fontsize=fs*tick_fs_factor, rotation=45, ha='right')
+        ax[row].tick_params(axis='y', labelsize=fs*0.9)
+        ax[row].set_title(title, fontsize=fs)
+        ax[row].set_ylabel(ylab, fontsize = fs, x=0.0, y=0.625)
 
-        ax2 = ax.secondary_xaxis('bottom')
-        ax2.set_xticks([i+0.5 for i in range(1,10,2)])
-        ax2.set_xticklabels([i for i in range(1,6)], fontsize=fs)
-        ax2.spines['bottom'].set_position(('outward', 60))   
-        ax2.xaxis.set_ticks_position('none')
-        ax2.spines['bottom'].set_visible(False)
-        ax2.tick_params(axis='x', labelsize=fs)
+        if plot_x_axis:
+            ## plot conservation rank
+            ax2 = ax[row].secondary_xaxis('bottom')
+            ax2.set_xticks([i+0.5 for i in range(1,10,2)])
+            ax2.set_xticklabels([i for i in range(1,6)], fontsize=fs*1.2)
+            ax2.spines['bottom'].set_position(('outward', 120))   
+            ax2.xaxis.set_ticks_position('none')
+            ax2.spines['bottom'].set_visible(False)
+            ax2.tick_params(axis='x', labelsize=fs*1.2)
+
+            ## plot chromosome categories
+            ax3 = ax[row].secondary_xaxis('bottom')
+            ax3.set_xticks([i for i in range(1,11)])
+            ax3.set_xticklabels(["A" if i%2==1 else "X" for i in range(1,11)], fontsize=fs)
+            ax3.spines['bottom'].set_position(('outward', 80))   
+            ax3.xaxis.set_ticks_position('none')
+            ax3.spines['bottom'].set_visible(False)
+            ax3.tick_params(axis='x', labelsize=fs)
 
         ## modify boxplot colors
         for i, box in enumerate(bp['boxes']):
@@ -359,37 +377,50 @@ def plot_dNdS_rank_conserved(summary_paths_AX_list:dict, outfile = "", maxdNdS =
             else:
                 flier.set(marker='.', markerfacecolor=colors_dict['X_edge'], markeredgecolor=colors_dict['X_edge'])
 
+    # colors = {
+    #     "fill" : "#246A73", # stormy teal
+    #     "edge" : "#174C54", # dark teal
+    #     "medians" : "#54A6A2", # tropical teal
+    #     # "lines" : "#7D93B5", # lavender grey
+    #     "X_fill" : "#7E3A7E", # grape soda
+    #     "X_edge" : "#672B67", # velvet purple
+    #     "X_medians" : "#C877C8", # orchid mist
+    #     # "X_lines" : "#7D93B5" # lavender grey
+    # }
     colors = {
-        "fill" : "#246A73", # stormy teal
-        "edge" : "#174C54", # dark teal
-        "medians" : "#54A6A2", # tropical teal
-        # "lines" : "#7D93B5", # lavender grey
-        "X_fill" : "#7E3A7E", # grape soda
-        "X_edge" : "#672B67", # velvet purple
-        "X_medians" : "#C877C8", # orchid mist
-        # "X_lines" : "#7D93B5" # lavender grey
+        "fill" : "#F2933A", # uniform_filtered orange
+        "edge" : "#C36711", # darker orange
+        "medians" : "#FFBB7C", # lighter orange
+        "X_fill" : "#b82946", # native red
+        "X_edge" : "#861D32", #dark red
+        "X_medians" : "#D86A80" # light red
     }
 
-
-    for partner in partner_species:
-        fig, ax = plt.subplots(figsize=(width_pixels / 100, height_pixels / 100), dpi=100)
+    
+    for i,partner in enumerate(sorted(partner_species)):
         print(f"/////////////////////// {partner} ///////////////////////")
         partner_title=partner.replace("_", ". ")
-        plot_title = f"C. maculatus vs. {partner_title} pairwise comparison"
-        plot_dNdS_subplot(lists_A=partner_lists_A[partner], lists_X=partner_lists_X[partner], fs=fs, title=plot_title, colors_dict=colors)
-        fig.supxlabel(f"(number of genes)\nconservation rank of C. maculatus ortholog", fontsize = fs)
-        fig.supylabel(y_label, fontsize = fs, x=0.0, y=0.625)
+        plot_title = f"{partner_title} pairwise comparison"
+        if i<2:
+            plot_x_axis=False
+        else:
+            plot_x_axis=True
+        plot_dNdS_subplot(lists_A=partner_lists_A[partner], lists_X=partner_lists_X[partner], fs=fs, row=i,title=plot_title, colors_dict=colors, plot_x_axis=plot_x_axis, ylab=y_label)
+        if plot_x_axis:
+            # fig.supxlabel(f"(number of genes)\nconservation rank of C. maculatus ortholog", fontsize = fs, labelpad=20)
+            ax[i].set_xlabel(f"(number of genes)\northolog distance", fontsize = fs, labelpad=100)
 
         # layout (left, bottom, right, top)
         plt.tight_layout(rect=[0.0, 0.05, 1, 1])
 
-        outfile_partner = outfile.replace(".png", f"{partner}.png")
-        # transparent background
-        plt.savefig(outfile_partner, dpi = 300, transparent = True)
-        # non-transparent background
-        filename_tr = outfile_partner.replace(".png", "_white_bg.png")
-        plt.savefig(filename_tr, dpi = 300, transparent = False)
-        print(f"plot saved in current working directory as: {outfile_partner} and {filename_tr}")
+    # outfile_partner = outfile.replace(".png", f"{partner}.png")
+    outfile_partner = outfile.replace(".png", f"_all_comparisons.png")
+    # transparent background
+    plt.savefig(outfile_partner, dpi = 300, transparent = True)
+    # non-transparent background
+    filename_tr = outfile_partner.replace(".png", "_white_bg.png")
+    plt.savefig(filename_tr, dpi = 300, transparent = False)
+    print(f"plot saved in current working directory as: {outfile_partner} and {filename_tr}")
 
 
 def compare_conservation_rank_proportions(summary_paths_AX):
@@ -960,7 +991,7 @@ if __name__ == "__main__":
         # compare_conservation_rank_proportions(full_tables_dict)
         ###################################################
 
-    if True:
+    if False:
         pos_sel = True # if true plot bar charts with proportion of positive selection
         if False:
             ###################################################
@@ -989,8 +1020,8 @@ if __name__ == "__main__":
         statistical_analysis_pos_sel(full_table_paths_dict=full_tables_dict)
         ###################################################
 
-    if False:
+    if True:
         ###################################################
-        ## scatterplots dNdS vs logFC 
+        ## boxplot dNdS by rank and chromosome but no sex bias
         filename=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/dNdS_vs_conservation_rank.png"
         plot_dNdS_rank_conserved(summary_paths_AX_list= full_tables_dict, outfile = filename, maxdNdS = 0)

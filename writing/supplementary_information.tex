@@ -58,6 +58,7 @@
 \renewcommand{\thetable}{S\arabic{table}}
 \renewcommand{\thefigure}{S\arabic{figure}}
 
+% pdflatex -pdf supplementary_information.tex
 
 \section*{Supplementary information}
 
@@ -235,15 +236,13 @@
         Missing BUSCOs & 32	(3.1\%) & 21 (2.0\%) & 8 (0.7\%) \\
         \hline
         Total BUSCO groups searched & 1013	 & 1013 & 1013 \\
+        \hline
+        \hline
+        total number of genes & 18978 & 18028 & 14861 \\
     \end{tabular}
 \end{table}
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.75\linewidth]{../data/annotation_evaluation/single_exon_genes_white_bg.png}
-    \caption{Number of genes with highlighted proportion of single exon genes in all species included.}
-    \label{SIfig:gene_nos}
-\end{figure}
+
 
 \subsection*{Synteny}
 
@@ -297,5 +296,15 @@
     \label{SIfig:synteny_TcasBsil}
 \end{figure}
 
+
+\subsection*{additional differential expression analyses}
+
+
+\begin{figure}[H]
+    \centering
+    \begin{overpic}[width=0.9\linewidth]{../data/DE_analysis/X_sex_bias.png}
+        \put(1,62){\textbf{A}}
+    \end{overpic}
+\end{figure}
 
 \end{document}
