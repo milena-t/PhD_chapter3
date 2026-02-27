@@ -686,7 +686,7 @@ def boxplot_dNdS(full_table_paths_dict, outfile, maxdNdS=2, partner_species="C_c
 
 
 
-def make_phylogeny_rank_merged_dict(summary_file_df, tissue, max_dNdS=2):
+def make_phylogeny_rank_merged_dict(summary_file_df, tissue, max_dNdS=2, pos_sel =False):
     """
     make a dict with X/Y like this where the rank orders are merged 
     {
@@ -707,13 +707,17 @@ def make_phylogeny_rank_merged_dict(summary_file_df, tissue, max_dNdS=2):
     dNdS_dict = { "A": {"male": [], "female": [], "unbiased": []},
                   "X": {"male": [], "female": [], "unbiased": []} }
 
-    for SB_cat, dNdS, chr  in zip(filtered_df[f"SB_{tissue}"],filtered_df["dN/dS"],filtered_df["chromosome"]):
-        dNdS_dict[chr][SB_cat].append(dNdS)
+    if pos_sel:
+        for SB_cat, possel, chr  in zip(filtered_df[f"SB_{tissue}"],filtered_df["positive_selection"],filtered_df["chromosome"]):
+            dNdS_dict[chr][SB_cat].append(possel)
+    else:
+        for SB_cat, dNdS, chr  in zip(filtered_df[f"SB_{tissue}"],filtered_df["dN/dS"],filtered_df["chromosome"]):
+            dNdS_dict[chr][SB_cat].append(dNdS)
 
     return dNdS_dict
 
 
-def boxplot_dNdS_merge_rank(full_table_paths_dict, outfile, maxdNdS=2, partner_species="C_chinensis"):
+def boxplot_dNdS_merge_rank(full_table_paths_dict, outfile, maxdNdS=2, partner_species="C_chinensis", pos_sel=False):
 
     X_df = pd.read_csv(full_table_paths_dict["X"], sep="\t")
     A_df = pd.read_csv(full_table_paths_dict["A"], sep="\t")
@@ -728,8 +732,12 @@ def boxplot_dNdS_merge_rank(full_table_paths_dict, outfile, maxdNdS=2, partner_s
     df["SB_head_thorax"] = df.apply(make_sex_bias_cat_row, axis=1, args=("head_thorax",))
     df = df[df["other_species"]==partner_species]
 
-    nested_vals_dict_a = make_phylogeny_rank_merged_dict(df, tissue="abdomen", max_dNdS=maxdNdS)
-    nested_vals_dict_ht = make_phylogeny_rank_merged_dict(df, tissue="head_thorax", max_dNdS=maxdNdS)
+    if pos_sel:
+        nested_vals_dict_a = make_phylogeny_rank_merged_dict(df, tissue="abdomen", max_dNdS=maxdNdS, pos_sel=pos_sel)
+        nested_vals_dict_ht = make_phylogeny_rank_merged_dict(df, tissue="head_thorax", max_dNdS=maxdNdS, pos_sel=pos_sel)
+    else:
+        nested_vals_dict_a = make_phylogeny_rank_merged_dict(df, tissue="abdomen", max_dNdS=maxdNdS)
+        nested_vals_dict_ht = make_phylogeny_rank_merged_dict(df, tissue="head_thorax", max_dNdS=maxdNdS)
 
     
     y_label = f"dN/dS"
@@ -739,7 +747,10 @@ def boxplot_dNdS_merge_rank(full_table_paths_dict, outfile, maxdNdS=2, partner_s
     fs = 30 # font size
 
     # set figure aspect ratio
-    aspect_ratio = 3 / 8
+    if pos_sel:
+        aspect_ratio = 4 / 8
+    else:
+        aspect_ratio = 3 / 8
     height_pixels = 1000  # Height in pixels
     width_pixels = int(height_pixels * aspect_ratio)  # Width in pixels
 
@@ -757,38 +768,97 @@ def boxplot_dNdS_merge_rank(full_table_paths_dict, outfile, maxdNdS=2, partner_s
             color_edges.append(colors_dict[SB_cat]["edge"])
             color_medians.append(colors_dict[SB_cat]["medians"])
         
-        ## make tick labels in the same order as the box plot lists to be sure that everyting is right
-        tick_labels = []
-        AX_lists = []
-        print(f"{title}")
-        for chr in ["A","X"]:
-            print(f"\t - {chr}")
-            SB_dict = AX_dicts[chr]
-            for SB_cat in SB_order_list:
 
-                ### to double check plot coloring and stuff right: plot verbose tick labels!
-                # num_genes =f"({len(SB_dict[SB_cat])}):{chr}:{SB_cat}"
-                num_genes =f"({len(SB_dict[SB_cat])})"
-                ### 
+        if pos_sel:
+            ## make tick labels in the same order as the box plot lists to be sure that everyting is right
+            tick_labels = []
+            AX_lists_pos = []
+            AX_lists_neg = []
+            cols_list_sig = []
+            cols_list_unsig = []
 
-                print(f"\t\t - {SB_cat} has {num_genes} genes")
-                tick_labels.append(num_genes)
-                AX_lists.append(SB_dict[SB_cat])
+            print(f"{title}")
+            for chr in ["A","X"]:
+                print(f"\t - {chr}")
+                SB_dict = AX_dicts[chr]
+                for SB_cat in SB_order_list:
 
-        ## make tick positions so that the groups of three within each chromosome are closer together
-        tick_pos = [i for i in range(1,len(tick_labels)+1)]
-        box_width = 1/5
-        pos_adjust=box_width*1.3
-        for i in range(len(tick_labels)):
-            if i%3 == 0:
-                tick_pos[i] =1+ i//3 -pos_adjust
-            if i%3 == 1:
-                tick_pos[i] =1+ i//3 
-            if i%3 == 2:
-                tick_pos[i] =1+ i//3 +pos_adjust
-            print(f"{i} : {tick_pos[i]}")
-        
-        bp = ax.boxplot(AX_lists, positions=tick_pos, widths=box_width, patch_artist=True)
+                    ### to double check plot coloring and stuff right: plot verbose tick labels!
+                    # num_genes =f"({len(SB_dict[SB_cat])}):{chr}:{SB_cat}"
+                    ### 
+
+                    num_genes =len(SB_dict[SB_cat])
+                    print(f"\t\t - {SB_cat} has {num_genes} genes")
+                    tick_labels.append(f"({num_genes})")
+
+                    A_nonsig = len([val for val in SB_dict[SB_cat] if val == False])*100.0
+                    A_sig = len([val for val in SB_dict[SB_cat] if val == True])*100.0
+                    try:
+                        AX_lists_pos.append(A_sig/num_genes)
+                    except:
+                        AX_lists_pos.append(0)
+                    try:
+                        AX_lists_neg.append(A_nonsig/num_genes)
+                    except:
+                        AX_lists_neg.append(0)
+
+                    cols_list_sig.append(colors_dict[SB_cat]["sig"])
+                    cols_list_unsig.append(colors_dict[SB_cat]["nonsig"])
+
+            ## make tick positions so that the groups of three within each chromosome are closer together
+            tick_pos = [i for i in range(1,len(tick_labels)+1)]
+            box_width = 1/5
+            pos_adjust=box_width*1.3
+            for i in range(len(tick_labels)):
+                if i%3 == 0:
+                    tick_pos[i] =1+ i//3 -pos_adjust
+                if i%3 == 1:
+                    tick_pos[i] =1+ i//3 
+                if i%3 == 2:
+                    tick_pos[i] =1+ i//3 +pos_adjust
+                print(f"{i} : {tick_pos[i]}")
+
+            ax.bar(tick_pos, AX_lists_neg, width = box_width, label='M1a', color=cols_list_unsig)#, alpha=0.7)
+            ax.bar(tick_pos, AX_lists_pos, width = box_width, bottom=AX_lists_neg, label='M2a', color= cols_list_sig)
+            ax.yaxis.set_major_formatter(FuncFormatter(lambda x, pos: '' if x > 100 and x<1 else f'{int(x)}%'))
+
+
+
+        else:
+            ## make tick labels in the same order as the box plot lists to be sure that everyting is right
+            tick_labels = []
+            AX_lists = []
+            print(f"{title}")
+            for chr in ["A","X"]:
+                print(f"\t - {chr}")
+                SB_dict = AX_dicts[chr]
+                for SB_cat in SB_order_list:
+
+                    ### to double check plot coloring and stuff right: plot verbose tick labels!
+                    # num_genes =f"({len(SB_dict[SB_cat])}):{chr}:{SB_cat}"
+                    num_genes =f"({len(SB_dict[SB_cat])})"
+                    ### 
+
+                    print(f"\t\t - {SB_cat} has {num_genes} genes")
+                    tick_labels.append(num_genes)
+                    AX_lists.append(SB_dict[SB_cat])
+
+            ## make tick positions so that the groups of three within each chromosome are closer together
+            tick_pos = [i for i in range(1,len(tick_labels)+1)]
+            box_width = 1/5
+            pos_adjust=box_width*1.3
+            for i in range(len(tick_labels)):
+                if i%3 == 0:
+                    tick_pos[i] =1+ i//3 -pos_adjust
+                if i%3 == 1:
+                    tick_pos[i] =1+ i//3 
+                if i%3 == 2:
+                    tick_pos[i] =1+ i//3 +pos_adjust
+                print(f"{i} : {tick_pos[i]}")
+            
+            bp = ax.boxplot(AX_lists, positions=tick_pos, widths=box_width, patch_artist=True)
+
+
 
         # set axis labels
         tick_fs_factor = 0.7
@@ -812,24 +882,27 @@ def boxplot_dNdS_merge_rank(full_table_paths_dict, outfile, maxdNdS=2, partner_s
             if i % 2 == 0:  # only the X-sections
                 left = i-box_width-pos_adjust
                 right = i+box_width+pos_adjust
-                ax.axvspan(left, right, color="lightgrey", alpha=0.3, linewidth = 0)
+                ax.axvspan(left, right, color="#7A6B70", alpha=0.2, linewidth = 0, zorder=0)
 
-        ## make fancy colors for the boxplot
-        if True:
-            for i, box in enumerate(bp["boxes"]):
-                box.set(facecolor=color_faces[i % 3], edgecolor=color_edges[i % 3], linewidth = lw)
-            for i, median in enumerate(bp['medians']):
-                median.set(color=color_medians[i % 3], linewidth=lw)
-            for i, whisker in enumerate(bp['whiskers']):
-                whisker.set(color = color_edges[i//2 % 3], linewidth = lw, linestyle='-')
-            for i, cap in enumerate(bp['caps']):
-                cap.set(color = color_edges[i//2 % 3], linewidth = lw)
-            for i, flier in enumerate(bp['fliers']):
-                flier.set(markerfacecolor=color_edges[i % 3], markeredgecolor=color_edges[i % 3], linewidth = lw, marker='.')
+        if pos_sel==False:
+            ## make fancy colors for the boxplot
+            if True:
+                for i, box in enumerate(bp["boxes"]):
+                    box.set(facecolor=color_faces[i % 3], edgecolor=color_edges[i % 3], linewidth = lw)
+                for i, median in enumerate(bp['medians']):
+                    median.set(color=color_medians[i % 3], linewidth=lw)
+                for i, whisker in enumerate(bp['whiskers']):
+                    whisker.set(color = color_edges[i//2 % 3], linewidth = lw, linestyle='-')
+                for i, cap in enumerate(bp['caps']):
+                    cap.set(color = color_edges[i//2 % 3], linewidth = lw)
+                for i, flier in enumerate(bp['fliers']):
+                    flier.set(markerfacecolor=color_edges[i % 3], markeredgecolor=color_edges[i % 3], linewidth = lw, marker='.')
 
         fig.supxlabel(f"(number of genes)\nchromosome", fontsize = fs*0.9)
-        fig.supylabel(y_label, fontsize = fs*0.8, x=0.0, y=0.625)
-
+        if pos_sel:
+            fig.supylabel(y_label, fontsize = fs*0.8, x=0.1, y=0.625)
+        else:
+            fig.supylabel(y_label, fontsize = fs*0.8, x=0.0, y=0.625)
         # layout (left, bottom, right, top)
         plt.tight_layout(rect=[0.0, 0.05, 1, 1])
 
@@ -845,16 +918,22 @@ def boxplot_dNdS_merge_rank(full_table_paths_dict, outfile, maxdNdS=2, partner_s
             "fill" : "#495E83", # dusk blue
             "edge" : "#374C6E", # dusk blue darker
             "medians" : "#A7CCED", # icy blue
+            "sig" : "#3C5786", # dusk blue
+            "nonsig" : "#677CA2", # glaucous
         },
         "female" : {
             "fill" : "#AB354A", # cherry rose
             "edge" : "#771C2C", # dark amaranth
             "medians" : "#EA9AA9", # cotton candy
+            "sig" : "#A4273E", # cherry rose
+            "nonsig" : "#BC5265" # dusty mauve
         },
         "unbiased" : {
             "fill" : "#816874", # dusty mauve
             "edge" : "#5B414E", # mauve shadow
-            "medians" : "#C3A7B5" # lilac ash
+            "medians" : "#C3A7B5", # lilac ash
+            "sig" : "#6B555F", # taupe grey
+            "nonsig" : "#967A88" #dusty mauve
         }
     }
 
@@ -882,10 +961,10 @@ if __name__ == "__main__":
         ###################################################
 
     if True:
-        if True:
+        pos_sel = True # if true plot bar charts with proportion of positive selection
+        if False:
             ###################################################
             ### boxplot for positive selection or dNdS by rank/chromosome/sex bias
-            pos_sel = True # if true plot bar charts with proportion of positive selection
                            # if false plot boxplot of dNdS values
             if pos_sel:
                 filename=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/pos_sel_vs_conservation_rank_boxplot.png"
@@ -895,9 +974,12 @@ if __name__ == "__main__":
             ###################################################
         else:
             ###################################################
-            ### boxplot for dNdS by rank/chromosome/sex bias
-            filename=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/dNdS_merged_conservation_rank_boxplot.png"
-            boxplot_dNdS_merge_rank(full_tables_dict, outfile=filename)
+            ### boxplot for dNdS by chromosome/sex bias with rank categories merged
+            if pos_sel:
+                filename=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/pos_sel_merged_conservation_rank_boxplot.png"
+            else:
+                filename=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/dNdS_merged_conservation_rank_boxplot.png"
+            boxplot_dNdS_merge_rank(full_tables_dict, outfile=filename, pos_sel=pos_sel)
             ###################################################
 
 
