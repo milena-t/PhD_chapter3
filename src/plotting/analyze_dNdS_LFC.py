@@ -478,7 +478,10 @@ def make_phylogeny_rank_nested_dict(summary_file_df, tissue, max_dNdS=2, pos_sel
     return dNdS_dict
 
 
-def boxplot_dNdS(full_table_paths_dict, outfile, maxdNdS=2, partner_species="C_chinensis", pos_sel = False):
+def boxplot_dNdS(full_table_paths_dict, outfile, maxdNdS=2, partner_species="C_chinensis", pos_sel = False, lineplot=False):
+
+    if pos_sel:
+        lineplot=False
 
     X_df = pd.read_csv(full_table_paths_dict["X"], sep="\t")
     A_df = pd.read_csv(full_table_paths_dict["A"], sep="\t")
@@ -511,7 +514,7 @@ def boxplot_dNdS(full_table_paths_dict, outfile, maxdNdS=2, partner_species="C_c
     height_pixels = 1000  # Height in pixels
     width_pixels = int(height_pixels * aspect_ratio)  # Width in pixels
 
-    def plot_dNdS_subplot(AX_dicts, fs, title, colors_dict, lw=2, outfile = "plot.png", pos_sel = False):
+    def plot_dNdS_subplot(AX_dicts, fs, title, colors_dict, lw=2, outfile = "plot.png", pos_sel = False, lineplot=False):
 
         fig, ax = plt.subplots(figsize=(width_pixels / 100, height_pixels / 100), dpi=100)
         SB_order_list =["male","unbiased","female"]
@@ -586,6 +589,7 @@ def boxplot_dNdS(full_table_paths_dict, outfile, maxdNdS=2, partner_species="C_c
 
             ## make tick labels in the same order as the box plot lists to be sure that everyting is right
             tick_labels = []
+            long_tick_labels = []
             AX_lists = []
             print(f"{title}")
             for i in range(1,6): # hard-code rank order. dicts are ordered so it should be right by default but just to be sure
@@ -603,35 +607,75 @@ def boxplot_dNdS(full_table_paths_dict, outfile, maxdNdS=2, partner_species="C_c
                         num_genes =f"({len(SB_dict[SB_cat])})"
                         print(f"\t\t - {SB_cat} has {num_genes} genes")
                         tick_labels.append(num_genes)
+                        long_tick_labels.append(f"{i} {chr} {SB_cat}")
                         AX_lists.append(SB_dict[SB_cat])
             ## make tick positions so that the groups of three within each chromosome are closer together
             tick_pos = [i for i in range(1,len(tick_labels)+1)]
+            tick_pos_lines_dict = {}
             box_width = 1/5
             pos_adjust=box_width*1.3
             for i in range(len(tick_labels)):
                 if i%3 == 0:
-                    tick_pos[i] =1+ i//3 -pos_adjust
+                    cur_pos =1+ i//3 -pos_adjust
                 if i%3 == 1:
-                    tick_pos[i] =1+ i//3 
+                    cur_pos =1+ i//3 
                 if i%3 == 2:
-                    tick_pos[i] =1+ i//3 +pos_adjust
-                print(f"{i} : {tick_pos[i]}")
+                    cur_pos =1+ i//3 +pos_adjust
+                tick_pos[i]=cur_pos
+                tick_pos_lines_dict[long_tick_labels[i]] = cur_pos
 
-            bp = ax.boxplot(AX_lists, positions=tick_pos, widths=box_width, patch_artist=True)
+
+            if lineplot:
+
+                medians_dict = {"A" : {SB_cat :[[],[]] for SB_cat in SB_order_list}, "X" : {SB_cat :[[],[]] for SB_cat in SB_order_list}}
+                errors_dict = {"A" : {SB_cat :[] for SB_cat in SB_order_list}, "X" : {SB_cat :[] for SB_cat in SB_order_list}}
+                for chr in ["A", "X"]:
+                    for SB_cat in SB_order_list:
+                        for i, rank in enumerate(range(1,6)):
+                            cur_list = AX_dicts[rank][chr][SB_cat]
+                            if len(cur_list)>0:
+                                medians_dict[chr][SB_cat][0].append(np.median(cur_list))
+                                errors_dict[chr][SB_cat].append(stats.sem(cur_list))
+                            else:
+                                medians_dict[chr][SB_cat][0].append(np.nan)
+                                errors_dict[chr][SB_cat].append(np.nan)
+
+                            medians_dict[chr][SB_cat][1].append(tick_pos_lines_dict[f"{rank} {chr} {SB_cat}"])
             
-            ## make fancy colors for the boxplot
-            if True:
-                for i, box in enumerate(bp["boxes"]):
-                    box.set(facecolor=color_faces[i % 3], edgecolor=color_edges[i % 3], linewidth = lw)
-                for i, median in enumerate(bp['medians']):
-                    median.set(color=color_medians[i % 3], linewidth=lw)
-                for i, whisker in enumerate(bp['whiskers']):
-                    whisker.set(color = color_edges[i//2 % 3], linewidth = lw, linestyle='-')
-                for i, cap in enumerate(bp['caps']):
-                    cap.set(color = color_edges[i//2 % 3], linewidth = lw)
-                for i, flier in enumerate(bp['fliers']):
-                    flier.set(markerfacecolor=color_edges[i % 3], markeredgecolor=color_edges[i % 3], linewidth = lw, marker='.')
+                for chr in ["A", "X"]:
+                    for SB_cat in SB_order_list:
+                        yvals = medians_dict[chr][SB_cat][0]
+                        xvals = medians_dict[chr][SB_cat][1]
+                        SEMs = errors_dict[chr][SB_cat]
 
+                        if chr=="A":
+                            color = colors_dict[SB_cat]["fill"] # previously edge but that looks very confusing
+                            linest = ":" # (0, (3, 5, 1, 5))# 'dashdotted'
+                        else:
+                            color = colors_dict[SB_cat]["fill"]
+                            linest = (0, (5, 5))#  "dashed"
+
+                        print(f"{chr} x {SB_cat} : {yvals}")
+                        ax.errorbar(xvals, yvals, xerr = 0, yerr = SEMs, color=color, linewidth =lw,
+                                    marker = ".", markersize=20, linestyle = linest)
+                        # ax.plot(xvals, yvals, color=color, linewidth =lw, linestyle="-")
+                        ax.set_ylim(0,0.5)
+
+            else:
+                bp = ax.boxplot(AX_lists, positions=tick_pos, widths=box_width, patch_artist=True)
+                
+                ## make fancy colors for the boxplot
+                if True:
+                    for i, box in enumerate(bp["boxes"]):
+                        box.set(facecolor=color_faces[i % 3], edgecolor=color_edges[i % 3], linewidth = lw)
+                    for i, median in enumerate(bp['medians']):
+                        median.set(color=color_medians[i % 3], linewidth=lw)
+                    for i, whisker in enumerate(bp['whiskers']):
+                        whisker.set(color = color_edges[i//2 % 3], linewidth = lw, linestyle='-')
+                    for i, cap in enumerate(bp['caps']):
+                        cap.set(color = color_edges[i//2 % 3], linewidth = lw)
+                    for i, flier in enumerate(bp['fliers']):
+                        flier.set(markerfacecolor=color_edges[i % 3], markeredgecolor=color_edges[i % 3], linewidth = lw, marker='.')
 
 
         # set axis labels
@@ -707,13 +751,15 @@ def boxplot_dNdS(full_table_paths_dict, outfile, maxdNdS=2, partner_species="C_c
 
     if pos_sel:
         title_suffix = f"pos. sel. genes in"
+    if lineplot:
+        title_suffix = f"median and SEM of dN/dS for"
     else:
         title_suffix = f"dN/dS by sex bias for"
 
     plot_dNdS_subplot(AX_dicts=nested_vals_dict_a, outfile=outfile.replace(".png", f"_abdomen.png"), 
-        title=f"{title_suffix} abdominal tissue", colors_dict=colors, fs=fs, pos_sel=pos_sel)
+        title=f"{title_suffix} abdominal tissue", colors_dict=colors, fs=fs, pos_sel=pos_sel, lineplot=lineplot)
     plot_dNdS_subplot(AX_dicts=nested_vals_dict_ht,outfile=outfile.replace(".png", f"_head_thorax.png"), 
-        title=f"{title_suffix} head+thorax tissue", colors_dict=colors, fs=fs, pos_sel=pos_sel)
+        title=f"{title_suffix} head+thorax tissue", colors_dict=colors, fs=fs, pos_sel=pos_sel, lineplot=lineplot)
 
 
 
@@ -980,7 +1026,7 @@ def boxplot_dNdS_merge_rank(full_table_paths_dict, outfile, maxdNdS=2, partner_s
 
 if __name__ == "__main__":
 
-    username = "miltr339"
+    username = "milena"
     full_tables_dict = get_full_table_path(username=username)
     reorg_table_outfile = f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/paml_stats_outfile_table.tsv"
     
@@ -991,17 +1037,20 @@ if __name__ == "__main__":
         # compare_conservation_rank_proportions(full_tables_dict)
         ###################################################
 
-    if False:
+    if True:
         pos_sel = False # if true plot bar charts with proportion of positive selection
-        if False:
+        lineplot=True
+        if True:
             ###################################################
-            ### bar plot for positive selection or dNdS by rank/chromosome/sex bias
-                           # if false plot boxplot of dNdS values
+            ### if pos_sel: bar plot for positive selection or dNdS by rank/chromosome/sex bias
+            ### else: boxplot of dNdS values
             if pos_sel:
                 filename=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/pos_sel_vs_conservation_rank_boxplot.png"
+            elif lineplot:
+                filename=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/dNdS_vs_conservation_rank_medians_lineplot.png"
             else:
                 filename=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/dNdS_vs_conservation_rank_boxplot.png"
-            boxplot_dNdS(full_tables_dict, outfile=filename, pos_sel=pos_sel)
+            boxplot_dNdS(full_tables_dict, outfile=filename, pos_sel=pos_sel, lineplot=lineplot)
             ###################################################
         else:
             ###################################################
@@ -1020,7 +1069,7 @@ if __name__ == "__main__":
         statistical_analysis_pos_sel(full_table_paths_dict=full_tables_dict)
         ###################################################
 
-    if True:
+    if False:
         ###################################################
         ## boxplot dNdS by rank and chromosome but no sex bias
         filename=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/dNdS_vs_conservation_rank.png"
