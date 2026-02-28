@@ -653,7 +653,7 @@ def boxplot_dNdS(full_table_paths_dict, outfile, maxdNdS=2, partner_species="C_c
                             linest = ":" # (0, (3, 5, 1, 5))# 'dashdotted'
                         else:
                             color = colors_dict[SB_cat]["fill"]
-                            linest = (0, (5, 5))#  "dashed"
+                            linest = "-" # (0, (5, 5))#  "dashed"
 
                         print(f"{chr} x {SB_cat} : {yvals}")
                         ax.errorbar(xvals, yvals, xerr = 0, yerr = SEMs, color=color, linewidth =lw,

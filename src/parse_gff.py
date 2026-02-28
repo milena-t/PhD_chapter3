@@ -365,7 +365,7 @@ def parse_gff3_general(filepath:str, verbose = True, only_genes = False, keep_fe
     return genome_annotation
 
 
-def parse_gff3_by_contig(filepath:str, verbose = True, featurecategory = FeatureCategory.Gene):
+def parse_gff3_by_contig(filepath:str, verbose = True, featurecategory = [FeatureCategory.Gene,FeatureCategory.Region]):
     """
     parse the gff into a dictionary by contig { contig : [ FeatureCategory.Gene ] } 
     This includes by default only genes, not any of the child features, 
@@ -405,9 +405,13 @@ def parse_gff3_by_contig(filepath:str, verbose = True, featurecategory = Feature
             contig,source,category_,start,stop,score,strandedness,frame,attributes_=[c for c in line.split("\t") if len(c)>0]
             category = categorize_string(category_)
 
-            if category != featurecategory:
+            if category not in featurecategory:
                 # There's only genes supposed to be included, skip everything that isn't a gene
                 continue
+
+            if "NW_026962382.1" in contig:
+                print(f"!!!!!!!!!! ----> read {contig}")
+            ####
             
             else:
                 if verbose:
