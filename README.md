@@ -1024,7 +1024,9 @@ C(chromosome)[T.X]     0.5665      0.136      4.172      0.000       0.300      
 
 <p float="left">
   <img src="data/DE_analysis/pos_sel_vs_conservation_rank_boxplot_abdomen_white_bg.png" width="79%" />
+  <img src="data/DE_analysis/pos_sel_merged_conservation_rank_boxplot_abdomen_white_bg.png" width="20%" />
   <img src="data/DE_analysis/pos_sel_vs_conservation_rank_boxplot_head_thorax_white_bg.png" width="79%" />
+  <img src="data/DE_analysis/pos_sel_merged_conservation_rank_boxplot_head_thorax_white_bg.png" width="20%" />
 </p>
 
 
