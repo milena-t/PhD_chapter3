@@ -752,7 +752,7 @@ def boxplot_dNdS(full_table_paths_dict, outfile, maxdNdS=2, partner_species="C_c
     if pos_sel:
         title_suffix = f"pos. sel. genes in"
     if lineplot:
-        title_suffix = f"median and SEM of dN/dS for"
+        title_suffix = f"median and standard error of dN/dS for"
     else:
         title_suffix = f"dN/dS by sex bias for"
 
@@ -1026,7 +1026,7 @@ def boxplot_dNdS_merge_rank(full_table_paths_dict, outfile, maxdNdS=2, partner_s
 
 if __name__ == "__main__":
 
-    username = "milena"
+    username = "miltr339"
     full_tables_dict = get_full_table_path(username=username)
     reorg_table_outfile = f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/paml_stats_outfile_table.tsv"
     
