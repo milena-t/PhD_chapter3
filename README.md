@@ -908,8 +908,8 @@ This plot shows the median within all the categories considered by the median re
 <p float="left">
   <img src="data/DE_analysis/dNdS_vs_conservation_rank_medians_lineplot_abdomen_white_bg.png" width="79%" />
   <img src="data/DE_analysis/dNdS_merged_conservation_rank_boxplot_abdomen_white_bg.png" width="20%" />
-  <img src="data/DE_analysis/dNdS_vs_conservation_rank_boxplot_head_thorax_white_bg.png" width="79%" />
-  <img src="data/DE_analysis/dNdS_vs_conservation_rank_medians_lineplot_head_thorax_white_bg.png" width="20%" />
+  <img src="data/DE_analysis/dNdS_vs_conservation_rank_medians_lineplot_head_thorax_white_bg.png" width="79%" />
+  <img src="data/DE_analysis/dNdS_merged_conservation_rank_boxplot_head_thorax_white_bg.png" width="20%" />
 </p>
 
 #### dN/dS by chromosome and conservation rank
