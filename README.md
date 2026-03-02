@@ -817,7 +817,7 @@ I am using `quantreg` again, like for the log2FC again, where ! have a continuou
   * significant interactions are 2-way `C(SB_head_thorax)[T.male]:C(chromosome)[T.X]` and 3-way `C(SB_head_thorax)[T.male]:C(chromosome)[T.X]:level_most_dist_ortholog` which are male-biased genes on X
 
 <details>
-  <summary>See lin reg tables</summary>
+  <summary>Tables with age rank</summary>
 
 ```text
 ////////////////// C_chinensis: abdomen //////////////////
@@ -856,6 +856,36 @@ I am using `quantreg` again, like for the log2FC again, where ! have a continuou
 =============================================================================================================================================
 ```
 </details>
+
+<details>
+  <summary>Tables without age rank</summary>
+
+```text
+////////////////// C_chinensis: abdomen //////////////////
+================================================================================================================
+                                                     coef    std err          t      P>|t|      [0.025      0.975]
+----------------------------------------------------------------------------------------------------------------
+* Intercept                                        0.0922      0.002     38.838      0.000       0.088       0.097
+* C(SB_abdomen)[T.male]                            0.0101      0.003      3.059      0.002       0.004       0.017
+* C(SB_abdomen)[T.unbiased]                       -0.0203      0.003     -7.125      0.000      -0.026      -0.015
+  C(chromosome)[T.X]                              -0.0209      0.013     -1.664      0.096      -0.046       0.004
+  C(SB_abdomen)[T.male]:C(chromosome)[T.X]         0.0017      0.019      0.088      0.930      -0.036       0.040
+  C(SB_abdomen)[T.unbiased]:C(chromosome)[T.X]     0.0091      0.015      0.613      0.540      -0.020       0.038
+================================================================================================================
+////////////////// C_chinensis: head+thorax //////////////////
+====================================================================================================================
+                                                         coef    std err          t      P>|t|      [0.025      0.975]
+--------------------------------------------------------------------------------------------------------------------
+* Intercept                                            0.1134      0.005     24.918      0.000       0.104       0.122
+  C(SB_head_thorax)[T.male]                            0.0050      0.006      0.870      0.384      -0.006       0.016
+* C(SB_head_thorax)[T.unbiased]                       -0.0356      0.005     -7.545      0.000      -0.045      -0.026
+  C(chromosome)[T.X]                                  -0.0072      0.028     -0.255      0.799      -0.062       0.048
+  C(SB_head_thorax)[T.male]:C(chromosome)[T.X]        -0.0285      0.036     -0.787      0.432      -0.100       0.043
+  C(SB_head_thorax)[T.unbiased]:C(chromosome)[T.X]    -0.0079      0.029     -0.274      0.784      -0.064       0.049
+====================================================================================================================
+```
+</details>
+
 
 #### *B. siliquastri*
 
@@ -919,7 +949,7 @@ green is A and violet is X. Also keep in mind that the conservation rank is 1:C_
 This seems mostly in line with statistical results. 
 
 <p float="left">
-  <img src="data/DE_analysis/dNdS_vs_conservation_rank_all_comparisons_white_bg.png" width="60%" />
+  <img src="data/DE_analysis/dNdS_vs_conservation_rank_all_comparisons_white_bg.png" width="50%" />
 </p>
 
 <details>

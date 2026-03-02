@@ -145,6 +145,18 @@ def statistical_analysis_dNdS(full_table_paths_dict, table_outfile="", max_dNdS=
                 print(f"\n------------> head+thorax")
                 test = smf.quantreg(formula=formula_ht, data=filt_df).fit(q=0.5) # q=0.5 means we estimate the median
                 print(test.summary())
+
+                ### without the age rank to assess only sex bias effect
+                formula_a = f"{partner}_dNdS ~  C(SB_abdomen)  * C(chromosome)"
+                formula_ht = f"{partner}_dNdS ~  C(SB_head_thorax)  * C(chromosome)"
+                
+                print(f"\n------------> NO AGE RANK: abdomen")
+                test = smf.quantreg(formula=formula_a, data=filt_df).fit(q=0.5) # q=0.5 means we estimate the median
+                print(test.summary())
+                print(f"\n------------> NO AGE RANK: head+thorax")
+                test = smf.quantreg(formula=formula_ht, data=filt_df).fit(q=0.5) # q=0.5 means we estimate the median
+                print(test.summary())
+
             else:
                 formula = f"{partner}_dNdS ~  C(chromosome) * level_most_dist_ortholog"
                 # the syntax with the parentheses (LFC_abdomen + LFC_head_thorax) * C(chromosome) means this:
@@ -1030,14 +1042,14 @@ if __name__ == "__main__":
     full_tables_dict = get_full_table_path(username=username)
     reorg_table_outfile = f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/paml_stats_outfile_table.tsv"
     
-    if False:
+    if True:
         ###################################################
         ## median quantile regression for dNdS as continuous response
         statistical_analysis_dNdS(full_tables_dict, table_outfile=f"")
         # compare_conservation_rank_proportions(full_tables_dict)
         ###################################################
 
-    if True:
+    if False:
         pos_sel = False # if true plot bar charts with proportion of positive selection
         lineplot=True
         if True:
