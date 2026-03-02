@@ -24,7 +24,7 @@ GFF=${INDIR}Cmac_superscaffolded_Lome_braker.gtf
 # I did:
 #   wget http://eggnog6.embl.de/download/novel_fams-1.0.1/novel_fams.dmnd.gz
 # they also suggest:
-#   python3 ${INDIR}eggnog/download_eggnog_data.py --dbname Arthropoda --data_dir ${INDIR}eggnog/eggnog_db
+python3 ${INDIR}eggnog/download_eggnog_data.py --data_dir ${INDIR}eggnog/eggnog_db
 
 #Use/Make scratch dir
 export scratchDIR=${SNIC_TMP}/Cmac_lome_eggnog_diamond
