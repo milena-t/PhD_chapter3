@@ -1142,6 +1142,12 @@ C(chromosome)[T.X]     0.7266      0.189      3.844      0.000       0.356      
 ```
 
 
+# GO-term enrichment
+
+I will finish the analysis by running GO-term enrichment analysis on *C. maculatus* with genes under positive selection according to the site-model and a high dNdS value (threshold tbd. upper quantile?)
+
+
+
 # old analysis with *Diorhaba*
 
 I had previously included another pair of sister species: *D.sublineata* and *D. carinulata*. I suspect that *D. carinulata* has a misidentified X chromosome, which leaves it only three X-linked 1-to-1 orthologs between them. I looked into it a bit here, in case it is X turnover. I would need actual lab evidence to conclude that though I think, since the X is so conserved in all the other *Coleoptera* I have here, and I would need coverage or PCR evidence to be sure that the X-identified contig in *D. carinulata* is right.
