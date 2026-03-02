@@ -836,10 +836,12 @@ def boxplot_dNdS_merge_rank(full_table_paths_dict, outfile, maxdNdS=2, partner_s
         nested_vals_dict_a = make_phylogeny_rank_merged_dict(df, tissue="abdomen", max_dNdS=maxdNdS)
         nested_vals_dict_ht = make_phylogeny_rank_merged_dict(df, tissue="head_thorax", max_dNdS=maxdNdS)
 
-    
-    y_label = f"dN/dS"
-    if maxdNdS>0:
-        y_label = f"dN/dS (max. {maxdNdS})"
+    if pos_sel:
+        y_label = f"percentage of pos. sel. genes"
+    else:
+        y_label = f"dN/dS"
+        if maxdNdS>0:
+            y_label = f"dN/dS (max. {maxdNdS})"
     
     fs = 30 # font size
 
@@ -851,7 +853,7 @@ def boxplot_dNdS_merge_rank(full_table_paths_dict, outfile, maxdNdS=2, partner_s
     height_pixels = 1000  # Height in pixels
     width_pixels = int(height_pixels * aspect_ratio)  # Width in pixels
 
-    def plot_dNdS_subplot(AX_dicts, fs, title, colors_dict, lw=2, outfile = "plot.png"):
+    def plot_dNdS_subplot(AX_dicts, fs, title, pos_sel, colors_dict, lw=2, outfile = "plot.png"):
 
         fig, ax = plt.subplots(figsize=(width_pixels / 100, height_pixels / 100), dpi=100)
         SB_order_list =["male","unbiased","female"]
@@ -995,7 +997,8 @@ def boxplot_dNdS_merge_rank(full_table_paths_dict, outfile, maxdNdS=2, partner_s
                 for i, flier in enumerate(bp['fliers']):
                     flier.set(markerfacecolor=color_edges[i % 3], markeredgecolor=color_edges[i % 3], linewidth = lw, marker='.')
 
-        fig.supxlabel(f"(number of genes)\nchromosome", fontsize = fs*0.9)
+        # fig.supxlabel(f"(number of genes)\nchromosome", fontsize = fs*0.9)
+
         if pos_sel:
             fig.supylabel(y_label, fontsize = fs*0.8, x=0.1, y=0.625)
         else:
@@ -1034,11 +1037,14 @@ def boxplot_dNdS_merge_rank(full_table_paths_dict, outfile, maxdNdS=2, partner_s
         }
     }
 
-
+    if pos_sel:
+        type_plt = "pos. sel."
+    else:
+        type_plt = "dN/dS"
     plot_dNdS_subplot(AX_dicts=nested_vals_dict_a, outfile=outfile.replace(".png", f"_abdomen.png"), 
-        title="dN/dS abd.", colors_dict=colors, fs=fs)
+        title=f"{type_plt} abd.", pos_sel = pos_sel, colors_dict=colors, fs=fs)
     plot_dNdS_subplot(AX_dicts=nested_vals_dict_ht,outfile=outfile.replace(".png", f"_head_thorax.png"), 
-        title="dN/dS h+t", colors_dict=colors, fs=fs)
+        title=f"{type_plt} h+t", pos_sel = pos_sel, colors_dict=colors, fs=fs)
 
 
 
@@ -1059,10 +1065,10 @@ if __name__ == "__main__":
         # compare_conservation_rank_proportions(full_tables_dict)
         ###################################################
 
-    if False:
-        pos_sel = False # if true plot bar charts with proportion of positive selection
+    if True:
+        pos_sel = True # if true plot bar charts with proportion of positive selection
         lineplot=True
-        if True:
+        if False:
             ###################################################
             ### if pos_sel: bar plot for positive selection or dNdS by rank/chromosome/sex bias
             ### else: boxplot of dNdS values
@@ -1087,7 +1093,7 @@ if __name__ == "__main__":
 
     ###### site model (pos. sel) stats and some plotting
     ## if plotting not here then in PhD_chapter3/src/plotting/analyze_site_classes.py
-    if True:
+    if False:
         ###################################################
         ## analyze positive selection in site classes
         ## logistic regression for categorical response (positive selection True/False)
