@@ -952,7 +952,7 @@ This plot shows the median within all the categories considered by the median re
 
 #### dN/dS by chromosome and conservation rank
 
-green is A and violet is X. Also keep in mind that the conservation rank is 1:C_chinensis and 2:B_siliquastri, so the lowest possible rank for *A. obtectus* is 3.
+orange is A and red is X, like in the first pairwise-comparison plots. Also keep in mind that the conservation rank is 1:C_chinensis and 2:B_siliquastri, so the lowest possible rank for *A. obtectus* is 3.
 
 This seems mostly in line with statistical results. 
 
@@ -1081,6 +1081,8 @@ C(chromosome)[T.X]     0.5665      0.136      4.172      0.000       0.300      
 </details>
 
 ### plots
+
+The darker parts at the top is the proportion of positively selected genes.
 
 <p float="left">
   <img src="data/DE_analysis/pos_sel_vs_conservation_rank_boxplot_abdomen_white_bg.png" width="74%" />
