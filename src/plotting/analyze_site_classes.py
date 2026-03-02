@@ -2,6 +2,8 @@
 plot the results extracted by src/blast_BRH/extract_dNdS_Results.get_site_classes()
 The results file contains the path to the ortholog, with pair and number ID, M1a or M2a model (depending on if M2a is sig. better than M1a in the LRT), 
 and then p and w from the site classes table. Either two or three site classes, depending on if M2a (3 classes) was significantly better than M1a (2 classes)
+
+!!! statistical analysis using a logistic regression is in PhD_chapter3/src/plotting/analyze_dNdS_LFC.py 
 """
 
 from plot_dNdS import get_summary_paths,read_dNdS_summary_file,get_species_list
