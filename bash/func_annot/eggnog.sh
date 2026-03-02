@@ -24,7 +24,10 @@ GFF=${INDIR}Cmac_superscaffolded_Lome_braker.gtf
 # I did:
 #   wget http://eggnog6.embl.de/download/novel_fams-1.0.1/novel_fams.dmnd.gz
 # they also suggest:
-python3 ${INDIR}eggnog/download_eggnog_data.py --data_dir ${INDIR}eggnog/eggnog_db
+    # Limit annotation to Arthropods (6656)
+    # python3 ${INDIR}eggnog/create_dbs.py -m diamond -y --taxids 6656 --dbname arthropoda --data_dir ${INDIR}eggnog/eggnog_db
+# and this one but it is is outdated, they use an old url in the download script that is not found
+    # python3 ${INDIR}eggnog/download_eggnog_data.py -y -H -d 6656 --data_dir ${INDIR}eggnog/eggnog_db
 
 #Use/Make scratch dir
 export scratchDIR=${SNIC_TMP}/Cmac_lome_eggnog_diamond
