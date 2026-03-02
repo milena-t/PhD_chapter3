@@ -221,15 +221,23 @@ def statistical_analysis_pos_sel(full_table_paths_dict):
             if "C_chinensis" in partner:
                 # only significantly sex-biased genes -> remove LFC
                 formula_a = f"positive_selection ~  C(SB_abdomen)  * C(chromosome) * level_most_dist_ortholog"
+                formula_a_no = f"positive_selection ~  C(SB_abdomen)  * C(chromosome)"
                 formula_ht = f"positive_selection ~  C(SB_head_thorax)  * (C(chromosome) + level_most_dist_ortholog)"
+                formula_ht_no = f"positive_selection ~  C(SB_head_thorax)  * C(chromosome)"
                 formula_no = f"positive_selection ~  C(chromosome) * level_most_dist_ortholog"
                 formula_nono = f"positive_selection ~  C(chromosome)"
                 
                 print(f"\n------------> abdomen")
                 test = smf.logit(formula=formula_a, data=filt_df).fit()
                 print(test.summary())
+                print(f"\n------------> NO AGE RANK: abdomen")
+                test = smf.logit(formula=formula_a_no, data=filt_df).fit()
+                print(test.summary())
                 print(f"\n------------> head+thorax")
                 test = smf.logit(formula=formula_ht, data=filt_df).fit()
+                print(test.summary())
+                print(f"\n------------> NO AGE RANK: head+thorax")
+                test = smf.logit(formula=formula_ht_no, data=filt_df).fit()
                 print(test.summary())
                 print(f"\n------------> no sex bias")
                 test = smf.logit(formula=formula_no, data=filt_df).fit()
@@ -1042,7 +1050,9 @@ if __name__ == "__main__":
     full_tables_dict = get_full_table_path(username=username)
     reorg_table_outfile = f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/paml_stats_outfile_table.tsv"
     
-    if True:
+
+    ###### dNdS stats and plotting
+    if False:
         ###################################################
         ## median quantile regression for dNdS as continuous response
         statistical_analysis_dNdS(full_tables_dict, table_outfile=f"")
@@ -1075,8 +1085,11 @@ if __name__ == "__main__":
             ###################################################
 
 
-    if False:
+    ###### site model (pos. sel) stats and some plotting
+    ## if plotting not here then in PhD_chapter3/src/plotting/analyze_site_classes.py
+    if True:
         ###################################################
+        ## analyze positive selection in site classes
         ## logistic regression for categorical response (positive selection True/False)
         statistical_analysis_pos_sel(full_table_paths_dict=full_tables_dict)
         ###################################################
