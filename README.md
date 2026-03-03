@@ -1091,33 +1091,37 @@ The Chi-square test requires the same number of observations in `all` and `pos_s
 ```text
 ////////////////// X //////////////////
 --> ABDOMEN
-	counts 		    :   all 	  pos_sel 	pos_sel_scaled
-	 * male 	    :   180	    28  		  207.79
-	 * unbiased 	:   686	    97  		  719.84
-	 * female   	:   262	    27  		  200.37
-	Chi2 p-value: 3.611278046126766e-05
+	counts 		: all 	 pos_sel 	pos_sel_scaled
+	 * male 	: 56	 14		65.65
+	 * unbiased 	: 211	 48		225.08
+	 * female 	: 80	 12		56.27
+	 * SUM		: 347	 74		347.00
+	Chi2 p-value: 0.008063207561759711
 
 --> HEAD+THORAX
-	counts 		    :   all     pos_sel   pos_sel_scaled
-	 * male 	    :   72      8     	  59.37
-	 * unbiased 	:   1005    140     	1038.95
-	 * female   	:   51      4     		29.68
-	Chi2 p-value: 0.0021637412955548036
+	counts 		: all 	 pos_sel 	pos_sel_scaled
+	 * male 	: 22	 5		23.45
+	 * unbiased 	: 309	 68		318.86
+	 * female 	: 16	 1		4.69
+	 * SUM		: 347	 74		347.00
+	Chi2 p-value: 0.014951598009209973
 
 ////////////////// A //////////////////
 --> ABDOMEN
-	counts 		    :   all 	  pos_sel 	pos_sel_scaled
-	 * male 	    :   6951	  626		    7305.00
-	 * unbiased 	:   14455	  1206		  14073.21
-	 * female 	  :   6402	  551		    6429.80
-	Chi2 p-value: 7.400502393731013e-07
+	counts 		: all 	 pos_sel 	pos_sel_scaled
+	 * male 	: 2341	 339		2537.53
+	 * unbiased 	: 4938	 624		4670.85
+	 * female 	: 2160	 298		2230.63
+	 * SUM		: 9439	 1261		9439.00
+	Chi2 p-value: 5.989556382137855e-08
 
 --> HEAD+THORAX
-	counts 		    :   all 	  pos_sel 	pos_sel_scaled
-	 * male 	    :   2754	  188		    2193.83
-	 * unbiased 	:   23335	  2036		  23758.74
-	 * female 	  :   1719	  159		    1855.42
-	Chi2 p-value: 1.724354385032047e-29
+	counts 		: all 	 pos_sel 	pos_sel_scaled
+	 * male 	: 931	 117		875.78
+	 * unbiased 	: 7923	 1053		7882.05
+	 * female 	: 585	 91		681.16
+	 * SUM		: 9439	 1261		9439.00
+	Chi2 p-value: 6.460337781225818e-05
 ```
 
 ### plots

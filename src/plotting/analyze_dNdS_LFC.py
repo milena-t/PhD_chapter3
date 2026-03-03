@@ -1057,6 +1057,7 @@ def chisq_test_pos_sel(full_table_path:str):
     df = pd.read_csv(full_table_path, sep="\t")
     df = df.rename(columns={'LFC_head+thorax': 'LFC_head_thorax'})
     df = df.rename(columns={'FDR_pval_head+thorax': 'FDR_pval_head_thorax'})
+    df = df[df["other_species"]=="C_chinensis"]
 
     df["SB_abdomen"] = df.apply(make_sex_bias_cat_row, axis=1, args=("abdomen",))
     df["SB_head_thorax"] = df.apply(make_sex_bias_cat_row, axis=1, args=("head_thorax",))
@@ -1109,6 +1110,7 @@ def chisq_test_pos_sel(full_table_path:str):
         ## the basic chisquare test requires the same number of observations in f_obs and f_exp, but we don't have that here
         ## so I will use proportions instead of counts
         if counts:
+            print(f"\t * SUM\t\t: {sum(all_SB_prop)}\t {sum(pos_sel_SB_prop)}\t\t{sum(pos_sel_SB_scaled):.2f}")
             chisq_res = stats.chisquare(f_obs=pos_sel_SB_scaled, f_exp=all_SB_prop)
             print(f"\tChi2 p-value: {chisq_res.pvalue}")
         else:
