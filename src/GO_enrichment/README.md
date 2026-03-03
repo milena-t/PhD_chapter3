@@ -6,7 +6,7 @@ Since InterProScan is not available on pelle yet, I will just use eggnogmapper (
 
 ## Eggnog mapper
 
-the Eggnogmapper databases are not available on pelle (or I can't find them?). So I tried to download them with `download_eggnog_data.py` as the documentation suggests, but these filepaths are outdated. I use the error messages from the script and some googling to try to find current urls to download from:
+the Eggnogmapper databases are not available on pelle (or I can't find them?). So I tried to download them with `download_eggnog_data.py` as the documentation suggests, but these urls are outdated. I use the error messages from the script and some googling to try to find current urls to download from:
 
 ```bash
 wget -nH --user-agent=Mozilla/5.0 --relative --no-parent --reject "index.html*" --cut-dirs=4 -e robots=off -O eggnog.db.gz http://eggnog5.embl.de/download/emapperdb-5.0.2/eggnog.db.gz && echo Decompressing... && gunzip eggnog.db.gz
@@ -16,7 +16,13 @@ wget -nH --user-agent=Mozilla/5.0 --relative --no-parent --reject "index.html*" 
 
 # gene set selection
 
-I will make one analysis for X and one for A where I compare positively selected genes to the rest, and one where I compare all X to all A in general. 
+The overlap is pretty good for all X or all A genes, but not great for the positively selected genes, I will therefore make one enrichment analysis for each species comparing positively selected genes to the background set within X and within A, and one comparing the background set between X and A:
+
+* within X and A separately:
+  * for each of the three species:
+    * enrichment of positively selected genes compared to the background of all genes in this category
+* between X and A
+  * enrichment of X-linked (union between all species lists) background genes compared to all 
 
 <p float="left">
   <img src="../../data/GO_enrichment/geneID_overlap_Venn_A.png" width="40%" />
