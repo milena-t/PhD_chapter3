@@ -18,5 +18,113 @@ if (!requireNamespace("BiocManager", quietly=TRUE))
     install.packages("BiocManager")
 BiocManager::install()
 BiocManager::install("topGO")
+BiocManager::install("GO.db")
 ```
+
+load all packages
+```{r}
+library(topGO)
+library(plyr)
+```
+
+read data
+```{r}
+setwd("/Users/miltr339/work/PhD_code/PhD_chapter3/data/GO_enrichment")
+
+annotation_path="/Users/miltr339/work/chapter3/Cmac_functional_annot/C_mac_eggnog_diamond.emapper.annotations"
+annot_header = c("query","seed_ortholog","evalue","score","eggNOG_OGs","max_annot_lvl","COG_category","Description","Preferred_name","GOs","EC","KEGG_ko","KEGG_Pathway","KEGG_Module","KEGG_Reaction","KEGG_rclass","BRITE","KEGG_TC","CAZy","BiGG_Reaction","PFAMs")
+annotation = read.csv(annotation_path, sep="\t", comment.char = "#", header=FALSE, col.names = annot_header)
+
+all_geneIDs_A_all_species_union = strsplit(readLines("all_geneIDs_A_all_species_union.txt"), ",")[[1]]
+all_geneIDs_X_all_species_union = strsplit(readLines("all_geneIDs_X_all_species_union.txt"), ",")[[1]]
+sig_geneIDs_A_all_species_union = strsplit(readLines("sig_geneIDs_A_all_species_union.txt"), ",")[[1]]
+sig_geneIDs_X_all_species_union = strsplit(readLines("sig_geneIDs_X_all_species_union.txt"), ",")[[1]]
+
+geneIDs_A_A_obtectus_sig = strsplit(readLines("geneIDs_A_A_obtectus_sig.txt"), ",")[[1]]
+geneIDs_A_B_siliquastri_sig = strsplit(readLines("geneIDs_A_B_siliquastri_sig.txt"), ",")[[1]]
+geneIDs_A_C_chinensis_sig = strsplit(readLines("geneIDs_A_C_chinensis_sig.txt"), ",")[[1]]
+geneIDs_X_A_obtectus_sig = strsplit(readLines("geneIDs_X_A_obtectus_sig.txt"), ",")[[1]]
+geneIDs_X_B_siliquastri_sig = strsplit(readLines("geneIDs_X_B_siliquastri_sig.txt"), ",")[[1]]
+geneIDs_X_C_chinensis_sig = strsplit(readLines("geneIDs_X_C_chinensis_sig.txt"), ",")[[1]]
+
+geneIDs_A_A_obtectus = read.csv("geneIDs_A_A_obtectus_all.txt", sep=",", header=TRUE)
+geneIDs_A_B_siliquastri = read.csv("geneIDs_A_B_siliquastri_all.txt", sep=",", header=TRUE)
+geneIDs_A_C_chinensis = read.csv("geneIDs_A_C_chinensis_all.txt", sep=",", header=TRUE)
+geneIDs_X_A_obtectus = read.csv("geneIDs_X_A_obtectus_all.txt", sep=",", header=TRUE)
+geneIDs_X_B_siliquastri = read.csv("geneIDs_X_B_siliquastri_all.txt", sep=",", header=TRUE)
+geneIDs_X_C_chinensis = read.csv("geneIDs_X_C_chinensis_all.txt", sep=",", header=TRUE)
+```
+
+make into topGO data structure: 
+1. start with making the enrichment geneIDs lists into the required named vectors (since I have binary categories and not p-values as expected, the data frames have kind of pseudo-p-values that are 0.0 if the gene is positively selected and 1 otherwise)
+```{r}
+make_gene_list <- function(input_df){
+  geneList <- factor(as.integer(input_df$pos_sel))
+  names(geneList) <- input_df$geneID
+  return(geneList)
+}
+
+A_A_obtectus_enrichment_list <- make_gene_list(geneIDs_A_A_obtectus)
+A_B_siliquastri_enrichment_list <- make_gene_list(geneIDs_A_B_siliquastri)
+A_C_chinensis_enrichment_list <- make_gene_list(geneIDs_A_C_chinensis)
+X_A_obtectus_enrichment_list <- make_gene_list(geneIDs_X_A_obtectus)
+X_B_siliquastri_enrichment_list <- make_gene_list(geneIDs_X_B_siliquastri)
+X_C_chinensis_enrichment_list <- make_gene_list(geneIDs_X_C_chinensis)
+
+make_contrasts_for_AvsX <- function(list_A, list_X){
+  all_geneIDs <- append(list_A,list_X)
+  AX_presence <- rep(FALSE, length(all_geneIDs))
+  for (i in 1:length(all_geneIDs)){
+    if (all_geneIDs[i] %in% list_X){
+      AX_presence[i]<-TRUE
+    }
+  }
+  geneList <- factor(as.integer(AX_presence))
+  names(geneList) <- all_geneIDs
+  return(geneList)
+}
+
+all_AX_contrast <- make_contrasts_for_AvsX(list_A = all_geneIDs_A_all_species_union, list_X = all_geneIDs_X_all_species_union)
+sig_AX_contrast <- make_contrasts_for_AvsX(list_A = sig_geneIDs_A_all_species_union, list_X = sig_geneIDs_X_all_species_union)
+```
+
+prepare eggnog annotation file
+```{r}
+valid <- !is.na(annotation$GOs) & annotation$GOs != "-"
+gene2GO <- strsplit(annotation$GOs[valid], ",")
+names(gene2GO) <- annotation$query[valid]
+```
+
+
+make GO enrichment object for each contrast
+```{r}
+
+GO_enrichment_analysis <- function(geneList, annotation_df){
+  # prepare input data
+  ## downsample annotation to only include genes in the current test
+  count(geneList)
+  gene2GO <- annotation_df[names(annotation_df) %in% names(geneList)]
+  ## create topGO object
+  GOdata <- new("topGOdata",ontology = "BP",allGenes = geneList,annot = annFUN.gene2GO,gene2GO = gene2GO)
+  
+  # run enrichment test
+  result <- runTest(GOdata, algorithm = "classic", statistic = "fisher")
+  
+  allRes <- GenTable(GOdata,classicFisher = result,orderBy = "classicFisher",topNodes = 20)
+  print(allRes)
+}
+
+### TODO continue here: https://bioconductor.org/packages//release/bioc/vignettes/topGO/inst/doc/topGO_manual.html#6_Running_the_enrichment_tests
+# especially p-value adjustments and see the section about visualization and interpretation of results
+
+GO_enrichment_analysis(geneList = X_C_chinensis_enrichment_list, annotation_df = gene2GO)
+## add rest of the genes lists
+```
+
+
+
+
+
+
+
 

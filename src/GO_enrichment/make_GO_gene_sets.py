@@ -34,7 +34,14 @@ def test_geneID_overlap(table_path:str,chr = "", outdir = f"", venn_name = f"ven
         all_IDs_outstr = ",".join(list(geneIDs_lists[species]))
         all_outname=f"{outdir}geneIDs_{chr}_{species}_all.txt"
         with open(all_outname, "w") as outfile:
-            outfile.write(all_IDs_outstr)
+            outfile.write(f"geneID,pos_sel\n")
+
+            pseudo_pval_dict = {True : 1 , False: 0} # make numeric for topGO in R
+            for geneID,pos_sel in zip(species_df["focal_transcript"], species_df["positive_selection"]):
+                if pos_sel == True or pos_sel ==False:
+                    outfile.write(f"{geneID},{pseudo_pval_dict[pos_sel]}\n")
+                else:
+                    pass
             print(f"list written to: {all_outname}")
 
         pos_sel_species_df = species_df[species_df["positive_selection"] == True]

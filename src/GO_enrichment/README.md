@@ -14,6 +14,10 @@ wget -nH --user-agent=Mozilla/5.0 --relative --no-parent --reject "index.html*" 
 wget -nH --user-agent=Mozilla/5.0 --relative --no-parent --reject "index.html*" --cut-dirs=4 -e robots=off -O eggnog_proteins.dmnd.gz http://eggnog5.embl.de/download/emapperdb-5.0.2/eggnog_proteins.dmnd.gz && echo Decompressing... && gunzip eggnog_proteins.dmnd.gz
 ```
 
+the decorating gff flag did not work, the output was empty except the gff3 header, but the normal annotation file is still there.
+
+The GO annotation is here: `/proj/naiss2023-6-65/Milena/chapter3/Cmac_func_annot/eggnog/C_mac_eggnog_diamond.emapper.annotations`
+
 # GO analysis
 
 ## gene set selection
