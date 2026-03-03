@@ -990,11 +990,13 @@ Conservation rank goes from 1 to 5, with 5 being highly conserved (up to drosoph
 
 </details>
 
-### logistic regression for positive selection
+### Statistical analysis for positive selection
 
 Since it's only two categories, I am using basic logistic regression and not the ordinal one like for the significantly sex-biased categories as above. I use the same logic for the sex bias as for the median test with continuous dNdS above
 
 #### *C. chinensis* with sex-biased expression
+
+#### logistic regression 
 
 * head+thorax has some coefficients that could not be estimated when using the full `positive_selection ~  C(SB_head_thorax)  * C(chromosome) * level_most_dist_ortholog` formula. This might be due to overfitting, so I simplify the model a bit to exclude the three-way interactions like this `positive_selection ~  C(SB_head_thorax)  * (C(chromosome) + level_most_dist_ortholog)` only for the head+thorax SB data.
   * everything except intercept is insignificant
@@ -1079,6 +1081,44 @@ C(chromosome)[T.X]     0.5665      0.136      4.172      0.000       0.300      
 ======================================================================================
 ```
 </details>
+
+#### Chi-square test
+
+Since the conservation distance and conservation:chromosome interactions are not significant, unlike with the dNdS analysis above, the age rank does likely not play a role here, unlike before. Therefore we do a more basic Chi-square test instead, to see if the sex-bias category proportion is different between positively selected genes and all genes in the analysis. 
+
+The Chi-square test requires the same number of observations in `all` and `pos_sel`, but since we have much fewer positively selected genes, I have to scale up the numbers of positively selected genes so that the sums match. 
+
+```text
+////////////////// X //////////////////
+--> ABDOMEN
+	counts 		    :   all 	  pos_sel 	pos_sel_scaled
+	 * male 	    :   180	    28  		  207.79
+	 * unbiased 	:   686	    97  		  719.84
+	 * female   	:   262	    27  		  200.37
+	Chi2 p-value: 3.611278046126766e-05
+
+--> HEAD+THORAX
+	counts 		    :   all     pos_sel   pos_sel_scaled
+	 * male 	    :   72      8     	  59.37
+	 * unbiased 	:   1005    140     	1038.95
+	 * female   	:   51      4     		29.68
+	Chi2 p-value: 0.0021637412955548036
+
+////////////////// A //////////////////
+--> ABDOMEN
+	counts 		    :   all 	  pos_sel 	pos_sel_scaled
+	 * male 	    :   6951	  626		    7305.00
+	 * unbiased 	:   14455	  1206		  14073.21
+	 * female 	  :   6402	  551		    6429.80
+	Chi2 p-value: 7.400502393731013e-07
+
+--> HEAD+THORAX
+	counts 		    :   all 	  pos_sel 	pos_sel_scaled
+	 * male 	    :   2754	  188		    2193.83
+	 * unbiased 	:   23335	  2036		  23758.74
+	 * female 	  :   1719	  159		    1855.42
+	Chi2 p-value: 1.724354385032047e-29
+```
 
 ### plots
 
