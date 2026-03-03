@@ -42,7 +42,6 @@ def test_geneID_overlap(table_path:str, venn_name = f"venn", venn_title = ""):
     set_labels=(species_list[0], species_list[1], species_list[2]),
     set_colors=("orange", "blue", "red"), alpha=0.7)
 
-    plt.tight_layout()
     plt.title(f"{venn_title} : all genes")
     plt.savefig(venn_name, dpi = 300, transparent = False)
     plt.clf()
@@ -56,7 +55,6 @@ def test_geneID_overlap(table_path:str, venn_name = f"venn", venn_title = ""):
     venn3(subsets=(geneIDs_pos_sel_lists[species_list[0]], geneIDs_pos_sel_lists[species_list[1]], geneIDs_pos_sel_lists[species_list[2]]), 
     set_labels=(species_list[0], species_list[1], species_list[2]),
     set_colors=("orange", "blue", "red"), alpha=0.7)
-    plt.tight_layout()
     plt.title(f"{venn_title} : positively selected")
     venn_name_sig = venn_name.replace(".png", "_pos_sel_genes.png")
     plt.savefig(venn_name_sig, dpi = 300, transparent = False)
