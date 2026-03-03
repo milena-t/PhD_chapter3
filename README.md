@@ -1190,7 +1190,7 @@ C(chromosome)[T.X]     0.7266      0.189      3.844      0.000       0.356      
 
 I will finish the analysis by running GO-term enrichment analysis on *C. maculatus* with genes under positive selection according to the site-model and a high dNdS value (threshold tbd. upper quantile?)
 
-
+see details here: https://github.com/milena-t/PhD_chapter3/tree/main/src/GO_enrichment#readme
 
 # old analysis with *Diorhaba*
 

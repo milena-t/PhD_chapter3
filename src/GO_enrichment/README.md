@@ -19,10 +19,10 @@ wget -nH --user-agent=Mozilla/5.0 --relative --no-parent --reject "index.html*" 
 I will make one analysis for X and one for A where I compare positively selected genes to the rest, and one where I compare all X to all A in general. 
 
 <p float="left">
-  <img src="data/GO_enrichment/geneID_overlap_Venn_A.png" width="40%" />
-  <img src="data/GO_enrichment/geneID_overlap_Venn_A_pos_sel_genes.png" width="40%" />
+  <img src="../data/GO_enrichment/geneID_overlap_Venn_A.png" width="40%" />
+  <img src="../data/GO_enrichment/geneID_overlap_Venn_A_pos_sel_genes.png" width="40%" />
 </p>
 <p float="left">
-  <img src="data/GO_enrichment/geneID_overlap_Venn_X.png" width="40%" />
-  <img src="data/GO_enrichment/geneID_overlap_Venn_X_pos_sel_genes.png" width="40%" />
+  <img src="../data/GO_enrichment/geneID_overlap_Venn_X.png" width="40%" />
+  <img src="../data/GO_enrichment/geneID_overlap_Venn_X_pos_sel_genes.png" width="40%" />
 </p>
