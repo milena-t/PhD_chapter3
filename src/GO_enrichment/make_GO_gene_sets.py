@@ -17,7 +17,7 @@ def get_full_table_path(username="miltr339"):
     return out_dict
 
 
-def test_geneID_overlap(table_path:str, venn_name = f"venn", venn_title = ""):
+def test_geneID_overlap(table_path:str,chr = "", outdir = f"", venn_name = f"venn", venn_title = ""):
     """
     Make a venn diagramm of the three species to see how the geneIDs overlap between them
     """
@@ -31,10 +31,20 @@ def test_geneID_overlap(table_path:str, venn_name = f"venn", venn_title = ""):
     for species in species_list:
         species_df = df[df["other_species"]==species]
         geneIDs_lists[species] = set(species_df["focal_transcript"])
+        all_IDs_outstr = ",".join(list(geneIDs_lists[species]))
+        all_outname=f"{outdir}geneIDs_{chr}_{species}_all.txt"
+        with open(all_outname, "w") as outfile:
+            outfile.write(all_IDs_outstr)
+            print(f"list written to: {all_outname}")
 
         pos_sel_species_df = species_df[species_df["positive_selection"] == True]
         geneIDs_pos_sel_lists[species] = set(pos_sel_species_df["focal_transcript"])
-    
+        sig_IDs_outstr = ",".join(list(geneIDs_pos_sel_lists[species]))
+        sig_outname=f"{outdir}geneIDs_{chr}_{species}_sig.txt"
+        with open(sig_outname, "w") as outfile:
+            outfile.write(sig_IDs_outstr)
+            print(f"list written to: {sig_outname}")
+
         print(f"{species} ({len(geneIDs_lists[species])})")
 
     ### plot all genes overlap
@@ -50,6 +60,11 @@ def test_geneID_overlap(table_path:str, venn_name = f"venn", venn_title = ""):
     all_intersection = list(geneIDs_lists[species_list[0]].intersection(geneIDs_lists[species_list[1]], geneIDs_lists[species_list[2]]))
     ## all list union
     all_union = list(set([geneID for species_list in geneIDs_lists.values() for geneID in species_list]))
+    all_outname = f"{outdir}all_geneIDs_{chr}_all_species_union.txt"
+    with open(all_outname, "w") as outfile:
+        outfile.write(",".join(all_union))
+        print(f"list written to: {all_outname}")
+
 
     ### plot positively selected genes overlap
     venn3(subsets=(geneIDs_pos_sel_lists[species_list[0]], geneIDs_pos_sel_lists[species_list[1]], geneIDs_pos_sel_lists[species_list[2]]), 
@@ -64,7 +79,10 @@ def test_geneID_overlap(table_path:str, venn_name = f"venn", venn_title = ""):
     sig_intersection = list(geneIDs_pos_sel_lists[species_list[0]].intersection(geneIDs_pos_sel_lists[species_list[1]], geneIDs_pos_sel_lists[species_list[2]]))
     ## all list union
     sig_union = list(set([geneID for species_list in geneIDs_pos_sel_lists.values() for geneID in species_list]))
-
+    sig_outname = f"{outdir}sig_geneIDs_{chr}_all_species_union.txt"
+    with open(sig_outname, "w") as outfile:
+        outfile.write(",".join(sig_union))
+        print(f"list written to: {sig_outname}")
 
 
 if __name__ == "__main__":
@@ -75,6 +93,6 @@ if __name__ == "__main__":
 
     for chr in ["X", "A"]:
         print(f"///////////////// {chr} /////////////////")
-        test_geneID_overlap(table_path= tables_dict[chr], 
+        test_geneID_overlap(table_path= tables_dict[chr], chr=chr, outdir = f"{outfiles_dir}/",
         venn_name=f"{outfiles_dir}/geneID_overlap_Venn_{chr}.png", 
         venn_title = f"geneID overlap {chr}")

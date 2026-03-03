@@ -14,7 +14,9 @@ wget -nH --user-agent=Mozilla/5.0 --relative --no-parent --reject "index.html*" 
 wget -nH --user-agent=Mozilla/5.0 --relative --no-parent --reject "index.html*" --cut-dirs=4 -e robots=off -O eggnog_proteins.dmnd.gz http://eggnog5.embl.de/download/emapperdb-5.0.2/eggnog_proteins.dmnd.gz && echo Decompressing... && gunzip eggnog_proteins.dmnd.gz
 ```
 
-# gene set selection
+# GO analysis
+
+## gene set selection
 
 The overlap is pretty good for all X or all A genes, but not great for the positively selected genes, I will therefore make one enrichment analysis for each species comparing positively selected genes to the background set within X and within A, and one comparing the background set between X and A:
 
