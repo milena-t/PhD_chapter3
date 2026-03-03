@@ -1,0 +1,22 @@
+---
+title: "Chapter3_GO_terms"
+author: "Milena Trabert"
+date: "2026-03-03"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# package install and setup
+
+I am using this tutorial: https://bioconductor.org/packages//release/bioc/vignettes/topGO/inst/doc/topGO_manual.html
+
+```{r}
+if (!requireNamespace("BiocManager", quietly=TRUE))
+    install.packages("BiocManager")
+BiocManager::install()
+BiocManager::install("topGO")
+```
+

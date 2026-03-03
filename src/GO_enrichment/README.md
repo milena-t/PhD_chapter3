@@ -13,3 +13,16 @@ wget -nH --user-agent=Mozilla/5.0 --relative --no-parent --reject "index.html*" 
 wget -nH --user-agent=Mozilla/5.0 --relative --no-parent --reject "index.html*" --cut-dirs=4 -e robots=off -O eggnog.taxa.tar.gz http://eggnog5.embl.de/download/emapperdb-5.0.2/eggnog.taxa.tar.gz && echo Decompressing... && tar -zxf eggnog.taxa.tar.gz && rm eggnog.taxa.tar.gz
 wget -nH --user-agent=Mozilla/5.0 --relative --no-parent --reject "index.html*" --cut-dirs=4 -e robots=off -O eggnog_proteins.dmnd.gz http://eggnog5.embl.de/download/emapperdb-5.0.2/eggnog_proteins.dmnd.gz && echo Decompressing... && gunzip eggnog_proteins.dmnd.gz
 ```
+
+# gene set selection
+
+I will make one analysis for X and one for A where I compare positively selected genes to the rest, and one where I compare all X to all A in general. 
+
+<p float="left">
+  <img src="data/GO_enrichment/geneID_overlap_Venn_A.png" width="40%" />
+  <img src="data/GO_enrichment/geneID_overlap_Venn_A_pos_sel_genes.png" width="40%" />
+</p>
+<p float="left">
+  <img src="data/GO_enrichment/geneID_overlap_Venn_X.png" width="40%" />
+  <img src="data/GO_enrichment/geneID_overlap_Venn_X_pos_sel_genes.png" width="40%" />
+</p>
