@@ -68,7 +68,7 @@ def make_sex_bias_cat_row(row, tissue = "abdomen"):
         return "unbiased"
 
 
-def statistical_analysis_dNdS(full_table_paths_dict, table_outfile="", max_dNdS=2):  
+def statistical_analysis_dNdS(full_table_paths_dict, table_outfile="", max_dNdS=2, include_sex_bias=False):  
     """
     fit linear regression to see if the response variable (dNdS) is explained by the log2FC in either tissue, with the fixed
     factors of sex chromosome category and conservation rank. NaNs are automatically dropped
@@ -132,9 +132,7 @@ def statistical_analysis_dNdS(full_table_paths_dict, table_outfile="", max_dNdS=
             test_filtering(f"chromosome", nan_only=True)
             test_filtering(f"level_most_dist_ortholog")
 
-        if True:
-                
-            if "C_chinensis" in partner:
+        if include_sex_bias and "C_chinensis" in partner:
                 # only significantly sex-biased genes -> remove LFC
                 formula_a = f"{partner}_dNdS ~  C(SB_abdomen)  * C(chromosome) * level_most_dist_ortholog"
                 formula_ht = f"{partner}_dNdS ~  C(SB_head_thorax)  * C(chromosome) * level_most_dist_ortholog"
@@ -157,33 +155,47 @@ def statistical_analysis_dNdS(full_table_paths_dict, table_outfile="", max_dNdS=
                 test = smf.quantreg(formula=formula_ht, data=filt_df).fit(q=0.5) # q=0.5 means we estimate the median
                 print(test.summary())
 
-            else:
-                formula = f"{partner}_dNdS ~  C(chromosome) * level_most_dist_ortholog"
-                # the syntax with the parentheses (LFC_abdomen + LFC_head_thorax) * C(chromosome) means this:
-                # LFC_abdomen + LFC_head_thorax + C(chromosome) + LFC_abdomen:C(chromosome) + LFC_head_thorax:C(chromosome)
- 
-                test = smf.quantreg(formula=formula, data=filt_df).fit(q=0.5) # q=0.5 means we estimate the median
-                print(test.summary())
-            
-                try:
-                    # test three-way interactions relevance with 
-                    interactions_test_string = """
-                    LFC_head_thorax:C(chromosome)[T.X]:level_most_dist_ortholog = 0,
-                    LFC_abdomen:C(chromosome)[T.X]:level_most_dist_ortholog = 0,
-                    C(SB_abdomen)[T.male]:C(chromosome)[T.X]:level_most_dist_ortholog = 0,
-                    C(SB_head_thorax)[T.male]:C(chromosome)[T.X]:level_most_dist_ortholog = 0
-                    """
-                    wald_test = test.wald_test(interactions_test_string, scalar = True)
-                    print(f"wald test for all three-way interactions: {wald_test}")
-                except:
-                    print("no Wald test could be performed")
+        else:
 
-                print(f"\n---------------> test without conservation rank to see if excluding it makes chromosome significant")
-                # do one test without age rank to see if chromosome becomes significant to explain the results from the permutation test
-                formula = f"{partner}_dNdS ~  C(chromosome)"
-                test = smf.quantreg(formula=formula, data=filt_df).fit(q=0.5) # q=0.5 means we estimate the median
-                print(test.summary())
-            print("\n")
+            ########### test interaction
+            print(f"\n---------------> test with chromosome * ortholog_distance interaction")
+            formula = f"{partner}_dNdS ~  C(chromosome) * level_most_dist_ortholog"
+            interactions_test_string = "C(chromosome)[T.X]:level_most_dist_ortholog = 0"
+
+            test = smf.quantreg(formula=formula, data=filt_df).fit(q=0.5) # q=0.5 means we estimate the median
+            print(test.summary())
+        
+            try:
+                # test two-way interaction
+                wald_test = test.wald_test(interactions_test_string, scalar = True)
+                print(f"wald test for {interactions_test_string} interaction: {wald_test}")
+            except:
+                print("no Wald test could be performed")
+
+            ########### test major effect age rank
+            print(f"\n---------------> test with only chromosome + ortholog_distance major effects and no interaction")
+            formula = f"{partner}_dNdS ~  C(chromosome) + level_most_dist_ortholog"
+            interactions_test_string = "level_most_dist_ortholog = 0"
+
+            test = smf.quantreg(formula=formula, data=filt_df).fit(q=0.5) # q=0.5 means we estimate the median
+            print(test.summary())
+        
+            try:
+                # test major effect of age rank
+                wald_test = test.wald_test(interactions_test_string, scalar = True)
+                print(f"wald test for {interactions_test_string} major effect: {wald_test}")
+            except:
+                print("no Wald test could be performed")
+
+            ########### test only chromosome effect
+            print(f"\n---------------> test without conservation rank to see if excluding it makes chromosome significant")
+            # do one test without age rank to see if chromosome becomes significant to explain the results from the permutation test
+            formula = f"{partner}_dNdS ~  C(chromosome)"
+            test = smf.quantreg(formula=formula, data=filt_df).fit(q=0.5) # q=0.5 means we estimate the median
+            print(test.summary())
+
+        print("\n")
+            
 
     
 
@@ -1152,7 +1164,8 @@ if __name__ == "__main__":
     
 
     ###### dNdS stats and plotting
-    if False:
+    if True:
+        ## stats
         ###################################################
         ## median quantile regression for dNdS as continuous response
         statistical_analysis_dNdS(full_tables_dict, table_outfile=f"")
@@ -1160,6 +1173,7 @@ if __name__ == "__main__":
         ###################################################
 
     if False:
+        ## plotting
         pos_sel = True # if true plot bar charts with proportion of positive selection
         lineplot=True
         if False:
@@ -1194,7 +1208,7 @@ if __name__ == "__main__":
         statistical_analysis_pos_sel(full_table_paths_dict=full_tables_dict)
         ###################################################
     
-    else:
+    if False:
         ###################################################
         ### do chisq test to assess the different proportions of sex bias in positively selected
         ### genes vs. the "background" of either X or A

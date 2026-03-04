@@ -321,6 +321,7 @@ SATC R package (TODO cite): src/SATC_analysis_sex_chr_ident.Rmd
 * **Diorhabada** 
   <details>
     <summary>not used in main analysis</summary>
+
   * [Diorhabda sublineata](https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_026230105.1/)
   ```python
   { X : ['NC_079485.1'],
@@ -332,6 +333,7 @@ SATC R package (TODO cite): src/SATC_analysis_sex_chr_ident.Rmd
     Y : ['NC_079473.1']} 
   ``` 
   * There is also Diabrotica undecimpunctata but it does not have sex chromosomes identified, but it does have a giant genome at 1.7Gb
+  
   </details>
 
 * **Tribolium**
@@ -564,6 +566,8 @@ Everything is 10000 permutations, and A-X, therefore:
   <img src="data/fastX_ortholog_ident/LRT_site_model_plot_tribolium_white_bg.png" width="49%" />
 </p>
 
+
+
 ### Summary
 
 Methods similar to [Torgerson & Singh 2006](https://www.nature.com/articles/6800749)), which shows Faster X in sperm-expressed genes in mammals. This is a much smaller dataset and they only have one comparison. They have two approaches for analysis:
@@ -575,7 +579,238 @@ Methods similar to [Torgerson & Singh 2006](https://www.nature.com/articles/6800
 [Whittle 2020](https://academic.oup.com/g3journal/article/10/3/1125/6026234) already did this comparison, and they find significantly slow X. But they do paml `yn00` which we have concluded is not ideal.
 
 
+# Conservation distance and statistical analysis
+
+
+I have assigned each Cmac ortholog a "conservation rank" depending on the most distant species in which there is a 1-to-1 ortholog for this gene. Most genes are highly conserved with orthologs all the way in *D. melanogaster*. The ranks are these: 
+
+```python 
+ranks_dict = {
+        "D_melanogaster" : 5,
+        "T_castaneum" : 4, "T_freemani" : 4,"C_magnifica" : 4,"C_septempunctata" : 4,
+        "A_obtectus" : 3,
+        "B_siliquastri" : 2,
+        "C_chinensis" : 1,
+    }
+```
+
+We expect X-linked genes to be more dosage compensated the more conserved they are, because dosage compensation has had more time to evolve. We see the opposite trend, with sex bias decreasing for increasing conservation rank. Also, it kind of looks like there is a trend downwards in female-bias for A/X and both tissues, but with the large difference in sample size it is difficult to tell.
+
+
+## Plot: dN/dS by chromosome and conservation rank
+
+orange is A and red is X, like in the first pairwise-comparison plots. Also keep in mind that the conservation rank is 1:C_chinensis and 2:B_siliquastri, so the lowest possible rank for *A. obtectus* is 3.
+
+This seems mostly in line with statistical results. 
+
+<p float="left">
+  <img src="data/DE_analysis/dNdS_vs_conservation_rank_all_comparisons_white_bg.png" width="50%" />
+</p>
+
+<details>
+  <summary>Scatterplots (not super informative)</summary>
+
+### logFC vs. dNdS colored by conservation rank or sex chromosome
+
+Conservation rank goes from 1 to 5, with 5 being highly conserved (up to drosophila) and 1 being only conserved to *C. chinensis*. I am splitting the dNdS into a plot that combines all dNdS values (where some transcript are shown in duplicate due to differing dNdS values in different comparisons, the first plot with no heading), and separate plots for all species. I am only showing transcripts where the log2FC is significant. 
+
+<p float="left">
+  <img src="data/DE_analysis/dNdS_C_chinensis_vs_sig_logFC_by_rank_white_bg.png" width="70%" />
+</p>
+<p float="left">
+  <img src="data/DE_analysis/dNdS_B_siliquastri_vs_sig_logFC_by_rank_white_bg.png" width="49%" />
+  <img src="data/DE_analysis/dNdS_A_obtectus_vs_sig_logFC_by_rank_white_bg.png" width="49%" />
+</p>
+
+* Generally, abdominal genes show a larger magnitude of male bias, and also it looks like they have more genes with a low conservation rank. 
+
+
+<p float="left">
+  <img src="data/DE_analysis/dNdS_C_chinensis_vs_sig_logFC_white_bg.png" width="70%" />
+</p>
+<p float="left">
+  <img src="data/DE_analysis/dNdS_B_siliquastri_vs_sig_logFC_white_bg.png" width="49%" />
+  <img src="data/DE_analysis/dNdS_A_obtectus_vs_sig_logFC_white_bg.png" width="49%" />
+</p>
+
+* Head+thorax tissues for X-linked genes have more male-biased genes, for abdominal genes it's pretty equal  
+
+</details>
+
+
+## statistics: logistic regression with model comparison
+
+I will do a logistic regression with the dNdS as response variable and the chromosome location (as factor) and conservation rank as a explanatory variable. I will start with including an interaction, and then do model comparisons with simpler models that lack the interaction, and then also lack the conservation rank to get useful p-values that aren't just in comparison to an intercept.
+
+### *C. chinensis*
+
+#### `chromosome * conservation_rank` 
+
+Wald p-value: p=0.46
+
+```text
+Df Residuals: 8894
+Df Model: 3
+===============================================================================================================
+                                                  coef    std err          t      P>|t|      [0.025      0.975]
+---------------------------------------------------------------------------------------------------------------
+Intercept                                       0.2890      0.005     62.440      0.000       0.280       0.298
+C(chromosome)[T.X]                             -0.0392      0.041     -0.946      0.344      -0.120       0.042
+level_most_dist_ortholog                       -0.0451      0.001    -43.828      0.000      -0.047      -0.043
+C(chromosome)[T.X]:level_most_dist_ortholog     0.0064      0.009      0.739      0.460      -0.011       0.023
+===============================================================================================================
+wald test for 'C(chromosome)[T.X]:level_most_dist_ortholog = 0' interaction: F test: F=0.5467707052309159, p=0.45965970768644115, df_denom=8.89e+03, df_num=1
+```
+
+Interaction is not significant
+
+
+#### `chromosome + conservation_distance`
+
+Wald p-value: p=0.0
+
+```text
+Df Residuals: 8895
+Df Model: 2
+============================================================================================
+                               coef    std err          t      P>|t|      [0.025      0.975]
+--------------------------------------------------------------------------------------------
+Intercept                    0.2886      0.005     62.751      0.000       0.280       0.298
+C(chromosome)[T.X]          -0.0074      0.005     -1.407      0.160      -0.018       0.003
+level_most_dist_ortholog    -0.0450      0.001    -44.037      0.000      -0.047      -0.043
+============================================================================================
+wald test for 'level_most_dist_ortholog = 0' major effect: F test: F=1939.2469848907688, p=0.0, df_denom=8.9e+03, df_num=1
+```
+
+conservation distance as major effect is strongly significant!
+
+#### `chromosome`
+
+
+<details>
+  <summary>table without conservation rank</summary>
+
+```text
+Df Residuals: 8896
+Df Model: 1
+======================================================================================
+                         coef    std err          t      P>|t|      [0.025      0.975]
+--------------------------------------------------------------------------------------
+Intercept              0.0836      0.001     71.187      0.000       0.081       0.086
+C(chromosome)[T.X]    -0.0169      0.006     -2.694      0.007      -0.029      -0.005
+======================================================================================
+```
+
+</details>
+
+### *B. siliquastri*
+
+#### `chromosome * conservation_rank` 
+
+Wald p-value: p=0.16 -> interaction not significant
+
+```text
+Df Residuals: 9377
+Df Model: 3
+===============================================================================================================
+                                                  coef    std err          t      P>|t|      [0.025      0.975]
+---------------------------------------------------------------------------------------------------------------
+Intercept                                       0.2595      0.004     60.159      0.000       0.251       0.268
+C(chromosome)[T.X]                              0.0267      0.028      0.940      0.347      -0.029       0.082
+level_most_dist_ortholog                       -0.0394      0.001    -41.470      0.000      -0.041      -0.038
+C(chromosome)[T.X]:level_most_dist_ortholog    -0.0084      0.006     -1.408      0.159      -0.020       0.003
+===============================================================================================================
+wald test for 'C(chromosome)[T.X]:level_most_dist_ortholog = 0' interaction: F test: F=1.983056216885961, p=0.1591019632980278, df_denom=9.38e+03, df_num=1
+```
+
+#### `chromosome + conservation_distance`
+
+Wald p-value: p=0.0 -> conservation distance is very significant!
+
+```text
+Df Residuals: 9378
+Df Model: 2
+============================================================================================
+                               coef    std err          t      P>|t|      [0.025      0.975]
+--------------------------------------------------------------------------------------------
+Intercept                    0.2608      0.004     61.217      0.000       0.252       0.269
+C(chromosome)[T.X]          -0.0146      0.004     -3.818      0.000      -0.022      -0.007
+level_most_dist_ortholog    -0.0397      0.001    -42.319      0.000      -0.042      -0.038
+============================================================================================
+wald test for 'level_most_dist_ortholog = 0' major effect: F test: F=1790.8940643435014, p=0.0, df_denom=9.38e+03, df_num=1
+```
+
+#### `chromosome`
+
+```text
+Df Residuals: 9379
+Df Model: 1
+======================================================================================
+                         coef    std err          t      P>|t|      [0.025      0.975]
+--------------------------------------------------------------------------------------
+Intercept              0.0772      0.001     90.618      0.000       0.076       0.079
+C(chromosome)[T.X]    -0.0246      0.004     -5.817      0.000      -0.033      -0.016
+======================================================================================
+```
+
+
+### *A. obtectus*
+
+#### `chromosome * conservation_rank` 
+
+Wald p-value: p=0.024 -> interaction is significant
+
+```text
+Df Residuals: 9614
+Df Model: 3
+===============================================================================================================
+                                                  coef    std err          t      P>|t|      [0.025      0.975]
+---------------------------------------------------------------------------------------------------------------
+Intercept                                       0.2750      0.004     63.197      0.000       0.267       0.284
+C(chromosome)[T.X]                             -0.0848      0.032     -2.683      0.007      -0.147      -0.023
+level_most_dist_ortholog                       -0.0438      0.001    -45.766      0.000      -0.046      -0.042
+C(chromosome)[T.X]:level_most_dist_ortholog     0.0149      0.007      2.259      0.024       0.002       0.028
+===============================================================================================================
+wald test for 'C(chromosome)[T.X]:level_most_dist_ortholog = 0' interaction: F test: F=5.101063831192631, p=0.02393348873932328, df_denom=9.61e+03, df_num=1
+```
+
+#### `chromosome + conservation_distance`
+
+<details>
+  <summary>rest technically not relevant since the interaction is significant but it is here just in case</summary>
+
+```text
+Df Residuals: 9615
+Df Model: 2
+============================================================================================
+                               coef    std err          t      P>|t|      [0.025      0.975]
+--------------------------------------------------------------------------------------------
+Intercept                    0.2737      0.004     63.562      0.000       0.265       0.282
+C(chromosome)[T.X]          -0.0120      0.003     -3.464      0.001      -0.019      -0.005
+level_most_dist_ortholog    -0.0436      0.001    -45.970      0.000      -0.045      -0.042
+============================================================================================
+wald test for 'level_most_dist_ortholog = 0' major effect: F test: F=2113.237569646739, p=0.0, df_denom=9.62e+03, df_num=1
+```
+
+#### `chromosome`
+
+```text
+Df Residuals: 9616
+Df Model: 1
+======================================================================================
+                         coef    std err          t      P>|t|      [0.025      0.975]
+--------------------------------------------------------------------------------------
+Intercept              0.0718      0.001     89.896      0.000       0.070       0.073
+C(chromosome)[T.X]    -0.0232      0.004     -5.837      0.000      -0.031      -0.015
+======================================================================================
+```
+
+</details>
+
+
 # Sex biased gene expression
+
+I will only use data from *C. maculatus*. Since sex-bias can evolve very quickly, I will only use use the closest comparison with *C. chinensis* and not incorporate the other *Bruchini* species.
 
 ## Samples and PCA
 
@@ -700,21 +935,6 @@ I calculated the standard error of the mean (SEM) with `scipy.stats.sem` which t
 
 
 ## sex bias and ortholog conservation
-
-
-I have assigned each Cmac ortholog a "conservation rank" depending on the most distant species in which there is a 1-to-1 ortholog for this gene. Most genes are highly conserved with orthologs all the way in *D. melanogaster*. The ranks are these: 
-
-```python 
-ranks_dict = {
-        "D_melanogaster" : 5,
-        "T_castaneum" : 4, "T_freemani" : 4,"C_magnifica" : 4,"C_septempunctata" : 4,
-        "A_obtectus" : 3,
-        "B_siliquastri" : 2,
-        "C_chinensis" : 1,
-    }
-```
-
-We expect X-linked genes to be more dosage compensated the more conserved they are, because dosage compensation has had more time to evolve. We see the opposite trend, with sex bias decreasing for increasing conservation rank. Also, it kind of looks like there is a trend downwards in female-bias for A/X and both tissues, but with the large difference in sample size it is difficult to tell.
 
 ### 1. sex bias categories
 
@@ -857,82 +1077,8 @@ I am using `quantreg` again, like for the log2FC again, where ! have a continuou
 ```
 </details>
 
-<details>
-  <summary>Tables without age rank</summary>
-
-```text
-////////////////// C_chinensis: abdomen //////////////////
-================================================================================================================
-                                                     coef    std err          t      P>|t|      [0.025      0.975]
-----------------------------------------------------------------------------------------------------------------
-* Intercept                                        0.0922      0.002     38.838      0.000       0.088       0.097
-* C(SB_abdomen)[T.male]                            0.0101      0.003      3.059      0.002       0.004       0.017
-* C(SB_abdomen)[T.unbiased]                       -0.0203      0.003     -7.125      0.000      -0.026      -0.015
-  C(chromosome)[T.X]                              -0.0209      0.013     -1.664      0.096      -0.046       0.004
-  C(SB_abdomen)[T.male]:C(chromosome)[T.X]         0.0017      0.019      0.088      0.930      -0.036       0.040
-  C(SB_abdomen)[T.unbiased]:C(chromosome)[T.X]     0.0091      0.015      0.613      0.540      -0.020       0.038
-================================================================================================================
-////////////////// C_chinensis: head+thorax //////////////////
-====================================================================================================================
-                                                         coef    std err          t      P>|t|      [0.025      0.975]
---------------------------------------------------------------------------------------------------------------------
-* Intercept                                            0.1134      0.005     24.918      0.000       0.104       0.122
-  C(SB_head_thorax)[T.male]                            0.0050      0.006      0.870      0.384      -0.006       0.016
-* C(SB_head_thorax)[T.unbiased]                       -0.0356      0.005     -7.545      0.000      -0.045      -0.026
-  C(chromosome)[T.X]                                  -0.0072      0.028     -0.255      0.799      -0.062       0.048
-  C(SB_head_thorax)[T.male]:C(chromosome)[T.X]        -0.0285      0.036     -0.787      0.432      -0.100       0.043
-  C(SB_head_thorax)[T.unbiased]:C(chromosome)[T.X]    -0.0079      0.029     -0.274      0.784      -0.064       0.049
-====================================================================================================================
-```
-</details>
 
 
-#### *B. siliquastri*
-
-the conservation rank is an extremely important factor, and the slow-X effect only becomes significant when we exclude it from the model
-
-```text
-////////////////// B_siliquastri //////////////////
-===============================================================================================================
-                                                  coef    std err          t      P>|t|      [0.025      0.975]
----------------------------------------------------------------------------------------------------------------
-Intercept                                       0.2595      0.004     60.159      0.000       0.251       0.268
-C(chromosome)[T.X]                              0.0267      0.028      0.940      0.347      -0.029       0.082
-level_most_dist_ortholog                       -0.0394      0.001    -41.470      0.000      -0.041      -0.038
-C(chromosome)[T.X]:level_most_dist_ortholog    -0.0084      0.006     -1.408      0.159      -0.020       0.003
-===============================================================================================================
-
----------------> test without conservation rank to see if excluding it makes chromosome significant
-======================================================================================
-                         coef    std err          t      P>|t|      [0.025      0.975]
---------------------------------------------------------------------------------------
-Intercept              0.0772      0.001     90.618      0.000       0.076       0.079
-C(chromosome)[T.X]    -0.0246      0.004     -5.817      0.000      -0.033      -0.016
-======================================================================================
-```
-
-#### *A. obtectus*
-
-Everything is significant, but the by far most dominant effect is the conservation rank.
-
-```text
-////////////////// A_obtectus //////////////////
-                                                  coef    std err          t      P>|t|      [0.025      0.975]
----------------------------------------------------------------------------------------------------------------
-Intercept                                       0.2747      0.004     63.138      0.000       0.266       0.283
-C(chromosome)[T.X]                             -0.0845      0.032     -2.674      0.008      -0.146      -0.023
-level_most_dist_ortholog                       -0.0438      0.001    -45.714      0.000      -0.046      -0.042
-C(chromosome)[T.X]:level_most_dist_ortholog     0.0148      0.007      2.250      0.024       0.002       0.028
-===============================================================================================================
-
----------------> test without conservation rank to see if excluding it makes chromosome significant
-======================================================================================
-                         coef    std err          t      P>|t|      [0.025      0.975]
---------------------------------------------------------------------------------------
-Intercept              0.0718      0.001     89.896      0.000       0.070       0.073
-C(chromosome)[T.X]    -0.0232      0.004     -5.837      0.000      -0.031      -0.015
-======================================================================================
-```
 
 
 
@@ -950,45 +1096,6 @@ This plot shows the median within all the categories considered by the median re
   <img src="data/DE_analysis/dNdS_merged_conservation_rank_boxplot_head_thorax_white_bg.png" width="20%" />
 </p>
 
-#### dN/dS by chromosome and conservation rank
-
-orange is A and red is X, like in the first pairwise-comparison plots. Also keep in mind that the conservation rank is 1:C_chinensis and 2:B_siliquastri, so the lowest possible rank for *A. obtectus* is 3.
-
-This seems mostly in line with statistical results. 
-
-<p float="left">
-  <img src="data/DE_analysis/dNdS_vs_conservation_rank_all_comparisons_white_bg.png" width="50%" />
-</p>
-
-<details>
-  <summary>Scatterplots (not super informative)</summary>
-
-#### logFC vs. dNdS colored by conservation rank or sex chromosome
-
-Conservation rank goes from 1 to 5, with 5 being highly conserved (up to drosophila) and 1 being only conserved to *C. chinensis*. I am splitting the dNdS into a plot that combines all dNdS values (where some transcript are shown in duplicate due to differing dNdS values in different comparisons, the first plot with no heading), and separate plots for all species. I am only showing transcripts where the log2FC is significant. 
-
-<p float="left">
-  <img src="data/DE_analysis/dNdS_C_chinensis_vs_sig_logFC_by_rank_white_bg.png" width="70%" />
-</p>
-<p float="left">
-  <img src="data/DE_analysis/dNdS_B_siliquastri_vs_sig_logFC_by_rank_white_bg.png" width="49%" />
-  <img src="data/DE_analysis/dNdS_A_obtectus_vs_sig_logFC_by_rank_white_bg.png" width="49%" />
-</p>
-
-* Generally, abdominal genes show a larger magnitude of male bias, and also it looks like they have more genes with a low conservation rank. 
-
-
-<p float="left">
-  <img src="data/DE_analysis/dNdS_C_chinensis_vs_sig_logFC_white_bg.png" width="70%" />
-</p>
-<p float="left">
-  <img src="data/DE_analysis/dNdS_B_siliquastri_vs_sig_logFC_white_bg.png" width="49%" />
-  <img src="data/DE_analysis/dNdS_A_obtectus_vs_sig_logFC_white_bg.png" width="49%" />
-</p>
-
-* Head+thorax tissues for X-linked genes have more male-biased genes, for abdominal genes it's pretty equal  
-
-</details>
 
 ### Statistical analysis for positive selection
 
