@@ -1082,11 +1082,14 @@ C(chromosome)[T.X]     0.5665      0.136      4.172      0.000       0.300      
 ```
 </details>
 
-#### Chi-square test
+#### Fisher's exact test
 
-Since the conservation distance and conservation:chromosome interactions are not significant, unlike with the dNdS analysis above, the age rank does likely not play a role here, unlike before. Therefore we do a more basic Chi-square test instead, to see if the sex-bias category proportion is different between positively selected genes and all genes in the analysis. 
+Since the conservation distance and conservation:chromosome interactions are not significant, unlike with the dNdS analysis above, the age rank does likely not play a role here, unlike before. Therefore we do a more the Fisher's exact test instead, to see the proportion of positively selected genes is different between A and X within each sex-bias category. We expect that male-biased genes especially are different since they are affected by the consequences of X-hemizygosity in males but not in females. 
 
-The Chi-square test requires the same number of observations in `all` and `pos_sel`, but since we have much fewer positively selected genes, I have to scale up the numbers of positively selected genes so that the sums match. 
+<details>
+  <summary>See counts by chromosome</summary>
+
+By `neg_sel` I just mean not positively selected, I did not actually test for negative selection, they could be neutral.
 
 ```text
 ////////////////// X //////////////////
@@ -1118,6 +1121,44 @@ The Chi-square test requires the same number of observations in `all` and `pos_s
 	 * unbiased 	: 6339       1053
 	 * female     : 432        91
 	 * SUM        : 7507       1261
+```
+
+</details>
+
+Fisher's test p-values:
+
+```text
+abdomen
+	male contingency table (cols: pos_sel/neg_sel and rows: A/X):
+[[ 339 1794]
+ [  14   40]]
+	male --> Fisher's exact p-value: 0.05934031213868704
+
+	unbiased contingency table (cols: pos_sel/neg_sel and rows: A/X):
+[[ 624 4011]
+ [  48  147]]
+	unbiased --> Fisher's exact p-value: 4.731307609496153e-05
+
+	female contingency table (cols: pos_sel/neg_sel and rows: A/X):
+[[ 298 1702]
+ [  12   63]]
+	female --> Fisher's exact p-value: 0.7427789380480843
+
+head_thorax
+	male contingency table (cols: pos_sel/neg_sel and rows: A/X):
+[[117 736]
+ [  5  16]]
+	male --> Fisher's exact p-value: 0.19780869267319706
+
+	unbiased contingency table (cols: pos_sel/neg_sel and rows: A/X):
+[[1053 6339]
+ [  68  221]]
+	unbiased --> Fisher's exact p-value: 3.9392665265182886e-05
+
+	female contingency table (cols: pos_sel/neg_sel and rows: A/X):
+[[ 91 432]
+ [  1  13]]
+	female --> Fisher's exact p-value: 0.48224144897027255
 ```
 
 ### plots

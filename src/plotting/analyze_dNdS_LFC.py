@@ -1096,11 +1096,11 @@ def make_fishers_test_data_for_chr(full_table_path:str):
         for i,SB_cat in enumerate(SB_order_list):
             neg_sel_SB_counts[SB_cat] = len([val for val in nested_vals_dict[SB_cat] if val == False])
             pos_sel_SB_counts[SB_cat] = len([val for val in nested_vals_dict[SB_cat] if val == True])
-            print(f"\t * {SB_cat} \t: {neg_sel_SB_counts[SB_cat]}\t {pos_sel_SB_counts[SB_cat]}")
+            print(f"\t * {SB_cat} \t: {neg_sel_SB_counts[SB_cat]}\t\t{pos_sel_SB_counts[SB_cat]}")
         
         ## the basic chisquare test requires the same number of observations in f_obs and f_exp, but we don't have that here
         ## so I will use proportions instead of counts
-        print(f"\t * SUM\t\t: {sum(list(neg_sel_SB_counts.values()))}\t {sum(list(pos_sel_SB_counts.values()))}")
+        print(f"\t * SUM\t\t: {sum(list(neg_sel_SB_counts.values()))}\t\t{sum(list(pos_sel_SB_counts.values()))}")
 
         return { "pos_sel" : pos_sel_SB_counts, "neg_sel" : neg_sel_SB_counts}
 
@@ -1111,6 +1111,37 @@ def make_fishers_test_data_for_chr(full_table_path:str):
 
     return {"abdomen" : abdomen_counts, "head_thorax" : ht_counts}
 
+def run_fisher_test(counts_dict, verbose = False):
+    """
+    run the fisher's exact test from counts data like { "A" : make_fishers_test_data_for_chr() , "X": make_fishers_test_data_for_chr() 
+    I run different tests for each sex bias category, and I contrast positively selected genes counts between A and X within each test
+    """
+    SB_order_list =["male","unbiased","female"]
+    tissue_list = ["abdomen", "head_thorax"]
+    # define the contingency table for fisher's test
+    table_cols = {0:"pos_sel", 1:"neg_sel"}
+    table_rows = {0:"A", 1:"X"}
+
+    # loop through all comparisons
+    for tissue in tissue_list:
+        print(f"{tissue}")
+        for SB_cat in SB_order_list:
+            if verbose:
+                print(f"\t{SB_cat} contingency table (cols: pos_sel/neg_sel and rows: A/X):")
+            else:
+                print(f"\t{SB_cat} A vs. X   by   pos_sel vs. neg_sel:")
+            contingency_table = np.array([ [0,0], [0,0] ])
+            
+            # make contingency table
+            for row in range(2):
+                for col in range(2):
+                    contingency_table[row,col] = counts_dict[table_rows[row]][tissue][table_cols[col]][SB_cat]
+                    if False:
+                        print(f"\t\t{row}:{col} = {table_rows[row]}:{table_cols[col]} \t --> {contingency_table[row,col]}")
+            print(contingency_table)
+            # run fisher test for the contingency table
+            fisher_res = stats.fisher_exact(contingency_table)
+            print(f"\t{SB_cat} --> Fisher's exact p-value: {fisher_res.pvalue}\n")
 
 
 if __name__ == "__main__":
@@ -1172,6 +1203,7 @@ if __name__ == "__main__":
             print(f"\n////////////////// {chr} //////////////////")
             fisher_counts_dict[chr] = make_fishers_test_data_for_chr(full_tables_dict[chr])
         print(fisher_counts_dict)
+        run_fisher_test(fisher_counts_dict, verbose=True)
         ###################################################
 
     if False:
