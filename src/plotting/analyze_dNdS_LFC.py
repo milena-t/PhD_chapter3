@@ -764,7 +764,8 @@ def boxplot_dNdS(full_table_paths_dict, outfile, maxdNdS=2, partner_species="C_c
                 ax.axvspan(left, right, color="#7A6B70", alpha=0.2, linewidth = 0, zorder=0)
 
         fig.supxlabel(f"conservation rank, chromosome location, and (number of genes)", fontsize = fs)
-        fig.supylabel(y_label, fontsize = fs, x=0.0, y=0.625)
+        if pos_sel==False:
+            fig.supylabel(y_label, fontsize = fs, x=0.0, y=0.625)
 
         # layout (left, bottom, right, top)
         plt.tight_layout(rect=[0.0, 0.05, 1, 1])
@@ -871,7 +872,7 @@ def boxplot_dNdS_merge_rank(full_table_paths_dict, outfile, maxdNdS=2, partner_s
         nested_vals_dict_ht = make_phylogeny_rank_merged_dict(df, tissue="head_thorax", max_dNdS=maxdNdS)
 
     if pos_sel:
-        y_label = f"percentage of pos. sel. genes"
+        y_label = f""
     else:
         y_label = f"dN/dS"
         if maxdNdS>0:
@@ -991,8 +992,6 @@ def boxplot_dNdS_merge_rank(full_table_paths_dict, outfile, maxdNdS=2, partner_s
             
             bp = ax.boxplot(AX_lists, positions=tick_pos, widths=box_width, patch_artist=True)
 
-
-
         # set axis labels
         tick_fs_factor = 0.7
         ax.set_xticks(ticks = tick_pos, labels = tick_labels, fontsize=fs*tick_fs_factor)#, rotation=45, ha='right')
@@ -1032,10 +1031,8 @@ def boxplot_dNdS_merge_rank(full_table_paths_dict, outfile, maxdNdS=2, partner_s
                     flier.set(markerfacecolor=color_edges[i % 3], markeredgecolor=color_edges[i % 3], linewidth = lw, marker='.')
 
         # fig.supxlabel(f"(number of genes)\nchromosome", fontsize = fs*0.9)
-
-        if pos_sel:
-            fig.supylabel(y_label, fontsize = fs*0.8, x=0.1, y=0.625)
-        else:
+        
+        if pos_sel==False:
             fig.supylabel(y_label, fontsize = fs*0.8, x=0.0, y=0.625)
         # layout (left, bottom, right, top)
         plt.tight_layout(rect=[0.0, 0.05, 1, 1])
@@ -1201,11 +1198,11 @@ if __name__ == "__main__":
         # compare_conservation_rank_proportions(full_tables_dict)
         ###################################################
 
-    if False:
+    if True:
         ## plotting
         pos_sel = True # if true plot bar charts with proportion of positive selection
         lineplot=True
-        if False:
+        if True:
             ###################################################
             ### if pos_sel: bar plot for positive selection or dNdS by rank/chromosome/sex bias
             ### else: boxplot of dNdS values
@@ -1237,7 +1234,7 @@ if __name__ == "__main__":
         statistical_analysis_pos_sel(full_table_paths_dict=full_tables_dict)
         ###################################################
     
-    if True:
+    if False:
         ###################################################
         ### do chisq test to assess the different proportions of sex bias in positively selected
         ### genes vs. the "background" of either X or A
