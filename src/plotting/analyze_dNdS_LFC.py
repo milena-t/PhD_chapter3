@@ -155,7 +155,7 @@ def statistical_analysis_dNdS(full_table_paths_dict, table_outfile="", max_dNdS=
                 test = smf.quantreg(formula=formula_ht, data=filt_df).fit(q=0.5) # q=0.5 means we estimate the median
                 print(test.summary())
 
-        else:
+        elif include_sex_bias == False:
 
             ########### test interaction
             print(f"\n---------------> test with chromosome * ortholog_distance interaction")
@@ -199,7 +199,7 @@ def statistical_analysis_dNdS(full_table_paths_dict, table_outfile="", max_dNdS=
 
     
 
-def statistical_analysis_pos_sel(full_table_paths_dict):
+def statistical_analysis_pos_sel(full_table_paths_dict, include_sex_bias=False):
     A_df = pd.read_csv(full_table_paths_dict["A"], sep="\t")
     partners_list = list(set(A_df["other_species"]))
     print(partners_list)
@@ -230,7 +230,7 @@ def statistical_analysis_pos_sel(full_table_paths_dict):
 
             # the syntax with the parentheses (LFC_abdomen + LFC_head_thorax) * C(chromosome) means this:
             # LFC_abdomen + LFC_head_thorax + C(chromosome) + LFC_abdomen:C(chromosome) + LFC_head_thorax:C(chromosome)
-            if "C_chinensis" in partner:
+            if include_sex_bias and "C_chinensis" in partner:
                 # only significantly sex-biased genes -> remove LFC
                 formula_a = f"positive_selection ~  C(SB_abdomen)  * C(chromosome) * level_most_dist_ortholog"
                 formula_a_no = f"positive_selection ~  C(SB_abdomen)  * C(chromosome)"
@@ -257,12 +257,39 @@ def statistical_analysis_pos_sel(full_table_paths_dict):
                 print(f"\n------------> no conservation rank")
                 test = smf.logit(formula=formula_nono, data=filt_df).fit()
                 print(test.summary())
-            else:
+
                 
+            elif include_sex_bias == False:
+                
+                ########### test interaction
+                print(f"\n---------------> test with chromosome * ortholog_distance interaction")
                 formula = f"positive_selection ~  C(chromosome) * level_most_dist_ortholog"
+                interactions_test_string = "C(chromosome)[T.X]:level_most_dist_ortholog = 0"
                 test = smf.logit(formula=formula, data=filt_df).fit()
                 print(test.summary())
-                
+
+                try:
+                    # test two-way interaction
+                    wald_test = test.wald_test(interactions_test_string, scalar = True)
+                    print(f"wald test for {interactions_test_string} interaction: {wald_test}")
+                except:
+                    print("no Wald test could be performed")
+
+                ########### test major effect age rank
+                print(f"\n---------------> test with only chromosome + ortholog_distance major effects and no interaction")
+                formula = f"positive_selection ~  C(chromosome) + level_most_dist_ortholog"
+                interactions_test_string = "level_most_dist_ortholog = 0"
+                test = smf.logit(formula=formula, data=filt_df).fit()
+                print(test.summary())
+
+                try:
+                    # test major effect of age rank
+                    wald_test = test.wald_test(interactions_test_string, scalar = True)
+                    print(f"wald test for {interactions_test_string} major effect: {wald_test}")
+                except:
+                    print("no Wald test could be performed")
+
+                ########### test only chromosome effect
                 print(f"\n---------------> test without conservation rank to see if excluding it makes chromosome significant")
                 # do one test without age rank to see if chromosome becomes significant to explain the results from the permutation test
                 formula = f"positive_selection ~  C(chromosome)"
@@ -1164,7 +1191,7 @@ if __name__ == "__main__":
     
 
     ###### dNdS stats and plotting
-    if True:
+    if False:
         ## stats
         ###################################################
         ## median quantile regression for dNdS as continuous response
@@ -1201,7 +1228,7 @@ if __name__ == "__main__":
 
     ###### site model (pos. sel) stats and some plotting
     ## if plotting not here then in PhD_chapter3/src/plotting/analyze_site_classes.py
-    if False:
+    if True:
         ###################################################
         ## analyze positive selection in site classes
         ## logistic regression for categorical response (positive selection True/False)
