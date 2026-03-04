@@ -474,21 +474,25 @@ def plot_dNdS_rank_conserved(summary_paths_AX_list:dict, outfile = "", maxdNdS =
     print(f"plot saved in current working directory as: {outfile_partner} and {filename_tr}")
 
 
-def compare_conservation_rank_proportions(summary_paths_AX):
+def compare_conservation_rank_proportions(summary_paths_AX, other_species = "C_chinensis"):
 
     summary_data_A = pd.read_csv(summary_paths_AX["A"], sep = "\t", index_col=False)
     summary_data_X = pd.read_csv(summary_paths_AX["X"], sep = "\t", index_col=False)
-    unique_A=summary_data_A.drop_duplicates(subset=["focal_transcript"])
-    unique_X=summary_data_X.drop_duplicates(subset=["focal_transcript"])
+    # unique_A=summary_data_A.drop_duplicates(subset=["focal_transcript"])
+    # unique_X=summary_data_X.drop_duplicates(subset=["focal_transcript"])
+    unique_A=summary_data_A[summary_data_A["other_species"]==other_species]
+    unique_X=summary_data_X[summary_data_X["other_species"]==other_species]
     total_A = unique_A.shape[0]
     total_X = unique_X.shape[0]
 
-    counts_A = {rank : f"{100*len(list)/total_A:.3f}%" for rank, list in make_phylogeny_rank_dict(unique_A, focal_species="", max_dNdS=0).items()}
-    counts_X = {rank : f"{100*len(list)/total_X:.3f}%" for rank, list in make_phylogeny_rank_dict(unique_X, focal_species="", max_dNdS=0).items()}
+    prop_A = {rank : f"{100*len(list)/total_A:.3f}%" for rank, list in make_phylogeny_rank_dict(unique_A, focal_species="", max_dNdS=0).items()}
+    prop_X = {rank : f"{100*len(list)/total_X:.3f}%" for rank, list in make_phylogeny_rank_dict(unique_X, focal_species="", max_dNdS=0).items()}
+    counts_A = {rank : f"{len(list)}" for rank, list in make_phylogeny_rank_dict(unique_A, focal_species="", max_dNdS=0).items()}
+    counts_X = {rank : f"{len(list)}" for rank, list in make_phylogeny_rank_dict(unique_X, focal_species="", max_dNdS=0).items()}
 
     print(f"count proportions of conservation ranks in A and X:")
     for rank in counts_A.keys():
-        print(f"{rank} -->\tA = {counts_A[rank]}\t X = {counts_X[rank]}")
+        print(f"{rank} -->\tA = {prop_A[rank]} ({counts_A[rank]})\t X = {prop_X[rank]} ({counts_X[rank]})")
 
 
 
@@ -1188,6 +1192,11 @@ if __name__ == "__main__":
     full_tables_dict = get_full_table_path(username=username)
     reorg_table_outfile = f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/paml_stats_outfile_table.tsv"
     
+    ### just a basic proportion of the different conservation ranks on A and X
+    ### shows that X has a higher proportion of rank-5 genes than A
+    for species in ["C_chinensis", "B_siliquastri", "A_obtectus"]:
+        print(f"\n-------> {species}")
+        compare_conservation_rank_proportions(full_tables_dict, other_species=species)
 
     ###### dNdS stats and plotting
     if False:
@@ -1195,10 +1204,9 @@ if __name__ == "__main__":
         ###################################################
         ## median quantile regression for dNdS as continuous response
         statistical_analysis_dNdS(full_tables_dict, table_outfile=f"")
-        # compare_conservation_rank_proportions(full_tables_dict)
         ###################################################
 
-    if True:
+    if False:
         ## plotting
         pos_sel = True # if true plot bar charts with proportion of positive selection
         lineplot=True

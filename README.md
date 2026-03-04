@@ -596,6 +596,38 @@ ranks_dict = {
 
 We expect X-linked genes to be more dosage compensated the more conserved they are, because dosage compensation has had more time to evolve. We see the opposite trend, with sex bias decreasing for increasing conservation rank. Also, it kind of looks like there is a trend downwards in female-bias for A/X and both tissues, but with the large difference in sample size it is difficult to tell.
 
+## general proportions
+
+Overall, the X has a higher proportion of rank-5 genes compared to the A, which is in line with the more conserved synteny as well I think
+
+```text
+-------> C_chinensis
+count proportions of conservation ranks in A and X:
+1 -->	A = 3.199% (302)     X = 0.865% (3)
+2 -->	A = 1.685% (159)     X = 1.153% (4)
+3 -->	A = 10.086% (952)    X = 3.170% (11)
+4 -->	A = 23.202% (2190)   X = 12.968% (45)
+5 -->	A = 61.829% (5836)   X = 81.844% (284)
+
+-------> B_siliquastri
+count proportions of conservation ranks in A and X:
+1 -->	A = 0.000% (0)       X = 0.000% (0)
+2 -->	A = 3.598% (327)     X = 2.051% (8)
+3 -->	A = 9.418% (856)     X = 4.103% (16)
+4 -->	A = 23.006% (2091)   X = 12.308% (48)
+5 -->	A = 63.978% (5815)   X = 81.538% (318)
+
+-------> A_obtectus
+count proportions of conservation ranks in A and X:
+1 -->	A = 0.000% (0)       X = 0.000% (0)
+2 -->	A = 0.000% (0)       X = 0.000% (0)
+3 -->	A = 13.890% (1289)   X = 4.859% (19)
+4 -->	A = 23.416% (2173)   X = 12.532% (49)
+5 -->	A = 62.694% (5818)   X = 82.609% (323)
+```
+
+(numbers are all orthologs, including the ones where there is no dNdS or pos_sel or log2FC values. I double checked it adds up)
+
 ## dN/dS
 
 ### Plot: dN/dS by chromosome and conservation rank
