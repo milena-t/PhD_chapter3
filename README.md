@@ -1098,36 +1098,6 @@ I calculated the standard error of the mean (SEM) with `scipy.stats.sem` which t
   <img src="data/DE_analysis/DE_conservation_rank_proportions_white_bg.png" width="100%" />
 </p>
 
-#### ordinal logistic regression
-
-I am modelling the expression categories (male/unbiased/female) agains the explanatory variables chromosome type, conservation rank, and their interaction. 
-The last two lines `-1.0/0.0` and `0.0/1.0` are not interpreted as slopes, just some property of the ordinal regression
-
-```text
-////////////////// ABDOMEN //////////////////
-===============================================================================================================
-                                                  coef    std err          z      P>|z|      [0.025      0.975]
----------------------------------------------------------------------------------------------------------------
-C(chromosome)[T.X]                              1.5105      0.429      3.523      0.000       0.670       2.351
-level_most_dist_ortholog                        0.0811      0.013      6.033      0.000       0.055       0.107
-C(chromosome)[T.X]:level_most_dist_ortholog    -0.3298      0.090     -3.666      0.000      -0.506      -0.153
--1.0/0.0                                        0.5128      0.061      8.437      0.000       0.394       0.632
-0.0/1.0                                         0.0516      0.011      4.594      0.000       0.030       0.074
-===============================================================================================================
-
-////////////////// HEAD+THORAX //////////////////
-===============================================================================================================
-                                                  coef    std err          z      P>|z|      [0.025      0.975]
----------------------------------------------------------------------------------------------------------------
-C(chromosome)[T.X]                              1.6700      0.473      3.528      0.000       0.742       2.598
-level_most_dist_ortholog                       -0.0642      0.014     -4.603      0.000      -0.091      -0.037
-C(chromosome)[T.X]:level_most_dist_ortholog    -0.3683      0.099     -3.727      0.000      -0.562      -0.175
--1.0/0.0                                       -0.6106      0.063     -9.646      0.000      -0.735      -0.487
-0.0/1.0                                         1.1168      0.008    137.256      0.000       1.101       1.133
-===============================================================================================================
-```
-
-All exp. variables and their interaction are significant.
 
 ### 2. magnitude of sex bias
 
@@ -1176,15 +1146,17 @@ level_most_dist_ortholog:C(SB_head_thorax)[T.male]:C(chromosome)[T.X]    -0.1835
 =========================================================================================================================================```
 ```
 
-## combining sex-biased expression with molecular rate and positive selection
+# combining sex-biased expression with molecular rate and positive selection
 
 I will only incorporate the sex-biased expression for *C. chinensis* vs. *C. maculatus* since sex-bias evolves very quickly and using this as inference for more distant comparisons is likely unreliable. I will also split the analysis by tissue in this case, since we have abdominal (reproductive) and head+thorax (somatic) data available. I will partition the sex bias into a factor with levels for male-biased, unbiased, or female-biased and not incorporate the actual log2FC values as a continuous variable.
 
-### median quantile dN/dS test
 
-I am using `quantreg` again, like for the log2FC again, where ! have a continuous response variable. 
 
-#### *C. chinensis* with expression data
+## median quantile dN/dS test
+
+I am using `quantreg` again, like for the log2FC again, where I have a continuous response variable. 
+
+### *C. chinensis* with expression data
 
 * Abdomen: all significant except the `C(SB_abdomen)[T.unbiased]:level_most_dist_ortholog` interaction
 * Head+Thorax: 
@@ -1234,14 +1206,10 @@ I am using `quantreg` again, like for the log2FC again, where ! have a continuou
 </details>
 
 
+### plots
 
 
-
-
-#### plots
-
-
-#### dN/dS by chromosome, conservation rank, and sex bias (only for *C. chinensis*)
+### dN/dS by chromosome, conservation rank, and sex bias (only for *C. chinensis*)
 
 This plot shows the median within all the categories considered by the median regression above and can help with interpreting it. It is only for *C. chinensis* since we decided that the sex-bias data becomes to unreliable for more distant pairwise dN/dS, because sex-bias can evolve very rapidly, and the more distant comparison are missing conservation rank 1 (*B. siliquastri*) or 1 and 2 (*A. obtectus*) which makes inference also more uncertain.
 
@@ -1253,21 +1221,21 @@ This plot shows the median within all the categories considered by the median re
 </p>
 
 
-### Statistical analysis for positive selection
+## Statistical analysis for positive selection
 
-Since it's only two categories, I am using basic logistic regression and not the ordinal one like for the significantly sex-biased categories as above. I use the same logic for the sex bias as for the median test with continuous dNdS above
+Since I found before that the conservation distance does not matter, I will not include it here. I will only do a fisher test to see if positively selected genes are enriched on X or A within sex-bias categories
 
-#### *C. chinensis* with sex-biased expression
+### logistic regression 
 
-#### logistic regression 
+<details>
+  <summary>logistic regression results for posterity</summary>
+
 
 * head+thorax has some coefficients that could not be estimated when using the full `positive_selection ~  C(SB_head_thorax)  * C(chromosome) * level_most_dist_ortholog` formula. This might be due to overfitting, so I simplify the model a bit to exclude the three-way interactions like this `positive_selection ~  C(SB_head_thorax)  * (C(chromosome) + level_most_dist_ortholog)` only for the head+thorax SB data.
   * everything except intercept is insignificant
 * abdominal expression is significant for intercept, male-biased expression, conservation rank and male:conservation interaction
 * the X chromosome is not significant as a major effect and also not in any interactions. It does not become significant when removing the sex bias, only when taking out the conservation rank as well.
 
-<details>
-  <summary>See lin reg tables</summary>
 
 ```text
 ////////////////// C_chinensis abdomen ////////////////// 
@@ -1345,7 +1313,7 @@ C(chromosome)[T.X]     0.5665      0.136      4.172      0.000       0.300      
 ```
 </details>
 
-#### Fisher's exact test
+### Fisher's exact test
 
 Since the conservation distance and conservation:chromosome interactions are not significant, unlike with the dNdS analysis above, the age rank does likely not play a role here, unlike before. Therefore we do a more the Fisher's exact test instead, to see the proportion of positively selected genes is different between A and X within each sex-bias category. We expect that male-biased genes especially are different since they are affected by the consequences of X-hemizygosity in males but not in females. 
 
@@ -1435,55 +1403,6 @@ The darker parts at the top is the proportion of positively selected genes.
   <img src="data/DE_analysis/pos_sel_merged_conservation_rank_boxplot_head_thorax_white_bg.png" width="25%" />
 </p>
 
-
-#### *B. siliquastri*
-
-* only intercept is significant when including conservation rank, chromosome becomes more significant when excluding conservation rank
-
-```text
-////////////////// B_siliquastri ////////////////// 
-===============================================================================================================
-                                                  coef    std err          z      P>|z|      [0.025      0.975]
----------------------------------------------------------------------------------------------------------------
-Intercept                                      -2.5080      0.219    -11.429      0.000      -2.938      -2.078
-C(chromosome)[T.X]                              1.7378      1.034      1.681      0.093      -0.289       3.764
-level_most_dist_ortholog                        0.0148      0.048      0.307      0.759      -0.080       0.109
-C(chromosome)[T.X]:level_most_dist_ortholog    -0.2836      0.220     -1.288      0.198      -0.715       0.148
-===============================================================================================================
-
-////////////////// B_siliquastri no conservation rank ////////////////// 
-======================================================================================
-                         coef    std err          z      P>|z|      [0.025      0.975]
---------------------------------------------------------------------------------------
-Intercept             -2.4419      0.039    -63.107      0.000      -2.518      -2.366
-C(chromosome)[T.X]     0.4108      0.163      2.517      0.012       0.091       0.731
-======================================================================================
-```
-
-#### *A. obtectus*
-
-* only intercept is significant when including conservation rank, chromosome more significant when excluding conservation rank
-
-```text
-////////////////// A_obtectus ////////////////// 
-===============================================================================================================
-                                                  coef    std err          z      P>|z|      [0.025      0.975]
----------------------------------------------------------------------------------------------------------------
-Intercept                                      -3.5724      0.337    -10.604      0.000      -4.233      -2.912
-C(chromosome)[T.X]                              0.9833      1.754      0.561      0.575      -2.455       4.421
-level_most_dist_ortholog                        0.1023      0.073      1.394      0.163      -0.042       0.246
-C(chromosome)[T.X]:level_most_dist_ortholog    -0.0595      0.365     -0.163      0.871      -0.775       0.656
-===============================================================================================================
-
-////////////////// A_obtectus no conservation rank ////////////////// 
-======================================================================================
-                         coef    std err          z      P>|z|      [0.025      0.975]
---------------------------------------------------------------------------------------
-Intercept             -3.1106      0.051    -60.565      0.000      -3.211      -3.010
-C(chromosome)[T.X]     0.7266      0.189      3.844      0.000       0.356       1.097
-======================================================================================
-
-```
 
 
 # GO-term enrichment
