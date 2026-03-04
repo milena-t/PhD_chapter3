@@ -605,7 +605,7 @@ orange is A and red is X, like in the first pairwise-comparison plots. Also keep
 This seems mostly in line with statistical results. 
 
 <p float="left">
-  <img src="data/DE_analysis/dNdS_vs_conservation_rank_all_comparisons_white_bg.png" width="50%" />
+  <img src="data/DE_analysis/dNdS_vs_conservation_rank_all_comparisons_white_bg.png" width="40%" />
 </p>
 
 <details>
