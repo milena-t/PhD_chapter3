@@ -450,8 +450,6 @@ if __name__ == "__main__":
     else:
         ## plot pos sel bar chart and dNdS violin plot at the same time
         violin_ymax=0
-        data_files = {"A" : ["A_dNdS", "A_LRT"],
-                    "X" : ["X_dNdS", "X_LRT"]}
         summary_paths = get_summary_paths(username=username)
         dNdS_dict_A = read_dNdS_summary_file(summary_paths[data_files["A"][0]], excl_list=species_excl)
         dNdS_dict_X = read_dNdS_summary_file(summary_paths[data_files["X"][0]], excl_list=species_excl)

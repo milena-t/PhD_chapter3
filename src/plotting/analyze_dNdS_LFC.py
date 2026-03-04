@@ -1050,9 +1050,9 @@ def boxplot_dNdS_merge_rank(full_table_paths_dict, outfile, maxdNdS=2, partner_s
         title=f"{type_plt} h+t", pos_sel = pos_sel, colors_dict=colors, fs=fs)
 
 
-def chisq_test_pos_sel(full_table_path:str):
+def make_fishers_test_data_for_chr(full_table_path:str):
     """
-    compare proportions of male/femal/unbiased genes for two sets: all X/A-linked and positively selected X/A-linked
+    make the fisher count data for one chromosome (the one for the input path) and both tissues
     """
     df = pd.read_csv(full_table_path, sep="\t")
     df = df.rename(columns={'LFC_head+thorax': 'LFC_head_thorax'})
@@ -1080,47 +1080,38 @@ def chisq_test_pos_sel(full_table_path:str):
     nested_vals_dict_ht = make_pos_sel_dict(df, tissue="head_thorax")
     SB_order_list =["male","unbiased","female"]
 
-    def make_chisq_test_tissue(nested_vals_dict:dict, counts=True):
+    def make_fisher_test_tissue(nested_vals_dict:dict):
         # first get numbers for all chr and all positively selected to calculate proportions
-        all_chr = 0
+        all_neg_sel = 0
         all_pos_sel = 0
         for SB_cat in SB_order_list:
-            all_chr += len(nested_vals_dict[SB_cat])
+            all_neg_sel += len([val for val in nested_vals_dict[SB_cat] if val == False])
             all_pos_sel += len([val for val in nested_vals_dict[SB_cat] if val == True])
 
-        ## calculate proportions
-        all_SB_prop = [0,0,0]
-        pos_sel_SB_prop = [0,0,0]
-        if counts:
-            pos_sel_SB_scaled = [0,0,0]
-            print(f"\tcounts \t\t: all \t pos_sel \tpos_sel_scaled")
-        else:
-            print(f"\tproportions \t: all \t pos_sel")
+        ## calculate proportions, list order is SB_order_list
+        neg_sel_SB_counts = {SB_cat : 0 for SB_cat in SB_order_list}
+        pos_sel_SB_counts = {SB_cat : 0 for SB_cat in SB_order_list}
+        print(f"\tproportions \t: neg_sel \t pos_sel")
+        
         for i,SB_cat in enumerate(SB_order_list):
-            if counts:
-                all_SB_prop[i] = len(nested_vals_dict[SB_cat]) 
-                pos_sel_SB_prop[i] = len([val for val in nested_vals_dict[SB_cat] if val == True])
-                pos_sel_SB_scaled[i] = pos_sel_SB_prop[i] / all_pos_sel * all_chr
-                print(f"\t * {SB_cat} \t: {all_SB_prop[i]}\t {pos_sel_SB_prop[i]}\t\t{pos_sel_SB_scaled[i]:.2f}")
-            else:
-                all_SB_prop[i] = len(nested_vals_dict[SB_cat])/all_chr 
-                pos_sel_SB_prop[i] = len([val for val in nested_vals_dict[SB_cat] if val == True])/all_pos_sel
-                print(f"\t * {SB_cat} \t: {all_SB_prop[i]:.3f}\t {pos_sel_SB_prop[i]:.3f}")
+            neg_sel_SB_counts[SB_cat] = len([val for val in nested_vals_dict[SB_cat] if val == False])
+            pos_sel_SB_counts[SB_cat] = len([val for val in nested_vals_dict[SB_cat] if val == True])
+            print(f"\t * {SB_cat} \t: {neg_sel_SB_counts[SB_cat]}\t {pos_sel_SB_counts[SB_cat]}")
         
         ## the basic chisquare test requires the same number of observations in f_obs and f_exp, but we don't have that here
         ## so I will use proportions instead of counts
-        if counts:
-            print(f"\t * SUM\t\t: {sum(all_SB_prop)}\t {sum(pos_sel_SB_prop)}\t\t{sum(pos_sel_SB_scaled):.2f}")
-            chisq_res = stats.chisquare(f_obs=pos_sel_SB_scaled, f_exp=all_SB_prop)
-            print(f"\tChi2 p-value: {chisq_res.pvalue}")
-        else:
-            chisq_res = stats.chisquare(f_obs=pos_sel_SB_prop, f_exp=all_SB_prop)
-            print(f"\tChi2 p-value: {chisq_res.pvalue}")
+        print(f"\t * SUM\t\t: {sum(list(neg_sel_SB_counts.values()))}\t {sum(list(pos_sel_SB_counts.values()))}")
+
+        return { "pos_sel" : pos_sel_SB_counts, "neg_sel" : neg_sel_SB_counts}
 
     print(f"--> ABDOMEN")
-    make_chisq_test_tissue(nested_vals_dict_a)
+    abdomen_counts = make_fisher_test_tissue(nested_vals_dict_a)
     print(f"\n--> HEAD+THORAX")
-    make_chisq_test_tissue(nested_vals_dict_ht)
+    ht_counts = make_fisher_test_tissue(nested_vals_dict_ht)
+
+    return {"abdomen" : abdomen_counts, "head_thorax" : ht_counts}
+
+
 
 if __name__ == "__main__":
 
@@ -1176,9 +1167,11 @@ if __name__ == "__main__":
         ###################################################
         ### do chisq test to assess the different proportions of sex bias in positively selected
         ### genes vs. the "background" of either X or A
+        fisher_counts_dict = {}
         for chr in ["X", "A"]:
             print(f"\n////////////////// {chr} //////////////////")
-            chisq_test_pos_sel(full_tables_dict[chr])
+            fisher_counts_dict[chr] = make_fishers_test_data_for_chr(full_tables_dict[chr])
+        print(fisher_counts_dict)
         ###################################################
 
     if False:
