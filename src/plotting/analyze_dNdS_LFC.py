@@ -1202,7 +1202,7 @@ if __name__ == "__main__":
         ## plotting
         pos_sel = True # if true plot bar charts with proportion of positive selection
         lineplot=True
-        if True:
+        if False:
             ###################################################
             ### if pos_sel: bar plot for positive selection or dNdS by rank/chromosome/sex bias
             ### else: boxplot of dNdS values
