@@ -258,7 +258,7 @@ def statistical_analysis_pos_sel(full_table_paths_dict, include_sex_bias=False):
                 test = smf.logit(formula=formula_nono, data=filt_df).fit()
                 print(test.summary())
 
-                
+
             elif include_sex_bias == False:
                 
                 ########### test interaction
@@ -354,10 +354,10 @@ def plot_dNdS_rank_conserved(summary_paths_AX_list:dict, outfile = "", maxdNdS =
     if maxdNdS>0:
         y_label = f"dN/dS (max. < {maxdNdS})"
     
-    fs = 30 # font size
+    fs = 28 # font size
 
     # set figure aspect ratio
-    aspect_ratio = 8 / 16
+    aspect_ratio = 10 / 23
     height_pixels = 1700  # Height in pixels
     width_pixels = int(height_pixels * aspect_ratio)  # Width in pixels
 
@@ -371,7 +371,7 @@ def plot_dNdS_rank_conserved(summary_paths_AX_list:dict, outfile = "", maxdNdS =
             AX_lists.extend([lists_A[rank], lists_X[rank]])
         
         # tick_labels = [f"{i // 2 + 1}\n({len(vals)})" for i,vals in enumerate(sex_biased_lists)]
-        tick_labels = [f"({len(vals)})" for i,vals in enumerate(AX_lists)] # plot conservation rank label on separate axis
+        tick_labels = [f"({len(vals)})" if len(vals)>0 else "" for i,vals in enumerate(AX_lists) ] # plot conservation rank label on separate axis
         width = 0.7
         pos_adjust=width*0.125
         tick_pos = [i+pos_adjust if i%2==1 else i-pos_adjust for i in range(1,len(tick_labels)+1)]
@@ -384,7 +384,9 @@ def plot_dNdS_rank_conserved(summary_paths_AX_list:dict, outfile = "", maxdNdS =
             ax[row].set_xticks(ticks = tick_pos, labels = tick_labels, fontsize=fs*tick_fs_factor)#, rotation=45, ha='right') # rotation=45 for diagonal direction
             ax[row].tick_params(axis='x', labelsize=fs*tick_fs_factor, rotation = 90)
         else:
-            ax[row].set_xticks(ticks = tick_pos, labels = ['' for tick in tick_labels], fontsize=fs*tick_fs_factor, rotation=45, ha='right')
+            ax[row].set_xticks(ticks = tick_pos, labels = tick_labels, fontsize=fs*tick_fs_factor)#, rotation=45, ha='right') # rotation=45 for diagonal direction
+            ax[row].tick_params(axis='x', labelsize=fs*tick_fs_factor, rotation = 90)
+            # ax[row].set_xticks(ticks = tick_pos, labels = ['' for tick in tick_labels], fontsize=fs*tick_fs_factor, rotation=45, ha='right')
         ax[row].tick_params(axis='y', labelsize=fs*0.9)
         ax[row].set_title(title, fontsize=fs)
         ax[row].set_ylabel(ylab, fontsize = fs, x=0.0, y=0.625)
@@ -436,16 +438,6 @@ def plot_dNdS_rank_conserved(summary_paths_AX_list:dict, outfile = "", maxdNdS =
             else:
                 flier.set(marker='.', markerfacecolor=colors_dict['X_edge'], markeredgecolor=colors_dict['X_edge'])
 
-    # colors = {
-    #     "fill" : "#246A73", # stormy teal
-    #     "edge" : "#174C54", # dark teal
-    #     "medians" : "#54A6A2", # tropical teal
-    #     # "lines" : "#7D93B5", # lavender grey
-    #     "X_fill" : "#7E3A7E", # grape soda
-    #     "X_edge" : "#672B67", # velvet purple
-    #     "X_medians" : "#C877C8", # orchid mist
-    #     # "X_lines" : "#7D93B5" # lavender grey
-    # }
     colors = {
         "fill" : "#F2933A", # uniform_filtered orange
         "edge" : "#C36711", # darker orange
@@ -459,7 +451,7 @@ def plot_dNdS_rank_conserved(summary_paths_AX_list:dict, outfile = "", maxdNdS =
     for i,partner in enumerate(sorted(partner_species)):
         print(f"/////////////////////// {partner} ///////////////////////")
         partner_title=partner.replace("_", ". ")
-        plot_title = f"{partner_title} pairwise comparison"
+        plot_title = f"{partner_title}"
         if i<2:
             plot_x_axis=False
         else:
@@ -1228,7 +1220,7 @@ if __name__ == "__main__":
 
     ###### site model (pos. sel) stats and some plotting
     ## if plotting not here then in PhD_chapter3/src/plotting/analyze_site_classes.py
-    if True:
+    if False:
         ###################################################
         ## analyze positive selection in site classes
         ## logistic regression for categorical response (positive selection True/False)
@@ -1247,7 +1239,7 @@ if __name__ == "__main__":
         run_fisher_test(fisher_counts_dict, verbose=True)
         ###################################################
 
-    if False:
+    if True:
         ###################################################
         ## boxplot dNdS by rank and chromosome but no sex bias
         filename=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/dNdS_vs_conservation_rank.png"
