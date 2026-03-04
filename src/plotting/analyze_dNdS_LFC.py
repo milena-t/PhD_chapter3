@@ -1154,6 +1154,8 @@ def run_fisher_test(counts_dict, verbose = False):
     table_rows = {0:"A", 1:"X"}
 
     # loop through all comparisons
+    p_order = [] # make p-values ordered lists for multiple testing correction
+    cats_order = []
     for tissue in tissue_list:
         print(f"{tissue}")
         for SB_cat in SB_order_list:
@@ -1173,6 +1175,14 @@ def run_fisher_test(counts_dict, verbose = False):
             # run fisher test for the contingency table
             fisher_res = stats.fisher_exact(contingency_table)
             print(f"\t{SB_cat} --> Fisher's exact p-value: {fisher_res.pvalue}\n")
+            p_order.append(fisher_res.pvalue)
+            cats_order.append(f"{tissue}:{SB_cat}")
+    
+    ## do multiple testing correction
+    print(f"\n------------> BH-correction for multiple testing (old_p -> corrected_p):")
+    p_adj = stats.false_discovery_control(ps=p_order)
+    for i in range(len(p_adj)):
+        print(f"{cats_order[i]}: {p_order[i]:.6f} -> {p_adj[i]:.6f}")
 
 
 if __name__ == "__main__":
@@ -1227,7 +1237,7 @@ if __name__ == "__main__":
         statistical_analysis_pos_sel(full_table_paths_dict=full_tables_dict)
         ###################################################
     
-    if False:
+    if True:
         ###################################################
         ### do chisq test to assess the different proportions of sex bias in positively selected
         ### genes vs. the "background" of either X or A
@@ -1239,7 +1249,7 @@ if __name__ == "__main__":
         run_fisher_test(fisher_counts_dict, verbose=True)
         ###################################################
 
-    if True:
+    if False:
         ###################################################
         ## boxplot dNdS by rank and chromosome but no sex bias
         filename=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/dNdS_vs_conservation_rank.png"

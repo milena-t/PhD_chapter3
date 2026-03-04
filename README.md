@@ -1354,7 +1354,6 @@ By `neg_sel` I just mean not positively selected, I did not actually test for ne
 	 * SUM        : 7507       1261
 ```
 
-</details>
 
 Fisher's test p-values:
 
@@ -1391,6 +1390,23 @@ head_thorax
  [  1  13]]
 	female --> Fisher's exact p-value: 0.48224144897027255
 ```
+
+</details>
+
+Fisher's exact test p-values:
+
+```text
+BH-correction for multiple testing (old_p -> corrected_p)
+
+abdomen :     male :     0.059340 -> 0.118681
+abdomen :     unbiased : 0.000047 -> 0.000142 * 
+abdomen :     female :   0.742779 -> 0.742779
+head_thorax : male :     0.197809 -> 0.296713
+head_thorax : unbiased : 0.000039 -> 0.000142 * 
+head_thorax : female :   0.482241 -> 0.578690
+```
+
+only unbiased genes are significantly enriched! 
 
 ### plots
 
