@@ -130,6 +130,16 @@ write.csv(A_C_chinensis_enriched_GOs, "/Users/miltr339/work/PhD_code/PhD_chapter
 write.csv(X_A_obtectus_enriched_GOs, "/Users/miltr339/work/PhD_code/PhD_chapter3/data/GO_enrichment/X_A_obtectus_enriched_GOs.csv", row.names=TRUE)
 write.csv(X_B_siliquastri_enriched_GOs, "/Users/miltr339/work/PhD_code/PhD_chapter3/data/GO_enrichment/X_B_siliquastri_enriched_GOs.csv", row.names=TRUE)
 write.csv(X_C_chinensis_enriched_GOs, "/Users/miltr339/work/PhD_code/PhD_chapter3/data/GO_enrichment/X_C_chinensis_enriched_GOs.csv", row.names=TRUE)
+
+
+### A to X comparison
+all_AX_enriched_GOs <- GO_enrichment_analysis(geneList = all_AX_contrast, annotation_df = gene2GO)
+sig_AX_enriched_GOs <- GO_enrichment_analysis(geneList = sig_AX_contrast, annotation_df = gene2GO)
+
+write.csv(all_AX_enriched_GOs, "/Users/miltr339/work/PhD_code/PhD_chapter3/data/GO_enrichment/all_AX_enriched_GOs", row.names=TRUE)
+write.csv(sig_AX_enriched_GOs, "/Users/miltr339/work/PhD_code/PhD_chapter3/data/GO_enrichment/sig_AX_enriched_GOs", row.names=TRUE)
+
+
 ```
 
 
