@@ -671,9 +671,23 @@ Conservation rank goes from 1 to 5, with 5 being highly conserved (up to drosoph
 </details>
 
 
-### statistics: logistic regression with model comparison
+### statistics: median regression with model comparison
 
-I will do a logistic regression with the dNdS as response variable and the chromosome location (as factor) and conservation rank as a explanatory variable. I will start with including an interaction, and then do model comparisons with simpler models that lack the interaction, and then also lack the conservation rank to get useful p-values that aren't just in comparison to an intercept.
+I will do a median regression with the dNdS as response variable and the chromosome location (as factor) and conservation rank as a explanatory variable. I will start with including an interaction, and then do model comparisons with simpler models that lack the interaction, and then also lack the conservation rank to get useful p-values that aren't just in comparison to an intercept. In summary, the interaction usually doesn't matter but the main effect does.
+
+* *C. chinensis* Wald test p-values:
+  * `chromosome * conservation_rank`: p=0.46
+  * `conservation_distance`: p=0.0
+* *B. siliquastri* Wald test p-values:
+  * `chromosome * conservation_rank`: p=0.16
+  * `conservation_distance`: p=0.0
+* *A. obtectus* Wald test p-values:
+  * `chromosome * conservation_rank`: p=0.02
+  * `conservation_distance`: p=0.0
+
+
+<details>
+  <summary>detailed results for model reduction approach</summary>
 
 #### *C. chinensis*
 
@@ -719,9 +733,6 @@ conservation distance as major effect is strongly significant!
 
 ##### `chromosome`
 
-
-<details>
-  <summary>table without conservation rank</summary>
 
 ```text
 Df Residuals: 8896
@@ -844,6 +855,21 @@ C(chromosome)[T.X]    -0.0232      0.004     -5.837      0.000      -0.031      
 ## Positive selection
 
 I will use the same model reduction approach as before with a logistic regression where the positive selection according to the site model is a binary response variable
+
+* *C. chinensis* Wald test p-values:
+  * `chromosome * conservation_rank`: p=0.34
+  * `conservation_distance`: p=0.08
+* *B. siliquastri* Wald test p-values:
+  * `chromosome * conservation_rank`: p=0.20
+  * `conservation_distance`: p=0.95
+* *A. obtectus* Wald test p-values:
+  * `chromosome * conservation_rank`: p=0.87
+  * `conservation_distance`: p=0.16
+
+
+<details>
+  <summary>detailed results for model reduction approach</summary>
+
 
 ### *C. chinensis*
 
@@ -995,6 +1021,8 @@ Intercept             -3.1106      0.051    -60.565      0.000      -3.211      
 C(chromosome)[T.X]     0.7266      0.189      3.844      0.000       0.356       1.097
 ======================================================================================
 ```
+
+</details>
 
 # Sex biased gene expression
 
