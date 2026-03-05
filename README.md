@@ -1428,50 +1428,65 @@ I am using `quantreg` again, like for the log2FC again, where I have a continuou
 
 ### *C. chinensis* dN/dS with expression data
 
+The formula is `dNdS ~  C(SB_tissue)  * C(chromosome) * level_most_dist_ortholog`, so up to a three-way interaction. I tried to see if i can drop it with the wald-test but it is significant in both cases.
+
+Summary results:
+
 * Abdomen: all significant except the `C(SB_abdomen)[T.unbiased]:level_most_dist_ortholog` interaction
 * Head+Thorax: 
   * no difference between sex-bias category (intercept is significant but not male or unbiased major effects)
   * chromosome (X) and conservation rank are significant major effects with negative coefficients
   * significant interactions are 2-way `C(SB_head_thorax)[T.male]:C(chromosome)[T.X]` and 3-way `C(SB_head_thorax)[T.male]:C(chromosome)[T.X]:level_most_dist_ortholog` which are male-biased genes on X
 
+Not super clear about how to interpret all of these yet.
+
 <details>
   <summary>Tables with age rank</summary>
 
 ```text
 ////////////////// C_chinensis: abdomen //////////////////
+Df Residuals: 8886
+Df Model: 11
 =========================================================================================================================================
                                                                               coef    std err          t      P>|t|      [0.025      0.975]
 -----------------------------------------------------------------------------------------------------------------------------------------
 * Intercept                                                                 0.3330      0.012     28.177      0.000       0.310       0.356
 * C(SB_abdomen)[T.male]                                                    -0.0658      0.014     -4.636      0.000      -0.094      -0.038
-* C(SB_abdomen)[T.unbiased]                                                -0.0448      0.014     -3.315      0.001      -0.071      -0.018
+* C(SB_abdomen)[T.unbiased]                                                -0.0448      0.014     -3.313      0.001      -0.071      -0.018
 * C(chromosome)[T.X]                                                        0.3308      0.089      3.733      0.000       0.157       0.505
 * C(SB_abdomen)[T.male]:C(chromosome)[T.X]                                 -0.3065      0.114     -2.697      0.007      -0.529      -0.084
-* C(SB_abdomen)[T.unbiased]:C(chromosome)[T.X]                             -0.4832      0.108     -4.490      0.000      -0.694      -0.272
+* C(SB_abdomen)[T.unbiased]:C(chromosome)[T.X]                             -0.4833      0.108     -4.491      0.000      -0.694      -0.272
 * level_most_dist_ortholog                                                 -0.0514      0.003    -20.081      0.000      -0.056      -0.046
 * C(SB_abdomen)[T.male]:level_most_dist_ortholog                            0.0115      0.003      3.610      0.000       0.005       0.018
-. C(SB_abdomen)[T.unbiased]:level_most_dist_ortholog                        0.0051      0.003      1.738      0.082      -0.001       0.011
+. C(SB_abdomen)[T.unbiased]:level_most_dist_ortholog                        0.0051      0.003      1.736      0.083      -0.001       0.011
 * C(chromosome)[T.X]:level_most_dist_ortholog                              -0.0703      0.019     -3.754      0.000      -0.107      -0.034
 * C(SB_abdomen)[T.male]:C(chromosome)[T.X]:level_most_dist_ortholog         0.0657      0.024      2.714      0.007       0.018       0.113
-* C(SB_abdomen)[T.unbiased]:C(chromosome)[T.X]:level_most_dist_ortholog     0.1008      0.023      4.460      0.000       0.056       0.145
+* C(SB_abdomen)[T.unbiased]:C(chromosome)[T.X]:level_most_dist_ortholog     0.1008      0.023      4.461      0.000       0.056       0.145
 =========================================================================================================================================
+wald test for 'C(SB_abdomen)[T.unbiased]:C(chromosome)[T.X]:level_most_dist_ortholog = 0' interaction: F test: F=19.89675066271259, p=8.274407703983081e-06, df_denom=8.89e+03, df_num=1
+
 ////////////////// C_chinensis: head+thorax //////////////////
+Df Residuals: 8886
+Df Model: 11
 =============================================================================================================================================
                                                                                   coef    std err          t      P>|t|      [0.025      0.975]
 ---------------------------------------------------------------------------------------------------------------------------------------------
-* Intercept                                                                     0.3102      0.018     17.028      0.000       0.274       0.346
-  C(SB_head_thorax)[T.male]                                                     0.0126      0.022      0.582      0.560      -0.030       0.055
-. C(SB_head_thorax)[T.unbiased]                                                -0.0359      0.019     -1.891      0.059      -0.073       0.001
-. C(chromosome)[T.X]                                                            0.3373      0.178      1.893      0.058      -0.012       0.687
-* C(SB_head_thorax)[T.male]:C(chromosome)[T.X]                                 -0.5618      0.201     -2.788      0.005      -0.957      -0.167
-* C(SB_head_thorax)[T.unbiased]:C(chromosome)[T.X]                             -0.4099      0.184     -2.224      0.026      -0.771      -0.049
-* level_most_dist_ortholog                                                     -0.0429      0.004    -10.456      0.000      -0.051      -0.035
-  C(SB_head_thorax)[T.male]:level_most_dist_ortholog                           -0.0084      0.005     -1.664      0.096      -0.018       0.001
-  C(SB_head_thorax)[T.unbiased]:level_most_dist_ortholog                        0.0004      0.004      0.092      0.927      -0.008       0.009
-. C(chromosome)[T.X]:level_most_dist_ortholog                                  -0.0718      0.039     -1.858      0.063      -0.148       0.004
-* C(SB_head_thorax)[T.male]:C(chromosome)[T.X]:level_most_dist_ortholog         0.1192      0.044      2.723      0.006       0.033       0.205
-* C(SB_head_thorax)[T.unbiased]:C(chromosome)[T.X]:level_most_dist_ortholog     0.0852      0.040      2.138      0.033       0.007       0.163
+* Intercept                                                                     0.3102      0.018     17.040      0.000       0.275       0.346
+  C(SB_head_thorax)[T.male]                                                     0.0126      0.022      0.583      0.560      -0.030       0.055
+. C(SB_head_thorax)[T.unbiased]                                                -0.0360      0.019     -1.901      0.057      -0.073       0.001
+. C(chromosome)[T.X]                                                            0.3373      0.178      1.894      0.058      -0.012       0.686
+* C(SB_head_thorax)[T.male]:C(chromosome)[T.X]                                 -0.5618      0.201     -2.790      0.005      -0.957      -0.167
+* C(SB_head_thorax)[T.unbiased]:C(chromosome)[T.X]                             -0.4097      0.184     -2.225      0.026      -0.771      -0.049
+* level_most_dist_ortholog                                                     -0.0429      0.004    -10.463      0.000      -0.051      -0.035
+  C(SB_head_thorax)[T.male]:level_most_dist_ortholog                           -0.0084      0.005     -1.665      0.096      -0.018       0.001
+  C(SB_head_thorax)[T.unbiased]:level_most_dist_ortholog                        0.0004      0.004      0.095      0.924      -0.008       0.009
+. C(chromosome)[T.X]:level_most_dist_ortholog                                  -0.0718      0.039     -1.860      0.063      -0.147       0.004
+* C(SB_head_thorax)[T.male]:C(chromosome)[T.X]:level_most_dist_ortholog         0.1192      0.044      2.725      0.006       0.033       0.205
+* C(SB_head_thorax)[T.unbiased]:C(chromosome)[T.X]:level_most_dist_ortholog     0.0852      0.040      2.139      0.032       0.007       0.163
 =============================================================================================================================================
+
+(The condition number is large, 2.1e+03. This might indicate that there are strong multicollinearity or other numerical problems.)
+wald test for 'C(SB_head_thorax)[T.unbiased]:C(chromosome)[T.X]:level_most_dist_ortholog = 0' interaction: F test: F=4.574900772447697, p=0.03247080279854324, df_denom=8.89e+03, df_num=1
 ```
 </details>
 

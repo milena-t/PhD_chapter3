@@ -133,27 +133,20 @@ def statistical_analysis_dNdS(full_table_paths_dict, table_outfile="", max_dNdS=
             test_filtering(f"level_most_dist_ortholog")
 
         if include_sex_bias and "C_chinensis" in partner:
-                # only significantly sex-biased genes -> remove LFC
-                formula_a = f"{partner}_dNdS ~  C(SB_abdomen)  * C(chromosome) * level_most_dist_ortholog"
-                formula_ht = f"{partner}_dNdS ~  C(SB_head_thorax)  * C(chromosome) * level_most_dist_ortholog"
+                for tissue in ["abdomen", "head_thorax"]:
+                    print(f"\n------------> {tissue}")
+                    formula = f"{partner}_dNdS ~  C(SB_{tissue})  * C(chromosome) * level_most_dist_ortholog"
+                    interactions_test_string=f"C(SB_{tissue})[T.unbiased]:C(chromosome)[T.X]:level_most_dist_ortholog = 0"
                 
-                print(f"\n------------> abdomen")
-                test = smf.quantreg(formula=formula_a, data=filt_df).fit(q=0.5) # q=0.5 means we estimate the median
-                print(test.summary())
-                print(f"\n------------> head+thorax")
-                test = smf.quantreg(formula=formula_ht, data=filt_df).fit(q=0.5) # q=0.5 means we estimate the median
-                print(test.summary())
+                    test = smf.quantreg(formula=formula, data=filt_df).fit(q=0.5) # q=0.5 means we estimate the median
+                    print(test.summary())
 
-                ### without the age rank to assess only sex bias effect
-                formula_a = f"{partner}_dNdS ~  C(SB_abdomen)  * C(chromosome)"
-                formula_ht = f"{partner}_dNdS ~  C(SB_head_thorax)  * C(chromosome)"
-                
-                print(f"\n------------> NO AGE RANK: abdomen")
-                test = smf.quantreg(formula=formula_a, data=filt_df).fit(q=0.5) # q=0.5 means we estimate the median
-                print(test.summary())
-                print(f"\n------------> NO AGE RANK: head+thorax")
-                test = smf.quantreg(formula=formula_ht, data=filt_df).fit(q=0.5) # q=0.5 means we estimate the median
-                print(test.summary())
+                    try:
+                        # test three-way interaction
+                        wald_test = test.wald_test(interactions_test_string, scalar = True)
+                        print(f"wald test for {interactions_test_string} interaction: {wald_test}")
+                    except:
+                        print("no Wald test could be performed")
 
         elif include_sex_bias == False:
 
@@ -1192,18 +1185,20 @@ if __name__ == "__main__":
     full_tables_dict = get_full_table_path(username=username)
     reorg_table_outfile = f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/paml_stats_outfile_table.tsv"
     
-    ### just a basic proportion of the different conservation ranks on A and X
-    ### shows that X has a higher proportion of rank-5 genes than A
-    for species in ["C_chinensis", "B_siliquastri", "A_obtectus"]:
-        print(f"\n-------> {species}")
-        compare_conservation_rank_proportions(full_tables_dict, other_species=species)
+    if False:
+        ### just a basic proportion of the different conservation ranks on A and X
+        ### shows that X has a higher proportion of rank-5 genes than A
+        for species in ["C_chinensis", "B_siliquastri", "A_obtectus"]:
+            print(f"\n-------> {species}")
+            compare_conservation_rank_proportions(full_tables_dict, other_species=species)
 
     ###### dNdS stats and plotting
-    if False:
+    if True:
         ## stats
         ###################################################
         ## median quantile regression for dNdS as continuous response
-        statistical_analysis_dNdS(full_tables_dict, table_outfile=f"")
+        do_chinensis_sex_bias=True
+        statistical_analysis_dNdS(full_tables_dict, table_outfile=f"", include_sex_bias=do_chinensis_sex_bias)
         ###################################################
 
     if False:
