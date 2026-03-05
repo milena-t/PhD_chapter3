@@ -745,7 +745,6 @@ C(chromosome)[T.X]    -0.0169      0.006     -2.694      0.007      -0.029      
 ======================================================================================
 ```
 
-</details>
 
 #### *B. siliquastri*
 
@@ -820,8 +819,6 @@ wald test for 'C(chromosome)[T.X]:level_most_dist_ortholog = 0' interaction: F t
 
 ##### `chromosome + conservation_distance`
 
-<details>
-  <summary>rest technically not relevant since the interaction is significant but it is here just in case</summary>
 
 ```text
 Df Residuals: 9615
@@ -849,7 +846,6 @@ C(chromosome)[T.X]    -0.0232      0.004     -5.837      0.000      -0.031      
 ======================================================================================
 ```
 
-</details>
 </details>
 
 
