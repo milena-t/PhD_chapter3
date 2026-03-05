@@ -1149,12 +1149,18 @@ I calculated the standard error of the mean (SEM) with `scipy.stats.sem` which t
 
 ## sex bias and ortholog conservation
 
+Before connecting this to dNdS and positive selection, I will see how sex bias changes with more or less conserved genes
+
 ### 1. sex bias categories
 
 <p float="left">
   <img src="data/DE_analysis/DE_conservation_rank_proportions_white_bg.png" width="100%" />
 </p>
 
+* Sex bias is lower in somatic than reproductive
+  * older genes are more female-biased and younger genes are more male-biased
+  * somatic: A is more male-biased than X
+* younger genes become more male biased on A than on X
 
 ### 2. magnitude of sex bias
 
@@ -1171,35 +1177,39 @@ I want to investigate if the magnitude of significant sex-bias is influenced by 
 
 Everything, including all interactions is strongly significant for abdominal data, for head+thorax the three-way interaction `level_most_dist_ortholog:C(SB_head_thorax)[T.male]:C(chromosome)[T.X]` becomes nonsignificant and the two-way interaction `C(SB_head_thorax)[T.male]:C(chromosome)[T.X]` is borderline. generally everything is very significant though.
 
+Abdomen: everything is significant
+
 ```text
 ////////////////// ABDOMEN //////////////////
 =====================================================================================================================================
-                                                                        coef    std err          t      P>|t|      [0.025      0.975]
+                                                                          coef    std err          t      P>|t|      [0.025      0.975]
 -------------------------------------------------------------------------------------------------------------------------------------
-Intercept                                                             3.7188      0.042     88.462      0.000       3.636       3.801
-C(SB_abdomen)[T.male]                                                -2.9777      0.104    -28.757      0.000      -3.181      -2.775
-C(chromosome)[T.X]                                                    1.9753      0.326      6.062      0.000       1.337       2.614
-C(SB_abdomen)[T.male]:C(chromosome)[T.X]                             -1.9827      0.664     -2.986      0.003      -3.284      -0.681
-level_most_dist_ortholog                                             -0.4066      0.010    -41.828      0.000      -0.426      -0.388
-level_most_dist_ortholog:C(SB_abdomen)[T.male]                        0.3816      0.022     17.192      0.000       0.338       0.425
-level_most_dist_ortholog:C(chromosome)[T.X]                          -0.3734      0.070     -5.347      0.000      -0.510      -0.236
-level_most_dist_ortholog:C(SB_abdomen)[T.male]:C(chromosome)[T.X]     0.3721      0.138      2.701      0.007       0.102       0.642
+* Intercept                                                             3.7188      0.042     88.462      0.000       3.636       3.801
+* C(SB_abdomen)[T.male]                                                -2.9777      0.104    -28.757      0.000      -3.181      -2.775
+* C(chromosome)[T.X]                                                    1.9753      0.326      6.062      0.000       1.337       2.614
+* C(SB_abdomen)[T.male]:C(chromosome)[T.X]                             -1.9827      0.664     -2.986      0.003      -3.284      -0.681
+* level_most_dist_ortholog                                             -0.4066      0.010    -41.828      0.000      -0.426      -0.388
+* level_most_dist_ortholog:C(SB_abdomen)[T.male]                        0.3816      0.022     17.192      0.000       0.338       0.425
+* level_most_dist_ortholog:C(chromosome)[T.X]                          -0.3734      0.070     -5.347      0.000      -0.510      -0.236
+* level_most_dist_ortholog:C(SB_abdomen)[T.male]:C(chromosome)[T.X]     0.3721      0.138      2.701      0.007       0.102       0.642
 =====================================================================================================================================
 ```
+
+head + thorax: still very significant but three-way interaction not anymore
 
 ```text
 ////////////////// HEAD+THORAX //////////////////
 =========================================================================================================================================
-                                                                            coef    std err          t      P>|t|      [0.025      0.975]
+                                                                              coef    std err          t      P>|t|      [0.025      0.975]
 -----------------------------------------------------------------------------------------------------------------------------------------
-Intercept                                                                 5.2074      0.041    126.773      0.000       5.127       5.288
-C(SB_head_thorax)[T.male]                                                -4.3702      0.065    -67.609      0.000      -4.497      -4.243
-C(chromosome)[T.X]                                                       -1.0880      0.388     -2.805      0.005      -1.848      -0.328
-C(SB_head_thorax)[T.male]:C(chromosome)[T.X]                              1.0033      0.514      1.953      0.051      -0.004       2.011
-level_most_dist_ortholog                                                 -0.7501      0.010    -74.462      0.000      -0.770      -0.730
-level_most_dist_ortholog:C(SB_head_thorax)[T.male]                        0.6841      0.015     46.480      0.000       0.655       0.713
-level_most_dist_ortholog:C(chromosome)[T.X]                               0.1990      0.084      2.363      0.018       0.034       0.364
-level_most_dist_ortholog:C(SB_head_thorax)[T.male]:C(chromosome)[T.X]    -0.1835      0.109     -1.683      0.092      -0.397       0.030
+* Intercept                                                                 5.2074      0.041    126.773      0.000       5.127       5.288
+* C(SB_head_thorax)[T.male]                                                -4.3702      0.065    -67.609      0.000      -4.497      -4.243
+* C(chromosome)[T.X]                                                       -1.0880      0.388     -2.805      0.005      -1.848      -0.328
+. C(SB_head_thorax)[T.male]:C(chromosome)[T.X]                              1.0033      0.514      1.953      0.051      -0.004       2.011
+* level_most_dist_ortholog                                                 -0.7501      0.010    -74.462      0.000      -0.770      -0.730
+* level_most_dist_ortholog:C(SB_head_thorax)[T.male]                        0.6841      0.015     46.480      0.000       0.655       0.713
+* level_most_dist_ortholog:C(chromosome)[T.X]                               0.1990      0.084      2.363      0.018       0.034       0.364
+  level_most_dist_ortholog:C(SB_head_thorax)[T.male]:C(chromosome)[T.X]    -0.1835      0.109     -1.683      0.092      -0.397       0.030
 =========================================================================================================================================```
 ```
 
@@ -1207,75 +1217,6 @@ level_most_dist_ortholog:C(SB_head_thorax)[T.male]:C(chromosome)[T.X]    -0.1835
 
 I will only incorporate the sex-biased expression for *C. chinensis* vs. *C. maculatus* since sex-bias evolves very quickly and using this as inference for more distant comparisons is likely unreliable. I will also split the analysis by tissue in this case, since we have abdominal (reproductive) and head+thorax (somatic) data available. I will partition the sex bias into a factor with levels for male-biased, unbiased, or female-biased and not incorporate the actual log2FC values as a continuous variable.
 
-
-
-## median quantile dN/dS test
-
-I am using `quantreg` again, like for the log2FC again, where I have a continuous response variable. 
-
-### *C. chinensis* with expression data
-
-* Abdomen: all significant except the `C(SB_abdomen)[T.unbiased]:level_most_dist_ortholog` interaction
-* Head+Thorax: 
-  * no difference between sex-bias category (intercept is significant but not male or unbiased major effects)
-  * chromosome (X) and conservation rank are significant major effects with negative coefficients
-  * significant interactions are 2-way `C(SB_head_thorax)[T.male]:C(chromosome)[T.X]` and 3-way `C(SB_head_thorax)[T.male]:C(chromosome)[T.X]:level_most_dist_ortholog` which are male-biased genes on X
-
-<details>
-  <summary>Tables with age rank</summary>
-
-```text
-////////////////// C_chinensis: abdomen //////////////////
-=========================================================================================================================================
-                                                                              coef    std err          t      P>|t|      [0.025      0.975]
------------------------------------------------------------------------------------------------------------------------------------------
-* Intercept                                                                 0.3330      0.012     28.177      0.000       0.310       0.356
-* C(SB_abdomen)[T.male]                                                    -0.0658      0.014     -4.636      0.000      -0.094      -0.038
-* C(SB_abdomen)[T.unbiased]                                                -0.0448      0.014     -3.315      0.001      -0.071      -0.018
-* C(chromosome)[T.X]                                                        0.3308      0.089      3.733      0.000       0.157       0.505
-* C(SB_abdomen)[T.male]:C(chromosome)[T.X]                                 -0.3065      0.114     -2.697      0.007      -0.529      -0.084
-* C(SB_abdomen)[T.unbiased]:C(chromosome)[T.X]                             -0.4832      0.108     -4.490      0.000      -0.694      -0.272
-* level_most_dist_ortholog                                                 -0.0514      0.003    -20.081      0.000      -0.056      -0.046
-* C(SB_abdomen)[T.male]:level_most_dist_ortholog                            0.0115      0.003      3.610      0.000       0.005       0.018
-. C(SB_abdomen)[T.unbiased]:level_most_dist_ortholog                        0.0051      0.003      1.738      0.082      -0.001       0.011
-* C(chromosome)[T.X]:level_most_dist_ortholog                              -0.0703      0.019     -3.754      0.000      -0.107      -0.034
-* C(SB_abdomen)[T.male]:C(chromosome)[T.X]:level_most_dist_ortholog         0.0657      0.024      2.714      0.007       0.018       0.113
-* C(SB_abdomen)[T.unbiased]:C(chromosome)[T.X]:level_most_dist_ortholog     0.1008      0.023      4.460      0.000       0.056       0.145
-=========================================================================================================================================
-////////////////// C_chinensis: head+thorax //////////////////
-=============================================================================================================================================
-                                                                                  coef    std err          t      P>|t|      [0.025      0.975]
----------------------------------------------------------------------------------------------------------------------------------------------
-* Intercept                                                                     0.3102      0.018     17.028      0.000       0.274       0.346
-  C(SB_head_thorax)[T.male]                                                     0.0126      0.022      0.582      0.560      -0.030       0.055
-. C(SB_head_thorax)[T.unbiased]                                                -0.0359      0.019     -1.891      0.059      -0.073       0.001
-. C(chromosome)[T.X]                                                            0.3373      0.178      1.893      0.058      -0.012       0.687
-* C(SB_head_thorax)[T.male]:C(chromosome)[T.X]                                 -0.5618      0.201     -2.788      0.005      -0.957      -0.167
-* C(SB_head_thorax)[T.unbiased]:C(chromosome)[T.X]                             -0.4099      0.184     -2.224      0.026      -0.771      -0.049
-* level_most_dist_ortholog                                                     -0.0429      0.004    -10.456      0.000      -0.051      -0.035
-  C(SB_head_thorax)[T.male]:level_most_dist_ortholog                           -0.0084      0.005     -1.664      0.096      -0.018       0.001
-  C(SB_head_thorax)[T.unbiased]:level_most_dist_ortholog                        0.0004      0.004      0.092      0.927      -0.008       0.009
-. C(chromosome)[T.X]:level_most_dist_ortholog                                  -0.0718      0.039     -1.858      0.063      -0.148       0.004
-* C(SB_head_thorax)[T.male]:C(chromosome)[T.X]:level_most_dist_ortholog         0.1192      0.044      2.723      0.006       0.033       0.205
-* C(SB_head_thorax)[T.unbiased]:C(chromosome)[T.X]:level_most_dist_ortholog     0.0852      0.040      2.138      0.033       0.007       0.163
-=============================================================================================================================================
-```
-</details>
-
-
-### plots
-
-
-### dN/dS by chromosome, conservation rank, and sex bias (only for *C. chinensis*)
-
-This plot shows the median within all the categories considered by the median regression above and can help with interpreting it. It is only for *C. chinensis* since we decided that the sex-bias data becomes to unreliable for more distant pairwise dN/dS, because sex-bias can evolve very rapidly, and the more distant comparison are missing conservation rank 1 (*B. siliquastri*) or 1 and 2 (*A. obtectus*) which makes inference also more uncertain.
-
-<p float="left">
-  <img src="data/DE_analysis/dNdS_vs_conservation_rank_medians_lineplot_abdomen_white_bg.png" width="79%" />
-  <img src="data/DE_analysis/dNdS_merged_conservation_rank_boxplot_abdomen_white_bg.png" width="20%" />
-  <img src="data/DE_analysis/dNdS_vs_conservation_rank_medians_lineplot_head_thorax_white_bg.png" width="79%" />
-  <img src="data/DE_analysis/dNdS_merged_conservation_rank_boxplot_head_thorax_white_bg.png" width="20%" />
-</p>
 
 
 ## Statistical analysis for positive selection
@@ -1474,6 +1415,77 @@ The darker parts at the top is the proportion of positively selected genes.
   <img src="data/DE_analysis/pos_sel_merged_conservation_rank_boxplot_abdomen_white_bg.png" width="25%" />
   <img src="data/DE_analysis/pos_sel_vs_conservation_rank_boxplot_head_thorax_white_bg.png" width="74%" />
   <img src="data/DE_analysis/pos_sel_merged_conservation_rank_boxplot_head_thorax_white_bg.png" width="25%" />
+</p>
+
+
+
+
+## median quantile dN/dS test
+
+I am using `quantreg` again, like for the log2FC again, where I have a continuous response variable. 
+
+### *C. chinensis* with expression data
+
+* Abdomen: all significant except the `C(SB_abdomen)[T.unbiased]:level_most_dist_ortholog` interaction
+* Head+Thorax: 
+  * no difference between sex-bias category (intercept is significant but not male or unbiased major effects)
+  * chromosome (X) and conservation rank are significant major effects with negative coefficients
+  * significant interactions are 2-way `C(SB_head_thorax)[T.male]:C(chromosome)[T.X]` and 3-way `C(SB_head_thorax)[T.male]:C(chromosome)[T.X]:level_most_dist_ortholog` which are male-biased genes on X
+
+<details>
+  <summary>Tables with age rank</summary>
+
+```text
+////////////////// C_chinensis: abdomen //////////////////
+=========================================================================================================================================
+                                                                              coef    std err          t      P>|t|      [0.025      0.975]
+-----------------------------------------------------------------------------------------------------------------------------------------
+* Intercept                                                                 0.3330      0.012     28.177      0.000       0.310       0.356
+* C(SB_abdomen)[T.male]                                                    -0.0658      0.014     -4.636      0.000      -0.094      -0.038
+* C(SB_abdomen)[T.unbiased]                                                -0.0448      0.014     -3.315      0.001      -0.071      -0.018
+* C(chromosome)[T.X]                                                        0.3308      0.089      3.733      0.000       0.157       0.505
+* C(SB_abdomen)[T.male]:C(chromosome)[T.X]                                 -0.3065      0.114     -2.697      0.007      -0.529      -0.084
+* C(SB_abdomen)[T.unbiased]:C(chromosome)[T.X]                             -0.4832      0.108     -4.490      0.000      -0.694      -0.272
+* level_most_dist_ortholog                                                 -0.0514      0.003    -20.081      0.000      -0.056      -0.046
+* C(SB_abdomen)[T.male]:level_most_dist_ortholog                            0.0115      0.003      3.610      0.000       0.005       0.018
+. C(SB_abdomen)[T.unbiased]:level_most_dist_ortholog                        0.0051      0.003      1.738      0.082      -0.001       0.011
+* C(chromosome)[T.X]:level_most_dist_ortholog                              -0.0703      0.019     -3.754      0.000      -0.107      -0.034
+* C(SB_abdomen)[T.male]:C(chromosome)[T.X]:level_most_dist_ortholog         0.0657      0.024      2.714      0.007       0.018       0.113
+* C(SB_abdomen)[T.unbiased]:C(chromosome)[T.X]:level_most_dist_ortholog     0.1008      0.023      4.460      0.000       0.056       0.145
+=========================================================================================================================================
+////////////////// C_chinensis: head+thorax //////////////////
+=============================================================================================================================================
+                                                                                  coef    std err          t      P>|t|      [0.025      0.975]
+---------------------------------------------------------------------------------------------------------------------------------------------
+* Intercept                                                                     0.3102      0.018     17.028      0.000       0.274       0.346
+  C(SB_head_thorax)[T.male]                                                     0.0126      0.022      0.582      0.560      -0.030       0.055
+. C(SB_head_thorax)[T.unbiased]                                                -0.0359      0.019     -1.891      0.059      -0.073       0.001
+. C(chromosome)[T.X]                                                            0.3373      0.178      1.893      0.058      -0.012       0.687
+* C(SB_head_thorax)[T.male]:C(chromosome)[T.X]                                 -0.5618      0.201     -2.788      0.005      -0.957      -0.167
+* C(SB_head_thorax)[T.unbiased]:C(chromosome)[T.X]                             -0.4099      0.184     -2.224      0.026      -0.771      -0.049
+* level_most_dist_ortholog                                                     -0.0429      0.004    -10.456      0.000      -0.051      -0.035
+  C(SB_head_thorax)[T.male]:level_most_dist_ortholog                           -0.0084      0.005     -1.664      0.096      -0.018       0.001
+  C(SB_head_thorax)[T.unbiased]:level_most_dist_ortholog                        0.0004      0.004      0.092      0.927      -0.008       0.009
+. C(chromosome)[T.X]:level_most_dist_ortholog                                  -0.0718      0.039     -1.858      0.063      -0.148       0.004
+* C(SB_head_thorax)[T.male]:C(chromosome)[T.X]:level_most_dist_ortholog         0.1192      0.044      2.723      0.006       0.033       0.205
+* C(SB_head_thorax)[T.unbiased]:C(chromosome)[T.X]:level_most_dist_ortholog     0.0852      0.040      2.138      0.033       0.007       0.163
+=============================================================================================================================================
+```
+</details>
+
+
+### plots
+
+
+### dN/dS by chromosome, conservation rank, and sex bias (only for *C. chinensis*)
+
+This plot shows the median within all the categories considered by the median regression above and can help with interpreting it. It is only for *C. chinensis* since we decided that the sex-bias data becomes to unreliable for more distant pairwise dN/dS, because sex-bias can evolve very rapidly, and the more distant comparison are missing conservation rank 1 (*B. siliquastri*) or 1 and 2 (*A. obtectus*) which makes inference also more uncertain.
+
+<p float="left">
+  <img src="data/DE_analysis/dNdS_vs_conservation_rank_medians_lineplot_abdomen_white_bg.png" width="79%" />
+  <img src="data/DE_analysis/dNdS_merged_conservation_rank_boxplot_abdomen_white_bg.png" width="20%" />
+  <img src="data/DE_analysis/dNdS_vs_conservation_rank_medians_lineplot_head_thorax_white_bg.png" width="79%" />
+  <img src="data/DE_analysis/dNdS_merged_conservation_rank_boxplot_head_thorax_white_bg.png" width="20%" />
 </p>
 
 
