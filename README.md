@@ -1223,10 +1223,12 @@ I will only incorporate the sex-biased expression for *C. chinensis* vs. *C. mac
 
 Since I found before that the conservation distance does not matter, I will not include it here. I will only do a fisher test to see if positively selected genes are enriched on X or A within sex-bias categories
 
-### logistic regression 
+### logistic regression
+
+(not used any more)
 
 <details>
-  <summary>logistic regression results for posterity</summary>
+  <summary>results for posterity</summary>
 
 
 * head+thorax has some coefficients that could not be estimated when using the full `positive_selection ~  C(SB_head_thorax)  * C(chromosome) * level_most_dist_ortholog` formula. This might be due to overfitting, so I simplify the model a bit to exclude the three-way interactions like this `positive_selection ~  C(SB_head_thorax)  * (C(chromosome) + level_most_dist_ortholog)` only for the head+thorax SB data.
@@ -1424,7 +1426,7 @@ The darker parts at the top is the proportion of positively selected genes.
 
 I am using `quantreg` again, like for the log2FC again, where I have a continuous response variable. 
 
-### *C. chinensis* with expression data
+### *C. chinensis* dN/dS with expression data
 
 * Abdomen: all significant except the `C(SB_abdomen)[T.unbiased]:level_most_dist_ortholog` interaction
 * Head+Thorax: 
