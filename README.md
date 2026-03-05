@@ -1154,7 +1154,7 @@ Before connecting this to dNdS and positive selection, I will see how sex bias c
 ### 1. sex bias categories
 
 <p float="left">
-  <img src="data/DE_analysis/DE_conservation_rank_proportions_white_bg.png" width="100%" />
+  <img src="data/DE_analysis/DE_conservation_rank_proportions_sep_panels_white_bg.png" width="75%" />
 </p>
 
 * Sex bias is lower in somatic than reproductive
