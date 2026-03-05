@@ -13,6 +13,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 I am using this tutorial: https://bioconductor.org/packages//release/bioc/vignettes/topGO/inst/doc/topGO_manual.html
 
+
 ```{r}
 if (!requireNamespace("BiocManager", quietly=TRUE))
     install.packages("BiocManager")
@@ -105,20 +106,30 @@ GO_enrichment_analysis <- function(geneList, annotation_df){
   count(geneList)
   gene2GO <- annotation_df[names(annotation_df) %in% names(geneList)]
   ## create topGO object
+  # ontology = BP means that it's all biological process level GOs
   GOdata <- new("topGOdata",ontology = "BP",allGenes = geneList,annot = annFUN.gene2GO,gene2GO = gene2GO)
   
   # run enrichment test
-  result <- runTest(GOdata, algorithm = "classic", statistic = "fisher")
+  result <- runTest(GOdata, algorithm = "elim", statistic = "fisher")
+  ## about the "elim" algorithm from the documentation: "Here one computes the p-value of a GO term conditioned on the neighbouring terms. The tests are therefore not independent and the multiple testing theory does not directly apply. We like to interpret the p-values returned by these methods as corrected or not affected by multiple testing."
   
   allRes <- GenTable(GOdata,classicFisher = result,orderBy = "classicFisher",topNodes = 20)
-  print(allRes)
+  return(allRes)
 }
 
-### TODO continue here: https://bioconductor.org/packages//release/bioc/vignettes/topGO/inst/doc/topGO_manual.html#6_Running_the_enrichment_tests
-# especially p-value adjustments and see the section about visualization and interpretation of results
+A_A_obtectus_enriched_GOs <- GO_enrichment_analysis(geneList = A_A_obtectus_enrichment_list, annotation_df = gene2GO)
+A_B_siliquastri_enriched_GOs <- GO_enrichment_analysis(geneList = A_B_siliquastri_enrichment_list, annotation_df = gene2GO)
+A_C_chinensis_enriched_GOs <- GO_enrichment_analysis(geneList = A_C_chinensis_enrichment_list, annotation_df = gene2GO)
+X_A_obtectus_enriched_GOs <- GO_enrichment_analysis(geneList = X_A_obtectus_enrichment_list, annotation_df = gene2GO)
+X_B_siliquastri_enriched_GOs <- GO_enrichment_analysis(geneList = X_B_siliquastri_enrichment_list, annotation_df = gene2GO)
+X_C_chinensis_enriched_GOs <- GO_enrichment_analysis(geneList = X_C_chinensis_enrichment_list, annotation_df = gene2GO)
 
-GO_enrichment_analysis(geneList = X_C_chinensis_enrichment_list, annotation_df = gene2GO)
-## add rest of the genes lists
+write.csv(A_A_obtectus_enriched_GOs, "/Users/miltr339/work/PhD_code/PhD_chapter3/data/GO_enrichment/A_A_obtectus_enriched_GOs.csv", row.names=TRUE)
+write.csv(A_B_siliquastri_enriched_GOs, "/Users/miltr339/work/PhD_code/PhD_chapter3/data/GO_enrichment/A_B_siliquastri_enriched_GOs.csv", row.names=TRUE)
+write.csv(A_C_chinensis_enriched_GOs, "/Users/miltr339/work/PhD_code/PhD_chapter3/data/GO_enrichment/A_C_chinensis_enriched_GOs.csv", row.names=TRUE)
+write.csv(X_A_obtectus_enriched_GOs, "/Users/miltr339/work/PhD_code/PhD_chapter3/data/GO_enrichment/X_A_obtectus_enriched_GOs.csv", row.names=TRUE)
+write.csv(X_B_siliquastri_enriched_GOs, "/Users/miltr339/work/PhD_code/PhD_chapter3/data/GO_enrichment/X_B_siliquastri_enriched_GOs.csv", row.names=TRUE)
+write.csv(X_C_chinensis_enriched_GOs, "/Users/miltr339/work/PhD_code/PhD_chapter3/data/GO_enrichment/X_C_chinensis_enriched_GOs.csv", row.names=TRUE)
 ```
 
 
