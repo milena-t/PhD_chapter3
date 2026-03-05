@@ -86,7 +86,7 @@ def categorize_SB_int(SB_int:int):
         raise RuntimeError(f"{SB_int} could not be categorized")
 
         
-def make_category_proportion_plot(rank_summary_path_A:str, rank_summary_path_X:str, outfile:str):
+def make_category_proportion_plot(rank_summary_path_A:str, rank_summary_path_X:str, outfile:str, plot_sep_panels=True):
     """
     plot a stacked bar to show the proportion of male/female/unbiased for X and A, and for abdominal and head+thorax
     """
@@ -135,24 +135,6 @@ def make_category_proportion_plot(rank_summary_path_A:str, rank_summary_path_X:s
     A_perc_dict,A_num_genes_rank = make_percentage_dict(A_sums_dict, A_df)
     assert len(X_perc_dict) == len(A_perc_dict)
 
-    ### plot stacked bar chart
-    fs = 25
-    width=0.2
-    x_gap = 0.025
-    # x_subtr=width*1.1/2.0
-    x_coords = list(range(1,len(X_sums_dict.keys())+1))
-
-    x_coords_bars = [
-        value
-        for x in x_coords
-        for value in (
-            x - width*1.5 - x_gap,
-            x - width*0.5 - x_gap,
-            x + width*0.5 + x_gap,
-            x + width*1.5 + x_gap,
-        )
-    ]
-    fig, ax = plt.subplots(1, 1, figsize=(22, 11)) 
 
     colors_dict ={
         "abdomen" : {
@@ -176,51 +158,119 @@ def make_category_proportion_plot(rank_summary_path_A:str, rank_summary_path_X:s
         "head_thorax" : "somatic"
     }
 
-    bottom = [0,0,0,0]*5
-    subcat_tissue = ["abdomen","head_thorax"]
-    chr_labels = [f"{labels_dict[tissue]}:{chr}" for chr in ["A","X"] for tissue in subcat_tissue]
-    bar_labels = [
-        (
-            f"{sublabel} ({A_num_genes_rank[conserved_rank]})"
-            if "A" in sublabel
-            else f"{sublabel} ({X_num_genes_rank[conserved_rank]})"
-        )
-        for conserved_rank in x_coords
-        for sublabel in chr_labels
-    ]
+    if plot_sep_panels:
+        ## separate panels for A/X and somatic/reproductive
+        fig, ax = plt.subplots(2, 2, figsize=(20, 15))     
+        fs = 25
+        width=0.75
+        rows_dict = {"abdomen" : 0, "head_thorax":1}
+        cols_dict = {"X" : 1 ,"A" : 0}
+
+        for tissue in rows_dict.keys():
+            for chr in cols_dict.keys():
+                x_coords = list(range(1,6)) # age ranks
+                bottom = [0 for i in range(len(x_coords))]
+                row = rows_dict[tissue]
+                col = cols_dict[chr]
+                
+                if chr == "A":
+                    bar_labels = [ f"({A_num_genes_rank[i]})" for i in x_coords]
+                    perc_dict = A_perc_dict
+                elif chr == "X":
+                    bar_labels = [ f"({X_num_genes_rank[i]})" for i in x_coords]
+                    perc_dict = X_perc_dict
+                    
+                # stack bars from bottom to top
+                for sex_bias in reversed(colors_dict["abdomen"].keys()):
+
+                    y_coords = [ perc_dict[i][tissue][sex_bias] for i  in x_coords]
+                    ax[row,col].bar(x_coords, y_coords, width = width, bottom=bottom, color= colors_dict["abdomen"][sex_bias])
+                    bottom = [bottom[i]+y_coords[i] for i in range(len(y_coords))]
+                
+                ax[row,col].yaxis.set_major_formatter(FuncFormatter(lambda x, pos: '' if x > 100 and x<1 else f'{int(x)}%'))
+                ax[row,col].set_title(f"{labels_dict[tissue]} {labels_dict[chr]}", fontsize=fs)
+                ax[row,col].tick_params(axis='y', labelsize=fs)
+                ax[row,col].tick_params(axis='x', labelsize=fs*0.75, rotation=90)
+                ax[row,col].set_xticks(ticks=x_coords, labels=bar_labels)
+                ax[row,col].set_ylim(0,100)
+
+                ax2 = ax[row,col].secondary_xaxis('bottom')
+                ax2.set_xticks(x_coords)
+                ax2.set_xticklabels(x_coords, fontsize=fs*1.2)
+                if chr == "X":
+                    ax2.spines['bottom'].set_position(('outward', 60))   
+                elif chr == "A": ## lower down with higher sample size and longer tick labels
+                    ax2.spines['bottom'].set_position(('outward', 80))   
+                ax2.xaxis.set_ticks_position('none')
+                ax2.spines['bottom'].set_visible(False)
+                ax2.tick_params(axis='x', labelsize=fs*1.2)
+
+        outfile = outfile.replace(".png", "_sep_panels.png")
+
+    else:
+        fig, ax = plt.subplots(1, 1, figsize=(22, 11)) 
+        ### plot stacked bar chart
+        fs = 25
+        width=0.2
+        x_gap = 0.025
+        # x_subtr=width*1.1/2.0
+        x_coords = list(range(1,len(X_sums_dict.keys())+1))
+
+        x_coords_bars = [
+            value
+            for x in x_coords
+            for value in (
+                x - width*1.5 - x_gap,
+                x - width*0.5 - x_gap,
+                x + width*0.5 + x_gap,
+                x + width*1.5 + x_gap,
+            )
+        ]
+        bottom = [0,0,0,0]*5
+        subcat_tissue = ["abdomen","head_thorax"]
+        chr_labels = [f"{labels_dict[tissue]}:{chr}" for chr in ["A","X"] for tissue in subcat_tissue]
+        bar_labels = [
+            (
+                f"{sublabel} ({A_num_genes_rank[conserved_rank]})"
+                if "A" in sublabel
+                else f"{sublabel} ({X_num_genes_rank[conserved_rank]})"
+            )
+            for conserved_rank in x_coords
+            for sublabel in chr_labels
+        ]
 
 
-    # stack bars from bottom to top
-    for sex_bias in reversed(colors_dict["abdomen"].keys()):
-        print(f"\t * {sex_bias}")
-        # alternate the colors for the abdomen/ht bars
-        colors_list = [colors_dict["abdomen"][sex_bias] if i%2==0 else colors_dict["head_thorax"][sex_bias] for i, _ in enumerate(range(len(bottom))) ]
-        # make bar height for the four bars in all the conservation rank categories
-        y_coords = []
-        for conserved_rank in x_coords:
-            y_coords.extend([A_perc_dict[conserved_rank]["abdomen"][sex_bias]]) 
-            y_coords.extend([A_perc_dict[conserved_rank]["head_thorax"][sex_bias]]) 
-            y_coords.extend([X_perc_dict[conserved_rank]["abdomen"][sex_bias]])
-            y_coords.extend([X_perc_dict[conserved_rank]["head_thorax"][sex_bias]])
+        # stack bars from bottom to top
+        for sex_bias in reversed(colors_dict["abdomen"].keys()):
+            print(f"\t * {sex_bias}")
+            # alternate the colors for the abdomen/ht bars
+            colors_list = [colors_dict["abdomen"][sex_bias] if i%2==0 else colors_dict["head_thorax"][sex_bias] for i, _ in enumerate(range(len(bottom))) ]
+            # make bar height for the four bars in all the conservation rank categories
+            y_coords = []
+            for conserved_rank in x_coords:
+                y_coords.extend([A_perc_dict[conserved_rank]["abdomen"][sex_bias]]) 
+                y_coords.extend([A_perc_dict[conserved_rank]["head_thorax"][sex_bias]]) 
+                y_coords.extend([X_perc_dict[conserved_rank]["abdomen"][sex_bias]])
+                y_coords.extend([X_perc_dict[conserved_rank]["head_thorax"][sex_bias]])
 
-        assert len(x_coords_bars)==len(y_coords)==len(colors_list)
-        ax.bar(x_coords_bars, y_coords, width = width, bottom=bottom, color= colors_list)
-        
-        bottom = [bottom[i]+y_coords[i] for i in range(len(y_coords))]
+            assert len(x_coords_bars)==len(y_coords)==len(colors_list)
+            ax.bar(x_coords_bars, y_coords, width = width, bottom=bottom, color= colors_list)
+            
+            bottom = [bottom[i]+y_coords[i] for i in range(len(y_coords))]
 
-    ax.yaxis.set_major_formatter(FuncFormatter(lambda x, pos: '' if x > 100 and x<1 else f'{int(x)}%'))
+        ax.yaxis.set_major_formatter(FuncFormatter(lambda x, pos: '' if x > 100 and x<1 else f'{int(x)}%'))
 
-    ax.tick_params(axis='y', labelsize=fs)
-    ax.tick_params(axis='x', labelsize=fs*0.75, rotation=90)
-    ax.set_xticks(ticks=x_coords_bars, labels=bar_labels)
+        ax.tick_params(axis='y', labelsize=fs)
+        ax.tick_params(axis='x', labelsize=fs*0.75, rotation=90)
+        ax.set_xticks(ticks=x_coords_bars, labels=bar_labels)
 
-    ax2 = ax.secondary_xaxis('bottom')
-    ax2.set_xticks(x_coords)
-    ax2.set_xticklabels(x_coords, fontsize=fs*1.2)
-    ax2.spines['bottom'].set_position(('outward', 180))   
-    ax2.xaxis.set_ticks_position('none')
-    ax2.spines['bottom'].set_visible(False)
-    ax2.tick_params(axis='x', labelsize=fs*1.2)
+        ax2 = ax.secondary_xaxis('bottom')
+        ax2.set_xticks(x_coords)
+        ax2.set_xticklabels(x_coords, fontsize=fs*1.2)
+        ax2.spines['bottom'].set_position(('outward', 180))   
+        ax2.xaxis.set_ticks_position('none')
+        ax2.spines['bottom'].set_visible(False)
+        ax2.tick_params(axis='x', labelsize=fs*1.2)
     
     plt.tight_layout(rect=[0, 0.05, 1, 1])
     # transparent background
@@ -597,7 +647,7 @@ if __name__ == "__main__":
 
     table_paths_dict = get_full_table_path(username=username)
 
-    if False:
+    if True:
         ### statistical analysis of sex-bias categories 
         summary_table_paths = {}
         for chromosome, path in table_paths_dict.items():
@@ -608,7 +658,7 @@ if __name__ == "__main__":
             # make_rank_summary_table(path, outfile_path=outfile_path, min_LFC=1, p_threshold=0.05)
             summary_table_paths[chromosome] = outfile_path
 
-        if False:
+        if True:
             plot_outfile_name=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/DE_conservation_rank_proportions.png"
             make_category_proportion_plot(rank_summary_path_A=summary_table_paths["A"], 
                                       rank_summary_path_X=summary_table_paths["X"],
