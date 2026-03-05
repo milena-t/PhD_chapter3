@@ -138,8 +138,6 @@ sig_AX_enriched_GOs <- GO_enrichment_analysis(geneList = sig_AX_contrast, annota
 
 write.csv(all_AX_enriched_GOs, "/Users/miltr339/work/PhD_code/PhD_chapter3/data/GO_enrichment/all_AX_enriched_GOs", row.names=TRUE)
 write.csv(sig_AX_enriched_GOs, "/Users/miltr339/work/PhD_code/PhD_chapter3/data/GO_enrichment/sig_AX_enriched_GOs", row.names=TRUE)
-
-
 ```
 
 

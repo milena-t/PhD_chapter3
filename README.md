@@ -1154,7 +1154,7 @@ Before connecting this to dNdS and positive selection, I will see how sex bias c
 ### 1. sex bias categories
 
 <p float="left">
-  <img src="data/DE_analysis/DE_conservation_rank_proportions_sep_panels_white_bg.png" width="75%" />
+  <img src="data/DE_analysis/DE_conservation_rank_proportions_sep_panels_white_bg.png" width="85%" />
 </p>
 
 * Sex bias is lower in somatic than reproductive
@@ -1173,44 +1173,64 @@ When only looking at the expression of significantly sex biased genes we can see
 
 #### median quantile expression test
 
-I want to investigate if the magnitude of significant sex-bias is influenced by the chromosome linkage or the conservation rank. I separate the analysis for abdomen and head+thorax tissue, and I specify this formula `abs(LFC) ~ level_most_dist_ortholog * C(SB) * C(chromosome)` with LFC being the absolute continuous log2FC, and SB being the significance category (male/unbiased/female, but there is no unbiased data in the significantly differentially expressed genes so it is excluded here. for a model including all genes this would become a three-level factor).
+I want to investigate if the magnitude of significant sex-bias is influenced by the chromosome linkage or the conservation rank. I separate the analysis like the panels in the plot, for abdomen and head+thorax tissue as well as chromosome, and I specify this formula `abs(LFC) ~ level_most_dist_ortholog * C(SB)` with LFC being the absolute continuous log2FC, and SB being the significance category (male/unbiased/female, but there is no unbiased data in the significantly differentially expressed genes so it is excluded here. for a model including all genes this would become a three-level factor).
 
-Everything, including all interactions is strongly significant for abdominal data, for head+thorax the three-way interaction `level_most_dist_ortholog:C(SB_head_thorax)[T.male]:C(chromosome)[T.X]` becomes nonsignificant and the two-way interaction `C(SB_head_thorax)[T.male]:C(chromosome)[T.X]` is borderline. generally everything is very significant though.
+Everything, including all interactions is strongly significant
 
-Abdomen: everything is significant
+Autosomes:
 
 ```text
-////////////////// ABDOMEN //////////////////
-=====================================================================================================================================
-                                                                          coef    std err          t      P>|t|      [0.025      0.975]
--------------------------------------------------------------------------------------------------------------------------------------
-* Intercept                                                             3.7188      0.042     88.462      0.000       3.636       3.801
-* C(SB_abdomen)[T.male]                                                -2.9777      0.104    -28.757      0.000      -3.181      -2.775
-* C(chromosome)[T.X]                                                    1.9753      0.326      6.062      0.000       1.337       2.614
-* C(SB_abdomen)[T.male]:C(chromosome)[T.X]                             -1.9827      0.664     -2.986      0.003      -3.284      -0.681
-* level_most_dist_ortholog                                             -0.4066      0.010    -41.828      0.000      -0.426      -0.388
-* level_most_dist_ortholog:C(SB_abdomen)[T.male]                        0.3816      0.022     17.192      0.000       0.338       0.425
-* level_most_dist_ortholog:C(chromosome)[T.X]                          -0.3734      0.070     -5.347      0.000      -0.510      -0.236
-* level_most_dist_ortholog:C(SB_abdomen)[T.male]:C(chromosome)[T.X]     0.3721      0.138      2.701      0.007       0.102       0.642
-=====================================================================================================================================
+////////////////// A :::: ABDOMEN //////////////////
+Df Residuals: 7182
+Df Model: 3
+==================================================================================================================
+                                                     coef    std err          t      P>|t|      [0.025      0.975]
+------------------------------------------------------------------------------------------------------------------
+Intercept                                          3.6587      0.046     79.059      0.000       3.568       3.749
+C(SB_abdomen)[T.male]                             -2.9382      0.114    -25.823      0.000      -3.161      -2.715
+level_most_dist_ortholog                          -0.3926      0.011    -37.209      0.000      -0.413      -0.372
+level_most_dist_ortholog:C(SB_abdomen)[T.male]     0.3715      0.024     15.335      0.000       0.324       0.419
+==================================================================================================================
+
+////////////////// A :::: HEAD+THORAX //////////////////
+Df Residuals: 4510
+Df Model: 3
+======================================================================================================================
+                                                         coef    std err          t      P>|t|      [0.025      0.975]
+----------------------------------------------------------------------------------------------------------------------
+Intercept                                              5.2101      0.045    115.975      0.000       5.122       5.298
+C(SB_head_thorax)[T.male]                             -4.3811      0.070    -63.022      0.000      -4.517      -4.245
+level_most_dist_ortholog                              -0.7485      0.011    -69.164      0.000      -0.770      -0.727
+level_most_dist_ortholog:C(SB_head_thorax)[T.male]     0.6839      0.016     43.650      0.000       0.653       0.715
+======================================================================================================================
 ```
 
-head + thorax: still very significant but three-way interaction not anymore
+X-chromosome
 
 ```text
-////////////////// HEAD+THORAX //////////////////
-=========================================================================================================================================
-                                                                              coef    std err          t      P>|t|      [0.025      0.975]
------------------------------------------------------------------------------------------------------------------------------------------
-* Intercept                                                                 5.2074      0.041    126.773      0.000       5.127       5.288
-* C(SB_head_thorax)[T.male]                                                -4.3702      0.065    -67.609      0.000      -4.497      -4.243
-* C(chromosome)[T.X]                                                       -1.0880      0.388     -2.805      0.005      -1.848      -0.328
-. C(SB_head_thorax)[T.male]:C(chromosome)[T.X]                              1.0033      0.514      1.953      0.051      -0.004       2.011
-* level_most_dist_ortholog                                                 -0.7501      0.010    -74.462      0.000      -0.770      -0.730
-* level_most_dist_ortholog:C(SB_head_thorax)[T.male]                        0.6841      0.015     46.480      0.000       0.655       0.713
-* level_most_dist_ortholog:C(chromosome)[T.X]                               0.1990      0.084      2.363      0.018       0.034       0.364
-  level_most_dist_ortholog:C(SB_head_thorax)[T.male]:C(chromosome)[T.X]    -0.1835      0.109     -1.683      0.092      -0.397       0.030
-=========================================================================================================================================```
+////////////////// X :::: ABDOMEN //////////////////
+Df Residuals: 269
+Df Model: 3
+==================================================================================================================
+                                                     coef    std err          t      P>|t|      [0.025      0.975]
+------------------------------------------------------------------------------------------------------------------
+Intercept                                          3.7554      0.287     13.096      0.000       3.191       4.320
+C(SB_abdomen)[T.male]                             -3.1135      0.534     -5.834      0.000      -4.164      -2.063
+level_most_dist_ortholog                          -0.3845      0.061     -6.308      0.000      -0.504      -0.264
+level_most_dist_ortholog:C(SB_abdomen)[T.male]     0.3753      0.111      3.390      0.001       0.157       0.593
+==================================================================================================================
+
+////////////////// X :::: HEAD+THORAX //////////////////
+Df Residuals: 164
+Df Model: 3
+======================================================================================================================
+                                                         coef    std err          t      P>|t|      [0.025      0.975]
+----------------------------------------------------------------------------------------------------------------------
+Intercept                                              4.1194      0.371     11.089      0.000       3.386       4.853
+C(SB_head_thorax)[T.male]                             -3.2497      0.499     -6.507      0.000      -4.236      -2.264
+level_most_dist_ortholog                              -0.5512      0.080     -6.863      0.000      -0.710      -0.393
+level_most_dist_ortholog:C(SB_head_thorax)[T.male]     0.4860      0.106      4.604      0.000       0.278       0.694
+======================================================================================================================
 ```
 
 # combining sex-biased expression with molecular rate and positive selection
