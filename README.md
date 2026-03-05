@@ -1450,6 +1450,9 @@ I am using `quantreg` again, like for the log2FC again, where I have a continuou
 
 The formula is `dNdS ~  C(SB_tissue)  * C(chromosome) * level_most_dist_ortholog`, so up to a three-way interaction. I tried to see if i can drop it with the wald-test but it is significant in both cases.
 
+<details>
+  <summary>Tables from three-way interaction</summary>
+
 Summary results:
 
 * Abdomen: all significant except the `C(SB_abdomen)[T.unbiased]:level_most_dist_ortholog` interaction
@@ -1458,10 +1461,6 @@ Summary results:
   * chromosome (X) and conservation rank are significant major effects with negative coefficients
   * significant interactions are 2-way `C(SB_head_thorax)[T.male]:C(chromosome)[T.X]` and 3-way `C(SB_head_thorax)[T.male]:C(chromosome)[T.X]:level_most_dist_ortholog` which are male-biased genes on X
 
-Not super clear about how to interpret all of these yet.
-
-<details>
-  <summary>Tables with age rank</summary>
 
 ```text
 ////////////////// C_chinensis: abdomen //////////////////
@@ -1508,7 +1507,99 @@ Df Model: 11
 (The condition number is large, 2.1e+03. This might indicate that there are strong multicollinearity or other numerical problems.)
 wald test for 'C(SB_head_thorax)[T.unbiased]:C(chromosome)[T.X]:level_most_dist_ortholog = 0' interaction: F test: F=4.574900772447697, p=0.03247080279854324, df_denom=8.89e+03, df_num=1
 ```
+
 </details>
+
+
+Since that is confusing to interpret, I will split the analysis by chromosome as well so I only have `dNdS ~  C(SB_tissue) * level_most_dist_ortholog`. I also do the wald test to see if the interaction can be dropped. This is still difficult to interpret because the intercept is `[T.female]`
+
+#### X chromosome
+
+Everything is significant, including interactions, nothing can be dropped
+
+```text
+----- X -----> abdomen
+Df Residuals: 307
+Df Model: 5
+======================================================================================================================
+                                                         coef    std err          t      P>|t|      [0.025      0.975]
+----------------------------------------------------------------------------------------------------------------------
+Intercept                                              0.6638      0.080      8.320      0.000       0.507       0.821
+C(SB_abdomen)[T.male]                                 -0.3724      0.102     -3.635      0.000      -0.574      -0.171
+C(SB_abdomen)[T.unbiased]                             -0.5280      0.097     -5.444      0.000      -0.719      -0.337
+level_most_dist_ortholog                              -0.1217      0.017     -7.220      0.000      -0.155      -0.089
+C(SB_abdomen)[T.male]:level_most_dist_ortholog         0.0771      0.022      3.540      0.000       0.034       0.120
+C(SB_abdomen)[T.unbiased]:level_most_dist_ortholog     0.1059      0.020      5.202      0.000       0.066       0.146
+======================================================================================================================
+wald test for 'C(SB_abdomen)[T.unbiased]:level_most_dist_ortholog = 0' interaction: F test: F=27.058266336536686, p=3.614974314200746e-07, df_denom=307, df_num=1
+wald test for 'C(SB_abdomen)[T.male]:level_most_dist_ortholog = 0' interaction: F test: F=12.534815218784667, p=0.0004613478485732533, df_denom=307, df_num=1
+
+----- X -----> head_thorax
+Df Residuals: 307
+Df Model: 5
+==========================================================================================================================
+                                                             coef    std err          t      P>|t|      [0.025      0.975]
+--------------------------------------------------------------------------------------------------------------------------
+Intercept                                                  0.6475      0.158      4.108      0.000       0.337       0.958
+C(SB_head_thorax)[T.male]                                 -0.5493      0.178     -3.083      0.002      -0.900      -0.199
+C(SB_head_thorax)[T.unbiased]                             -0.4457      0.163     -2.735      0.007      -0.766      -0.125
+level_most_dist_ortholog                                  -0.1147      0.034     -3.359      0.001      -0.182      -0.048
+C(SB_head_thorax)[T.male]:level_most_dist_ortholog         0.1109      0.039      2.866      0.004       0.035       0.187
+C(SB_head_thorax)[T.unbiased]:level_most_dist_ortholog     0.0856      0.035      2.429      0.016       0.016       0.155
+==========================================================================================================================
+wald test for 'C(SB_head_thorax)[T.unbiased]:level_most_dist_ortholog = 0' interaction: F test: F=5.90030470651783, p=0.01571196681254707, df_denom=307, df_num=1
+wald test for 'C(SB_head_thorax)[T.male]:level_most_dist_ortholog = 0' interaction: F test: F=8.216559871037937, p=0.0044378654384064405, df_denom=307, df_num=1
+```
+
+#### Autosomes
+
+The interaction is only significant in the abdomen
+
+```text
+----- A -----> abdomen
+Df Residuals: 8579
+Df Model: 5
+======================================================================================================================
+                                                         coef    std err          t      P>|t|      [0.025      0.975]
+----------------------------------------------------------------------------------------------------------------------
+Intercept                                              0.3330      0.012     28.096      0.000       0.310       0.356
+C(SB_abdomen)[T.male]                                 -0.0658      0.014     -4.623      0.000      -0.094      -0.038
+C(SB_abdomen)[T.unbiased]                             -0.0448      0.014     -3.304      0.001      -0.071      -0.018
+level_most_dist_ortholog                              -0.0514      0.003    -20.023      0.000      -0.056      -0.046
+C(SB_abdomen)[T.male]:level_most_dist_ortholog         0.0115      0.003      3.599      0.000       0.005       0.018
+C(SB_abdomen)[T.unbiased]:level_most_dist_ortholog     0.0051      0.003      1.731      0.083      -0.001       0.011
+======================================================================================================================
+wald test for 'C(SB_abdomen)[T.unbiased]:level_most_dist_ortholog = 0' interaction: F test: F=2.9975975640508543, p=0.08342403589579751, df_denom=8.58e+03, df_num=1
+wald test for 'C(SB_abdomen)[T.male]:level_most_dist_ortholog = 0' interaction: F test: F=12.954543462354634, p=0.0003209453934923984, df_denom=8.58e+03, df_num=1
+
+----- A -----> head_thorax
+
+Df Residuals: 8579
+Df Model: 5
+==========================================================================================================================
+                                                             coef    std err          t      P>|t|      [0.025      0.975]
+--------------------------------------------------------------------------------------------------------------------------
+Intercept                                                  0.3102      0.018     16.926      0.000       0.274       0.346
+C(SB_head_thorax)[T.male]                                  0.0126      0.022      0.579      0.563      -0.030       0.055
+C(SB_head_thorax)[T.unbiased]                             -0.0360      0.019     -1.888      0.059      -0.073       0.001
+level_most_dist_ortholog                                  -0.0429      0.004    -10.394      0.000      -0.051      -0.035
+C(SB_head_thorax)[T.male]:level_most_dist_ortholog        -0.0084      0.005     -1.654      0.098      -0.018       0.002
+C(SB_head_thorax)[T.unbiased]:level_most_dist_ortholog     0.0004      0.004      0.094      0.925      -0.008       0.009
+==========================================================================================================================
+wald test for 'C(SB_head_thorax)[T.unbiased]:level_most_dist_ortholog = 0' interaction: F test: F=0.008798362160207749, p=0.9252705517407853, df_denom=8.58e+03, df_num=1
+wald test for 'C(SB_head_thorax)[T.male]:level_most_dist_ortholog = 0' interaction: F test: F=2.7356853520654085, p=0.09816597957116717, df_denom=8.58e+03, df_num=1
+
+Df Residuals: 8581
+Df Model: 3
+=================================================================================================
+                                    coef    std err          t      P>|t|      [0.025      0.975]
+-------------------------------------------------------------------------------------------------
+Intercept                         0.3141      0.006     52.378      0.000       0.302       0.326
+C(SB_head_thorax)[T.male]        -0.0234      0.005     -4.633      0.000      -0.033      -0.013
+C(SB_head_thorax)[T.unbiased]    -0.0339      0.004     -8.265      0.000      -0.042      -0.026
+level_most_dist_ortholog         -0.0438      0.001    -42.088      0.000      -0.046      -0.042
+=================================================================================================
+```
 
 
 ### plots

@@ -78,14 +78,10 @@ def statistical_analysis_dNdS(full_table_paths_dict, table_outfile="", max_dNdS=
     partners_list = list(set(A_df["other_species"]))
     print(partners_list)
 
-    reorder_dNdS_partners = False
-    if reorder_dNdS_partners:
-        df = reorder_df_to_have_dNdS_cols(full_table_paths_dict, outfile=table_outfile)
-    else:
-        X_df = pd.read_csv(full_table_paths_dict["X"], sep="\t")
-        A_df = pd.read_csv(full_table_paths_dict["A"], sep="\t")
-        X_df["chromosome"] = ["X"]*X_df.shape[0]
-        A_df["chromosome"] = ["A"]*A_df.shape[0]
+    X_df = pd.read_csv(full_table_paths_dict["X"], sep="\t")
+    A_df = pd.read_csv(full_table_paths_dict["A"], sep="\t")
+    X_df["chromosome"] = ["X"]*X_df.shape[0]
+    A_df["chromosome"] = ["A"]*A_df.shape[0]
 
     df = pd.concat([A_df,X_df], ignore_index=True)
     df = df.rename(columns={'LFC_head+thorax': 'LFC_head_thorax'})
@@ -95,20 +91,15 @@ def statistical_analysis_dNdS(full_table_paths_dict, table_outfile="", max_dNdS=
     df["SB_head_thorax"] = df.apply(make_sex_bias_cat_row, axis=1, args=("head_thorax",))
     df["LFC_abdomen"] = abs(df["LFC_abdomen"])
     df["LFC_head_thorax"] = abs(df["LFC_head_thorax"])
-    print(df)
     
     for partner in partners_list:
-        if reorder_dNdS_partners:
-            filt_df = df[df[f"{partner}_dNdS"]>0]
-            filt_df = filt_df[filt_df[f"{partner}_dNdS"].notna()]
-            filt_df = filt_df[filt_df[f"{partner}_dNdS"] < max_dNdS]
-        else:
-            df_ren = df.rename(columns={'dN/dS': f"{partner}_dNdS"})
-            filt_df = df_ren[df_ren["other_species"]==partner]
-            filt_df[f"{partner}_dNdS"] = pd.to_numeric(filt_df[f"{partner}_dNdS"], errors='coerce')
-            filt_df = filt_df[filt_df[f"{partner}_dNdS"]>0]
-            filt_df = filt_df[filt_df[f"{partner}_dNdS"].notna()]
-            filt_df = filt_df[filt_df[f"{partner}_dNdS"] < max_dNdS]
+        
+        df_ren = df.rename(columns={'dN/dS': f"{partner}_dNdS"})
+        filt_df = df_ren[df_ren["other_species"]==partner]
+        filt_df[f"{partner}_dNdS"] = pd.to_numeric(filt_df[f"{partner}_dNdS"], errors='coerce')
+        filt_df = filt_df[filt_df[f"{partner}_dNdS"]>0]
+        filt_df = filt_df[filt_df[f"{partner}_dNdS"].notna()]
+        filt_df = filt_df[filt_df[f"{partner}_dNdS"] < max_dNdS]
         print(f"\n////////////////// {partner} //////////////////")
 
         if False:
@@ -133,20 +124,47 @@ def statistical_analysis_dNdS(full_table_paths_dict, table_outfile="", max_dNdS=
             test_filtering(f"level_most_dist_ortholog")
 
         if include_sex_bias and "C_chinensis" in partner:
+            
+            for chr in ["A", "X"]:
+
+                df = pd.read_csv(full_table_paths_dict[chr], sep="\t")
+                df = df.rename(columns={'LFC_head+thorax': 'LFC_head_thorax'})
+                df = df.rename(columns={'FDR_pval_head+thorax': 'FDR_pval_head_thorax'})
+
+                df["SB_abdomen"] = df.apply(make_sex_bias_cat_row, axis=1, args=("abdomen",))
+                df["SB_head_thorax"] = df.apply(make_sex_bias_cat_row, axis=1, args=("head_thorax",))
+                df["LFC_abdomen"] = abs(df["LFC_abdomen"])
+                df["LFC_head_thorax"] = abs(df["LFC_head_thorax"])
+                df_ren = df.rename(columns={'dN/dS': f"{partner}_dNdS"})
+                filt_df = df_ren[df_ren["other_species"]==partner]
+                filt_df[f"{partner}_dNdS"] = pd.to_numeric(filt_df[f"{partner}_dNdS"], errors='coerce')
+                filt_df = filt_df[filt_df[f"{partner}_dNdS"]>0]
+                filt_df = filt_df[filt_df[f"{partner}_dNdS"].notna()]
+                filt_df = filt_df[filt_df[f"{partner}_dNdS"] < max_dNdS]
+
                 for tissue in ["abdomen", "head_thorax"]:
-                    print(f"\n------------> {tissue}")
-                    formula = f"{partner}_dNdS ~  C(SB_{tissue})  * C(chromosome) * level_most_dist_ortholog"
-                    interactions_test_string=f"C(SB_{tissue})[T.unbiased]:C(chromosome)[T.X]:level_most_dist_ortholog = 0"
+                    print(f"\n----- {chr} -----> {tissue}")
+                    formula = f"{partner}_dNdS ~  C(SB_{tissue}) * level_most_dist_ortholog"
+                    interactions_test_string_u=f"C(SB_{tissue})[T.unbiased]:level_most_dist_ortholog = 0"
+                    interactions_test_string_m=f"C(SB_{tissue})[T.male]:level_most_dist_ortholog = 0"
                 
                     test = smf.quantreg(formula=formula, data=filt_df).fit(q=0.5) # q=0.5 means we estimate the median
                     print(test.summary())
 
                     try:
-                        # test three-way interaction
-                        wald_test = test.wald_test(interactions_test_string, scalar = True)
-                        print(f"wald test for {interactions_test_string} interaction: {wald_test}")
+                        # test two-way interaction
+                        wald_test = test.wald_test(interactions_test_string_u, scalar = True)
+                        print(f"wald test for {interactions_test_string_u} interaction: {wald_test}")
+                        wald_test = test.wald_test(interactions_test_string_m, scalar = True)
+                        print(f"wald test for {interactions_test_string_m} interaction: {wald_test}")
                     except:
                         print("no Wald test could be performed")
+
+                    if chr == "A":
+                        formula = f"{partner}_dNdS ~  C(SB_{tissue}) + level_most_dist_ortholog"
+                        test = smf.quantreg(formula=formula, data=filt_df).fit(q=0.5) # q=0.5 means we estimate the median
+                        print(test.summary())
+
 
         elif include_sex_bias == False:
 
