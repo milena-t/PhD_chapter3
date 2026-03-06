@@ -157,6 +157,9 @@ def statistical_analysis_dNdS(full_table_paths_dict, table_outfile="", max_dNdS=
                         print(f"wald test for {interactions_test_string_u} interaction: {wald_test}")
                         wald_test = test.wald_test(interactions_test_string_m, scalar = True)
                         print(f"wald test for {interactions_test_string_m} interaction: {wald_test}")
+                        comb_string= f"{interactions_test_string_m}, {interactions_test_string_u}"
+                        wald_test = test.wald_test(comb_string, scalar = True)
+                        print(f"wald test for {comb_string} interaction: {wald_test}")
                     except:
                         print("no Wald test could be performed")
 

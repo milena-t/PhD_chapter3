@@ -1529,6 +1529,7 @@ C(SB_abdomen)[T.unbiased]:level_most_dist_ortholog     0.1059      0.020      5.
 ======================================================================================================================
 wald test for 'C(SB_abdomen)[T.unbiased]:level_most_dist_ortholog = 0' interaction: F test: F=27.058266336536686, p=3.614974314200746e-07, df_denom=307, df_num=1
 wald test for 'C(SB_abdomen)[T.male]:level_most_dist_ortholog = 0' interaction: F test: F=12.534815218784667, p=0.0004613478485732533, df_denom=307, df_num=1
+wald test for 'C(SB_abdomen):level_most_dist_ortholog = 0' interaction: F test: F=13.56536933471134, p=2.2623953919952155e-06, df_denom=307, df_num=2
 
 ----- X -----> head_thorax
 Df Residuals: 307
@@ -1545,6 +1546,7 @@ C(SB_head_thorax)[T.unbiased]:level_most_dist_ortholog     0.0856      0.035    
 ==========================================================================================================================
 wald test for 'C(SB_head_thorax)[T.unbiased]:level_most_dist_ortholog = 0' interaction: F test: F=5.90030470651783, p=0.01571196681254707, df_denom=307, df_num=1
 wald test for 'C(SB_head_thorax)[T.male]:level_most_dist_ortholog = 0' interaction: F test: F=8.216559871037937, p=0.0044378654384064405, df_denom=307, df_num=1
+wald test for 'C(SB_head_thorax):level_most_dist_ortholog = 0' interaction: F test: F=4.109450519468191, p=0.017328467979801747, df_denom=307, df_num=2
 ```
 
 #### Autosomes
@@ -1567,6 +1569,7 @@ C(SB_abdomen)[T.unbiased]:level_most_dist_ortholog     0.0051      0.003      1.
 ======================================================================================================================
 wald test for 'C(SB_abdomen)[T.unbiased]:level_most_dist_ortholog = 0' interaction: F test: F=2.9975975640508543, p=0.08342403589579751, df_denom=8.58e+03, df_num=1
 wald test for 'C(SB_abdomen)[T.male]:level_most_dist_ortholog = 0' interaction: F test: F=12.954543462354634, p=0.0003209453934923984, df_denom=8.58e+03, df_num=1
+wald test for 'C(SB_abdomen):level_most_dist_ortholog = 0' interaction: F test: F=7.109047099908722, p=0.0008224995355211462, df_denom=8.58e+03, df_num=2
 
 ----- A -----> head_thorax
 
@@ -1584,6 +1587,7 @@ C(SB_head_thorax)[T.unbiased]:level_most_dist_ortholog     0.0004      0.004    
 ==========================================================================================================================
 wald test for 'C(SB_head_thorax)[T.unbiased]:level_most_dist_ortholog = 0' interaction: F test: F=0.008798362160207749, p=0.9252705517407853, df_denom=8.58e+03, df_num=1
 wald test for 'C(SB_head_thorax)[T.male]:level_most_dist_ortholog = 0' interaction: F test: F=2.7356853520654085, p=0.09816597957116717, df_denom=8.58e+03, df_num=1
+wald test for 'C(SB_head_thorax):level_most_dist_ortholog = 0' interaction: F test: F=3.9236548450606374, p=0.019804196237153904, df_denom=8.58e+03, df_num=2
 
 Df Residuals: 8581
 Df Model: 3
