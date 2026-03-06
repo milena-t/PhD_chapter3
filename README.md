@@ -1624,6 +1624,15 @@ I will finish the analysis by running GO-term enrichment analysis on *C. maculat
 
 see details here: https://github.com/milena-t/PhD_chapter3/tree/main/src/GO_enrichment#readme
 
+I will put the GO enrichment results in a supplementary file including all of these:
+
+* enrichment of X-linked genes compared to whole genome (A)
+  * all orthologs: (data/GO_enrichment/all_AX_enriched_GOs.csv)
+  * pos. sel.: (data/GO_enrichment/sig_AX_enriched_GOs.csv)
+* enrichment of positively selected orthologs (site-model, C. chinensis orthologs)
+  * on A (data/GO_enrichment/A_C_chinensis_enriched_GOs.csv)
+  * on X (data/GO_enrichment/X_C_chinensis_enriched_GOs.csv)
+
 # old analysis with *Diorhaba*
 
 I had previously included another pair of sister species: *D.sublineata* and *D. carinulata*. I suspect that *D. carinulata* has a misidentified X chromosome, which leaves it only three X-linked 1-to-1 orthologs between them. I looked into it a bit here, in case it is X turnover. I would need actual lab evidence to conclude that though I think, since the X is so conserved in all the other *Coleoptera* I have here, and I would need coverage or PCR evidence to be sure that the X-identified contig in *D. carinulata* is right.
