@@ -1175,7 +1175,7 @@ When only looking at the expression of significantly sex biased genes we can see
 
 I want to investigate if the magnitude of significant sex-bias is influenced by the chromosome linkage or the conservation rank. I separate the analysis like the panels in the plot, for abdomen and head+thorax tissue as well as chromosome, and I specify this formula `abs(LFC) ~ level_most_dist_ortholog * C(SB)` with LFC being the absolute continuous log2FC, and SB being the significance category (male/unbiased/female, but there is no unbiased data in the significantly differentially expressed genes so it is excluded here. for a model including all genes this would become a three-level factor).
 
-Everything, including all interactions is strongly significant
+Everything, including all interactions is strongly significant. 
 
 Autosomes:
 
@@ -1203,7 +1203,14 @@ C(SB_head_thorax)[T.male]                              2.6746      0.336      7.
 level_most_dist_ortholog                              -0.3525      0.064     -5.518      0.000      -0.478      -0.227
 level_most_dist_ortholog:C(SB_head_thorax)[T.male]    -0.5275      0.079     -6.703      0.000      -0.682      -0.373
 ======================================================================================================================
+```
 
+The actual calculation of the coefficients is a bit unclear to me. the intercept should be female-biased/rank1, which has these medians in the plot: `abdomen=2.346` and `head+thorax=3.292` (they are the same from the plotting function as in the statistical analysis), which does not agree with the coefficients from the models. When I run the model again without interactions, the intercept coefficient increases for both tissues and becomes further away from the plotted/calculated means. The rank order is right, the male median is higher than the female (`abdomen male median = 2.462`, `h+t male median = 3.454`), and the `C(SB_head_thorax)[T.male]` coefficient is larger for head+thorax, where the difference between male and female median is greater (for rank 1). The coefficients are therefore probably some mathematical estimates for rank 1 that take the complete data set and its structure into account, but I don't know for sure how that works. In conclusion it's fine?
+
+<details>
+  <summary>X-statistics (low sample size and therefore weird)</summary>
+
+```text
 ////////////////// X :::: ABDOMEN //////////////////
 Df Residuals: 132
 Df Model: 3
@@ -1228,6 +1235,8 @@ level_most_dist_ortholog                              -0.7322      0.391     -1.
 level_most_dist_ortholog:C(SB_head_thorax)[T.male]     0.5138      0.445      1.155      0.256      -0.391       1.418
 ======================================================================================================================
 ```
+
+</details>
 
 # combining sex-biased expression with molecular rate and positive selection
 
