@@ -527,7 +527,7 @@ def check_DE_phylogeny_rank_conserved(summary_paths_AX_list:dict, outfile = "", 
 
 
 def make_sex_bias_cat_row(row, tissue = "abdomen"):
-    if row[f"LFC_{tissue}"] < 1:
+    if row[f"LFC_{tissue}"] < -1:
         if row[f"FDR_pval_{tissue}"]<0.05:
             return "male"
         else:
@@ -561,11 +561,15 @@ def logFC_quantile_regression(summary_table_path:str, p_val_threshold= 0.05, sep
         df = pd.read_csv(summary_table_path[chr], sep = "\t", index_col=False)
         
         df = df.rename(columns={'LFC_head+thorax': 'LFC_head_thorax'})
+        df = df.rename(columns={'FDR_pval_head+thorax': 'FDR_pval_head_thorax'})
         df["SB_abdomen"] = np.where(df["LFC_abdomen"] <= 0, "male", "female")
         df["SB_head_thorax"] = np.where(df["LFC_head_thorax"] <= 0, "male", "female")
+        df["SB_abdomen"] = df.apply(make_sex_bias_cat_row, axis=1, args=("abdomen",))
+        df["SB_head_thorax"] = df.apply(make_sex_bias_cat_row, axis=1, args=("head_thorax",))
         df["LFC_abdomen"] = abs(df["LFC_abdomen"])
         df["LFC_head_thorax"] = abs(df["LFC_head_thorax"])
         df_all = df[df["other_species"] == "C_chinensis"]
+        
         
         if sep_MF:
             ## abdominal df
@@ -606,33 +610,29 @@ def logFC_quantile_regression(summary_table_path:str, p_val_threshold= 0.05, sep
             print(model_ht_m.summary())
 
         else:
-            df_all = df_all.rename(columns={'LFC_head+thorax': 'LFC_head_thorax'})
-            df_all = df_all.rename(columns={'FDR_pval_head+thorax': 'FDR_pval_head_thorax'})
-            df_all["SB_abdomen"] = df_all.apply(make_sex_bias_cat_row, axis=1, args=("abdomen",))
-            df_all["SB_head_thorax"] = df_all.apply(make_sex_bias_cat_row, axis=1, args=("head_thorax",))
 
             ## abdominal df
             if p_val_threshold >0:
-                df = df_all[df_all["FDR_pval_abdomen"]<p_val_threshold]
-                df = df[(df["LFC_abdomen"]>1) | (df["LFC_abdomen"]<1)]
+                df = df_all[df_all["SB_abdomen"] != "unbiased"]
             else:
                 df = df_all
 
             formula = "LFC_abdomen ~ level_most_dist_ortholog * C(SB_abdomen)"
             model_a = smf.quantreg(formula=formula, data=df).fit(q=0.5)
             print(f"\n////////////////// {chr} :::: ABDOMEN //////////////////")
+            print(f"sex bias categories: {set(df['SB_abdomen'].tolist())}")
             print(model_a.summary())
 
             ## head_thorax 
             if p_val_threshold >0:
-                df = df_all[df_all["FDR_pval_head_thorax"]<p_val_threshold]
-                df = df[(df["LFC_head_thorax"]>1) | (df["LFC_head_thorax"]<1)]
+                df = df_all[df_all["SB_head_thorax"] != "unbiased"]
             else:
                 df = df_all
 
             formula = "LFC_head_thorax ~ level_most_dist_ortholog * C(SB_head_thorax)"
             model_ht = smf.quantreg(formula=formula, data= df).fit(q=0.5)
             print(f"\n////////////////// {chr} :::: HEAD+THORAX //////////////////")
+            print(f"sex bias categories: {set(df['SB_head_thorax'].tolist())}")
             print(model_ht.summary())
 
 
@@ -665,15 +665,14 @@ if __name__ == "__main__":
         ### statistical analysis of continuous log2FC values
         summary_paths = get_summary_paths(username=username)
         abs_logFC = True
-        if False:
-            ## plotting the bar chart
-            check_DE_phylogeny_rank_conserved(summary_paths_AX_list=summary_paths,
-                outfile=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/conservation_rank_all_sex_bias_proportion.png",
-                abs_LFC=abs_logFC, sig_p_threshold=0, only_dNdS = True)
+        if True:
+            ## plotting the boxplot
+            # check_DE_phylogeny_rank_conserved(summary_paths_AX_list=summary_paths,
+            #     outfile=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/conservation_rank_all_sex_bias_proportion.png",
+            #     abs_LFC=abs_logFC, sig_p_threshold=0, only_dNdS = True)
             check_DE_phylogeny_rank_conserved(summary_paths_AX_list=summary_paths,
                 outfile=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/conservation_rank_sig_sex_bias_proportion.png",
                 abs_LFC=abs_logFC, sig_p_threshold=0.05, only_dNdS = True)
-        else:
+        if True:
             ## statistical analysis
-            # logFC_quantile_regression(summary_paths, abs_LFC=abs_logFC, p_val_threshold=0.05, sep_MF=False)
             logFC_quantile_regression(summary_paths, abs_LFC=abs_logFC, p_val_threshold=0.05, sep_MF=False)

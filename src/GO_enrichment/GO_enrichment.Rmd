@@ -125,7 +125,7 @@ GO_enrichment_analysis <- function(geneList, annotation_df){
   result <- runTest(GOdata, algorithm = "elim", statistic = "fisher")
   ## about the "elim" algorithm from the documentation: "Here one computes the p-value of a GO term conditioned on the neighbouring terms. The tests are therefore not independent and the multiple testing theory does not directly apply. We like to interpret the p-values returned by these methods as corrected or not affected by multiple testing."
   
-  allRes <- GenTable(GOdata,classicFisher = result,orderBy = "classicFisher",topNodes = 500)
+  allRes <- GenTable(GOdata,classicFisher = result,orderBy = "classicFisher",topNodes = 1000)
   return(allRes)
 }
 
