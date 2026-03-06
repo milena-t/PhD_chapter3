@@ -1628,7 +1628,7 @@ I will put the GO enrichment results in a supplementary file including all of th
 
 * enrichment of X-linked genes compared to whole genome (A)
   * all orthologs: (data/GO_enrichment/all_AX_enriched_GOs.csv)
-  * pos. sel.: (data/GO_enrichment/sig_AX_enriched_GOs.csv)
+  * pos. sel.: (data/GO_enrichment/sig_AX_enriched_GOs.csv) (This is the dosage compensation one!)
 * enrichment of positively selected orthologs (site-model, C. chinensis orthologs)
   * on A (data/GO_enrichment/A_C_chinensis_enriched_GOs.csv)
   * on X (data/GO_enrichment/X_C_chinensis_enriched_GOs.csv)
