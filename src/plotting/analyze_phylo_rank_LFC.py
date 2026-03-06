@@ -639,6 +639,7 @@ def logFC_quantile_regression(summary_table_path:str, p_val_threshold= 0.05, sep
 
         else:
             
+            df_all["level_most_dist_ortholog_c"] = df_all["level_most_dist_ortholog"] - 1
 
             for tissue in ["abdomen", "head_thorax"]:
                 ## abdominal df
@@ -647,14 +648,13 @@ def logFC_quantile_regression(summary_table_path:str, p_val_threshold= 0.05, sep
                 else:
                     df = df_all
 
-                formula = f"LFC_{tissue} ~ level_most_dist_ortholog * C(SB_{tissue})"
+                formula = f"LFC_{tissue} ~ level_most_dist_ortholog_c * C(SB_{tissue})"
                 model_a = smf.quantreg(formula=formula, data=df).fit(q=0.5)
                 print(f"\n////////////////// {chr} :::: {tissue} //////////////////")
                 print(f"sex bias categories: {set(df[f'SB_{tissue}'].tolist())}")
                 print(model_a.summary())
-                formula = f"LFC_{tissue} ~ level_most_dist_ortholog + C(SB_{tissue})"
-                model_a = smf.quantreg(formula=formula, data=df).fit(q=0.5)
-                print(model_a.summary())
+                model_pred = model_a.predict({f"SB_{tissue}": "female", "level_most_dist_ortholog_c": 1})
+                print(f"model predicted intercept (female-biased rank1): {model_pred}")
 
                 df_male=df_all[df_all[f"SB_{tissue}"] == "male"]
                 test_median_m = np.median(df_male[df_male["level_most_dist_ortholog"]==1][f"LFC_{tissue}"].tolist())
@@ -692,7 +692,7 @@ if __name__ == "__main__":
         ### statistical analysis of continuous log2FC values
         summary_paths = get_summary_paths(username=username)
         abs_logFC = True
-        if True:
+        if False:
             ## plotting the boxplot
             # check_DE_phylogeny_rank_conserved(summary_paths_AX_list=summary_paths,
             #     outfile=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/conservation_rank_all_sex_bias_proportion.png",
