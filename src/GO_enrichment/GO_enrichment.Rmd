@@ -47,6 +47,9 @@ all_geneIDs_X_all_species_union = strsplit(readLines("all_geneIDs_X_all_species_
 sig_geneIDs_A_all_species_union = strsplit(readLines("sig_geneIDs_A_all_species_union.txt"), ",")[[1]]
 sig_geneIDs_X_all_species_union = strsplit(readLines("sig_geneIDs_X_all_species_union.txt"), ",")[[1]]
 
+all_geneIDs_all_species_union = append(all_geneIDs_A_all_species_union, all_geneIDs_X_all_species_union)
+sig_geneIDs_all_species_union = append(sig_geneIDs_A_all_species_union, sig_geneIDs_X_all_species_union)
+
 geneIDs_A_A_obtectus_sig = strsplit(readLines("geneIDs_A_A_obtectus_sig.txt"), ",")[[1]]
 geneIDs_A_B_siliquastri_sig = strsplit(readLines("geneIDs_A_B_siliquastri_sig.txt"), ",")[[1]]
 geneIDs_A_C_chinensis_sig = strsplit(readLines("geneIDs_A_C_chinensis_sig.txt"), ",")[[1]]
@@ -94,6 +97,7 @@ make_contrasts_for_AvsX <- function(list_A, list_X){
 
 all_AX_contrast <- make_contrasts_for_AvsX(list_A = all_geneIDs_A_all_species_union, list_X = all_geneIDs_X_all_species_union)
 sig_AX_contrast <- make_contrasts_for_AvsX(list_A = sig_geneIDs_A_all_species_union, list_X = sig_geneIDs_X_all_species_union)
+all_sig_contrast <- make_contrasts_for_AvsX(list_A = all_geneIDs_all_species_union, list_X = sig_geneIDs_all_species_union)
 ```
 
 prepare eggnog annotation file
@@ -121,7 +125,7 @@ GO_enrichment_analysis <- function(geneList, annotation_df){
   result <- runTest(GOdata, algorithm = "elim", statistic = "fisher")
   ## about the "elim" algorithm from the documentation: "Here one computes the p-value of a GO term conditioned on the neighbouring terms. The tests are therefore not independent and the multiple testing theory does not directly apply. We like to interpret the p-values returned by these methods as corrected or not affected by multiple testing."
   
-  allRes <- GenTable(GOdata,classicFisher = result,orderBy = "classicFisher",topNodes = 300)
+  allRes <- GenTable(GOdata,classicFisher = result,orderBy = "classicFisher",topNodes = 500)
   return(allRes)
 }
 
@@ -146,6 +150,10 @@ sig_AX_enriched_GOs <- GO_enrichment_analysis(geneList = sig_AX_contrast, annota
 
 write.csv(all_AX_enriched_GOs, "/Users/miltr339/work/PhD_code/PhD_chapter3/data/GO_enrichment/all_AX_enriched_GOs.csv", row.names=TRUE)
 write.csv(sig_AX_enriched_GOs, "/Users/miltr339/work/PhD_code/PhD_chapter3/data/GO_enrichment/sig_AX_enriched_GOs.csv", row.names=TRUE)
+
+### all to sig comparison
+all_sig_enriched_GOs <- GO_enrichment_analysis(geneList = all_sig_contrast, annotation_df = gene2GO)
+write.csv(all_sig_enriched_GOs, "/Users/miltr339/work/PhD_code/PhD_chapter3/data/GO_enrichment/allsig_enriched_GOs.csv", row.names=TRUE)
 ```
 
 # Try semantic clustering with Viseago

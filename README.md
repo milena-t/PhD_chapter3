@@ -1632,6 +1632,7 @@ I will put the GO enrichment results in a supplementary file including all of th
 * enrichment of positively selected orthologs (site-model, C. chinensis orthologs)
   * on A (data/GO_enrichment/A_C_chinensis_enriched_GOs.csv)
   * on X (data/GO_enrichment/X_C_chinensis_enriched_GOs.csv)
+  * General enrichment on sig genes compared to all (data/GO_enrichment/allsig_enriched_GOs.csv)
 
 # old analysis with *Diorhaba*
 
