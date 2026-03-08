@@ -86,7 +86,7 @@ def categorize_SB_int(SB_int:int):
         raise RuntimeError(f"{SB_int} could not be categorized")
 
         
-def make_category_proportion_plot(rank_summary_path_A:str, rank_summary_path_X:str, outfile:str):
+def make_category_proportion_plot(rank_summary_path_A:str, rank_summary_path_X:str, outfile:str, plot_sep_panels=True):
     """
     plot a stacked bar to show the proportion of male/female/unbiased for X and A, and for abdominal and head+thorax
     """
@@ -135,24 +135,6 @@ def make_category_proportion_plot(rank_summary_path_A:str, rank_summary_path_X:s
     A_perc_dict,A_num_genes_rank = make_percentage_dict(A_sums_dict, A_df)
     assert len(X_perc_dict) == len(A_perc_dict)
 
-    ### plot stacked bar chart
-    fs = 25
-    width=0.2
-    x_gap = 0.025
-    # x_subtr=width*1.1/2.0
-    x_coords = list(range(1,len(X_sums_dict.keys())+1))
-
-    x_coords_bars = [
-        value
-        for x in x_coords
-        for value in (
-            x - width*1.5 - x_gap,
-            x - width*0.5 - x_gap,
-            x + width*0.5 + x_gap,
-            x + width*1.5 + x_gap,
-        )
-    ]
-    fig, ax = plt.subplots(1, 1, figsize=(22, 11)) 
 
     colors_dict ={
         "abdomen" : {
@@ -176,51 +158,119 @@ def make_category_proportion_plot(rank_summary_path_A:str, rank_summary_path_X:s
         "head_thorax" : "somatic"
     }
 
-    bottom = [0,0,0,0]*5
-    subcat_tissue = ["abdomen","head_thorax"]
-    chr_labels = [f"{labels_dict[tissue]}:{chr}" for chr in ["A","X"] for tissue in subcat_tissue]
-    bar_labels = [
-        (
-            f"{sublabel} ({A_num_genes_rank[conserved_rank]})"
-            if "A" in sublabel
-            else f"{sublabel} ({X_num_genes_rank[conserved_rank]})"
-        )
-        for conserved_rank in x_coords
-        for sublabel in chr_labels
-    ]
+    if plot_sep_panels:
+        ## separate panels for A/X and somatic/reproductive
+        fig, ax = plt.subplots(2, 2, figsize=(20, 15))     
+        fs = 25
+        width=0.75
+        rows_dict = {"abdomen" : 0, "head_thorax":1}
+        cols_dict = {"X" : 1 ,"A" : 0}
+
+        for tissue in rows_dict.keys():
+            for chr in cols_dict.keys():
+                x_coords = list(range(1,6)) # age ranks
+                bottom = [0 for i in range(len(x_coords))]
+                row = rows_dict[tissue]
+                col = cols_dict[chr]
+                
+                if chr == "A":
+                    bar_labels = [ f"({A_num_genes_rank[i]})" for i in x_coords]
+                    perc_dict = A_perc_dict
+                elif chr == "X":
+                    bar_labels = [ f"({X_num_genes_rank[i]})" for i in x_coords]
+                    perc_dict = X_perc_dict
+                    
+                # stack bars from bottom to top
+                for sex_bias in reversed(colors_dict["abdomen"].keys()):
+
+                    y_coords = [ perc_dict[i][tissue][sex_bias] for i  in x_coords]
+                    ax[row,col].bar(x_coords, y_coords, width = width, bottom=bottom, color= colors_dict["abdomen"][sex_bias])
+                    bottom = [bottom[i]+y_coords[i] for i in range(len(y_coords))]
+                
+                ax[row,col].yaxis.set_major_formatter(FuncFormatter(lambda x, pos: '' if x > 100 and x<1 else f'{int(x)}%'))
+                ax[row,col].set_title(f"{labels_dict[tissue]} {labels_dict[chr]}", fontsize=fs)
+                ax[row,col].tick_params(axis='y', labelsize=fs)
+                ax[row,col].tick_params(axis='x', labelsize=fs*0.75, rotation=90)
+                ax[row,col].set_xticks(ticks=x_coords, labels=bar_labels)
+                ax[row,col].set_ylim(0,100)
+
+                ax2 = ax[row,col].secondary_xaxis('bottom')
+                ax2.set_xticks(x_coords)
+                ax2.set_xticklabels(x_coords, fontsize=fs*1.2)
+                if chr == "X":
+                    ax2.spines['bottom'].set_position(('outward', 60))   
+                elif chr == "A": ## lower down with higher sample size and longer tick labels
+                    ax2.spines['bottom'].set_position(('outward', 80))   
+                ax2.xaxis.set_ticks_position('none')
+                ax2.spines['bottom'].set_visible(False)
+                ax2.tick_params(axis='x', labelsize=fs*1.2)
+
+        outfile = outfile.replace(".png", "_sep_panels.png")
+
+    else:
+        fig, ax = plt.subplots(1, 1, figsize=(22, 11)) 
+        ### plot stacked bar chart
+        fs = 25
+        width=0.2
+        x_gap = 0.025
+        # x_subtr=width*1.1/2.0
+        x_coords = list(range(1,len(X_sums_dict.keys())+1))
+
+        x_coords_bars = [
+            value
+            for x in x_coords
+            for value in (
+                x - width*1.5 - x_gap,
+                x - width*0.5 - x_gap,
+                x + width*0.5 + x_gap,
+                x + width*1.5 + x_gap,
+            )
+        ]
+        bottom = [0,0,0,0]*5
+        subcat_tissue = ["abdomen","head_thorax"]
+        chr_labels = [f"{labels_dict[tissue]}:{chr}" for chr in ["A","X"] for tissue in subcat_tissue]
+        bar_labels = [
+            (
+                f"{sublabel} ({A_num_genes_rank[conserved_rank]})"
+                if "A" in sublabel
+                else f"{sublabel} ({X_num_genes_rank[conserved_rank]})"
+            )
+            for conserved_rank in x_coords
+            for sublabel in chr_labels
+        ]
 
 
-    # stack bars from bottom to top
-    for sex_bias in reversed(colors_dict["abdomen"].keys()):
-        print(f"\t * {sex_bias}")
-        # alternate the colors for the abdomen/ht bars
-        colors_list = [colors_dict["abdomen"][sex_bias] if i%2==0 else colors_dict["head_thorax"][sex_bias] for i, _ in enumerate(range(len(bottom))) ]
-        # make bar height for the four bars in all the conservation rank categories
-        y_coords = []
-        for conserved_rank in x_coords:
-            y_coords.extend([A_perc_dict[conserved_rank]["abdomen"][sex_bias]]) 
-            y_coords.extend([A_perc_dict[conserved_rank]["head_thorax"][sex_bias]]) 
-            y_coords.extend([X_perc_dict[conserved_rank]["abdomen"][sex_bias]])
-            y_coords.extend([X_perc_dict[conserved_rank]["head_thorax"][sex_bias]])
+        # stack bars from bottom to top
+        for sex_bias in reversed(colors_dict["abdomen"].keys()):
+            print(f"\t * {sex_bias}")
+            # alternate the colors for the abdomen/ht bars
+            colors_list = [colors_dict["abdomen"][sex_bias] if i%2==0 else colors_dict["head_thorax"][sex_bias] for i, _ in enumerate(range(len(bottom))) ]
+            # make bar height for the four bars in all the conservation rank categories
+            y_coords = []
+            for conserved_rank in x_coords:
+                y_coords.extend([A_perc_dict[conserved_rank]["abdomen"][sex_bias]]) 
+                y_coords.extend([A_perc_dict[conserved_rank]["head_thorax"][sex_bias]]) 
+                y_coords.extend([X_perc_dict[conserved_rank]["abdomen"][sex_bias]])
+                y_coords.extend([X_perc_dict[conserved_rank]["head_thorax"][sex_bias]])
 
-        assert len(x_coords_bars)==len(y_coords)==len(colors_list)
-        ax.bar(x_coords_bars, y_coords, width = width, bottom=bottom, color= colors_list)
-        
-        bottom = [bottom[i]+y_coords[i] for i in range(len(y_coords))]
+            assert len(x_coords_bars)==len(y_coords)==len(colors_list)
+            ax.bar(x_coords_bars, y_coords, width = width, bottom=bottom, color= colors_list)
+            
+            bottom = [bottom[i]+y_coords[i] for i in range(len(y_coords))]
 
-    ax.yaxis.set_major_formatter(FuncFormatter(lambda x, pos: '' if x > 100 and x<1 else f'{int(x)}%'))
+        ax.yaxis.set_major_formatter(FuncFormatter(lambda x, pos: '' if x > 100 and x<1 else f'{int(x)}%'))
 
-    ax.tick_params(axis='y', labelsize=fs)
-    ax.tick_params(axis='x', labelsize=fs*0.75, rotation=90)
-    ax.set_xticks(ticks=x_coords_bars, labels=bar_labels)
+        ax.tick_params(axis='y', labelsize=fs)
+        ax.tick_params(axis='x', labelsize=fs*0.75, rotation=90)
+        ax.set_xticks(ticks=x_coords_bars, labels=bar_labels)
 
-    ax2 = ax.secondary_xaxis('bottom')
-    ax2.set_xticks(x_coords)
-    ax2.set_xticklabels(x_coords, fontsize=fs*1.2)
-    ax2.spines['bottom'].set_position(('outward', 180))   
-    ax2.xaxis.set_ticks_position('none')
-    ax2.spines['bottom'].set_visible(False)
-    ax2.tick_params(axis='x', labelsize=fs*1.2)
+        ax2 = ax.secondary_xaxis('bottom')
+        ax2.set_xticks(x_coords)
+        ax2.set_xticklabels(x_coords, fontsize=fs*1.2)
+        ax2.spines['bottom'].set_position(('outward', 180))   
+        ax2.xaxis.set_ticks_position('none')
+        ax2.spines['bottom'].set_visible(False)
+        ax2.tick_params(axis='x', labelsize=fs*1.2)
     
     plt.tight_layout(rect=[0, 0.05, 1, 1])
     # transparent background
@@ -233,42 +283,40 @@ def make_category_proportion_plot(rank_summary_path_A:str, rank_summary_path_X:s
 
 
 def make_log_reg_table(full_table_paths_dict):
+    
+    for chr in ["X", "A"]:
 
-    X_df = pd.read_csv(full_table_paths_dict["X"], sep="\t")
-    A_df = pd.read_csv(full_table_paths_dict["A"], sep="\t")
-    X_df["chromosome"] = ["X"]*X_df.shape[0]
-    A_df["chromosome"] = ["A"]*A_df.shape[0]
+        df = pd.read_csv(full_table_paths_dict[chr], sep="\t")
 
-    df = pd.concat([A_df,X_df], ignore_index=True)
-    df = df.rename(columns={'LFC_head+thorax': 'LFC_head_thorax'})
-    df = df.rename(columns={'FDR_pval_head+thorax': 'FDR_pval_head_thorax'})
+        df = df.rename(columns={'LFC_head+thorax': 'LFC_head_thorax'})
+        df = df.rename(columns={'FDR_pval_head+thorax': 'FDR_pval_head_thorax'})
 
-    df["SB_abdomen"] = df.apply(make_sex_bias_cat_row_numeric, axis=1, args=("abdomen",))
-    df["SB_head_thorax"] = df.apply(make_sex_bias_cat_row_numeric, axis=1, args=("head_thorax",))
-    df["LFC_abdomen"] = abs(df["LFC_abdomen"])
-    df["LFC_head_thorax"] = abs(df["LFC_head_thorax"])
+        df["SB_abdomen"] = df.apply(make_sex_bias_cat_row_numeric, axis=1, args=("abdomen",))
+        df["SB_head_thorax"] = df.apply(make_sex_bias_cat_row_numeric, axis=1, args=("head_thorax",))
+        df["LFC_abdomen"] = abs(df["LFC_abdomen"])
+        df["LFC_head_thorax"] = abs(df["LFC_head_thorax"])
 
-    # specify formula
-    formula_a = f"SB_abdomen ~ C(chromosome) * level_most_dist_ortholog"# * LFC_abdomen"
-    formula_ht = f"SB_head_thorax ~ C(chromosome) * level_most_dist_ortholog"# * LFC_head_thorax"
-    y_a, X_a = patsy.dmatrices(formula_a,data=df,return_type="dataframe")
-    y_ht, X_ht = patsy.dmatrices(formula_ht,data=df,return_type="dataframe")
-    X_a = X_a.drop(columns="Intercept")
-    X_ht = X_ht.drop(columns="Intercept")
+        # specify formula
+        formula_a = f"SB_abdomen ~ level_most_dist_ortholog"# * LFC_abdomen"
+        formula_ht = f"SB_head_thorax ~ level_most_dist_ortholog"# * LFC_head_thorax"
+        y_a, X_a = patsy.dmatrices(formula_a,data=df,return_type="dataframe")
+        y_ht, X_ht = patsy.dmatrices(formula_ht,data=df,return_type="dataframe")
+        X_a = X_a.drop(columns="Intercept")
+        X_ht = X_ht.drop(columns="Intercept")
 
-    print(f"\n////////////////// ABDOMEN //////////////////")
-    model = OrderedModel(y_a.iloc[:,0], X_a, distr='logit').fit(method='bfgs', disp=False)
-    print(model.summary())
+        print(f"\n////////////////// {chr} :::: ABDOMEN //////////////////")
+        model = OrderedModel(y_a.iloc[:,0], X_a, distr='logit').fit(method='bfgs', disp=False)
+        print(model.summary())
 
 
-    print(f"\n////////////////// HEAD+THORAX //////////////////")
-    model = OrderedModel(y_ht.iloc[:,0], X_ht, distr='logit').fit(method='bfgs', disp=False)
-    print(model.summary())
+        print(f"\n////////////////// {chr} :::: HEAD+THORAX //////////////////")
+        model = OrderedModel(y_ht.iloc[:,0], X_ht, distr='logit').fit(method='bfgs', disp=False)
+        print(model.summary())
 
 ############################
 
 
-def make_phylogeny_rank_dict(summary_file_df, min_p, min_LFC):
+def make_phylogeny_rank_dict(summary_file_df, min_p, min_LFC, verbose = False, filter_dNdS=True):
     """
     make a dict with rank orders like { 1 : [list, of, Log2FC, numbers] ,  2 [more, log2FC, numbers] , ... }
     """
@@ -276,9 +324,12 @@ def make_phylogeny_rank_dict(summary_file_df, min_p, min_LFC):
     dedup_df = summary_file_df[summary_file_df["other_species"] == "C_chinensis"] # keep only chinensis data to make it comparable with later plots
 
     # Keep only rows where there is a valid dN/dS 
-    dNdS_numeric = pd.to_numeric(dedup_df["dN/dS"], errors='coerce')
-    valid_rows = dNdS_numeric.notna()
-    filtered_df=dedup_df[valid_rows]
+    if filter_dNdS:
+        dNdS_numeric = pd.to_numeric(dedup_df["dN/dS"], errors='coerce')
+        valid_rows = dNdS_numeric.notna()
+        filtered_df=dedup_df[valid_rows]
+    else:
+        filtered_df=dedup_df
     
     LFC_dict_abdomen = { i : [] for i in range(1,6)}
     LFC_dict_head_thorax = { i : [] for i in range(1,6)}
@@ -296,15 +347,22 @@ def make_phylogeny_rank_dict(summary_file_df, min_p, min_LFC):
             if pval<min_p and abs(log2FC_val)>min_LFC:
                 LFC_dict_head_thorax[p_rank].append(log2FC_val)
 
+    if verbose:
+        for rank in LFC_dict_abdomen.keys():
+            print(f"{rank} : abdomen: {np.median(LFC_dict_abdomen[rank])}")
+            print(f"{rank} : head+th: {np.median(LFC_dict_head_thorax[rank])}")
+        print()
+
     return LFC_dict_abdomen, LFC_dict_head_thorax
 
 
 
-def check_DE_phylogeny_rank_conserved(summary_paths_AX_list:dict, outfile = "", abs_LFC=False, sig_p_threshold = 0, sep_MF=True, only_dNdS=False):
+def check_DE_phylogeny_rank_conserved(summary_paths_AX_list:dict, outfile = "", abs_LFC=False, sig_p_threshold = 0, sep_MF=True):
     """
     check if genes with a higher phylogeny conservarion rank have higher log2FC values 
     if abs_LFC=True then do abs() around LFC to assess general sex bias and don't differentiate male-female contrast
     if only_dNdS include only genes that have a valid dNdS estimate
+
     """
 
     summary_data_A = pd.read_csv(summary_paths_AX_list["A"], sep = "\t", index_col=False)
@@ -314,9 +372,12 @@ def check_DE_phylogeny_rank_conserved(summary_paths_AX_list:dict, outfile = "", 
         min_LFC = 1
     else:
         min_LFC = 0
-
-    LFC_dict_abdomen_A, LFC_dict_head_thorax_A = make_phylogeny_rank_dict(summary_data_A, min_p = sig_p_threshold, min_LFC = min_LFC)
-    LFC_dict_abdomen_X, LFC_dict_head_thorax_X = make_phylogeny_rank_dict(summary_data_X, min_p = sig_p_threshold, min_LFC = min_LFC)
+    
+    verbose = False
+    if verbose:
+        print(f"\nplotting medians:")
+    LFC_dict_abdomen_A, LFC_dict_head_thorax_A = make_phylogeny_rank_dict(summary_data_A, min_p = sig_p_threshold, min_LFC = min_LFC, verbose=verbose, filter_dNdS=False)
+    LFC_dict_abdomen_X, LFC_dict_head_thorax_X = make_phylogeny_rank_dict(summary_data_X, min_p = sig_p_threshold, min_LFC = min_LFC, verbose=verbose, filter_dNdS=False)
 
     if abs_LFC and sep_MF==False:
         LFC_lists_abdomen_A = [[abs(val) for val in vals_list] for vals_list in LFC_dict_abdomen_A.values()]
@@ -373,15 +434,19 @@ def check_DE_phylogeny_rank_conserved(summary_paths_AX_list:dict, outfile = "", 
             ax[row,col].axhline(y=0, linestyle = "--", color = "black")
 
 
-    def plot_DE_subplot_sep_MF(lists, row,col, fs, title, colors_dict, abs_logFC, lw=2):
+    def plot_DE_subplot_sep_MF(lists, row,col, fs, title, colors_dict, abs_logFC, lw=2, verbose=False):
         
         ## split into male- and female biased for separate boxplots
         sex_biased_lists = []
         if abs_logFC:
-            for lst in lists:
+            for i,lst in enumerate(lists):
                 male_biased = [abs(x) for x in lst if x < 0]
                 female_biased = [x for x in lst if x > 0]
                 sex_biased_lists.extend([male_biased, female_biased])
+                if verbose and len(lst)>0:
+                    print(f"{i+1} : male: {np.median(male_biased):.3f} \t female: {np.nanmedian(female_biased):.3f}")
+            if verbose:
+                print
         else:
             for lst in lists:
                 male_biased = [x for x in lst if x < 0]
@@ -411,32 +476,33 @@ def check_DE_phylogeny_rank_conserved(summary_paths_AX_list:dict, outfile = "", 
         ax2.tick_params(axis='x', labelsize=fs)
 
         ## modify boxplot colors
-        for i, box in enumerate(bp['boxes']):
-            if i%2==0:
-                box.set(facecolor=colors_dict["fill"], edgecolor=colors_dict["edge"], linewidth=2)
-            else:
-                box.set(facecolor=colors_dict["FB_fill"], edgecolor=colors_dict["FB_edge"], linewidth=2)
-        for i, median in enumerate(bp['medians']):
-            if i%2==0:
-                median.set(color=colors_dict['medians'], linewidth=lw)
-            else:
-                median.set(color=colors_dict['FB_medians'], linewidth=lw)
-        for i, whisker in enumerate(bp['whiskers']):
-            # print(f"whisker: {i}")
-            if i//2 % 2==0:
-                whisker.set(color=colors_dict['edge'], linestyle='-',linewidth=lw)
-            else:
-                whisker.set(color=colors_dict['FB_edge'], linestyle='-',linewidth=lw)
-        for i, cap in enumerate(bp['caps']):
-            if i//2 % 2==0:
-                cap.set(color=colors_dict['edge'],linewidth=lw)
-            else:
-                cap.set(color=colors_dict['FB_edge'],linewidth=lw)
-        for i, flier in enumerate(bp['fliers']):
-            if i%2==0:
-                flier.set(marker='.', markerfacecolor=colors_dict['edge'], markeredgecolor=colors_dict['edge'])
-            else:
-                flier.set(marker='.', markerfacecolor=colors_dict['FB_edge'], markeredgecolor=colors_dict['FB_edge'])
+        if True:
+            for i, box in enumerate(bp['boxes']):
+                if i%2==0:
+                    box.set(facecolor=colors_dict["fill"], edgecolor=colors_dict["edge"], linewidth=2)
+                else:
+                    box.set(facecolor=colors_dict["FB_fill"], edgecolor=colors_dict["FB_edge"], linewidth=2)
+            for i, median in enumerate(bp['medians']):
+                if i%2==0:
+                    median.set(color=colors_dict['medians'], linewidth=lw)
+                else:
+                    median.set(color=colors_dict['FB_medians'], linewidth=lw)
+            for i, whisker in enumerate(bp['whiskers']):
+                # print(f"whisker: {i}")
+                if i//2 % 2==0:
+                    whisker.set(color=colors_dict['edge'], linestyle='-',linewidth=lw)
+                else:
+                    whisker.set(color=colors_dict['FB_edge'], linestyle='-',linewidth=lw)
+            for i, cap in enumerate(bp['caps']):
+                if i//2 % 2==0:
+                    cap.set(color=colors_dict['edge'],linewidth=lw)
+                else:
+                    cap.set(color=colors_dict['FB_edge'],linewidth=lw)
+            for i, flier in enumerate(bp['fliers']):
+                if i%2==0:
+                    flier.set(marker='.', markerfacecolor=colors_dict['edge'], markeredgecolor=colors_dict['edge'])
+                else:
+                    flier.set(marker='.', markerfacecolor=colors_dict['FB_edge'], markeredgecolor=colors_dict['FB_edge'])
     
         if abs_logFC == False:
             ax[row,col].axhline(y=0, linestyle = "--", color = "black")
@@ -453,11 +519,17 @@ def check_DE_phylogeny_rank_conserved(summary_paths_AX_list:dict, outfile = "", 
     }
 
     if sep_MF:
+        verbose = True
         print(f" separate male and female sex biased genes")
-        plot_DE_subplot_sep_MF(LFC_lists_abdomen_A, row=0, col=0, fs=fs, title=f"Autosomes: abdomen", colors_dict=colors, abs_logFC=abs_LFC)
-        plot_DE_subplot_sep_MF(LFC_lists_head_thorax_A, row=0, col=1, fs=fs, title=f"Autosomes: head+thorax", colors_dict=colors, abs_logFC=abs_LFC)
-        plot_DE_subplot_sep_MF(LFC_lists_abdomen_X, row=1, col=0, fs=fs, title=f"X-chromosome: abdomen", colors_dict=colors, abs_logFC=abs_LFC)
-        plot_DE_subplot_sep_MF(LFC_lists_head_thorax_X, row=1, col=1, fs=fs, title=f"X-chromosome: head+thorax", colors_dict=colors, abs_logFC=abs_LFC)
+        
+        print(f"\nAutosomes: abdomen")
+        plot_DE_subplot_sep_MF(LFC_lists_abdomen_A, row=0, col=0, fs=fs, title=f"Autosomes: abdomen", colors_dict=colors, abs_logFC=abs_LFC, verbose = verbose)
+        print(f"\nAutosomes: head+thorax")
+        plot_DE_subplot_sep_MF(LFC_lists_head_thorax_A, row=0, col=1, fs=fs, title=f"Autosomes: head+thorax", colors_dict=colors, abs_logFC=abs_LFC, verbose = verbose)
+        print(f"\nX-chromosome: abdomen")
+        plot_DE_subplot_sep_MF(LFC_lists_abdomen_X, row=1, col=0, fs=fs, title=f"X-chromosome: abdomen", colors_dict=colors, abs_logFC=abs_LFC, verbose = verbose)
+        print(f"\nX-chromosome: head+thorax")
+        plot_DE_subplot_sep_MF(LFC_lists_head_thorax_X, row=1, col=1, fs=fs, title=f"X-chromosome: head+thorax", colors_dict=colors, abs_logFC=abs_LFC, verbose = verbose)
         fig.supxlabel(f"(number of genes)\nconservation rank of C. maculatus ortholog", fontsize = fs)
     else:
         plot_DE_subplot(LFC_lists_abdomen_A, row=0, col=0, fs=fs, title=f"Autosomes: abdomen", colors_dict=colors, abs_logFC=abs_LFC)
@@ -479,7 +551,7 @@ def check_DE_phylogeny_rank_conserved(summary_paths_AX_list:dict, outfile = "", 
 
 
 def make_sex_bias_cat_row(row, tissue = "abdomen"):
-    if row[f"LFC_{tissue}"] < 1:
+    if row[f"LFC_{tissue}"] < -1:
         if row[f"FDR_pval_{tissue}"]<0.05:
             return "male"
         else:
@@ -494,7 +566,7 @@ def make_sex_bias_cat_row(row, tissue = "abdomen"):
 
 
 def make_sex_bias_cat_row_numeric(row, tissue = "abdomen"):
-    if row[f"LFC_{tissue}"] < 1:
+    if row[f"LFC_{tissue}"] < -1:
         if row[f"FDR_pval_{tissue}"]<0.05:
             return -1
         else:
@@ -508,88 +580,87 @@ def make_sex_bias_cat_row_numeric(row, tissue = "abdomen"):
         return 0
 
 def logFC_quantile_regression(summary_table_path:str, p_val_threshold= 0.05, sep_MF=True, abs_LFC=False):
-    X_df = pd.read_csv(summary_table_path["X"], sep = "\t", index_col=False)
-    A_df = pd.read_csv(summary_table_path["A"], sep = "\t", index_col=False)
-     # add columns for chromosome cat
-    X_df["chromosome"] = ["X"]*X_df.shape[0]
-    A_df["chromosome"] = ["A"]*A_df.shape[0]
 
-    df_duplicates = pd.concat([A_df,X_df], ignore_index=True)
-    df = df_duplicates.rename(columns={'LFC_head+thorax': 'LFC_head_thorax'})
-    df["SB_abdomen"] = np.where(df["LFC_abdomen"] <= 0, "male", "female")
-    df["SB_head_thorax"] = np.where(df["LFC_head_thorax"] <= 0, "male", "female")
-    df["LFC_abdomen"] = abs(df["LFC_abdomen"])
-    df["LFC_head_thorax"] = abs(df["LFC_head_thorax"])
-    df_all = df.drop_duplicates(subset=['focal_transcript']) # remove duplicate data points -> log2FC is the same for all instances of the focal transcript
-    
-    
-    if sep_MF:
-        ## abdominal df
-        if p_val_threshold >0:
-            df = df_all[df_all["FDR_pval_abdomen"]<p_val_threshold]
-        else:
-            df = df_all
+    for chr in ["A", "X"]:
 
-        ## abdomen
-        test_a = smf.quantreg("LFC_abdomen ~ level_most_dist_ortholog * C(chromosome)", df).fit(q=0.5)
-        print(f"\n////////////////// ABDOMEN //////////////////")
-        print(test_a.summary())
+        if chr=="X": ## no stats for X
+            continue
 
-
-        ## head_thorax 
-        if p_val_threshold >0:
-            df = df_all[df_all["FDR_pval_head+thorax"]<p_val_threshold]
-            df = df[df["LFC_head+thorax"]>1 or df["LFC_head+thorax"]<1]
-        else:
-            df = df_all
-
-        ## rename the head thorax column because this does not play well with the formula specification
+        df = pd.read_csv(summary_table_path[chr], sep = "\t", index_col=False)
+        
         df = df.rename(columns={'LFC_head+thorax': 'LFC_head_thorax'})
         df = df.rename(columns={'FDR_pval_head+thorax': 'FDR_pval_head_thorax'})
+        df["SB_abdomen"] = np.where(df["LFC_abdomen"] <= 0, "male", "female")
+        df["SB_head_thorax"] = np.where(df["LFC_head_thorax"] <= 0, "male", "female")
+        df["SB_abdomen"] = df.apply(make_sex_bias_cat_row, axis=1, args=("abdomen",))
+        df["SB_head_thorax"] = df.apply(make_sex_bias_cat_row, axis=1, args=("head_thorax",))
+        df["LFC_abdomen"] = abs(df["LFC_abdomen"])
+        df["LFC_head_thorax"] = abs(df["LFC_head_thorax"])
+        df_all = df[df["other_species"] == "C_chinensis"]
         
-        df_f = df[df["LFC_head_thorax"]>0]
-        df_m = df[df["LFC_head_thorax"]<0]
         
-        model_ht_f = smf.quantreg("LFC_head_thorax ~ level_most_dist_ortholog * C(chromosome)", df_f).fit(q=0.5) # q=0.5 means we estimate the median
-        if abs_LFC:
-            df_m["LFC_head_thorax_abs"] = df_m["LFC_head_thorax"]*-1 # make all vals positive so that the coefficients are comparable
-            model_ht_m = smf.quantreg("LFC_head_thorax_abs ~ level_most_dist_ortholog * C(chromosome)", df_m).fit(q=0.5) # q=0.5 means we estimate the median
+        if sep_MF:
+            ## abdominal df
+            if p_val_threshold >0:
+                df = df_all[df_all["FDR_pval_abdomen"]<p_val_threshold]
+            else:
+                df = df_all
+
+            ## abdomen
+            test_a = smf.quantreg("LFC_abdomen ~ level_most_dist_ortholog * C(chromosome)", df).fit(q=0.5)
+            print(f"\n////////////////// ABDOMEN //////////////////")
+            print(test_a.summary())
+
+
+            ## head_thorax 
+            if p_val_threshold >0:
+                df = df_all[df_all["FDR_pval_head+thorax"]<p_val_threshold]
+                df = df[df["LFC_head+thorax"]>1 or df["LFC_head+thorax"]<1]
+            else:
+                df = df_all
+
+            ## rename the head thorax column because this does not play well with the formula specification
+            df = df.rename(columns={'LFC_head+thorax': 'LFC_head_thorax'})
+            df = df.rename(columns={'FDR_pval_head+thorax': 'FDR_pval_head_thorax'})
+            
+            df_f = df[df["LFC_head_thorax"]>0]
+            df_m = df[df["LFC_head_thorax"]<0]
+            
+            model_ht_f = smf.quantreg("LFC_head_thorax ~ level_most_dist_ortholog * C(chromosome)", df_f).fit(q=0.5) # q=0.5 means we estimate the median
+            if abs_LFC:
+                df_m["LFC_head_thorax_abs"] = df_m["LFC_head_thorax"]*-1 # make all vals positive so that the coefficients are comparable
+                model_ht_m = smf.quantreg("LFC_head_thorax_abs ~ level_most_dist_ortholog * C(chromosome)", df_m).fit(q=0.5) # q=0.5 means we estimate the median
+            else:
+                model_ht_m = smf.quantreg("LFC_head_thorax ~ level_most_dist_ortholog * C(chromosome)", df_m).fit(q=0.5) # q=0.5 means we estimate the median
+            print(f"\n\n////////////////// HEAD+THORAX -- FEMALE-BIASED //////////////////")
+            print(model_ht_f.summary())
+            print(f"\n////////////////// HEAD+THORAX -- MALE-BIASED //////////////////")
+            print(model_ht_m.summary())
+
         else:
-            model_ht_m = smf.quantreg("LFC_head_thorax ~ level_most_dist_ortholog * C(chromosome)", df_m).fit(q=0.5) # q=0.5 means we estimate the median
-        print(f"\n\n////////////////// HEAD+THORAX -- FEMALE-BIASED //////////////////")
-        print(model_ht_f.summary())
-        print(f"\n////////////////// HEAD+THORAX -- MALE-BIASED //////////////////")
-        print(model_ht_m.summary())
+            
+            df_all["level_most_dist_ortholog_c"] = df_all["level_most_dist_ortholog"] - 1
 
-    else:
-        df_all = df_all.rename(columns={'LFC_head+thorax': 'LFC_head_thorax'})
-        df_all = df_all.rename(columns={'FDR_pval_head+thorax': 'FDR_pval_head_thorax'})
-        df_all["SB_abdomen"] = df_all.apply(make_sex_bias_cat_row, axis=1, args=("abdomen",))
-        df_all["SB_head_thorax"] = df_all.apply(make_sex_bias_cat_row, axis=1, args=("head_thorax",))
+            for tissue in ["abdomen", "head_thorax"]:
+                ## abdominal df
+                if p_val_threshold >0:
+                    df = df_all[df_all[f"SB_{tissue}"] != "unbiased"]
+                else:
+                    df = df_all
 
-        ## abdominal df
-        if p_val_threshold >0:
-            df = df_all[df_all["FDR_pval_abdomen"]<p_val_threshold]
-            df = df[(df["LFC_abdomen"]>1) | (df["LFC_abdomen"]<1)]
-        else:
-            df = df_all
+                formula = f"LFC_{tissue} ~ level_most_dist_ortholog_c * C(SB_{tissue})"
+                model_a = smf.quantreg(formula=formula, data=df).fit(q=0.5)
+                print(f"\n////////////////// {chr} :::: {tissue} //////////////////")
+                print(f"sex bias categories: {set(df[f'SB_{tissue}'].tolist())}")
+                print(model_a.summary())
+                model_pred = model_a.predict({f"SB_{tissue}": "female", "level_most_dist_ortholog_c": 1})
+                print(f"model predicted intercept (female-biased rank1): {model_pred}")
 
-        formula = "LFC_abdomen ~ level_most_dist_ortholog * C(SB_abdomen) * C(chromosome)"
-        model_a = smf.quantreg(formula=formula, data=df).fit(q=0.5)
-        print(f"\n////////////////// ABDOMEN //////////////////")
-        print(model_a.summary())
-
-        ## head_thorax 
-        if p_val_threshold >0:
-            df = df_all[df_all["FDR_pval_head_thorax"]<p_val_threshold]
-            df = df[(df["LFC_head_thorax"]>1) | (df["LFC_head_thorax"]<1)]
-        else:
-            df = df_all
-
-        formula = "LFC_head_thorax ~ level_most_dist_ortholog * C(SB_head_thorax) * C(chromosome)"
-        model_ht = smf.quantreg(formula=formula, data= df).fit(q=0.5)
-        print(f"\n////////////////// HEAD+THORAX //////////////////")
-        print(model_ht.summary())
+                df_male=df_all[df_all[f"SB_{tissue}"] == "male"]
+                test_median_m = np.median(df_male[df_male["level_most_dist_ortholog"]==1][f"LFC_{tissue}"].tolist())
+                df_female=df_all[df_all[f"SB_{tissue}"] == "female"]
+                test_median_f = np.median(df_female[df_female["level_most_dist_ortholog"]==1][f"LFC_{tissue}"].tolist())
+                print(f"{tissue}:{chr}:rank1 medians \t male: {test_median_m:.3f} \tfemale: {test_median_f:.3f}")
 
 
 if __name__ == "__main__":
@@ -621,15 +692,14 @@ if __name__ == "__main__":
         ### statistical analysis of continuous log2FC values
         summary_paths = get_summary_paths(username=username)
         abs_logFC = True
-        if True:
-            ## plotting the bar chart
-            check_DE_phylogeny_rank_conserved(summary_paths_AX_list=summary_paths,
-                outfile=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/conservation_rank_all_sex_bias_proportion.png",
-                abs_LFC=abs_logFC, sig_p_threshold=0, only_dNdS = True)
+        if False:
+            ## plotting the boxplot
+            # check_DE_phylogeny_rank_conserved(summary_paths_AX_list=summary_paths,
+            #     outfile=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/conservation_rank_all_sex_bias_proportion.png",
+            #     abs_LFC=abs_logFC, sig_p_threshold=0)
             check_DE_phylogeny_rank_conserved(summary_paths_AX_list=summary_paths,
                 outfile=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/conservation_rank_sig_sex_bias_proportion.png",
-                abs_LFC=abs_logFC, sig_p_threshold=0.05, only_dNdS = True)
-        else:
+                abs_LFC=abs_logFC, sig_p_threshold=0.05)
+        if True:
             ## statistical analysis
-            # logFC_quantile_regression(summary_paths, abs_LFC=abs_logFC, p_val_threshold=0.05, sep_MF=False)
             logFC_quantile_regression(summary_paths, abs_LFC=abs_logFC, p_val_threshold=0.05, sep_MF=False)

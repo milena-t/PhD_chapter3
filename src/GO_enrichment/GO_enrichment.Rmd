@@ -9,17 +9,20 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# package install and setup
+# Enrichment with TopGo
 
 I am using this tutorial: https://bioconductor.org/packages//release/bioc/vignettes/topGO/inst/doc/topGO_manual.html
 
+## setup
 
+install
 ```{r}
 if (!requireNamespace("BiocManager", quietly=TRUE))
     install.packages("BiocManager")
 BiocManager::install()
 BiocManager::install("topGO")
 BiocManager::install("GO.db")
+BiocManager::install("ViSEAGO")
 ```
 
 load all packages
@@ -28,6 +31,9 @@ library(topGO)
 library(plyr)
 ```
 
+## enrichment analysis
+
+I do everything here but we only use the A/X general and C. chinensis species-specific comparisons.
 read data
 ```{r}
 setwd("/Users/miltr339/work/PhD_code/PhD_chapter3/data/GO_enrichment")
@@ -40,6 +46,9 @@ all_geneIDs_A_all_species_union = strsplit(readLines("all_geneIDs_A_all_species_
 all_geneIDs_X_all_species_union = strsplit(readLines("all_geneIDs_X_all_species_union.txt"), ",")[[1]]
 sig_geneIDs_A_all_species_union = strsplit(readLines("sig_geneIDs_A_all_species_union.txt"), ",")[[1]]
 sig_geneIDs_X_all_species_union = strsplit(readLines("sig_geneIDs_X_all_species_union.txt"), ",")[[1]]
+
+all_geneIDs_all_species_union = append(all_geneIDs_A_all_species_union, all_geneIDs_X_all_species_union)
+sig_geneIDs_all_species_union = append(sig_geneIDs_A_all_species_union, sig_geneIDs_X_all_species_union)
 
 geneIDs_A_A_obtectus_sig = strsplit(readLines("geneIDs_A_A_obtectus_sig.txt"), ",")[[1]]
 geneIDs_A_B_siliquastri_sig = strsplit(readLines("geneIDs_A_B_siliquastri_sig.txt"), ",")[[1]]
@@ -54,10 +63,11 @@ geneIDs_A_C_chinensis = read.csv("geneIDs_A_C_chinensis_all.txt", sep=",", heade
 geneIDs_X_A_obtectus = read.csv("geneIDs_X_A_obtectus_all.txt", sep=",", header=TRUE)
 geneIDs_X_B_siliquastri = read.csv("geneIDs_X_B_siliquastri_all.txt", sep=",", header=TRUE)
 geneIDs_X_C_chinensis = read.csv("geneIDs_X_C_chinensis_all.txt", sep=",", header=TRUE)
+
 ```
 
 make into topGO data structure: 
-1. start with making the enrichment geneIDs lists into the required named vectors (since I have binary categories and not p-values as expected, the data frames have kind of pseudo-p-values that are 0.0 if the gene is positively selected and 1 otherwise)
+start with making the enrichment geneIDs lists into the required named vectors (since I have binary categories and not p-values as expected, the data frames have values that are 1 if the gene is positively selected and 0 otherwise)
 ```{r}
 make_gene_list <- function(input_df){
   geneList <- factor(as.integer(input_df$pos_sel))
@@ -65,11 +75,11 @@ make_gene_list <- function(input_df){
   return(geneList)
 }
 
-A_A_obtectus_enrichment_list <- make_gene_list(geneIDs_A_A_obtectus)
-A_B_siliquastri_enrichment_list <- make_gene_list(geneIDs_A_B_siliquastri)
+# A_A_obtectus_enrichment_list <- make_gene_list(geneIDs_A_A_obtectus)
+# A_B_siliquastri_enrichment_list <- make_gene_list(geneIDs_A_B_siliquastri)
 A_C_chinensis_enrichment_list <- make_gene_list(geneIDs_A_C_chinensis)
-X_A_obtectus_enrichment_list <- make_gene_list(geneIDs_X_A_obtectus)
-X_B_siliquastri_enrichment_list <- make_gene_list(geneIDs_X_B_siliquastri)
+# X_A_obtectus_enrichment_list <- make_gene_list(geneIDs_X_A_obtectus)
+# X_B_siliquastri_enrichment_list <- make_gene_list(geneIDs_X_B_siliquastri)
 X_C_chinensis_enrichment_list <- make_gene_list(geneIDs_X_C_chinensis)
 
 make_contrasts_for_AvsX <- function(list_A, list_X){
@@ -87,6 +97,7 @@ make_contrasts_for_AvsX <- function(list_A, list_X){
 
 all_AX_contrast <- make_contrasts_for_AvsX(list_A = all_geneIDs_A_all_species_union, list_X = all_geneIDs_X_all_species_union)
 sig_AX_contrast <- make_contrasts_for_AvsX(list_A = sig_geneIDs_A_all_species_union, list_X = sig_geneIDs_X_all_species_union)
+all_sig_contrast <- make_contrasts_for_AvsX(list_A = all_geneIDs_all_species_union, list_X = sig_geneIDs_all_species_union)
 ```
 
 prepare eggnog annotation file
@@ -96,6 +107,7 @@ gene2GO <- strsplit(annotation$GOs[valid], ",")
 names(gene2GO) <- annotation$query[valid]
 ```
 
+## run enrichment
 
 make GO enrichment object for each contrast
 ```{r}
@@ -113,22 +125,22 @@ GO_enrichment_analysis <- function(geneList, annotation_df){
   result <- runTest(GOdata, algorithm = "elim", statistic = "fisher")
   ## about the "elim" algorithm from the documentation: "Here one computes the p-value of a GO term conditioned on the neighbouring terms. The tests are therefore not independent and the multiple testing theory does not directly apply. We like to interpret the p-values returned by these methods as corrected or not affected by multiple testing."
   
-  allRes <- GenTable(GOdata,classicFisher = result,orderBy = "classicFisher",topNodes = 20)
+  allRes <- GenTable(GOdata,classicFisher = result,orderBy = "classicFisher",topNodes = 1000)
   return(allRes)
 }
 
-A_A_obtectus_enriched_GOs <- GO_enrichment_analysis(geneList = A_A_obtectus_enrichment_list, annotation_df = gene2GO)
-A_B_siliquastri_enriched_GOs <- GO_enrichment_analysis(geneList = A_B_siliquastri_enrichment_list, annotation_df = gene2GO)
+# A_A_obtectus_enriched_GOs <- GO_enrichment_analysis(geneList = A_A_obtectus_enrichment_list, annotation_df = gene2GO)
+# A_B_siliquastri_enriched_GOs <- GO_enrichment_analysis(geneList = A_B_siliquastri_enrichment_list, annotation_df = gene2GO)
 A_C_chinensis_enriched_GOs <- GO_enrichment_analysis(geneList = A_C_chinensis_enrichment_list, annotation_df = gene2GO)
-X_A_obtectus_enriched_GOs <- GO_enrichment_analysis(geneList = X_A_obtectus_enrichment_list, annotation_df = gene2GO)
-X_B_siliquastri_enriched_GOs <- GO_enrichment_analysis(geneList = X_B_siliquastri_enrichment_list, annotation_df = gene2GO)
+# X_A_obtectus_enriched_GOs <- GO_enrichment_analysis(geneList = X_A_obtectus_enrichment_list, annotation_df = gene2GO)
+# X_B_siliquastri_enriched_GOs <- GO_enrichment_analysis(geneList = X_B_siliquastri_enrichment_list, annotation_df = gene2GO)
 X_C_chinensis_enriched_GOs <- GO_enrichment_analysis(geneList = X_C_chinensis_enrichment_list, annotation_df = gene2GO)
 
-write.csv(A_A_obtectus_enriched_GOs, "/Users/miltr339/work/PhD_code/PhD_chapter3/data/GO_enrichment/A_A_obtectus_enriched_GOs.csv", row.names=TRUE)
-write.csv(A_B_siliquastri_enriched_GOs, "/Users/miltr339/work/PhD_code/PhD_chapter3/data/GO_enrichment/A_B_siliquastri_enriched_GOs.csv", row.names=TRUE)
+# write.csv(A_A_obtectus_enriched_GOs, "/Users/miltr339/work/PhD_code/PhD_chapter3/data/GO_enrichment/A_A_obtectus_enriched_GOs.csv", row.names=TRUE)
+# write.csv(A_B_siliquastri_enriched_GOs, "/Users/miltr339/work/PhD_code/PhD_chapter3/data/GO_enrichment/A_B_siliquastri_enriched_GOs.csv", row.names=TRUE)
 write.csv(A_C_chinensis_enriched_GOs, "/Users/miltr339/work/PhD_code/PhD_chapter3/data/GO_enrichment/A_C_chinensis_enriched_GOs.csv", row.names=TRUE)
-write.csv(X_A_obtectus_enriched_GOs, "/Users/miltr339/work/PhD_code/PhD_chapter3/data/GO_enrichment/X_A_obtectus_enriched_GOs.csv", row.names=TRUE)
-write.csv(X_B_siliquastri_enriched_GOs, "/Users/miltr339/work/PhD_code/PhD_chapter3/data/GO_enrichment/X_B_siliquastri_enriched_GOs.csv", row.names=TRUE)
+# write.csv(X_A_obtectus_enriched_GOs, "/Users/miltr339/work/PhD_code/PhD_chapter3/data/GO_enrichment/X_A_obtectus_enriched_GOs.csv", row.names=TRUE)
+# write.csv(X_B_siliquastri_enriched_GOs, "/Users/miltr339/work/PhD_code/PhD_chapter3/data/GO_enrichment/X_B_siliquastri_enriched_GOs.csv", row.names=TRUE)
 write.csv(X_C_chinensis_enriched_GOs, "/Users/miltr339/work/PhD_code/PhD_chapter3/data/GO_enrichment/X_C_chinensis_enriched_GOs.csv", row.names=TRUE)
 
 
@@ -136,13 +148,60 @@ write.csv(X_C_chinensis_enriched_GOs, "/Users/miltr339/work/PhD_code/PhD_chapter
 all_AX_enriched_GOs <- GO_enrichment_analysis(geneList = all_AX_contrast, annotation_df = gene2GO)
 sig_AX_enriched_GOs <- GO_enrichment_analysis(geneList = sig_AX_contrast, annotation_df = gene2GO)
 
-write.csv(all_AX_enriched_GOs, "/Users/miltr339/work/PhD_code/PhD_chapter3/data/GO_enrichment/all_AX_enriched_GOs", row.names=TRUE)
-write.csv(sig_AX_enriched_GOs, "/Users/miltr339/work/PhD_code/PhD_chapter3/data/GO_enrichment/sig_AX_enriched_GOs", row.names=TRUE)
+write.csv(all_AX_enriched_GOs, "/Users/miltr339/work/PhD_code/PhD_chapter3/data/GO_enrichment/all_AX_enriched_GOs.csv", row.names=TRUE)
+write.csv(sig_AX_enriched_GOs, "/Users/miltr339/work/PhD_code/PhD_chapter3/data/GO_enrichment/sig_AX_enriched_GOs.csv", row.names=TRUE)
 
-
+### all to sig comparison
+all_sig_enriched_GOs <- GO_enrichment_analysis(geneList = all_sig_contrast, annotation_df = gene2GO)
+write.csv(all_sig_enriched_GOs, "/Users/miltr339/work/PhD_code/PhD_chapter3/data/GO_enrichment/allsig_enriched_GOs.csv", row.names=TRUE)
 ```
 
+# Try semantic clustering with Viseago
 
+## load libraries
+```{r}
+library(ggplot2)
+library(GO.db)
+library(ViSEAGO)
+```
+
+## read data
+
+background annotation
+```{r}
+filter_GO_terms_background <- function(GOfil){
+  # GOfil is a dataframe
+  # make go terms column to list
+    GOfil$GOs <- lapply(GOfil$GOs, function(x) {
+    if (x == "-") {
+      x
+    } else {
+      strsplit(x, ",")[[1]]
+    }
+  })
+  org_n<-nrow(GOfil)
+  genes_before_filtering <- length(unique(GOfil$query))
+  GOfil<-GOfil[which(GOfil$GOs %in% keys(GO.db)),]
+  new_n<-nrow(GOfil)
+  genes_after_filtering <- length(unique(GOfil$query))
+  print(filename)
+  print("number of genes lost:")
+  print(genes_before_filtering - genes_after_filtering)
+  # Looks like one gene was lost
+  print("number of GO-terms lost:")
+  print(org_n-new_n)
+  print("------------------------------")
+  edited_filename <- sub("\\.tsv$", "_ViSEAGO_filtered", filename)
+  write.table(GOfil,edited_filename,sep="\t",col.names=TRUE,row.names=FALSE,quote=FALSE)
+  return(edited_filename)
+}
+
+annotation_path="/Users/miltr339/work/chapter3/Cmac_functional_annot/C_mac_eggnog_diamond.emapper.annotations.tsv"
+annot_header = c("query","seed_ortholog","evalue","score","eggNOG_OGs","max_annot_lvl","COG_category","Description","Preferred_name","GOs","EC","KEGG_ko","KEGG_Pathway","KEGG_Module","KEGG_Reaction","KEGG_rclass","BRITE","KEGG_TC","CAZy","BiGG_Reaction","PFAMs")
+GOfil = read.table(annotation_path, sep="\t", comment.char = "#", header=FALSE, col.names = annot_header)
+filter_GO_terms_background(GOfil = annotation)
+
+```
 
 
 
