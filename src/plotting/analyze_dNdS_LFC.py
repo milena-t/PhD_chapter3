@@ -1260,7 +1260,7 @@ if __name__ == "__main__":
         statistical_analysis_dNdS(full_tables_dict, table_outfile=f"", include_sex_bias=do_chinensis_sex_bias)
         ###################################################
 
-    else:
+    if False:
         ## plotting
         pos_sel = False # if True plot bar charts with proportion of positive selection
                         # if False, plot boxplot with dNdS values
@@ -1297,9 +1297,9 @@ if __name__ == "__main__":
     ###### site model (pos. sel) stats and some plotting
     ## if plotting not here then in PhD_chapter3/src/plotting/analyze_site_classes.py
     if False:
-        ###################################################
         ## analyze positive selection in site classes
         ## logistic regression for categorical response (positive selection True/False)
+        ###################################################
         statistical_analysis_pos_sel(full_table_paths_dict=full_tables_dict)
         ###################################################
     
