@@ -144,9 +144,15 @@ def statistical_analysis_dNdS(full_table_paths_dict, table_outfile="", max_dNdS=
 
                 for tissue in ["abdomen", "head_thorax"]:
                     print(f"\n----- {chr} -----> {tissue}")
-                    formula = f"{partner}_dNdS ~  C(SB_{tissue}) * level_most_dist_ortholog"
-                    interactions_test_string_u=f"C(SB_{tissue})[T.unbiased]:level_most_dist_ortholog = 0"
-                    interactions_test_string_m=f"C(SB_{tissue})[T.male]:level_most_dist_ortholog = 0"
+                    formula = f"{partner}_dNdS ~  C(SB_{tissue}) * C(level_most_dist_ortholog)"
+                    interactions_test_string_u=f"""C(SB_{tissue})[T.unbiased]:C(level_most_dist_ortholog)[T.2] = 0,
+                        C(SB_{tissue})[T.unbiased]:C(level_most_dist_ortholog)[T.3] = 0,
+                        C(SB_{tissue})[T.unbiased]:C(level_most_dist_ortholog)[T.4] = 0,
+                        C(SB_{tissue})[T.unbiased]:C(level_most_dist_ortholog)[T.5] = 0"""
+                    interactions_test_string_m=f"""C(SB_{tissue})[T.male]:C(level_most_dist_ortholog)[T.2] = 0,
+                        C(SB_{tissue})[T.male]:C(level_most_dist_ortholog)[T.3] = 0,
+                        C(SB_{tissue})[T.male]:C(level_most_dist_ortholog)[T.4] = 0,
+                        C(SB_{tissue})[T.male]:C(level_most_dist_ortholog)[T.5] = 0"""
                 
                     test = smf.quantreg(formula=formula, data=filt_df).fit(q=0.5) # q=0.5 means we estimate the median
                     print(test.summary())
@@ -164,7 +170,7 @@ def statistical_analysis_dNdS(full_table_paths_dict, table_outfile="", max_dNdS=
                         print("no Wald test could be performed")
 
                     if chr == "A":
-                        formula = f"{partner}_dNdS ~  C(SB_{tissue}) + level_most_dist_ortholog"
+                        formula = f"{partner}_dNdS ~  C(SB_{tissue}) + C(level_most_dist_ortholog)"
                         test = smf.quantreg(formula=formula, data=filt_df).fit(q=0.5) # q=0.5 means we estimate the median
                         print(test.summary())
 
@@ -173,8 +179,11 @@ def statistical_analysis_dNdS(full_table_paths_dict, table_outfile="", max_dNdS=
 
             ########### test interaction
             print(f"\n---------------> test with chromosome * ortholog_distance interaction")
-            formula = f"{partner}_dNdS ~  C(chromosome) * level_most_dist_ortholog"
-            interactions_test_string = "C(chromosome)[T.X]:level_most_dist_ortholog = 0"
+            formula = f"{partner}_dNdS ~  C(chromosome) * C(level_most_dist_ortholog)"
+            interactions_test_string = """C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.2] = 0,
+            C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.3] = 0,
+            C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.4] = 0,
+            C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.5] = 0"""
 
             test = smf.quantreg(formula=formula, data=filt_df).fit(q=0.5) # q=0.5 means we estimate the median
             print(test.summary())
@@ -182,14 +191,15 @@ def statistical_analysis_dNdS(full_table_paths_dict, table_outfile="", max_dNdS=
             try:
                 # test two-way interaction
                 wald_test = test.wald_test(interactions_test_string, scalar = True)
-                print(f"wald test for {interactions_test_string} interaction: {wald_test}")
+                print(f"wald test for 'chromosome*conservation_distance' interaction: {wald_test}")
             except:
                 print("no Wald test could be performed")
 
             ########### test major effect age rank
             print(f"\n---------------> test with only chromosome + ortholog_distance major effects and no interaction")
-            formula = f"{partner}_dNdS ~  C(chromosome) + level_most_dist_ortholog"
-            interactions_test_string = "level_most_dist_ortholog = 0"
+            formula = f"{partner}_dNdS ~  C(chromosome) + C(level_most_dist_ortholog)"
+            interactions_test_string = """C(level_most_dist_ortholog)[T.2] = 0,C(level_most_dist_ortholog)[T.3] = 0
+                C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.4] = 0,C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.5] = 0"""
 
             test = smf.quantreg(formula=formula, data=filt_df).fit(q=0.5) # q=0.5 means we estimate the median
             print(test.summary())
@@ -197,7 +207,7 @@ def statistical_analysis_dNdS(full_table_paths_dict, table_outfile="", max_dNdS=
             try:
                 # test major effect of age rank
                 wald_test = test.wald_test(interactions_test_string, scalar = True)
-                print(f"wald test for {interactions_test_string} major effect: {wald_test}")
+                print(f"wald test for 'conservation_distance' major effect: {wald_test}")
             except:
                 print("no Wald test could be performed")
 
@@ -1242,7 +1252,7 @@ if __name__ == "__main__":
             compare_conservation_rank_proportions(full_tables_dict, other_species=species)
 
     ###### dNdS stats and plotting
-    if False:
+    if True:
         ## stats
         ## median quantile regression for dNdS as continuous response
         do_chinensis_sex_bias=True
@@ -1250,7 +1260,7 @@ if __name__ == "__main__":
         statistical_analysis_dNdS(full_tables_dict, table_outfile=f"", include_sex_bias=do_chinensis_sex_bias)
         ###################################################
 
-    if True:
+    else:
         ## plotting
         pos_sel = False # if True plot bar charts with proportion of positive selection
                         # if False, plot boxplot with dNdS values
