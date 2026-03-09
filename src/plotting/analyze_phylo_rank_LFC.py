@@ -583,7 +583,7 @@ def logFC_quantile_regression(summary_table_path:str, p_val_threshold= 0.05, sep
 
     for chr in ["A", "X"]:
 
-        if chr=="X": ## no stats for X
+        if chr=="X": ## no stats for X, sample size is too low
             continue
 
         df = pd.read_csv(summary_table_path[chr], sep = "\t", index_col=False)
@@ -607,7 +607,7 @@ def logFC_quantile_regression(summary_table_path:str, p_val_threshold= 0.05, sep
                 df = df_all
 
             ## abdomen
-            test_a = smf.quantreg("LFC_abdomen ~ level_most_dist_ortholog * C(chromosome)", df).fit(q=0.5)
+            test_a = smf.quantreg("LFC_abdomen ~ C(level_most_dist_ortholog) * C(chromosome)", df).fit(q=0.5)
             print(f"\n////////////////// ABDOMEN //////////////////")
             print(test_a.summary())
 
@@ -626,12 +626,12 @@ def logFC_quantile_regression(summary_table_path:str, p_val_threshold= 0.05, sep
             df_f = df[df["LFC_head_thorax"]>0]
             df_m = df[df["LFC_head_thorax"]<0]
             
-            model_ht_f = smf.quantreg("LFC_head_thorax ~ level_most_dist_ortholog * C(chromosome)", df_f).fit(q=0.5) # q=0.5 means we estimate the median
+            model_ht_f = smf.quantreg("LFC_head_thorax ~ C(level_most_dist_ortholog) * C(chromosome)", df_f).fit(q=0.5) # q=0.5 means we estimate the median
             if abs_LFC:
                 df_m["LFC_head_thorax_abs"] = df_m["LFC_head_thorax"]*-1 # make all vals positive so that the coefficients are comparable
-                model_ht_m = smf.quantreg("LFC_head_thorax_abs ~ level_most_dist_ortholog * C(chromosome)", df_m).fit(q=0.5) # q=0.5 means we estimate the median
+                model_ht_m = smf.quantreg("LFC_head_thorax_abs ~ C(level_most_dist_ortholog) * C(chromosome)", df_m).fit(q=0.5) # q=0.5 means we estimate the median
             else:
-                model_ht_m = smf.quantreg("LFC_head_thorax ~ level_most_dist_ortholog * C(chromosome)", df_m).fit(q=0.5) # q=0.5 means we estimate the median
+                model_ht_m = smf.quantreg("LFC_head_thorax ~ C(level_most_dist_ortholog) * C(chromosome)", df_m).fit(q=0.5) # q=0.5 means we estimate the median
             print(f"\n\n////////////////// HEAD+THORAX -- FEMALE-BIASED //////////////////")
             print(model_ht_f.summary())
             print(f"\n////////////////// HEAD+THORAX -- MALE-BIASED //////////////////")
@@ -639,21 +639,21 @@ def logFC_quantile_regression(summary_table_path:str, p_val_threshold= 0.05, sep
 
         else:
             
-            df_all["level_most_dist_ortholog_c"] = df_all["level_most_dist_ortholog"] - 1
+            # df_all["level_most_dist_ortholog_c"] = df_all["level_most_dist_ortholog"] - 1
 
             for tissue in ["abdomen", "head_thorax"]:
-                ## abdominal df
+                
                 if p_val_threshold >0:
                     df = df_all[df_all[f"SB_{tissue}"] != "unbiased"]
                 else:
                     df = df_all
 
-                formula = f"LFC_{tissue} ~ level_most_dist_ortholog_c * C(SB_{tissue})"
+                formula = f"LFC_{tissue} ~ C(level_most_dist_ortholog) * C(SB_{tissue})"
                 model_a = smf.quantreg(formula=formula, data=df).fit(q=0.5)
                 print(f"\n////////////////// {chr} :::: {tissue} //////////////////")
                 print(f"sex bias categories: {set(df[f'SB_{tissue}'].tolist())}")
                 print(model_a.summary())
-                model_pred = model_a.predict({f"SB_{tissue}": "female", "level_most_dist_ortholog_c": 1})
+                model_pred = model_a.predict({f"SB_{tissue}": "female", "level_most_dist_ortholog": 1})
                 print(f"model predicted intercept (female-biased rank1): {model_pred}")
 
                 df_male=df_all[df_all[f"SB_{tissue}"] == "male"]
@@ -664,8 +664,8 @@ def logFC_quantile_regression(summary_table_path:str, p_val_threshold= 0.05, sep
 
 
 if __name__ == "__main__":
-    username = "miltr339"
 
+    username = "milena"
     table_paths_dict = get_full_table_path(username=username)
 
     if False:

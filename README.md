@@ -1180,32 +1180,47 @@ Everything, including all interactions is strongly significant.
 Autosomes:
 
 ```text
-////////////////// A :::: ABDOMEN //////////////////
-Df Residuals: 4497
-Df Model: 3
-==================================================================================================================
-                                                     coef    std err          t      P>|t|      [0.025      0.975]
-------------------------------------------------------------------------------------------------------------------
-Intercept                                          2.8242      0.145     19.438      0.000       2.539       3.109
-C(SB_abdomen)[T.male]                              0.9775      0.174      5.618      0.000       0.636       1.319
-level_most_dist_ortholog                          -0.2490      0.032     -7.902      0.000      -0.311      -0.187
-level_most_dist_ortholog:C(SB_abdomen)[T.male]    -0.1290      0.039     -3.308      0.001      -0.205      -0.053
-==================================================================================================================
+////////////////// A :::: abdomen //////////////////
+Df Residuals: 4491
+Df Model: 9
+==========================================================================================================================
+                                                             coef    std err          t      P>|t|      [0.025      0.975]
+--------------------------------------------------------------------------------------------------------------------------
+* Intercept                                                  2.3458      0.201     11.699      0.000       1.953       2.739
+* C(level_most_dist_ortholog)[T.2]                           0.9374      0.385      2.433      0.015       0.182       1.693
+  C(level_most_dist_ortholog)[T.3]                          -0.2688      0.221     -1.217      0.224      -0.702       0.164
+* C(level_most_dist_ortholog)[T.4]                          -0.4974      0.208     -2.395      0.017      -0.905      -0.090
+* C(level_most_dist_ortholog)[T.5]                          -0.7675      0.203     -3.782      0.000      -1.165      -0.370
+  C(SB_abdomen)[T.male]                                      0.1587      0.238      0.667      0.505      -0.308       0.625
+  C(level_most_dist_ortholog)[T.2]:C(SB_abdomen)[T.male]    -0.4441      0.427     -1.041      0.298      -1.280       0.392
+* C(level_most_dist_ortholog)[T.3]:C(SB_abdomen)[T.male]     0.5256      0.261      2.014      0.044       0.014       1.037
+* C(level_most_dist_ortholog)[T.4]:C(SB_abdomen)[T.male]     0.5331      0.248      2.150      0.032       0.047       1.019
+  C(level_most_dist_ortholog)[T.5]:C(SB_abdomen)[T.male]     0.0966      0.243      0.398      0.691      -0.379       0.573
+==========================================================================================================================
+model predicted intercept (female-biased rank1): 2.345814
+abdomen:A:rank1 medians 	 male: 2.462 	female: 2.346
 
-////////////////// A :::: HEAD+THORAX //////////////////
-Df Residuals: 1512
-Df Model: 3
-======================================================================================================================
-                                                         coef    std err          t      P>|t|      [0.025      0.975]
-----------------------------------------------------------------------------------------------------------------------
-Intercept                                              3.2551      0.282     11.523      0.000       2.701       3.809
-C(SB_head_thorax)[T.male]                              2.6746      0.336      7.953      0.000       2.015       3.334
-level_most_dist_ortholog                              -0.3525      0.064     -5.518      0.000      -0.478      -0.227
-level_most_dist_ortholog:C(SB_head_thorax)[T.male]    -0.5275      0.079     -6.703      0.000      -0.682      -0.373
-======================================================================================================================
+////////////////// A :::: head_thorax //////////////////
+Df Residuals: 1506
+Df Model: 9
+==============================================================================================================================
+                                                                 coef    std err          t      P>|t|      [0.025      0.975]
+------------------------------------------------------------------------------------------------------------------------------
+* Intercept                                                      3.2921      0.312     10.554      0.000       2.680       3.904
+* C(level_most_dist_ortholog)[T.2]                               0.9822      0.550      1.785      0.074      -0.097       2.061
+* C(level_most_dist_ortholog)[T.3]                              -1.2224      0.352     -3.476      0.001      -1.912      -0.533
+* C(level_most_dist_ortholog)[T.4]                              -1.5377      0.330     -4.658      0.000      -2.185      -0.890
+* C(level_most_dist_ortholog)[T.5]                              -1.7838      0.321     -5.560      0.000      -2.413      -1.155
+  C(SB_head_thorax)[T.male]                                      0.1743      0.373      0.467      0.641      -0.558       0.906
+  C(level_most_dist_ortholog)[T.2]:C(SB_head_thorax)[T.male]    -0.2789      0.623     -0.448      0.654      -1.500       0.942
+* C(level_most_dist_ortholog)[T.3]:C(SB_head_thorax)[T.male]     1.6594      0.417      3.982      0.000       0.842       2.477
+* C(level_most_dist_ortholog)[T.4]:C(SB_head_thorax)[T.male]     1.2386      0.396      3.129      0.002       0.462       2.015
+  C(level_most_dist_ortholog)[T.5]:C(SB_head_thorax)[T.male]    -0.3203      0.389     -0.823      0.410      -1.083       0.443
+==============================================================================================================================
+model predicted intercept (female-biased rank1): 3.292097
+head_thorax:A:rank1 medians 	 male: 3.454 	female: 3.292
 ```
 
-The actual calculation of the coefficients is a bit unclear to me. the intercept should be female-biased/rank1, which has these medians in the plot: `abdomen=2.346` and `head+thorax=3.292` (they are the same from the plotting function as in the statistical analysis), which does not agree with the coefficients from the models. When I run the model again without interactions, the intercept coefficient increases for both tissues and becomes further away from the plotted/calculated means. The rank order is right, the male median is higher than the female (`abdomen male median = 2.462`, `h+t male median = 3.454`), and the `C(SB_head_thorax)[T.male]` coefficient is larger for head+thorax, where the difference between male and female median is greater (for rank 1). The coefficients are therefore probably some mathematical estimates for rank 1 that take the complete data set and its structure into account, but I don't know for sure how that works. In conclusion it's fine?
 
 <details>
   <summary>X-statistics (low sample size and therefore weird)</summary>
