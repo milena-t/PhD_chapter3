@@ -274,11 +274,11 @@ def statistical_analysis_pos_sel(full_table_paths_dict, include_sex_bias=False):
             # LFC_abdomen + LFC_head_thorax + C(chromosome) + LFC_abdomen:C(chromosome) + LFC_head_thorax:C(chromosome)
             if include_sex_bias and "C_chinensis" in partner:
                 # only significantly sex-biased genes -> remove LFC
-                formula_a = f"positive_selection ~  C(SB_abdomen)  * C(chromosome) * level_most_dist_ortholog"
+                formula_a = f"positive_selection ~  C(SB_abdomen)  * C(chromosome) * C(level_most_dist_ortholog)"
                 formula_a_no = f"positive_selection ~  C(SB_abdomen)  * C(chromosome)"
-                formula_ht = f"positive_selection ~  C(SB_head_thorax)  * (C(chromosome) + level_most_dist_ortholog)"
+                formula_ht = f"positive_selection ~  C(SB_head_thorax)  * (C(chromosome) + C(level_most_dist_ortholog))"
                 formula_ht_no = f"positive_selection ~  C(SB_head_thorax)  * C(chromosome)"
-                formula_no = f"positive_selection ~  C(chromosome) * level_most_dist_ortholog"
+                formula_no = f"positive_selection ~  C(chromosome) * C(level_most_dist_ortholog)"
                 formula_nono = f"positive_selection ~  C(chromosome)"
                 
                 print(f"\n------------> abdomen")
@@ -305,29 +305,46 @@ def statistical_analysis_pos_sel(full_table_paths_dict, include_sex_bias=False):
                 
                 ########### test interaction
                 print(f"\n---------------> test with chromosome * ortholog_distance interaction")
-                formula = f"positive_selection ~  C(chromosome) * level_most_dist_ortholog"
-                interactions_test_string = "C(chromosome)[T.X]:level_most_dist_ortholog = 0"
+                formula = f"positive_selection ~  C(chromosome) * C(level_most_dist_ortholog)"
                 test = smf.logit(formula=formula, data=filt_df).fit()
                 print(test.summary())
 
+                interactions_by_partner = {
+                "A_obtectus" : """C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.4] = 0,
+                C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.5] = 0""",
+                "B_siliquastri" : """C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.3] = 0,
+                C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.4] = 0,
+                C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.5] = 0""",
+                "C_chinensis" : """C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.2] = 0,
+                C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.3] = 0,
+                C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.4] = 0,
+                C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.5] = 0"""
+                }
+                
+                
                 try:
                     # test two-way interaction
-                    wald_test = test.wald_test(interactions_test_string, scalar = True)
-                    print(f"wald test for {interactions_test_string} interaction: {wald_test}")
+                    wald_test = test.wald_test(interactions_by_partner[partner], scalar = True)
+                    print(f"wald test for {interactions_by_partner[partner]} interaction: {wald_test}")
                 except:
                     print("no Wald test could be performed")
 
                 ########### test major effect age rank
                 print(f"\n---------------> test with only chromosome + ortholog_distance major effects and no interaction")
-                formula = f"positive_selection ~  C(chromosome) + level_most_dist_ortholog"
-                interactions_test_string = "level_most_dist_ortholog = 0"
+                formula = f"positive_selection ~  C(chromosome) + C(level_most_dist_ortholog)"
                 test = smf.logit(formula=formula, data=filt_df).fit()
                 print(test.summary())
 
+                ME_by_pair = {
+                    "C_chinensis" : """C(level_most_dist_ortholog)[T.2] = 0,C(level_most_dist_ortholog)[T.3] = 0,C(level_most_dist_ortholog)[T.4] = 0,C(level_most_dist_ortholog)[T.5] = 0""",
+                    "B_siliquastri" : """C(level_most_dist_ortholog)[T.3] = 0,C(level_most_dist_ortholog)[T.4] = 0,C(level_most_dist_ortholog)[T.5] = 0""",
+                    "A_obtectus" : """C(level_most_dist_ortholog)[T.4] = 0,C(level_most_dist_ortholog)[T.5] = 0""",
+                }
+
+                wald_test = test.wald_test(ME_by_pair[partner], scalar = True)
                 try:
                     # test major effect of age rank
-                    wald_test = test.wald_test(interactions_test_string, scalar = True)
-                    print(f"wald test for {interactions_test_string} major effect: {wald_test}")
+                    print(f"wald test for {ME_by_pair[partner]} major effect: {wald_test}")
                 except:
                     print("no Wald test could be performed")
 
@@ -1270,7 +1287,7 @@ if __name__ == "__main__":
             compare_conservation_rank_proportions(full_tables_dict, other_species=species)
 
     ###### dNdS stats and plotting
-    if True:
+    if False:
         ## stats
         ## median quantile regression for dNdS as continuous response
         do_chinensis_sex_bias=False
@@ -1314,11 +1331,12 @@ if __name__ == "__main__":
 
     ###### site model (pos. sel) stats and some plotting
     ## if plotting not here then in PhD_chapter3/src/plotting/analyze_site_classes.py
-    if False:
+    if True:
         ## analyze positive selection in site classes
         ## logistic regression for categorical response (positive selection True/False)
+        do_chinensis_sex_bias=False
         ###################################################
-        statistical_analysis_pos_sel(full_table_paths_dict=full_tables_dict)
+        statistical_analysis_pos_sel(full_table_paths_dict=full_tables_dict, include_sex_bias=do_chinensis_sex_bias)
         ###################################################
     
     if False:

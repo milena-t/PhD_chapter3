@@ -394,10 +394,111 @@
 \end{table}
 
 
+\subsubsection*{quantile regression coefficients}
+
+\begin{table}[H]
+    \centering
+    \caption{Median regression results of \texttt{dNdS $\sim$ chromosome + conservation distance}. 
+    The intercept is autosomal genes of conservation distance 1.}
+    \label{SItab:conservation}
+    \begin{tabular}{c |c | c}
+        \multicolumn{3}{c}{\textit{C. chinensis} (df=5)}\\
+        \hline
+        Main effect & coefficient & p-value \\
+        \hline
+        \hline
+        Intercept & 0.2071 & 0.000\\
+        \hline
+        chromosome:X & -0.0063 & 0.228\\
+        \hline
+        conservation distance:2 & -0.0342 & 0.000\\
+        \hline
+        conservation distance:3 & -0.0431 & 0.000\\
+        \hline
+        conservation distance:4 & -0.0961 & 0.000\\
+        \hline
+        conservation distance:5 & -0.1447 & 0.000\\
+        \hline
+    \end{tabular}
+    \hspace{0.5cm}
+    \begin{tabular}{c |c | c}
+        \multicolumn{3}{c}{\textit{B. siliquastri} (df=4)}\\
+        \hline
+        Main effect & coefficient & p-value \\
+        \hline
+        \hline
+        Intercept & 0.1754 & 0.000 \\
+        \hline
+        chromosome:X & -0.0146 & 0.000 \\
+        \hline
+        conservation distance:3 & -0.0284 & 0.000 \\
+        \hline
+        conservation distance:4 & -0.0733 & 0.000 \\
+        \hline
+        conservation distance:5 & -0.1130 & 0.000 \\
+        \hline
+    \end{tabular}
+    \hspace{0.5cm}
+    \begin{tabular}{c |c | c}
+        \multicolumn{3}{c}{\textit{A. obtectus} (df=3)}\\
+        \hline
+        Main effect & coefficient & p-value \\
+        \hline
+        \hline
+        Intercept & 0.1482 & 0.000 \\
+        \hline
+        chromosome:X & -0.0124 & 0.000 \\
+        \hline
+        conservation distance:4 & -0.0529 & 0.000 \\
+        \hline
+        conservation distance:5 & -0.0919 & 0.000 \\
+        \hline
+    \end{tabular}
+\end{table}
+
+\subsubsection*{logistic regression results}
+
+\begin{table}[H]
+    \centering
+    \caption{Logistic regression results of \texttt{pos. sel. $\sim$ chromosome + conservation distance}. 
+    The intercept is autosomal genes of conservation distance 1.}
+    \label{SItab:conservation}
+    \begin{tabular}{c |c | c}
+        \multicolumn{3}{c}{\textit{C. chinensis} (df=1)}\\
+        \hline
+        Main effect & coefficient & p-value \\
+        \hline
+        \hline
+        Intercept & -1.7839 & 0.000 \\
+        \hline
+        chromosome:X & 0.5665 & 0.000 \\
+        \hline
+    \end{tabular}
+    \hspace{0.5cm}
+    \begin{tabular}{c |c | c}
+        \multicolumn{3}{c}{\textit{B. siliquastri} (df=1)}\\
+        \hline
+        Main effect & coefficient & p-value \\
+        \hline
+        \hline
+        Intercept & -2.4419 & 0.000 \\
+        \hline
+        chromosome:X & 0.4108 & 0.012 \\
+        \hline
+    \end{tabular}
+    \hspace{0.5cm}
+    \begin{tabular}{c |c | c}
+        \multicolumn{3}{c}{\textit{A. obtectus} (df=1)}\\
+        \hline
+        \hline
+        Intercept & -3.1106 & 0.000 \\
+        \hline
+        chromosome:X & 0.7266 & 0.000 \\
+        \hline
+    \end{tabular}
+\end{table}
 
 \subsection*{additional differential expression analyses}
-
-
 
 \begin{figure}[H]
     \centering
