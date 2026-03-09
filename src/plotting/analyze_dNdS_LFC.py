@@ -6,7 +6,7 @@ use the conservation rank and A/X as fixed factors
 import pandas as pd
 import numpy as np
 from scipy import stats
-import statsmodels.api as sm
+import random
 import statsmodels.formula.api as smf
 import matplotlib.pyplot as plt
 from matplotlib.ticker import FuncFormatter
@@ -867,7 +867,7 @@ def make_phylogeny_rank_merged_dict(summary_file_df, tissue, max_dNdS=2, pos_sel
     return dNdS_dict
 
 
-def boxplot_dNdS_merge_rank(full_table_paths_dict, outfile, maxdNdS=2, partner_species="C_chinensis", pos_sel=False):
+def boxplot_dNdS_merge_rank(full_table_paths_dict, outfile, maxdNdS=2, partner_species="C_chinensis", pos_sel=False, eq_samples = 0):
 
     X_df = pd.read_csv(full_table_paths_dict["X"], sep="\t")
     A_df = pd.read_csv(full_table_paths_dict["A"], sep="\t")
@@ -885,9 +885,36 @@ def boxplot_dNdS_merge_rank(full_table_paths_dict, outfile, maxdNdS=2, partner_s
     if pos_sel:
         nested_vals_dict_a = make_phylogeny_rank_merged_dict(df, tissue="abdomen", max_dNdS=maxdNdS, pos_sel=pos_sel)
         nested_vals_dict_ht = make_phylogeny_rank_merged_dict(df, tissue="head_thorax", max_dNdS=maxdNdS, pos_sel=pos_sel)
-    else:
+    elif eq_samples == 0:
         nested_vals_dict_a = make_phylogeny_rank_merged_dict(df, tissue="abdomen", max_dNdS=maxdNdS)
         nested_vals_dict_ht = make_phylogeny_rank_merged_dict(df, tissue="head_thorax", max_dNdS=maxdNdS)
+    else:
+        nested_vals_dict_a = make_phylogeny_rank_nested_dict(df, tissue="abdomen", max_dNdS=maxdNdS)
+        nested_vals_dict_ht = make_phylogeny_rank_nested_dict(df, tissue="head_thorax", max_dNdS=maxdNdS)
+
+        def make_phylogeny_rank_merged_dict_eq_samples(nested_vals_dict, samplesize):
+            """
+            take nested vals dict, flatten by rank and equalize sample sizes
+            """
+            dNdS_dict = { "A": {"male": [], "female": [], "unbiased": []},
+                        "X": {"male": [], "female": [], "unbiased": []} }
+
+
+            for chr in ["A", "X"]:
+                for SB_cat in ["male","female","unbiased"]:
+                    vals_dict = []
+                    for rank in range(1,6):
+                        dNdS_all = nested_vals_dict[rank][chr][SB_cat]
+                        try:
+                            vals_dict.extend(random.sample(dNdS_all,samplesize))
+                        except:
+                            vals_dict.extend(dNdS_all)
+                    dNdS_dict[chr][SB_cat] = vals_dict
+
+            return dNdS_dict
+
+        nested_vals_dict_a = make_phylogeny_rank_merged_dict_eq_samples(nested_vals_dict_a, samplesize=eq_samples)
+        nested_vals_dict_ht = make_phylogeny_rank_merged_dict_eq_samples(nested_vals_dict_ht, samplesize=eq_samples)
 
     if pos_sel:
         y_label = f""
@@ -935,13 +962,7 @@ def boxplot_dNdS_merge_rank(full_table_paths_dict, outfile, maxdNdS=2, partner_s
                 SB_dict = AX_dicts[chr]
                 for SB_cat in SB_order_list:
 
-                    ### to double check plot coloring and stuff right: plot verbose tick labels!
-                    # num_genes =f"({len(SB_dict[SB_cat])}):{chr}:{SB_cat}"
-                    ### 
-
                     num_genes =len(SB_dict[SB_cat])
-                    print(f"\t\t - {SB_cat} has {num_genes} genes")
-                    tick_labels.append(f"({num_genes})")
 
                     A_nonsig = len([val for val in SB_dict[SB_cat] if val == False])*100.0
                     A_sig = len([val for val in SB_dict[SB_cat] if val == True])*100.0
@@ -953,6 +974,13 @@ def boxplot_dNdS_merge_rank(full_table_paths_dict, outfile, maxdNdS=2, partner_s
                         AX_lists_neg.append(A_nonsig/num_genes)
                     except:
                         AX_lists_neg.append(0)
+
+                    
+                    ### to double check plot coloring and stuff right: plot verbose tick labels!
+                    num_genes =f"({len(SB_dict[SB_cat])}):{chr}:{SB_cat}"
+                    ### 
+                    tick_labels.append(f"({num_genes})")
+                    print(f"\t\t - {SB_cat} has {num_genes} genes")
 
                     cols_list_sig.append(colors_dict[SB_cat]["sig"])
                     cols_list_unsig.append(colors_dict[SB_cat]["nonsig"])
@@ -987,8 +1015,8 @@ def boxplot_dNdS_merge_rank(full_table_paths_dict, outfile, maxdNdS=2, partner_s
                 for SB_cat in SB_order_list:
 
                     ### to double check plot coloring and stuff right: plot verbose tick labels!
-                    # num_genes =f"({len(SB_dict[SB_cat])}):{chr}:{SB_cat}"
-                    num_genes =f"({len(SB_dict[SB_cat])})"
+                    num_genes =f"({len(SB_dict[SB_cat])}):{chr}:{SB_cat}"
+                    # num_genes =f"({len(SB_dict[SB_cat])})"
                     ### 
 
                     print(f"\t\t - {SB_cat} has {num_genes} genes")
@@ -1202,7 +1230,7 @@ def run_fisher_test(counts_dict, verbose = False):
 
 if __name__ == "__main__":
 
-    username = "miltr339"
+    username = "milena"
     full_tables_dict = get_full_table_path(username=username)
     reorg_table_outfile = f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/paml_stats_outfile_table.tsv"
     
@@ -1214,38 +1242,45 @@ if __name__ == "__main__":
             compare_conservation_rank_proportions(full_tables_dict, other_species=species)
 
     ###### dNdS stats and plotting
-    if True:
+    if False:
         ## stats
-        ###################################################
         ## median quantile regression for dNdS as continuous response
         do_chinensis_sex_bias=True
+        ###################################################
         statistical_analysis_dNdS(full_tables_dict, table_outfile=f"", include_sex_bias=do_chinensis_sex_bias)
         ###################################################
 
-    if False:
+    if True:
         ## plotting
-        pos_sel = True # if true plot bar charts with proportion of positive selection
-        lineplot=True
+        pos_sel = False # if True plot bar charts with proportion of positive selection
+                        # if False, plot boxplot with dNdS values
+        lineplot=True   # if True, plot (conservation distance separated) line plot of dNdS medians with standard error
+                        # if False, plot dNds boxplot
         if False:
-            ###################################################
-            ### if pos_sel: bar plot for positive selection or dNdS by rank/chromosome/sex bias
-            ### else: boxplot of dNdS values
+            ## plot dNdS or pos sel separated by sex bias, A/X and age rank
             if pos_sel:
                 filename=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/pos_sel_vs_conservation_rank_boxplot.png"
             elif lineplot:
                 filename=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/dNdS_vs_conservation_rank_medians_lineplot.png"
             else:
                 filename=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/dNdS_vs_conservation_rank_boxplot.png"
+            ###################################################
             boxplot_dNdS(full_tables_dict, outfile=filename, pos_sel=pos_sel, lineplot=lineplot)
             ###################################################
         else:
-            ###################################################
-            ### boxplot for dNdS by chromosome/sex bias with rank categories merged
-            if pos_sel:
+            ### boxplot for dNdS by sex bias and A/X but with rank categories merged
+            equalize_sample_size = 10 # if int>0: make merged conservation rank from equal samples from every rank
+                                      # the higher ranks have much more samples in them, and also a lower dNdS 
+                                      # which makes the plot look contradictory to the line plot for abdomen autosomal orthologs
+
+            if equalize_sample_size>0:
+                filename=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/dNdS_merged_conservation_rank_boxplot_eq_sample_size.png"
+            elif pos_sel:
                 filename=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/pos_sel_merged_conservation_rank_boxplot.png"
             else:
                 filename=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/dNdS_merged_conservation_rank_boxplot.png"
-            boxplot_dNdS_merge_rank(full_tables_dict, outfile=filename, pos_sel=pos_sel)
+            ###################################################
+            boxplot_dNdS_merge_rank(full_tables_dict, outfile=filename, pos_sel=pos_sel, eq_samples = equalize_sample_size)
             ###################################################
 
 
