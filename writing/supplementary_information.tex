@@ -522,10 +522,136 @@
     \label{SIfig:SBprop}
 \end{figure}
 
+\begin{table}[H]
+    \centering
+    \caption{Median regression results of autosomal orthologs: \texttt{log2FC $\sim$ sex-bias category * conservation distance}. 
+    The intercept is female-biased genes of conservation distance 1, the wald-test is performed for all two-way interactions at once.}
+    \label{SItab:A_logFCconservation}
+    \begin{tabular}{l |c | c}
+        \multicolumn{3}{c}{autosomal abdomen (df=9)}\\
+        \hline
+        \multicolumn{3}{l}{Wald-test: p$<$0.001 (df=4)}\\
+        \hline
+        Main effect & coefficient & p-value \\
+        \hline
+        \hline
+        Intercept & 2.3458 & 0.000 \\
+        \hline
+        conservation distance:2 &  0.9374 & 0.015 \\
+        \hline
+        conservation distance:3 & -0.2688 & 0.224 \\
+        \hline
+        conservation distance:4 & -0.4974 & 0.017 \\
+        \hline
+        conservation distance:5 & -0.7675 & 0.000 \\
+        \hline
+        sex-bias category:male & 0.1587 & 0.505 \\
+        \hline
+        conservation distance:2 by sex-bias category:male &-0.4441 & 0.298 \\
+        \hline
+        conservation distance:3 by sex-bias category:male & 0.5256 & 0.044 \\
+        \hline
+        conservation distance:4 by sex-bias category:male & 0.5331 & 0.032 \\
+        \hline
+        conservation distance:5 by sex-bias category:male & 0.0966 & 0.691 \\
+        \hline
+    \end{tabular}
+    \hspace{0.5cm}
+    \begin{tabular}{l |c | c}
+        \multicolumn{3}{c}{autosomal head+thorax (df=9)}\\
+        \hline
+        \multicolumn{3}{l}{Wald-test: p$<$0.001 (df=4)}\\
+        \hline
+        Main effect & coefficient & p-value \\
+        \hline
+        \hline
+        Intercept & 3.2921 & 0.000\\
+        \hline
+        conservation distance:2 &  0.9822 & 0.074\\
+        \hline
+        conservation distance:3 & -1.2224 & 0.001\\
+        \hline
+        conservation distance:4 & -1.5377 & 0.000\\
+        \hline
+        conservation distance:5 & -1.7838 & 0.000\\
+        \hline
+        sex-bias category:male & 0.1743 & 0.641\\
+        \hline
+        conservation distance:2 by sex-bias category:male & -0.2789 & 0.654\\
+        \hline
+        conservation distance:3 by sex-bias category:male &  1.6594 & 0.000\\
+        \hline
+        conservation distance:4 by sex-bias category:male &  1.2386 & 0.002\\
+        \hline
+        conservation distance:5 by sex-bias category:male & -0.3203 & 0.410\\
+        \hline
+    \end{tabular}
+\end{table}
+\begin{table}[H]
+    \centering
+    \caption{Median regression results of X-linked orthologs: \texttt{log2FC $\sim$ sex-bias category * conservation distance}. 
+    The intercept is female-biased genes of conservation distance 1, the wald-test is performed for all two-way interactions at once.}
+    \label{SItab:X_logFCconservation}
+    \begin{tabular}{l |c | c}
+        \multicolumn{3}{c}{X-linked abdomen (df=8)}\\
+        \hline
+        \multicolumn{3}{l}{Wald-test: p$<$0.001 (df=4)}\\
+        \hline
+        Main effect & coefficient & p-value \\
+        \hline
+        \hline
+        Intercept & 8.5262 & 0.000 \\
+        \hline
+        conservation distance:2 & -1.0504 & 0.091 \\
+        \hline
+        conservation distance:3 & -5.9624 & 0.000 \\
+        \hline
+        conservation distance:4 & -5.6147 & 0.000 \\
+        \hline
+        conservation distance:5 & -6.8057 & 0.000 \\
+        \hline
+        sex-bias category:male & -5.1565 & 0.000 \\
+        \hline
+        conservation distance:2 by sex-bias category:male & -1.0504 & 0.091 \\
+        \hline
+        conservation distance:3 by sex-bias category:male &  4.1746 & 0.005 \\
+        \hline
+        conservation distance:4 by sex-bias category:male &  4.4626 & 0.001 \\
+        \hline
+        conservation distance:5 by sex-bias category:male &  5.3478 & 0.000 \\
+        \hline
+    \end{tabular}
+    \hspace{0.5cm}
+    \begin{tabular}{l |c | c}
+        \multicolumn{3}{c}{X-linked head+thorax (df=6)}\\
+        \hline
+        \multicolumn{3}{l}{Wald-test: p$<$0.001 (df=3)}\\
+        \hline
+        Main effect & coefficient & p-value \\
+        \hline
+        \hline
+        Intercept & 3.5536 & 0.000 \\
+        \hline
+        conservation distance:3 & -0.2525 & 0.719 \\
+        \hline
+        conservation distance:4 &  0.6955 & 0.192 \\
+        \hline
+        conservation distance:5 & -1.9830 & 0.000 \\
+        \hline
+        sex-bias category:male & 0.0147 & 0.974 \\
+        \hline
+        conservation distance:3 by sex-bias category:male & -1.7354 & 0.079 \\
+        \hline
+        conservation distance:4 by sex-bias category:male & -3.0057 & 0.000 \\
+        \hline
+        conservation distance:5 by sex-bias category:male & -0.3380 & 0.508 \\
+        \hline
+    \end{tabular}
+\end{table}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.75\linewidth]{../data/DE_analysis/dNdS_vs_conservation_rank_boxplot_abdomen_white_bg.png}
+    \includegraphics[width=0.75\linewidth]{../data/DE_analysis/dNdS_vs_conservation_rank_medians_lineplot_abdomen_white_bg.png}
     \caption{sex bias magnitude by chromosome and conservation distance abdomen}
     \label{SIfig:SBmag_a}
 \end{figure}
@@ -533,7 +659,7 @@
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.75\linewidth]{../data/DE_analysis/dNdS_vs_conservation_rank_boxplot_head_thorax_white_bg.png}
+    \includegraphics[width=0.75\linewidth]{../data/DE_analysis/dNdS_vs_conservation_rank_medians_lineplot_head_thorax_white_bg.png}
     \caption{sex bias magnitude by chromosome and conservation distance head and thorax}
     \label{SIfig:SBmag_ht}
 \end{figure}

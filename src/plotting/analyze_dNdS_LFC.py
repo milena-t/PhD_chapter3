@@ -413,10 +413,10 @@ def plot_dNdS_rank_conserved(summary_paths_AX_list:dict, outfile = "", maxdNdS =
     if maxdNdS>0:
         y_label = f"dN/dS (max. < {maxdNdS})"
     
-    fs = 28 # font size
+    fs = 25 # font size
 
     # set figure aspect ratio
-    aspect_ratio = 10 / 23
+    aspect_ratio = 10 / 28
     height_pixels = 1700  # Height in pixels
     width_pixels = int(height_pixels * aspect_ratio)  # Width in pixels
 
@@ -1331,7 +1331,7 @@ if __name__ == "__main__":
 
     ###### site model (pos. sel) stats and some plotting
     ## if plotting not here then in PhD_chapter3/src/plotting/analyze_site_classes.py
-    if True:
+    if False:
         ## analyze positive selection in site classes
         ## logistic regression for categorical response (positive selection True/False)
         do_chinensis_sex_bias=False
@@ -1351,7 +1351,7 @@ if __name__ == "__main__":
         run_fisher_test(fisher_counts_dict, verbose=True)
         ###################################################
 
-    if False:
+    if True:
         ###################################################
         ## boxplot dNdS by rank and chromosome but no sex bias
         filename=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/dNdS_vs_conservation_rank.png"
