@@ -62,7 +62,33 @@
 
 \section*{Supplementary information}
 
-\newpage
+\subsection*{Genome annotation}
+
+\begin{table}[H]
+    \centering
+    \caption{BUSCO scores for \textit{C. magnifica}, \textit{T. freemani} and \textit{C. maculatus} genome annotations}
+    \label{SItab:BUSCO}
+    \begin{tabular}{l |c |c | c}
+        BUSCO category & \textit{C. magnifica} &  \textit{T. freemani} & \textit{C. maculatus} \\
+        \hline
+        \hline	   
+        Complete BUSCOs & 972 (96.0\%) & 978 (96.6\%) & 999 (98.7\%) \\
+        \hline
+        Complete and single-copy BUSCOs & 877 (86.6\%) & 896 (88.5\%) & 731 (72.2\%) \\
+        \hline
+        Complete and duplicated BUSCOs & 95	(9.4\%) & 82 (8.1\%) & 268 (26.5\%) \\
+        \hline
+        Fragmented BUSCOs & 9 (0.9\%) & 14 (1.4\%) & 6 (0.6\%) \\
+        \hline
+        Missing BUSCOs & 32	(3.1\%) & 21 (2.0\%) & 8 (0.7\%) \\
+        \hline
+        Total BUSCO groups searched & 1013	 & 1013 & 1013 \\
+        \hline
+        \hline
+        total number of genes & 18978 & 18028 & 14861 \\
+    \end{tabular}
+\end{table}
+
 
 \subsection*{Synteny}
 
@@ -166,6 +192,37 @@
     }\label{dS_plots}
     
 \end{figure}
+
+
+\subsubsection*{dS permutation test results}
+
+\begin{table}[H]
+    \centering
+    \caption{Permutation test results (n=10000) for all pairwise species comparisons.}
+    \label{SItab:BUSCO}
+    \begin{tabular}{l | l | c |c | c}
+        species 1  & species 2 & measured dS$_A$-dS$_X$ & permutation test dS$_A$-dS$_X$ and CI & significance \\
+        \hline
+        \hline	 
+        \textit{A. obtectus} & \textit{C. maculatus} & 0.098 &  0.00014 with CI [-0.03081,0.03110] & SIGNIFICANT \\
+        \hline
+        \textit{C. chinensis} & \textit{C. maculatus} & 0.050 &  0.00019 with CI [-0.01798,0.01836] & SIGNIFICANT \\
+        \hline
+        \textit{B. siliquastri} & \textit{C. maculatus} & 0.120 &  0.00004 with CI [-0.02476,0.02484] & SIGNIFICANT \\
+        \hline
+        \textit{A. obtectus} & \textit{C. chinensis} & 0.072 &  0.00009 with CI [-0.03635,0.03653] & SIGNIFICANT \\
+        \hline
+        \textit{A. obtectus} & \textit{B. siliquastri} & 0.093 & -0.00010 with CI [-0.02889,0.02868] & SIGNIFICANT \\
+        \hline
+        \textit{B. siliquastri} & \textit{C. chinensis} & 0.097 & -0.00001 with CI [-0.02696,0.02695] & SIGNIFICANT \\
+        \hline
+        \textit{C. magnifica} & \textit{C. septempunctata} & 0.048 & -0.00007 with CI [-0.01728,0.01715] & SIGNIFICANT \\
+        \hline
+        \textit{T. castaneum} & \textit{T. freemani} & -0.002 & 0.00002 with CI [-0.01600,0.01603] & (nonsignificant) \\
+        \hline
+    \end{tabular}
+\end{table}
+
 
 
 \begin{figure}[H]
@@ -352,32 +409,6 @@
     \label{SIfig:GO_venn_X}
 \end{figure}
 
-\subsection*{Genome annotation}
-
-\begin{table}[H]
-    \centering
-    \caption{BUSCO scores for \textit{C. magnifica}, \textit{T. freemani} and \textit{C. maculatus} genome annotations}
-    \label{SItab:BUSCO}
-    \begin{tabular}{l |c |c | c}
-        BUSCO category & \textit{C. magnifica} &  \textit{T. freemani} & \textit{C. maculatus} \\
-        \hline
-        \hline	   
-        Complete BUSCOs & 972 (96.0\%) & 978 (96.6\%) & 999 (98.7\%) \\
-        \hline
-        Complete and single-copy BUSCOs & 877 (86.6\%) & 896 (88.5\%) & 731 (72.2\%) \\
-        \hline
-        Complete and duplicated BUSCOs & 95	(9.4\%) & 82 (8.1\%) & 268 (26.5\%) \\
-        \hline
-        Fragmented BUSCOs & 9 (0.9\%) & 14 (1.4\%) & 6 (0.6\%) \\
-        \hline
-        Missing BUSCOs & 32	(3.1\%) & 21 (2.0\%) & 8 (0.7\%) \\
-        \hline
-        Total BUSCO groups searched & 1013	 & 1013 & 1013 \\
-        \hline
-        \hline
-        total number of genes & 18978 & 18028 & 14861 \\
-    \end{tabular}
-\end{table}
 
 
 \end{document}

@@ -499,19 +499,19 @@ Overall, the dS is lower on X in all cases, and since dS is assumed to be neutra
 
 ***Bruchini***
 ```text
-A_obtectus_C_maculatus --> 	   median(dNdS_A)-median(dNdS_X) = 0.098, mean bootstrap diff =  0.00014 with CI [-0.03081,0.03110] --> SIGNIFICANT
-C_chinensis_C_maculatus --> 	 median(dNdS_A)-median(dNdS_X) = 0.050, mean bootstrap diff =  0.00019 with CI [-0.01798,0.01836] --> SIGNIFICANT
-B_siliquastri_C_maculatus -->  median(dNdS_A)-median(dNdS_X) = 0.120, mean bootstrap diff =  0.00004 with CI [-0.02476,0.02484] --> SIGNIFICANT
-A_obtectus_C_chinensis --> 	   median(dNdS_A)-median(dNdS_X) = 0.072, mean bootstrap diff =  0.00009 with CI [-0.03635,0.03653] --> SIGNIFICANT
-A_obtectus_B_siliquastri --> 	 median(dNdS_A)-median(dNdS_X) = 0.093, mean bootstrap diff = -0.00010 with CI [-0.02889,0.02868] --> SIGNIFICANT
-B_siliquastri_C_chinensis -->  median(dNdS_A)-median(dNdS_X) = 0.097, mean bootstrap diff = -0.00001 with CI [-0.02696,0.02695] --> SIGNIFICANT
+A_obtectus_C_maculatus --> 	   median(dS_A)-median(dS_X) = 0.098, mean bootstrap diff =  0.00014 with CI [-0.03081,0.03110] --> SIGNIFICANT
+C_chinensis_C_maculatus --> 	 median(dS_A)-median(dS_X) = 0.050, mean bootstrap diff =  0.00019 with CI [-0.01798,0.01836] --> SIGNIFICANT
+B_siliquastri_C_maculatus -->  median(dS_A)-median(dS_X) = 0.120, mean bootstrap diff =  0.00004 with CI [-0.02476,0.02484] --> SIGNIFICANT
+A_obtectus_C_chinensis --> 	   median(dS_A)-median(dS_X) = 0.072, mean bootstrap diff =  0.00009 with CI [-0.03635,0.03653] --> SIGNIFICANT
+A_obtectus_B_siliquastri --> 	 median(dS_A)-median(dS_X) = 0.093, mean bootstrap diff = -0.00010 with CI [-0.02889,0.02868] --> SIGNIFICANT
+B_siliquastri_C_chinensis -->  median(dS_A)-median(dS_X) = 0.097, mean bootstrap diff = -0.00001 with CI [-0.02696,0.02695] --> SIGNIFICANT
 ```
 
 ***Coccinella* and *Tribolium***
 
 ```text
-C_magnifica_C_septempunctata --> 	 median(dNdS_A)-median(dNdS_X) = 0.048, mean bootstrap diff = -0.00007 with CI [-0.01728,0.01715] --> SIGNIFICANT
-T_castaneum_T_freemani --> 	       median(dNdS_A)-median(dNdS_X) = -0.002, mean bootstrap diff = 0.00002 with CI [-0.01600,0.01603] --> (nonsignificant)
+C_magnifica_C_septempunctata --> 	 median(dS_A)-median(dS_X) = 0.048, mean bootstrap diff = -0.00007 with CI [-0.01728,0.01715] --> SIGNIFICANT
+T_castaneum_T_freemani --> 	       median(dS_A)-median(dS_X) = -0.002, mean bootstrap diff = 0.00002 with CI [-0.01600,0.01603] --> (nonsignificant)
 ```
 
 
@@ -1464,7 +1464,7 @@ The darker parts at the top is the proportion of positively selected genes.
 
 ## median quantile dN/dS test
 
-I am using `quantreg` again, like for the log2FC again, where I have a continuous response variable. 
+I am using `quantreg` again, like for the log2FC, where I have a continuous response variable. 
 
 ### *C. chinensis* dN/dS with expression data
 
