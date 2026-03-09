@@ -682,7 +682,7 @@ I will do a median regression with the dNdS as response variable and the chromos
   * `chromosome * conservation_distance`: p=0.055
   * `conservation_distance`: p=0.0
 * *A. obtectus* Wald test p-values:
-  * `chromosome * conservation_distance`: p=0.0648
+  * `chromosome * conservation_distance`: p=0.065
   * `conservation_distance`: p=0.0
 
 
