@@ -676,162 +676,86 @@ Conservation rank goes from 1 to 5, with 5 being highly conserved (up to drosoph
 I will do a median regression with the dNdS as response variable and the chromosome location (as factor) and conservation rank as a explanatory variable. I will start with including an interaction, and then do model comparisons with simpler models that lack the interaction, and then also lack the conservation rank to get useful p-values that aren't just in comparison to an intercept. In summary, the interaction usually doesn't matter but the main effect does.
 
 * *C. chinensis* Wald test p-values:
-  * `chromosome * conservation_rank`: p=0.46
+  * `chromosome * conservation_distance`: p=0.159
   * `conservation_distance`: p=0.0
 * *B. siliquastri* Wald test p-values:
-  * `chromosome * conservation_rank`: p=0.16
+  * `chromosome * conservation_distance`: p=0.055
   * `conservation_distance`: p=0.0
 * *A. obtectus* Wald test p-values:
-  * `chromosome * conservation_rank`: p=0.02
+  * `chromosome * conservation_distance`: p=0.0648
   * `conservation_distance`: p=0.0
 
 
 <details>
   <summary>detailed results for model reduction approach</summary>
 
+Mind that in all comparison the intercept is females in distance 1.
+
 #### *C. chinensis*
-
-##### `chromosome * conservation_rank` 
-
-Wald p-value: p=0.46
-
-```text
-Df Residuals: 8894
-Df Model: 3
-===============================================================================================================
-                                                  coef    std err          t      P>|t|      [0.025      0.975]
----------------------------------------------------------------------------------------------------------------
-Intercept                                       0.2890      0.005     62.440      0.000       0.280       0.298
-C(chromosome)[T.X]                             -0.0392      0.041     -0.946      0.344      -0.120       0.042
-level_most_dist_ortholog                       -0.0451      0.001    -43.828      0.000      -0.047      -0.043
-C(chromosome)[T.X]:level_most_dist_ortholog     0.0064      0.009      0.739      0.460      -0.011       0.023
-===============================================================================================================
-wald test for 'C(chromosome)[T.X]:level_most_dist_ortholog = 0' interaction: F test: F=0.5467707052309159, p=0.45965970768644115, df_denom=8.89e+03, df_num=1
-```
-
-Interaction is not significant
-
 
 ##### `chromosome + conservation_distance`
 
 Wald p-value: p=0.0
 
 ```text
-Df Residuals: 8895
-Df Model: 2
-============================================================================================
-                               coef    std err          t      P>|t|      [0.025      0.975]
---------------------------------------------------------------------------------------------
-Intercept                    0.2886      0.005     62.751      0.000       0.280       0.298
-C(chromosome)[T.X]          -0.0074      0.005     -1.407      0.160      -0.018       0.003
-level_most_dist_ortholog    -0.0450      0.001    -44.037      0.000      -0.047      -0.043
-============================================================================================
-wald test for 'level_most_dist_ortholog = 0' major effect: F test: F=1939.2469848907688, p=0.0, df_denom=8.9e+03, df_num=1
-```
-
-conservation distance as major effect is strongly significant!
-
-##### `chromosome`
-
-
-```text
-Df Residuals: 8896
-Df Model: 1
-======================================================================================
-                         coef    std err          t      P>|t|      [0.025      0.975]
---------------------------------------------------------------------------------------
-Intercept              0.0836      0.001     71.187      0.000       0.081       0.086
-C(chromosome)[T.X]    -0.0169      0.006     -2.694      0.007      -0.029      -0.005
-======================================================================================
+Df Residuals: 8892
+Df Model: 5
+====================================================================================================
+                                       coef    std err          t      P>|t|      [0.025      0.975]
+----------------------------------------------------------------------------------------------------
+Intercept                            0.2071      0.006     37.549      0.000       0.196       0.218
+C(chromosome)[T.X]                  -0.0063      0.005     -1.207      0.228      -0.016       0.004
+C(level_most_dist_ortholog)[T.2]    -0.0342      0.009     -3.654      0.000      -0.053      -0.016
+C(level_most_dist_ortholog)[T.3]    -0.0431      0.006     -6.830      0.000      -0.055      -0.031
+C(level_most_dist_ortholog)[T.4]    -0.0961      0.006    -16.390      0.000      -0.108      -0.085
+C(level_most_dist_ortholog)[T.5]    -0.1447      0.006    -25.610      0.000      -0.156      -0.134
+====================================================================================================
+wald test for 'conservation_distance' major effect: <F test: F=445.17582057420077, p=0.0, df_denom=8.89e+03, df_num=4>
 ```
 
 
 #### *B. siliquastri*
-
-##### `chromosome * conservation_rank` 
-
-Wald p-value: p=0.16 -> interaction not significant
-
-```text
-Df Residuals: 9377
-Df Model: 3
-===============================================================================================================
-                                                  coef    std err          t      P>|t|      [0.025      0.975]
----------------------------------------------------------------------------------------------------------------
-Intercept                                       0.2595      0.004     60.159      0.000       0.251       0.268
-C(chromosome)[T.X]                              0.0267      0.028      0.940      0.347      -0.029       0.082
-level_most_dist_ortholog                       -0.0394      0.001    -41.470      0.000      -0.041      -0.038
-C(chromosome)[T.X]:level_most_dist_ortholog    -0.0084      0.006     -1.408      0.159      -0.020       0.003
-===============================================================================================================
-wald test for 'C(chromosome)[T.X]:level_most_dist_ortholog = 0' interaction: F test: F=1.983056216885961, p=0.1591019632980278, df_denom=9.38e+03, df_num=1
-```
 
 ##### `chromosome + conservation_distance`
 
 Wald p-value: p=0.0 -> conservation distance is very significant!
 
 ```text
-Df Residuals: 9378
-Df Model: 2
-============================================================================================
-                               coef    std err          t      P>|t|      [0.025      0.975]
---------------------------------------------------------------------------------------------
-Intercept                    0.2608      0.004     61.217      0.000       0.252       0.269
-C(chromosome)[T.X]          -0.0146      0.004     -3.818      0.000      -0.022      -0.007
-level_most_dist_ortholog    -0.0397      0.001    -42.319      0.000      -0.042      -0.038
-============================================================================================
-wald test for 'level_most_dist_ortholog = 0' major effect: F test: F=1790.8940643435014, p=0.0, df_denom=9.38e+03, df_num=1
+Df Residuals: 9376
+Df Model: 4
+====================================================================================================
+                                       coef    std err          t      P>|t|      [0.025      0.975]
+----------------------------------------------------------------------------------------------------
+Intercept                            0.1754      0.004     43.986      0.000       0.168       0.183
+C(chromosome)[T.X]                  -0.0146      0.004     -3.809      0.000      -0.022      -0.007
+C(level_most_dist_ortholog)[T.3]    -0.0284      0.005     -6.064      0.000      -0.038      -0.019
+C(level_most_dist_ortholog)[T.4]    -0.0733      0.004    -17.093      0.000      -0.082      -0.065
+C(level_most_dist_ortholog)[T.5]    -0.1130      0.004    -27.579      0.000      -0.121      -0.105
+====================================================================================================
+wald test for 'conservation_distance' major effect: <F test: F=609.5339598668866, p=0.0, df_denom=9.38e+03, df_num=3>
 ```
 
-##### `chromosome`
-
-```text
-Df Residuals: 9379
-Df Model: 1
-======================================================================================
-                         coef    std err          t      P>|t|      [0.025      0.975]
---------------------------------------------------------------------------------------
-Intercept              0.0772      0.001     90.618      0.000       0.076       0.079
-C(chromosome)[T.X]    -0.0246      0.004     -5.817      0.000      -0.033      -0.016
-======================================================================================
-```
 
 
 #### *A. obtectus*
 
-##### `chromosome * conservation_rank` 
+##### `chromosome + conservation_distance`
 
 Wald p-value: p=0.024 -> interaction is significant
 
 ```text
 Df Residuals: 9614
 Df Model: 3
-===============================================================================================================
-                                                  coef    std err          t      P>|t|      [0.025      0.975]
----------------------------------------------------------------------------------------------------------------
-Intercept                                       0.2750      0.004     63.197      0.000       0.267       0.284
-C(chromosome)[T.X]                             -0.0848      0.032     -2.683      0.007      -0.147      -0.023
-level_most_dist_ortholog                       -0.0438      0.001    -45.766      0.000      -0.046      -0.042
-C(chromosome)[T.X]:level_most_dist_ortholog     0.0149      0.007      2.259      0.024       0.002       0.028
-===============================================================================================================
-wald test for 'C(chromosome)[T.X]:level_most_dist_ortholog = 0' interaction: F test: F=5.101063831192631, p=0.02393348873932328, df_denom=9.61e+03, df_num=1
+====================================================================================================
+                                       coef    std err          t      P>|t|      [0.025      0.975]
+----------------------------------------------------------------------------------------------------
+Intercept                            0.1482      0.002     80.240      0.000       0.145       0.152
+C(chromosome)[T.X]                  -0.0124      0.003     -3.575      0.000      -0.019      -0.006
+C(level_most_dist_ortholog)[T.4]    -0.0529      0.002    -22.706      0.000      -0.057      -0.048
+C(level_most_dist_ortholog)[T.5]    -0.0919      0.002    -45.066      0.000      -0.096      -0.088
+====================================================================================================
 ```
 
-##### `chromosome + conservation_distance`
-
-
-```text
-Df Residuals: 9615
-Df Model: 2
-============================================================================================
-                               coef    std err          t      P>|t|      [0.025      0.975]
---------------------------------------------------------------------------------------------
-Intercept                    0.2737      0.004     63.562      0.000       0.265       0.282
-C(chromosome)[T.X]          -0.0120      0.003     -3.464      0.001      -0.019      -0.005
-level_most_dist_ortholog    -0.0436      0.001    -45.970      0.000      -0.045      -0.042
-============================================================================================
-wald test for 'level_most_dist_ortholog = 0' major effect: F test: F=2113.237569646739, p=0.0, df_denom=9.62e+03, df_num=1
-```
 
 ##### `chromosome`
 
