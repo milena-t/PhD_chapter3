@@ -720,7 +720,7 @@ if __name__ == "__main__":
     username = "milena"
     table_paths_dict = get_full_table_path(username=username)
 
-    if True:
+    if False:
         ### statistical analysis of sex-bias categories 
         summary_table_paths = {}
         for chromosome, path in table_paths_dict.items():
@@ -744,7 +744,7 @@ if __name__ == "__main__":
         ### statistical analysis of continuous log2FC values
         summary_paths = get_summary_paths(username=username)
         abs_logFC = True
-        if True:
+        if False:
             ## plotting the boxplot
             # check_DE_phylogeny_rank_conserved(summary_paths_AX_list=summary_paths,
             #     outfile=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/conservation_rank_all_sex_bias_proportion.png",
@@ -752,6 +752,6 @@ if __name__ == "__main__":
             check_DE_phylogeny_rank_conserved(summary_paths_AX_list=summary_paths,
                 outfile=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/conservation_rank_sig_sex_bias_proportion.png",
                 abs_LFC=abs_logFC, sig_p_threshold=0.05)
-        if False:
+        if True:
             ## statistical analysis
             logFC_quantile_regression(summary_paths, abs_LFC=abs_logFC, p_val_threshold=0.05, sep_MF=False)

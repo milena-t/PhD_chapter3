@@ -1298,7 +1298,8 @@ if __name__ == "__main__":
     if True:
         ## stats
         ## median quantile regression for dNdS as continuous response
-        do_chinensis_sex_bias=True
+        do_chinensis_sex_bias=True # if False do only dNdS ~ gene age * chromosome for Bruchini
+                                    # if True do dNdS ~ gene age * sex bias + chromosome for Chinensis
         ###################################################
         statistical_analysis_dNdS(full_tables_dict, table_outfile=f"", include_sex_bias=do_chinensis_sex_bias)
         ###################################################
