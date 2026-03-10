@@ -159,15 +159,23 @@ def statistical_analysis_dNdS(full_table_paths_dict, table_outfile="", max_dNdS=
 
                     try:
                         # test two-way interaction
-                        wald_test = test.wald_test(interactions_test_string_u, scalar = True)
-                        print(f"wald test for {interactions_test_string_u} interaction: {wald_test}")
-                        wald_test = test.wald_test(interactions_test_string_m, scalar = True)
-                        print(f"wald test for {interactions_test_string_m} interaction: {wald_test}")
                         comb_string= f"{interactions_test_string_m}, {interactions_test_string_u}"
                         wald_test = test.wald_test(comb_string, scalar = True)
                         print(f"wald test for {comb_string} interaction: {wald_test}")
                     except:
-                        print("no Wald test could be performed")
+
+                        try:
+                            interactions_test_string_u=f"""C(SB_{tissue})[T.unbiased]:C(level_most_dist_ortholog)[T.3] = 0,
+                            C(SB_{tissue})[T.unbiased]:C(level_most_dist_ortholog)[T.4] = 0,
+                            C(SB_{tissue})[T.unbiased]:C(level_most_dist_ortholog)[T.5] = 0"""
+                            interactions_test_string_m=f"""C(SB_{tissue})[T.male]:C(level_most_dist_ortholog)[T.3] = 0,
+                            C(SB_{tissue})[T.male]:C(level_most_dist_ortholog)[T.4] = 0,
+                            C(SB_{tissue})[T.male]:C(level_most_dist_ortholog)[T.5] = 0"""
+                            comb_string= f"{interactions_test_string_m}, {interactions_test_string_u}"
+                            wald_test = test.wald_test(comb_string, scalar = True)
+                            print(f"wald test for {comb_string} interaction: {wald_test}")
+                        except:
+                            print("no Wald test could be performed")
 
                     if chr == "A":
                         formula = f"{partner}_dNdS ~  C(SB_{tissue}) + C(level_most_dist_ortholog)"
@@ -1287,10 +1295,10 @@ if __name__ == "__main__":
             compare_conservation_rank_proportions(full_tables_dict, other_species=species)
 
     ###### dNdS stats and plotting
-    if False:
+    if True:
         ## stats
         ## median quantile regression for dNdS as continuous response
-        do_chinensis_sex_bias=False
+        do_chinensis_sex_bias=True
         ###################################################
         statistical_analysis_dNdS(full_tables_dict, table_outfile=f"", include_sex_bias=do_chinensis_sex_bias)
         ###################################################
@@ -1351,7 +1359,7 @@ if __name__ == "__main__":
         run_fisher_test(fisher_counts_dict, verbose=True)
         ###################################################
 
-    if True:
+    if False:
         ###################################################
         ## boxplot dNdS by rank and chromosome but no sex bias
         filename=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/dNdS_vs_conservation_rank.png"

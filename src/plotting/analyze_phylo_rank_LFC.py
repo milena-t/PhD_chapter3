@@ -291,27 +291,23 @@ def make_log_reg_table(full_table_paths_dict):
         df = df.rename(columns={'LFC_head+thorax': 'LFC_head_thorax'})
         df = df.rename(columns={'FDR_pval_head+thorax': 'FDR_pval_head_thorax'})
 
-        df["SB_abdomen"] = df.apply(make_sex_bias_cat_row_numeric, axis=1, args=("abdomen",))
-        df["SB_head_thorax"] = df.apply(make_sex_bias_cat_row_numeric, axis=1, args=("head_thorax",))
-        df["LFC_abdomen"] = abs(df["LFC_abdomen"])
-        df["LFC_head_thorax"] = abs(df["LFC_head_thorax"])
+        for tissue in ["abdomen", "head_thorax"]:
+            df[f"SB_{tissue}"] = df.apply(make_sex_bias_cat_row_numeric, axis=1, args=(f"{tissue}",))
+            df[f"LFC_{tissue}"] = abs(df[f"LFC_{tissue}"])
 
-        # specify formula
-        formula_a = f"SB_abdomen ~ level_most_dist_ortholog"# * LFC_abdomen"
-        formula_ht = f"SB_head_thorax ~ level_most_dist_ortholog"# * LFC_head_thorax"
-        y_a, X_a = patsy.dmatrices(formula_a,data=df,return_type="dataframe")
-        y_ht, X_ht = patsy.dmatrices(formula_ht,data=df,return_type="dataframe")
-        X_a = X_a.drop(columns="Intercept")
-        X_ht = X_ht.drop(columns="Intercept")
+            # specify formula
+            formula_a = f"SB_{tissue} ~ C(level_most_dist_ortholog)"# * LFC_{tissue}"
+            # multiomial logistic regression
+            model = smf.mnlogit(formula=formula_a, data=df).fit()
 
-        print(f"\n////////////////// {chr} :::: ABDOMEN //////////////////")
-        model = OrderedModel(y_a.iloc[:,0], X_a, distr='logit').fit(method='bfgs', disp=False)
-        print(model.summary())
+            ## ordered model
+            # y_a, X_a = patsy.dmatrices(formula_a,data=df,return_type="dataframe")
+            # X_a = X_a.drop(columns="Intercept")
+            # model = OrderedModel(y_a.iloc[:,0], X_a, distr='logit').fit(method='bfgs', disp=False)
 
+            print(f"\n////////////////// {chr} :::: {tissue} //////////////////")
+            print(model.summary())
 
-        print(f"\n////////////////// {chr} :::: HEAD+THORAX //////////////////")
-        model = OrderedModel(y_ht.iloc[:,0], X_ht, distr='logit').fit(method='bfgs', disp=False)
-        print(model.summary())
 
 ############################
 
@@ -566,18 +562,21 @@ def make_sex_bias_cat_row(row, tissue = "abdomen"):
 
 
 def make_sex_bias_cat_row_numeric(row, tissue = "abdomen"):
+    """
+    0 = male biased, 1 = unbiased, 2 = female biased
+    """
     if row[f"LFC_{tissue}"] < -1:
         if row[f"FDR_pval_{tissue}"]<0.05:
-            return -1
-        else:
             return 0
+        else:
+            return 1
     elif row[f"LFC_{tissue}"] >1:
         if row[f"FDR_pval_{tissue}"]<0.05:
-            return 1
+            return 2
         else:
-            return 0
+            return 1
     else:
-        return 0
+        return 1
 
 def logFC_quantile_regression(summary_table_path:str, p_val_threshold= 0.05, sep_MF=True, abs_LFC=False):
 
@@ -721,7 +720,7 @@ if __name__ == "__main__":
     username = "milena"
     table_paths_dict = get_full_table_path(username=username)
 
-    if False:
+    if True:
         ### statistical analysis of sex-bias categories 
         summary_table_paths = {}
         for chromosome, path in table_paths_dict.items():
