@@ -518,14 +518,6 @@
 \end{figure}
 
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=\linewidth]{../data/DE_analysis/DE_conservation_rank_proportions_sep_panels.png}
-    \caption{Proportion of sex-bias categories by chromosome and gene age, abdominal tissues are reproductive and 
-    head and throax tissue is somatic.}
-    \label{SIfig:SBprop}
-\end{figure}
-
 \begin{table}[H]
     \centering
     \caption{Multinomial logistic regression of sex-bias categories by gene age. Due to very low sample size for the X-linked 
@@ -731,7 +723,7 @@
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.75\linewidth]{../data/DE_analysis/dNdS_vs_conservation_rank_medians_lineplot_abdomen_white_bg.png}
-    \caption{sex bias magnitude (d$_N$/d$_S$) by chromosome and gene age abdomen. Blue is male-biased, grey is
+    \caption{d$_N$/d$_S$ by chromosome and gene age split by sex bias categories accodring to abdominal tissue. Blue is male-biased, grey is
     unbiased and red is female-biased, dotted lines are autosomal and bold lines are X-linked.}
     \label{SIfig:SBmag_a}
 \end{figure}
@@ -740,11 +732,24 @@
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.75\linewidth]{../data/DE_analysis/dNdS_vs_conservation_rank_medians_lineplot_head_thorax_white_bg.png}
-    \caption{sex bias magnitude (d$_N$/d$_S$) by chromosome and gene age head and thorax. Blue is male-biased, grey is
+    \caption{d$_N$/d$_S$ by chromosome and gene age split by sex bias categories accodring to head and thorax tissue. Blue is male-biased, grey is
     unbiased and red is female-biased, dotted lines are autosomal and bold lines are X-linked.}
     \label{SIfig:SBmag_ht}
 \end{figure}
 
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[t]{0.43\textwidth}
+        \vspace{0pt}
+        \begin{overpic}[width=0.49\textwidth]{../data/DE_analysis/dNdS_merged_conservation_rank_boxplot_abdomen.png}
+            \put(8,98){\textbf{C}}
+        \end{overpic}
+        \includegraphics[width=0.49\textwidth]{../data/DE_analysis/dNdS_merged_conservation_rank_boxplot_head_thorax.png}
+    \end{minipage}%
+    \caption{d$_N$/d$_S$ by chromosome, for sex bias according to either abdominal (abd.) or head and thorax tissues (h+t). Blue is male-biased, grey is
+    unbiased and red is female-biased, dotted lines are autosomal and bold lines are X-linked. All gene age categories are merged, 
+    resulting in a misleading median estimate.}
+\end{figure}
 
 \begin{table}[H]
     \centering

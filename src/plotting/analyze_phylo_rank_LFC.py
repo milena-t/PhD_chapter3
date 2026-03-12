@@ -152,16 +152,16 @@ def make_category_proportion_plot(rank_summary_path_A:str, rank_summary_path_X:s
         "female_biased" : "female biased",
         "male_biased" : "male biased", 
         "unbiased" : "unbiased",
-        "X" : "X-linked",
-        "A" : "autosomal",
-        "abdomen" : "reproductive",
-        "head_thorax" : "somatic"
+        "X" : "X-chromosome",
+        "A" : "Autosomes",
+        "abdomen" : "abdomen",
+        "head_thorax" : "head+thorax"
     }
 
     if plot_sep_panels:
         ## separate panels for A/X and somatic/reproductive
         fig, ax = plt.subplots(2, 2, figsize=(20, 15))     
-        fs = 25
+        fs = 30
         width=0.75
         rows_dict = {"abdomen" : 0, "head_thorax":1}
         cols_dict = {"X" : 1 ,"A" : 0}
@@ -188,9 +188,9 @@ def make_category_proportion_plot(rank_summary_path_A:str, rank_summary_path_X:s
                     bottom = [bottom[i]+y_coords[i] for i in range(len(y_coords))]
                 
                 ax[row,col].yaxis.set_major_formatter(FuncFormatter(lambda x, pos: '' if x > 100 and x<1 else f'{int(x)}%'))
-                ax[row,col].set_title(f"{labels_dict[tissue]} {labels_dict[chr]}", fontsize=fs)
+                ax[row,col].set_title(f"{labels_dict[chr]}: {labels_dict[tissue]} ", fontsize=fs)
                 ax[row,col].tick_params(axis='y', labelsize=fs)
-                ax[row,col].tick_params(axis='x', labelsize=fs*0.75, rotation=90)
+                ax[row,col].tick_params(axis='x', labelsize=fs*0.75, rotation=45)
                 ax[row,col].set_xticks(ticks=x_coords, labels=bar_labels)
                 ax[row,col].set_ylim(0,100)
 
@@ -720,7 +720,7 @@ if __name__ == "__main__":
     username = "milena"
     table_paths_dict = get_full_table_path(username=username)
 
-    if False:
+    if True:
         ### statistical analysis of sex-bias categories 
         summary_table_paths = {}
         for chromosome, path in table_paths_dict.items():
@@ -731,7 +731,7 @@ if __name__ == "__main__":
             # make_rank_summary_table(path, outfile_path=outfile_path, min_LFC=1, p_threshold=0.05)
             summary_table_paths[chromosome] = outfile_path
 
-        if False:
+        if True:
             plot_outfile_name=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/DE_conservation_rank_proportions.png"
             make_category_proportion_plot(rank_summary_path_A=summary_table_paths["A"], 
                                       rank_summary_path_X=summary_table_paths["X"],

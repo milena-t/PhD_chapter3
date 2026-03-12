@@ -600,7 +600,7 @@ def make_phylogeny_rank_nested_dict(summary_file_df, tissue, max_dNdS=2, pos_sel
     return dNdS_dict
 
 
-def boxplot_dNdS(full_table_paths_dict, outfile, maxdNdS=2, partner_species="C_chinensis", pos_sel = False, lineplot=False):
+def boxplot_dNdS(full_table_paths_dict, outfile, maxdNdS=2, partner_species="C_chinensis", pos_sel = False, lineplot=False, only_chr="A"):
 
     if pos_sel:
         lineplot=False
@@ -636,7 +636,7 @@ def boxplot_dNdS(full_table_paths_dict, outfile, maxdNdS=2, partner_species="C_c
     height_pixels = 1000  # Height in pixels
     width_pixels = int(height_pixels * aspect_ratio)  # Width in pixels
 
-    def plot_dNdS_subplot(AX_dicts, fs, title, colors_dict, lw=2, outfile = "plot.png", pos_sel = False, lineplot=False):
+    def plot_dNdS_subplot(AX_dicts, fs, title, colors_dict, lw=2, outfile = "plot.png", pos_sel = False, lineplot=False, only_chr=""):
 
         fig, ax = plt.subplots(figsize=(width_pixels / 100, height_pixels / 100), dpi=100)
         SB_order_list =["male","unbiased","female"]
@@ -713,11 +713,15 @@ def boxplot_dNdS(full_table_paths_dict, outfile, maxdNdS=2, partner_species="C_c
             tick_labels = []
             long_tick_labels = []
             AX_lists = []
+            if only_chr =="":
+                chr_list = ["A","X"]
+            elif len(only_chr) == 1:
+                chr_list = [only_chr]
             print(f"{title}")
             for i in range(1,6): # hard-code rank order. dicts are ordered so it should be right by default but just to be sure
                 chr_dict = AX_dicts[i]
                 print(f"rank {i}")
-                for chr in ["A","X"]:
+                for chr in chr_list:
                     print(f"\t - {chr}")
                     SB_dict = chr_dict[chr]
                     for SB_cat in SB_order_list:
@@ -751,7 +755,7 @@ def boxplot_dNdS(full_table_paths_dict, outfile, maxdNdS=2, partner_species="C_c
 
                 medians_dict = {"A" : {SB_cat :[[],[]] for SB_cat in SB_order_list}, "X" : {SB_cat :[[],[]] for SB_cat in SB_order_list}}
                 errors_dict = {"A" : {SB_cat :[] for SB_cat in SB_order_list}, "X" : {SB_cat :[] for SB_cat in SB_order_list}}
-                for chr in ["A", "X"]:
+                for chr in chr_list:
                     for SB_cat in SB_order_list:
                         for i, rank in enumerate(range(1,6)):
                             cur_list = AX_dicts[rank][chr][SB_cat]
@@ -764,7 +768,7 @@ def boxplot_dNdS(full_table_paths_dict, outfile, maxdNdS=2, partner_species="C_c
 
                             medians_dict[chr][SB_cat][1].append(tick_pos_lines_dict[f"{rank} {chr} {SB_cat}"])
             
-                for chr in ["A", "X"]:
+                for chr in chr_list:
                     for SB_cat in SB_order_list:
                         yvals = medians_dict[chr][SB_cat][0]
                         xvals = medians_dict[chr][SB_cat][1]
@@ -781,7 +785,8 @@ def boxplot_dNdS(full_table_paths_dict, outfile, maxdNdS=2, partner_species="C_c
                         ax.errorbar(xvals, yvals, xerr = 0, yerr = SEMs, color=color, linewidth =lw,
                                     marker = ".", markersize=20, linestyle = linest)
                         # ax.plot(xvals, yvals, color=color, linewidth =lw, linestyle="-")
-                        ax.set_ylim(0,0.5)
+                        if len(chr_list)==2:
+                            ax.set_ylim(0,0.5) 
 
             else:
                 bp = ax.boxplot(AX_lists, positions=tick_pos, widths=box_width, patch_artist=True)
@@ -811,30 +816,35 @@ def boxplot_dNdS(full_table_paths_dict, outfile, maxdNdS=2, partner_species="C_c
         ## plot rank labels
         fs_factor=1.5
         ax2 = ax.secondary_xaxis('bottom')
-        ax2.set_xticks([i+0.5 for i in range(1,10,2)])
+        ax2.set_xticks([i+0.5*(len(chr_list)-1) for i in range(1,len(chr_list)*5+len(only_chr),len(chr_list))])
         ax2.set_xticklabels([i for i in range(1,6)], fontsize=fs*fs_factor)
-        ax2.spines['bottom'].set_position(('outward', 120))   
+        ax2.spines['bottom'].set_position(('outward', len(chr_list)*60+len(only_chr)*20))   
         ax2.xaxis.set_ticks_position('none')
         ax2.spines['bottom'].set_visible(False)
         ax2.tick_params(axis='x', labelsize=fs*fs_factor)
 
         ## plot chromosome categories
-        ax3 = ax.secondary_xaxis('bottom')
-        ax3.set_xticks([i for i in range(1,11)])
-        ax3.set_xticklabels(["A" if i%2==1 else "X" for i in range(1,11)], fontsize=fs)
-        ax3.spines['bottom'].set_position(('outward', 80))   
-        ax3.xaxis.set_ticks_position('none')
-        ax3.spines['bottom'].set_visible(False)
-        ax3.tick_params(axis='x', labelsize=fs)
+        if len(chr_list)==2:
+            ax3 = ax.secondary_xaxis('bottom')
+            ax3.set_xticks([i for i in range(1,11)])
+            ax3.set_xticklabels(["A" if i%2==1 else "X" for i in range(1,11)], fontsize=fs)
+            ax3.spines['bottom'].set_position(('outward', 80))   
+            ax3.xaxis.set_ticks_position('none')
+            ax3.spines['bottom'].set_visible(False)
+            ax3.tick_params(axis='x', labelsize=fs)
 
         ## highlight X-chromosomes
-        for i in range(1,11):
-            if i % 2 == 0:  # only the X-sections
-                left = i-box_width-pos_adjust
-                right = i+box_width+pos_adjust
-                ax.axvspan(left, right, color="#7A6B70", alpha=0.2, linewidth = 0, zorder=0)
+        if len(chr_list)==2:
+            for i in range(1,11):
+                if i % 2 == 0:  # only the X-sections
+                    left = i-box_width-pos_adjust
+                    right = i+box_width+pos_adjust
+                    ax.axvspan(left, right, color="#7A6B70", alpha=0.2, linewidth = 0, zorder=0)
 
-        fig.supxlabel(f"conservation rank, chromosome location, and (number of genes)", fontsize = fs)
+            fig.supxlabel(f"conservation rank, chromosome location, and (number of genes)", fontsize = fs)
+        else:
+            # fig.supxlabel(f"conservation rank and (number of genes)", fontsize = fs)
+            outfile = outfile.replace(".png", f"_only_{only_chr}.png")
         if pos_sel==False:
             fig.supylabel(y_label, fontsize = fs, x=0.0, y=0.625)
 
@@ -880,9 +890,9 @@ def boxplot_dNdS(full_table_paths_dict, outfile, maxdNdS=2, partner_species="C_c
         title_suffix = f"dN/dS by sex bias for"
 
     plot_dNdS_subplot(AX_dicts=nested_vals_dict_a, outfile=outfile.replace(".png", f"_abdomen.png"), 
-        title=f"{title_suffix} abdominal tissue", colors_dict=colors, fs=fs, pos_sel=pos_sel, lineplot=lineplot)
+        title=f"{title_suffix} abdominal tissue", colors_dict=colors, fs=fs, pos_sel=pos_sel, lineplot=lineplot, only_chr=only_chr)
     plot_dNdS_subplot(AX_dicts=nested_vals_dict_ht,outfile=outfile.replace(".png", f"_head_thorax.png"), 
-        title=f"{title_suffix} head+thorax tissue", colors_dict=colors, fs=fs, pos_sel=pos_sel, lineplot=lineplot)
+        title=f"{title_suffix} head+thorax tissue", colors_dict=colors, fs=fs, pos_sel=pos_sel, lineplot=lineplot, only_chr=only_chr)
 
 
 
@@ -976,7 +986,7 @@ def boxplot_dNdS_merge_rank(full_table_paths_dict, outfile, maxdNdS=2, partner_s
         if maxdNdS>0:
             y_label = f"dN/dS (max. {maxdNdS})"
     
-    fs = 30 # font size
+    fs = 35 # font size
 
     # set figure aspect ratio
     if pos_sel:
@@ -1030,7 +1040,7 @@ def boxplot_dNdS_merge_rank(full_table_paths_dict, outfile, maxdNdS=2, partner_s
 
                     
                     ### to double check plot coloring and stuff right: plot verbose tick labels!
-                    num_genes =f"({len(SB_dict[SB_cat])}):{chr}:{SB_cat}"
+                    # num_genes =f"({len(SB_dict[SB_cat])}):{chr}:{SB_cat}"
                     ### 
                     tick_labels.append(f"({num_genes})")
                     print(f"\t\t - {SB_cat} has {num_genes} genes")
@@ -1068,7 +1078,7 @@ def boxplot_dNdS_merge_rank(full_table_paths_dict, outfile, maxdNdS=2, partner_s
                 for SB_cat in SB_order_list:
 
                     ### to double check plot coloring and stuff right: plot verbose tick labels!
-                    num_genes =f"({len(SB_dict[SB_cat])}):{chr}:{SB_cat}"
+                    # num_genes =f"({len(SB_dict[SB_cat])}):{chr}:{SB_cat}"
                     # num_genes =f"({len(SB_dict[SB_cat])})"
                     ### 
 
@@ -1103,7 +1113,7 @@ def boxplot_dNdS_merge_rank(full_table_paths_dict, outfile, maxdNdS=2, partner_s
         ax3 = ax.secondary_xaxis('bottom')
         ax3.set_xticks([i+1 for i in range(2)])
         ax3.set_xticklabels(["A" if i%2==1 else "X" for i in range(1,3)], fontsize=fs)
-        ax3.spines['bottom'].set_position(('outward', 80))   
+        ax3.spines['bottom'].set_position(('outward', 90))   
         ax3.xaxis.set_ticks_position('none')
         ax3.spines['bottom'].set_visible(False)
         ax3.tick_params(axis='x', labelsize=fs)
@@ -1295,7 +1305,7 @@ if __name__ == "__main__":
             compare_conservation_rank_proportions(full_tables_dict, other_species=species)
 
     ###### dNdS stats and plotting
-    if True:
+    if False:
         ## stats
         ## median quantile regression for dNdS as continuous response
         do_chinensis_sex_bias=True # if False do only dNdS ~ gene age * chromosome for Bruchini
@@ -1304,12 +1314,13 @@ if __name__ == "__main__":
         statistical_analysis_dNdS(full_tables_dict, table_outfile=f"", include_sex_bias=do_chinensis_sex_bias)
         ###################################################
 
-    if False:
+    if True:
         ## plotting
-        pos_sel = False # if True plot bar charts with proportion of positive selection
+        pos_sel = True # if True plot bar charts with proportion of positive selection
                         # if False, plot boxplot with dNdS values
         lineplot=True   # if True, plot (conservation distance separated) line plot of dNdS medians with standard error
                         # if False, plot dNds boxplot
+                        # if "only_chr" is specified below plot only one chromosome category, otherwise plot A and X in the same plot
         if False:
             ## plot dNdS or pos sel separated by sex bias, A/X and age rank
             if pos_sel:
@@ -1319,17 +1330,18 @@ if __name__ == "__main__":
             else:
                 filename=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/dNdS_vs_conservation_rank_boxplot.png"
             ###################################################
-            boxplot_dNdS(full_tables_dict, outfile=filename, pos_sel=pos_sel, lineplot=lineplot)
+            boxplot_dNdS(full_tables_dict, outfile=filename, pos_sel=pos_sel, lineplot=lineplot, only_chr="A")
             ###################################################
         else:
             ### boxplot for dNdS by sex bias and A/X but with rank categories merged
-            equalize_sample_size = 10 # if int>0: make merged conservation rank from equal samples from every rank
+            equalize_sample_size = 0 # if int>0: make merged conservation rank from equal samples from every rank
                                       # the higher ranks have much more samples in them, and also a lower dNdS 
                                       # which makes the plot look contradictory to the line plot for abdomen autosomal orthologs
 
             if equalize_sample_size>0:
                 filename=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/dNdS_merged_conservation_rank_boxplot_eq_sample_size.png"
-            elif pos_sel:
+                pos_sel=False
+            if pos_sel:
                 filename=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/pos_sel_merged_conservation_rank_boxplot.png"
             else:
                 filename=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/dNdS_merged_conservation_rank_boxplot.png"
