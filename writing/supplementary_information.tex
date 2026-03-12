@@ -62,7 +62,33 @@
 
 \section*{Supplementary information}
 
-\newpage
+\subsection*{Genome annotation}
+
+\begin{table}[H]
+    \centering
+    \caption{BUSCO scores for \textit{C. magnifica}, \textit{T. freemani} and \textit{C. maculatus} genome annotations}
+    \label{SItab:BUSCO}
+    \begin{tabular}{l |c |c | c}
+        BUSCO category & \textit{C. magnifica} &  \textit{T. freemani} & \textit{C. maculatus} \\
+        \hline
+        \hline	   
+        Complete BUSCOs & 972 (96.0\%) & 978 (96.6\%) & 999 (98.7\%) \\
+        \hline
+        Complete and single-copy BUSCOs & 877 (86.6\%) & 896 (88.5\%) & 731 (72.2\%) \\
+        \hline
+        Complete and duplicated BUSCOs & 95	(9.4\%) & 82 (8.1\%) & 268 (26.5\%) \\
+        \hline
+        Fragmented BUSCOs & 9 (0.9\%) & 14 (1.4\%) & 6 (0.6\%) \\
+        \hline
+        Missing BUSCOs & 32	(3.1\%) & 21 (2.0\%) & 8 (0.7\%) \\
+        \hline
+        Total BUSCO groups searched & 1013	 & 1013 & 1013 \\
+        \hline
+        \hline
+        total number of genes & 18978 & 18028 & 14861 \\
+    \end{tabular}
+\end{table}
+
 
 \subsection*{Synteny}
 
@@ -118,7 +144,7 @@
 
 
 
-\subsection*{additional plots for $\text{d}_N$ and $\text{d}_S$}
+\subsection*{Additional plots for $\text{d}_N$ and $\text{d}_S$}
 
 \begin{figure}[H]
 
@@ -159,13 +185,45 @@
     
     
     \caption{\textbf{d$_S$ vs. d$_N$ scatterplots and violin plots of d$_S$ values from X-linked and autosomal orthologs.} 
-    Pairwise comparisons between members of three species groups with violin plots of d$_S$ values for X-linked and 
+    Pairwise comparisons between members of three lineages with violin plots of d$_S$ values for X-linked and 
     autosomal 1-to-1 orthologs, and scatterplots of d$_S$ vs. d$_N$. Permutation tests (n=10000) show that d$_S$ is 
     significantly lower for X-linked orthologs in all comparisons within \textit{Bruchini} (\textbf{A}) and 
     \textit{Coccinella} (\textbf{B}), but not \textit{Tribolium} (\textbf{C}).
     }\label{dS_plots}
     
 \end{figure}
+
+
+\subsubsection*{dS permutation test results}
+
+\begin{table}[H]
+    \centering
+    \caption{Permutation test results for all pairwise species comparisons. Estimated dS$_A$-dS$_X$ calculated from mean of
+    10000 permutations, 95\% Confidence interval (CI) calculated from normal distribution of permuted dS$_A$-dS$_X$ values.}
+    \label{SItab:BUSCO}
+    \begin{tabular}{l | l | c |c | c}
+        species 1  & species 2 & measured dS$_A$-dS$_X$ & est. dS$_A$-dS$_X$ and CI & significance \\
+        \hline
+        \hline	 
+        \textit{A. obtectus} & \textit{C. maculatus} & 0.098 &  0.00014, CI [-0.03081,0.03110] & SIGNIFICANT \\
+        \hline
+        \textit{C. chinensis} & \textit{C. maculatus} & 0.050 &  0.00019, CI [-0.01798,0.01836] & SIGNIFICANT \\
+        \hline
+        \textit{B. siliquastri} & \textit{C. maculatus} & 0.120 &  0.00004, CI [-0.02476,0.02484] & SIGNIFICANT \\
+        \hline
+        \textit{A. obtectus} & \textit{C. chinensis} & 0.072 &  0.00009, CI [-0.03635,0.03653] & SIGNIFICANT \\
+        \hline
+        \textit{A. obtectus} & \textit{B. siliquastri} & 0.093 & -0.00010, CI [-0.02889,0.02868] & SIGNIFICANT \\
+        \hline
+        \textit{B. siliquastri} & \textit{C. chinensis} & 0.097 & -0.00001, CI [-0.02696,0.02695] & SIGNIFICANT \\
+        \hline
+        \textit{C. magnifica} & \textit{C. septempunctata} & 0.048 & -0.00007, CI [-0.01728,0.01715] & SIGNIFICANT \\
+        \hline
+        \textit{T. castaneum} & \textit{T. freemani} & -0.002 & 0.00002, CI [-0.01600,0.01603] & nonsignificant \\
+        \hline
+    \end{tabular}
+\end{table}
+
 
 
 \begin{figure}[H]
@@ -272,10 +330,185 @@
 \end{figure}
 
 
+\subsection*{Gene age of orthologs}
 
-\subsection*{additional differential expression analyses}
+\begin{table}[H]
+    \centering
+    \caption{Percentages of each gene age category from the perspective of \textit{C. maculatus} in pairwise comparisons
+    to \textit{C. chinensis}, \textit{B. siliquastri}, and \textit{A. obtectus}. Percentages and absolute counts are shown. Since the
+    distance is determined from the perspective of \textit{C. maculatus} orthologs, the \textit{B. siliqastri} and \textit{A. obtectus}
+    comparisons can have a minimum distance category of 1 and 2 respectively.}
+    \label{SItab:conservation}
+    \begin{tabular}{c |c | c}
+        \multicolumn{3}{c}{\textit{C. chinensis}}\\
+        \hline
+        Distance & Autosome & X-chromosome \\
+        \hline
+        \hline
+        1 & 3.199\% (302) & 0.865\% (3)\\
+        \hline
+        2 & 1.685\% (159) & 1.153\% (4)\\
+        \hline
+        3 & 10.086\% (952) & 3.170\% (11)\\
+        \hline
+        4 & 23.202\% (2190) & 12.968\% (45)\\
+        \hline
+        5 & 61.829\% (5836) & 81.844\% (284)\\
+        \hline
+    \end{tabular}
+    \hspace{1cm}
+    \begin{tabular}{c |c | c}
+        \multicolumn{3}{c}{\textit{B. siliquastri}}\\
+        \hline
+        Distance & Autosome & X-chromosome \\
+        \hline
+        \hline
+        1 & 0.000\% (0) & 0.000\% (0)\\
+        \hline
+        2 & 3.598\% (327) & 2.051\% (8)\\
+        \hline
+        3 & 9.418\% (856) & 4.103\% (16)\\
+        \hline
+        4 & 23.006\% (2091) & 12.308\% (48)\\
+        \hline
+        5 & 63.978\% (5815) & 81.538\% (318)\\
+        \hline
+    \end{tabular}
+    \begin{tabular}{c |c | c}
+        \multicolumn{3}{c}{\textit{A. obtectus}}\\
+        \hline
+        Distance & Autosome & X-chromosome \\
+        \hline
+        \hline
+        1 & 0.000\% (0) & 0.000\% (0)\\
+        \hline
+        2 & 0.000\% (0) & 0.000\% (0)\\
+        \hline
+        3 & 13.890\% (1289) & 4.859\% (19)\\
+        \hline
+        4 & 23.416\% (2173) & 12.532\% (49)\\
+        \hline
+        5 & 62.694\% (5818) & 82.609\% (323)\\
+        \hline
+    \end{tabular}
+\end{table}
 
 
+\subsubsection*{Median Quantile regression results}
+
+\begin{table}[H]
+    \centering
+    \caption{Median regression results of \texttt{dNdS $\sim$ chromosome + gene age}. 
+    The intercept is autosomal genes of gene age 1.}
+    \label{SItab:conservation}
+    \begin{tabular}{c |c | c|c}
+        \multicolumn{3}{c}{\textit{C. chinensis} (df=4)}\\
+        \hline
+        Main effect & coefficient & t-statistic & p-value \\
+        \hline
+        \hline
+        Intercept & 0.2071 & 37.549 & 0.000\\
+        \hline
+        chromosome:X & -0.0063 & -1.207 & 0.228\\
+        \hline
+        gene age:2 & -0.0342 & -3.654 & 0.000\\
+        \hline
+        gene age:3 & -0.0431 & -6.830 & 0.000\\
+        \hline
+        gene age:4 & -0.0961 & -16.390 & 0.000\\
+        \hline
+        gene age:5 & -0.1447 & -25.61 & 0.000\\
+        \hline
+    \end{tabular}
+    \hspace{0.5cm}
+    \begin{tabular}{c |c | c|c}
+        \multicolumn{3}{c}{\textit{B. siliquastri} (df=4)}\\
+        \hline
+        Main effect & coefficient & t-statistic & p-value \\
+        \hline
+        \hline
+        Intercept & 0.1754 & 43.986 & 0.000 \\
+        \hline
+        chromosome:X & -0.0146 & -3.809 & 0.000 \\
+        \hline
+        gene age:3 & -0.0284 & -6.064 & 0.000 \\
+        \hline
+        gene age:4 & -0.0733 & -17.093 & 0.000 \\
+        \hline
+        gene age:5 & -0.1130 & -27.57 & 0.000 \\
+        \hline
+    \end{tabular}
+    \hspace{0.5cm}
+    \begin{tabular}{c |c | c|c}
+        \multicolumn{3}{c}{\textit{A. obtectus} (df=3)}\\
+        \hline
+        Main effect & coefficient & t-statistic & p-value \\
+        \hline
+        \hline
+        Intercept & 0.1482 & 80.240 & 0.000 \\
+        \hline
+        chromosome:X & -0.0124 & -3.575 & 0.000 \\
+        \hline
+        gene age:4 & -0.0529 & -22.706 & 0.000 \\
+        \hline
+        gene age:5 & -0.0919 & -45.06 & 0.000 \\
+        \hline
+    \end{tabular}
+\end{table}
+
+\subsubsection*{logistic regression results}
+
+\begin{table}[H]
+    \centering
+    \caption{Logistic regression results of \texttt{pos. sel. $\sim$ chromosome + gene age}. 
+    The intercept is autosomal genes of gene age 1. The positive coefficients indicate that the X-chromosome
+    is enriched for genes under positive selection.}
+    \label{SItab:conservation}
+    \begin{tabular}{c |c | c|c}
+        \multicolumn{3}{c}{\textit{C. chinensis} (df=1)}\\
+        \hline
+        Main effect & coefficient & z-statistic & p-value \\
+        \hline
+        \hline
+        Intercept & -1.7839 & -58.616 & 0.000 \\
+        \hline
+        chromosome:X & 0.5665 & 4.172 & 0.000 \\
+        \hline
+    \end{tabular}
+    \hspace{0.5cm}
+    \begin{tabular}{c |c | c|c}
+        \multicolumn{3}{c}{\textit{B. siliquastri} (df=1)}\\
+        \hline
+        Main effect & coefficient & z-statistic & p-value \\
+        \hline
+        \hline
+        Intercept & -2.4419 & -63.107 & 0.000 \\
+        \hline
+        chromosome:X & 0.4108 & 2.517  & 0.012 \\
+        \hline
+    \end{tabular}
+    \hspace{0.5cm}
+    \begin{tabular}{c |c | c| c}
+        \multicolumn{3}{c}{\textit{A. obtectus} (df=1)}\\
+        \hline
+        Main effect & coefficient & z-statistic & p-value \\
+        \hline
+        \hline
+        Intercept & -3.1106 & -60.565 & 0.000 \\
+        \hline
+        chromosome:X & 0.7266 & 3.844 & 0.000 \\
+        \hline
+    \end{tabular}
+\end{table}
+
+\subsection*{Additional differential expression analyses}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{../data/DE_analysis/all_sex_bias_proportion.png}
+    \caption{Proportion of sex-bias of X-linked and autosomal genes for reproductive (abdominal) or somatic tissues (head and thorax)}
+    \label{SIfig:SB_prop}
+\end{figure}
 
 \begin{figure}[H]
     \centering
@@ -287,40 +520,261 @@
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\linewidth]{../data/DE_analysis/DE_conservation_rank_proportions_white_bg.png}
-    \caption{sex bias proportion by chromosome and conservation distance}
-    \label{SIfig:DE_prop}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=\linewidth]{../data/DE_analysis/conservation_rank_sig_sex_bias_proportion_white_bg.png}
-    \caption{sex bias proportion by chromosome and conservation distance}
+    \includegraphics[width=\linewidth]{../data/DE_analysis/DE_conservation_rank_proportions_sep_panels.png}
+    \caption{Proportion of sex-bias categories by chromosome and gene age, abdominal tissues are reproductive and 
+    head and throax tissue is somatic.}
     \label{SIfig:SBprop}
 \end{figure}
 
+\begin{table}[H]
+    \centering
+    \caption{Multinomial logistic regression of sex-bias categories by gene age. Due to very low sample size for the X-linked 
+    orthologs, the analysis was only performed for autosomal orthologs. The intercept is male-bias and conservaiton distance 1.}
+    \label{SItab:mLogReg}
+    \begin{tabular}{l |c  |c| c}
+        \multicolumn{4}{c}{autosomal abdomen (df=8)}\\
+        \hline
+        Main effect & coefficient & z-statistic & p-value \\
+        \hline
+        \hline
+        \multicolumn{4}{l}{unbiased}\\
+        \hline
+        Intercept &0.7441 & 5.682& 0.000 \\
+        \hline
+        gene age:2 &   -0.9165 & -5.655 & 0.000 \\
+        \hline
+        gene age:3 &   -1.1137 & -8.133 & 0.000 \\
+        \hline
+        gene age:4 &   -0.4398 & -3.281 & 0.001 \\
+        \hline
+        gene age:5 &    0.4869 &  3.671 & 0.000 \\
+        \hline
+        \hline
+        \multicolumn{4}{l}{female-biased}\\
+        \hline
+        Intercept & -0.8990   & -4.484 & 0.000 \\
+        \hline
+        gene age:2 &   -0.7975   & -3.079 & 0.002 \\
+        \hline
+        gene age:3 &   -0.2042   & -0.987 & 0.324 \\
+        \hline
+        gene age:4 &    0.4794   &  2.357 & 0.018 \\
+        \hline
+        gene age:5 &    1.2997   &  6.437& 0.000 \\
+        \hline
+    \end{tabular}
+    \hspace{0.5cm}
+    \begin{tabular}{l |c | c| c}
+        \multicolumn{4}{c}{autosomal head + thorax (df=8)}\\
+        \hline
+        Main effect & coefficient & z-statistic & p-value \\
+        \hline
+        \hline
+        \multicolumn{4}{l}{unbiased}\\
+        \hline
+        Intercept & 1.6923 & 10.316 & 0.000 \\
+        \hline
+        gene age:2 & -0.7355 & -3.778 & 0.000 \\
+        \hline
+        gene age:3 & -0.6480 & -3.824 & 0.000 \\
+        \hline
+        gene age:4 & -0.0466 & -0.278 & 0.781 \\
+        \hline
+        gene age:5 &  1.2009 &  7.160 & 0.000 \\
+        \hline
+        \hline
+        \multicolumn{4}{l}{female-biased}\\
+        \hline
+        Intercept & -0.8398 & -3.059 & 0.002 \\
+        \hline
+        gene age:2 & -0.5308 & -1.568 & 0.117 \\
+        \hline
+        gene age:3 & -0.4050 & -1.420 & 0.156 \\
+        \hline
+        gene age:4 &  0.0969 &  0.346 & 0.730 \\
+        \hline
+        gene age:5 &  0.9757 &  3.504 & 0.000 \\
+        \hline
+    \end{tabular}
+\end{table}
+
+
+
+\begin{table}[H]
+    \centering
+    \caption{Median regression results of autosomal orthologs: \texttt{log2FC $\sim$ sex-bias category * gene age}. 
+    The intercept is female-biased genes of gene age 1, the wald-test is performed for all two-way interactions at once.}
+    \label{SItab:A_logFCconservation}
+    \begin{tabular}{l |c |c| c}
+        \multicolumn{4}{c}{autosomal abdomen (df=9)}\\
+        \hline
+        \multicolumn{4}{l}{Wald-test: $F_{4,1510}$=32.642, $p<$0.001 (df=4)}\\
+        \hline
+        Main effect & coefficient & t-statistic & p-value \\
+        \hline
+        \hline
+        Intercept & 2.3458 &  11.699 & 0.000 \\
+        \hline
+        gene age:2 &  0.9374 &  2.433 & 0.015 \\
+        \hline
+        gene age:3 & -0.2688 & -1.217 & 0.224 \\
+        \hline
+        gene age:4 & -0.4974 & -2.395 & 0.017 \\
+        \hline
+        gene age:5 & -0.7675 & -3.782 & 0.000 \\
+        \hline
+        sex-bias category:male & 0.1587 &  0.667 & 0.505 \\
+        \hline
+        gene age:2 by sex-bias category:male &-0.4441 & -1.041 & 0.298 \\
+        \hline
+        gene age:3 by sex-bias category:male & 0.5256 &  2.014 & 0.044 \\
+        \hline
+        gene age:4 by sex-bias category:male & 0.5331 &  2.150 & 0.032 \\
+        \hline
+        gene age:5 by sex-bias category:male & 0.0966 &  0.398 & 0.691 \\
+        \hline
+    \end{tabular}
+    \vspace{1cm}
+    \begin{tabular}{l |c |c | c}
+        \multicolumn{4}{c}{autosomal head+thorax (df=9)}\\
+        \hline
+        \multicolumn{4}{l}{Wald-test: $F_{4,4490}$=9.411, $p<$0.0001 (df=4)}\\
+        \hline
+        Main effect & coefficient & t-statistic & p-value \\
+        \hline
+        \hline
+        Intercept & 3.2921 & 10.554 & 0.000\\
+        \hline
+        gene age:2 &  0.9822 &  1.785 & 0.074\\
+        \hline
+        gene age:3 & -1.2224 & -3.476 & 0.001\\
+        \hline
+        gene age:4 & -1.5377 & -4.658 & 0.000\\
+        \hline
+        gene age:5 & -1.7838 & -5.560 & 0.000\\
+        \hline
+        sex-bias category:male & 0.1743 &  0.467 & 0.641\\
+        \hline
+        gene age:2 by sex-bias category:male & -0.2789 & -0.448 & 0.654\\
+        \hline
+        gene age:3 by sex-bias category:male &  1.6594 &  3.982 & 0.000\\
+        \hline
+        gene age:4 by sex-bias category:male &  1.2386 &  3.129 & 0.002\\
+        \hline
+        gene age:5 by sex-bias category:male & -0.3203 & -0.823 & 0.410\\
+        \hline
+    \end{tabular}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    \caption{Median regression results of X-linked orthologs: \texttt{log2FC $\sim$ sex-bias category * gene age}. 
+    The intercept is female-biased genes of gene age 1, the wald-test is performed for all two-way interactions at once.}
+    \label{SItab:X_logFCconservation}
+    \begin{tabular}{l |c |c | c}
+        \multicolumn{4}{c}{X-linked abdomen (df=8)}\\
+        \hline
+        \multicolumn{4}{l}{Wald-test: $F_{4,127}$=10.601, $p<$0.0001 (df=4)}\\
+        \hline
+        Main effect & coefficient &t-statistic & p-value \\
+        \hline
+        \hline
+        Intercept & 8.5262 & 9.775 & 0.000 \\
+        \hline
+        gene age:2 & -1.0504 & -1.703 & 0.091 \\
+        \hline
+        gene age:3 & -5.9624 & -6.114 & 0.000 \\
+        \hline
+        gene age:4 & -5.6147 & -6.219 & 0.000 \\
+        \hline
+        gene age:5 & -6.8057 & -7.739 & 0.000 \\
+        \hline
+        sex-bias category:male & -5.1565 & -4.180 & 0.000 \\
+        \hline
+        gene age:2 by sex-bias category:male & -1.0504 & -1.703 & 0.091 \\
+        \hline
+        gene age:3 by sex-bias category:male &  4.1746 &  2.886 & 0.005 \\
+        \hline
+        gene age:4 by sex-bias category:male &  4.4626 &  3.479 & 0.001 \\
+        \hline
+        gene age:5 by sex-bias category:male &  5.3478 &  4.292 & 0.000 \\
+        \hline
+    \end{tabular}
+    \vspace{1cm}
+    \begin{tabular}{l |c |c | c}
+        \multicolumn{4}{c}{X-linked head+thorax (df=6)}\\
+        \hline
+        \multicolumn{4}{l}{Wald-test: $F_{3,31}$=11.295, $p<$0.0001 (df=3)}\\
+        \hline
+        Main effect & coefficient & t-statistic & p-value \\
+        \hline
+        \hline
+        Intercept & 3.5536 &  7.935 & 0.000 \\
+        \hline
+        gene age:3 & -0.2525 & -0.363 & 0.719 \\
+        \hline
+        gene age:4 &  0.6955 &  1.335 & 0.192 \\
+        \hline
+        gene age:5 & -1.9830 & -4.168 & 0.000 \\
+        \hline
+        sex-bias category:male & 0.0147 &  0.033 & 0.974 \\
+        \hline
+        gene age:3 by sex-bias category:male & -1.7354 & -1.819 & 0.079 \\
+        \hline
+        gene age:4 by sex-bias category:male & -3.0057 & -5.033 & 0.000 \\
+        \hline
+        gene age:5 by sex-bias category:male & -0.3380 & -0.670 & 0.508 \\
+        \hline
+    \end{tabular}
+\end{table}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.75\linewidth]{../data/DE_analysis/dNdS_vs_conservation_rank_boxplot_abdomen_white_bg.png}
-    \caption{sex bias magnitude by chromosome and conservation distance abdomen}
+    \includegraphics[width=0.75\linewidth]{../data/DE_analysis/dNdS_vs_conservation_rank_medians_lineplot_abdomen_white_bg.png}
+    \caption{sex bias magnitude (d$_N$/d$_S$) by chromosome and gene age abdomen. Blue is male-biased, grey is
+    unbiased and red is female-biased, dotted lines are autosomal and bold lines are X-linked.}
     \label{SIfig:SBmag_a}
 \end{figure}
 
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.75\linewidth]{../data/DE_analysis/dNdS_vs_conservation_rank_boxplot_head_thorax_white_bg.png}
-    \caption{sex bias magnitude by chromosome and conservation distance head and thorax}
+    \includegraphics[width=0.75\linewidth]{../data/DE_analysis/dNdS_vs_conservation_rank_medians_lineplot_head_thorax_white_bg.png}
+    \caption{sex bias magnitude (d$_N$/d$_S$) by chromosome and gene age head and thorax. Blue is male-biased, grey is
+    unbiased and red is female-biased, dotted lines are autosomal and bold lines are X-linked.}
     \label{SIfig:SBmag_ht}
 \end{figure}
 
+
+\begin{table}[H]
+    \centering
+    \caption{Fisher's exact test for enrichment of number of positively selected genes on X compared to A split by sex-bias categories.
+    Raw and Benjamini-Hochberg corrected p-values are shown, significance highlighted in bold.}
+    \label{SItab:fisher_pos_sel}
+    \begin{tabular}{l|l|c|c}
+        tissue & sex-bias & raw p-value & BH-corrected \\
+        \hline
+        \hline
+        abdomen & male & 0.059340 & 0.118681\\
+        \hline
+        abdomen & unbiased & 0.000047 & \textbf{0.000142}\\
+        \hline
+        abdomen & female & 0.742779 & 0.742779\\
+        \hline
+        head+thorax & male & 0.197809 & 0.296713\\
+        \hline
+        head+thorax & unbiased & 0.000039 & \textbf{0.000142}\\
+        \hline
+        head+thorax & female & 0.482241 & 0.578690\\
+        \hline
+    \end{tabular}
+\end{table}
 
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.75\linewidth]{../data/DE_analysis/pos_sel_vs_conservation_rank_boxplot_abdomen_white_bg.png}
-    \caption{sex bias magnitude by chromosome and conservation distance abdomen}
+    \caption{Median dNdS of orthologs grouped by chromosome, sex-bias direction and gene age for abdominal tissues.}
     \label{SIfig:SBcat_a}
 \end{figure}
 
@@ -328,7 +782,7 @@
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.75\linewidth]{../data/DE_analysis/pos_sel_vs_conservation_rank_boxplot_head_thorax_white_bg.png}
-    \caption{sex bias magnitude by chromosome and conservation distance head and thorax}
+    \caption{Median dNdS of orthologs grouped by chromosome, sex-bias direction and gene age for head and thorax tissues.}
     \label{SIfig:SBcat_ht}
 \end{figure}
 
@@ -352,32 +806,6 @@
     \label{SIfig:GO_venn_X}
 \end{figure}
 
-\subsection*{Genome annotation}
-
-\begin{table}[H]
-    \centering
-    \caption{BUSCO scores for \textit{C. magnifica}, \textit{T. freemani} and \textit{C. maculatus} genome annotations}
-    \label{SItab:BUSCO}
-    \begin{tabular}{l |c |c | c}
-        BUSCO category & \textit{C. magnifica} &  \textit{T. freemani} & \textit{C. maculatus} \\
-        \hline
-        \hline	   
-        Complete BUSCOs & 972 (96.0\%) & 978 (96.6\%) & 999 (98.7\%) \\
-        \hline
-        Complete and single-copy BUSCOs & 877 (86.6\%) & 896 (88.5\%) & 731 (72.2\%) \\
-        \hline
-        Complete and duplicated BUSCOs & 95	(9.4\%) & 82 (8.1\%) & 268 (26.5\%) \\
-        \hline
-        Fragmented BUSCOs & 9 (0.9\%) & 14 (1.4\%) & 6 (0.6\%) \\
-        \hline
-        Missing BUSCOs & 32	(3.1\%) & 21 (2.0\%) & 8 (0.7\%) \\
-        \hline
-        Total BUSCO groups searched & 1013	 & 1013 & 1013 \\
-        \hline
-        \hline
-        total number of genes & 18978 & 18028 & 14861 \\
-    \end{tabular}
-\end{table}
 
 \subsection*{Sample SRR numbers}
 

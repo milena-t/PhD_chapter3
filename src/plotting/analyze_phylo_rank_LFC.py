@@ -291,27 +291,23 @@ def make_log_reg_table(full_table_paths_dict):
         df = df.rename(columns={'LFC_head+thorax': 'LFC_head_thorax'})
         df = df.rename(columns={'FDR_pval_head+thorax': 'FDR_pval_head_thorax'})
 
-        df["SB_abdomen"] = df.apply(make_sex_bias_cat_row_numeric, axis=1, args=("abdomen",))
-        df["SB_head_thorax"] = df.apply(make_sex_bias_cat_row_numeric, axis=1, args=("head_thorax",))
-        df["LFC_abdomen"] = abs(df["LFC_abdomen"])
-        df["LFC_head_thorax"] = abs(df["LFC_head_thorax"])
+        for tissue in ["abdomen", "head_thorax"]:
+            df[f"SB_{tissue}"] = df.apply(make_sex_bias_cat_row_numeric, axis=1, args=(f"{tissue}",))
+            df[f"LFC_{tissue}"] = abs(df[f"LFC_{tissue}"])
 
-        # specify formula
-        formula_a = f"SB_abdomen ~ level_most_dist_ortholog"# * LFC_abdomen"
-        formula_ht = f"SB_head_thorax ~ level_most_dist_ortholog"# * LFC_head_thorax"
-        y_a, X_a = patsy.dmatrices(formula_a,data=df,return_type="dataframe")
-        y_ht, X_ht = patsy.dmatrices(formula_ht,data=df,return_type="dataframe")
-        X_a = X_a.drop(columns="Intercept")
-        X_ht = X_ht.drop(columns="Intercept")
+            # specify formula
+            formula_a = f"SB_{tissue} ~ C(level_most_dist_ortholog)"# * LFC_{tissue}"
+            # multiomial logistic regression
+            model = smf.mnlogit(formula=formula_a, data=df).fit()
 
-        print(f"\n////////////////// {chr} :::: ABDOMEN //////////////////")
-        model = OrderedModel(y_a.iloc[:,0], X_a, distr='logit').fit(method='bfgs', disp=False)
-        print(model.summary())
+            ## ordered model
+            # y_a, X_a = patsy.dmatrices(formula_a,data=df,return_type="dataframe")
+            # X_a = X_a.drop(columns="Intercept")
+            # model = OrderedModel(y_a.iloc[:,0], X_a, distr='logit').fit(method='bfgs', disp=False)
 
+            print(f"\n////////////////// {chr} :::: {tissue} //////////////////")
+            print(model.summary())
 
-        print(f"\n////////////////// {chr} :::: HEAD+THORAX //////////////////")
-        model = OrderedModel(y_ht.iloc[:,0], X_ht, distr='logit').fit(method='bfgs', disp=False)
-        print(model.summary())
 
 ############################
 
@@ -395,11 +391,11 @@ def check_DE_phylogeny_rank_conserved(summary_paths_AX_list:dict, outfile = "", 
         y_label = f"|log2FC|"
     
     if sig_p_threshold>0:
-        y_label = f"{y_label} of sig DE genes (p<{sig_p_threshold}, |log2FC|>{min_LFC})"
+        y_label = f"{y_label} of sig DE genes \n(p<{sig_p_threshold}, |log2FC|>{min_LFC})"
 
     #### plot 2x2 boxplots
     
-    fs = 25 # font size
+    fs = 30 # font size
 
     # set figure aspect ratio
     aspect_ratio = 18 / 12
@@ -460,7 +456,7 @@ def check_DE_phylogeny_rank_conserved(summary_paths_AX_list:dict, outfile = "", 
         bp = ax[row,col].boxplot(sex_biased_lists, positions=tick_pos, patch_artist=True)
 
         # set axis labels
-        tick_fs_factor = 0.6
+        tick_fs_factor = 0.75
         ax[row,col].set_xticks(ticks = tick_pos, labels = tick_labels, fontsize=fs*tick_fs_factor, rotation=45, ha='right')
         ax[row,col].tick_params(axis='x', labelsize=fs*tick_fs_factor)#, rotation = 90)
         ax[row,col].tick_params(axis='y', labelsize=fs*0.9)
@@ -530,7 +526,7 @@ def check_DE_phylogeny_rank_conserved(summary_paths_AX_list:dict, outfile = "", 
         plot_DE_subplot_sep_MF(LFC_lists_abdomen_X, row=1, col=0, fs=fs, title=f"X-chromosome: abdomen", colors_dict=colors, abs_logFC=abs_LFC, verbose = verbose)
         print(f"\nX-chromosome: head+thorax")
         plot_DE_subplot_sep_MF(LFC_lists_head_thorax_X, row=1, col=1, fs=fs, title=f"X-chromosome: head+thorax", colors_dict=colors, abs_logFC=abs_LFC, verbose = verbose)
-        fig.supxlabel(f"(number of genes)\nconservation rank of C. maculatus ortholog", fontsize = fs)
+        # fig.supxlabel(f"(number of genes)\nconservation rank of C. maculatus ortholog", fontsize = fs)
     else:
         plot_DE_subplot(LFC_lists_abdomen_A, row=0, col=0, fs=fs, title=f"Autosomes: abdomen", colors_dict=colors, abs_logFC=abs_LFC)
         plot_DE_subplot(LFC_lists_head_thorax_A, row=0, col=1, fs=fs, title=f"Autosomes: head+thorax", colors_dict=colors, abs_logFC=abs_LFC)
@@ -566,25 +562,29 @@ def make_sex_bias_cat_row(row, tissue = "abdomen"):
 
 
 def make_sex_bias_cat_row_numeric(row, tissue = "abdomen"):
+    """
+    0 = male biased, 1 = unbiased, 2 = female biased
+    """
     if row[f"LFC_{tissue}"] < -1:
         if row[f"FDR_pval_{tissue}"]<0.05:
-            return -1
-        else:
             return 0
+        else:
+            return 1
     elif row[f"LFC_{tissue}"] >1:
         if row[f"FDR_pval_{tissue}"]<0.05:
-            return 1
+            return 2
         else:
-            return 0
+            return 1
     else:
-        return 0
+        return 1
 
 def logFC_quantile_regression(summary_table_path:str, p_val_threshold= 0.05, sep_MF=True, abs_LFC=False):
 
     for chr in ["A", "X"]:
 
-        if chr=="X": ## no stats for X
-            continue
+        if chr=="X": ## no stats for X, sample size is too low
+            #continue
+            pass
 
         df = pd.read_csv(summary_table_path[chr], sep = "\t", index_col=False)
         
@@ -600,60 +600,112 @@ def logFC_quantile_regression(summary_table_path:str, p_val_threshold= 0.05, sep
         
         
         if sep_MF:
-            ## abdominal df
-            if p_val_threshold >0:
-                df = df_all[df_all["FDR_pval_abdomen"]<p_val_threshold]
-            else:
-                df = df_all
-
-            ## abdomen
-            test_a = smf.quantreg("LFC_abdomen ~ level_most_dist_ortholog * C(chromosome)", df).fit(q=0.5)
-            print(f"\n////////////////// ABDOMEN //////////////////")
-            print(test_a.summary())
-
-
-            ## head_thorax 
-            if p_val_threshold >0:
-                df = df_all[df_all["FDR_pval_head+thorax"]<p_val_threshold]
-                df = df[df["LFC_head+thorax"]>1 or df["LFC_head+thorax"]<1]
-            else:
-                df = df_all
+            print(f">---------- separate male and female biased genes ----------<")
 
             ## rename the head thorax column because this does not play well with the formula specification
             df = df.rename(columns={'LFC_head+thorax': 'LFC_head_thorax'})
             df = df.rename(columns={'FDR_pval_head+thorax': 'FDR_pval_head_thorax'})
-            
-            df_f = df[df["LFC_head_thorax"]>0]
-            df_m = df[df["LFC_head_thorax"]<0]
-            
-            model_ht_f = smf.quantreg("LFC_head_thorax ~ level_most_dist_ortholog * C(chromosome)", df_f).fit(q=0.5) # q=0.5 means we estimate the median
-            if abs_LFC:
-                df_m["LFC_head_thorax_abs"] = df_m["LFC_head_thorax"]*-1 # make all vals positive so that the coefficients are comparable
-                model_ht_m = smf.quantreg("LFC_head_thorax_abs ~ level_most_dist_ortholog * C(chromosome)", df_m).fit(q=0.5) # q=0.5 means we estimate the median
-            else:
-                model_ht_m = smf.quantreg("LFC_head_thorax ~ level_most_dist_ortholog * C(chromosome)", df_m).fit(q=0.5) # q=0.5 means we estimate the median
-            print(f"\n\n////////////////// HEAD+THORAX -- FEMALE-BIASED //////////////////")
-            print(model_ht_f.summary())
-            print(f"\n////////////////// HEAD+THORAX -- MALE-BIASED //////////////////")
-            print(model_ht_m.summary())
+
+            for tissue in ["abdomen","head_thorax"]:
+
+                ## head_thorax 
+                if p_val_threshold >0:
+                    df = df_all[df_all[f"FDR_{tissue}"]<p_val_threshold]
+                    df = df[df[f"LFC_{tissue}"]>1 or df[f"LFC_{tissue}"]<1]
+                else:
+                    df = df_all
+                
+
+
+                if abs_LFC:
+                    df_f = df[df[f"LFC_{tissue}"]>0]
+                    df_m = df[df[f"LFC_{tissue}"]<0]
+                    df_m[f"LFC_{tissue}_abs"] = df_m[f"LFC_{tissue}"]*-1 # make all vals positive so that the coefficients are comparable
+                    
+                    model_ht_m = smf.quantreg(f"LFC_{tissue}_abs ~ C(level_most_dist_ortholog) * C(chromosome)", df_m).fit(q=0.5) # q=0.5 means we estimate the median
+                    model_ht_f = smf.quantreg(f"LFC_{tissue} ~ C(level_most_dist_ortholog) * C(chromosome)", df_f).fit(q=0.5) # q=0.5 means we estimate the median
+                    
+                    interactions_by_partner = f"""
+C(level_most_dist_ortholog)[T.2]:C(SB_{tissue})[T.male]=0,
+C(level_most_dist_ortholog)[T.3]:C(SB_{tissue})[T.male]=0,
+C(level_most_dist_ortholog)[T.4]:C(SB_{tissue})[T.male]=0,
+C(level_most_dist_ortholog)[T.5]:C(SB_{tissue})[T.male]=0"""
+
+                    print(f"\n\n////////////////// HEAD+THORAX -- FEMALE-BIASED //////////////////")
+                    print(model_ht_f.summary())
+                    
+                    try:
+                        # test two-way interaction
+                        wald_test = model_ht_f.wald_test(interactions_by_partner, scalar = True)
+                        print(f"wald test for {interactions_by_partner} interaction: {wald_test}")
+                    except:
+
+                        try:
+                            interactions_by_partner = f"""
+C(level_most_dist_ortholog)[T.3]:C(SB_{tissue})[T.male]=0,
+C(level_most_dist_ortholog)[T.4]:C(SB_{tissue})[T.male]=0,
+C(level_most_dist_ortholog)[T.5]:C(SB_{tissue})[T.male]=0"""
+                            
+                            wald_test = model_ht_f.wald_test(interactions_by_partner, scalar = True)
+                            print(f"wald test for {interactions_by_partner} interaction: {wald_test}")
+                        except:
+                            print("no Wald test could be performed")
+
+                    print(f"\n////////////////// HEAD+THORAX -- MALE-BIASED //////////////////")
+                    print(model_ht_m.summary())
+
+                    try:
+                        # test two-way interaction
+                        wald_test = model_ht_m.wald_test(interactions_by_partner, scalar = True)
+                        print(f"wald test for {interactions_by_partner} interaction: {wald_test}")
+                    except:
+                        print("no Wald test could be performed")
+                else:
+                    model_ht = smf.quantreg(f"fLFC_{tissue} ~ C(level_most_dist_ortholog) * C(chromosome)", df).fit(q=0.5) # q=0.5 means we estimate the median
+                    print(model_ht.summary())
 
         else:
             
-            df_all["level_most_dist_ortholog_c"] = df_all["level_most_dist_ortholog"] - 1
+            # df_all["level_most_dist_ortholog_c"] = df_all["level_most_dist_ortholog"] - 1
 
             for tissue in ["abdomen", "head_thorax"]:
-                ## abdominal df
+                
                 if p_val_threshold >0:
                     df = df_all[df_all[f"SB_{tissue}"] != "unbiased"]
                 else:
                     df = df_all
 
-                formula = f"LFC_{tissue} ~ level_most_dist_ortholog_c * C(SB_{tissue})"
+                interactions_by_partner = f"""
+C(level_most_dist_ortholog)[T.2]:C(SB_{tissue})[T.male]=0,
+C(level_most_dist_ortholog)[T.3]:C(SB_{tissue})[T.male]=0,
+C(level_most_dist_ortholog)[T.4]:C(SB_{tissue})[T.male]=0,
+C(level_most_dist_ortholog)[T.5]:C(SB_{tissue})[T.male]=0"""
+
+                formula = f"LFC_{tissue} ~ C(level_most_dist_ortholog) * C(SB_{tissue})"
                 model_a = smf.quantreg(formula=formula, data=df).fit(q=0.5)
                 print(f"\n////////////////// {chr} :::: {tissue} //////////////////")
                 print(f"sex bias categories: {set(df[f'SB_{tissue}'].tolist())}")
                 print(model_a.summary())
-                model_pred = model_a.predict({f"SB_{tissue}": "female", "level_most_dist_ortholog_c": 1})
+
+                try:
+                    # test two-way interaction
+                    wald_test = model_a.wald_test(interactions_by_partner, scalar = True)
+                    print(f"wald test for {interactions_by_partner} interaction: {wald_test}")
+                except:
+                     
+                    try:
+                        interactions_by_partner = f"""
+C(level_most_dist_ortholog)[T.3]:C(SB_{tissue})[T.male]=0,
+C(level_most_dist_ortholog)[T.4]:C(SB_{tissue})[T.male]=0,
+C(level_most_dist_ortholog)[T.5]:C(SB_{tissue})[T.male]=0"""
+                            
+                        wald_test = model_a.wald_test(interactions_by_partner, scalar = True)
+                        print(f"wald test for {interactions_by_partner} interaction: {wald_test}")
+                    except:
+                        print("no Wald test could be performed")
+
+                ### check if intercept is as expected: median of female:conservation_dist=1
+                model_pred = model_a.predict({f"SB_{tissue}": "female", "level_most_dist_ortholog": 1})
                 print(f"model predicted intercept (female-biased rank1): {model_pred}")
 
                 df_male=df_all[df_all[f"SB_{tissue}"] == "male"]
@@ -664,8 +716,8 @@ def logFC_quantile_regression(summary_table_path:str, p_val_threshold= 0.05, sep
 
 
 if __name__ == "__main__":
-    username = "miltr339"
 
+    username = "milena"
     table_paths_dict = get_full_table_path(username=username)
 
     if False:

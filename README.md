@@ -499,19 +499,19 @@ Overall, the dS is lower on X in all cases, and since dS is assumed to be neutra
 
 ***Bruchini***
 ```text
-A_obtectus_C_maculatus --> 	   median(dNdS_A)-median(dNdS_X) = 0.098, mean bootstrap diff =  0.00014 with CI [-0.03081,0.03110] --> SIGNIFICANT
-C_chinensis_C_maculatus --> 	 median(dNdS_A)-median(dNdS_X) = 0.050, mean bootstrap diff =  0.00019 with CI [-0.01798,0.01836] --> SIGNIFICANT
-B_siliquastri_C_maculatus -->  median(dNdS_A)-median(dNdS_X) = 0.120, mean bootstrap diff =  0.00004 with CI [-0.02476,0.02484] --> SIGNIFICANT
-A_obtectus_C_chinensis --> 	   median(dNdS_A)-median(dNdS_X) = 0.072, mean bootstrap diff =  0.00009 with CI [-0.03635,0.03653] --> SIGNIFICANT
-A_obtectus_B_siliquastri --> 	 median(dNdS_A)-median(dNdS_X) = 0.093, mean bootstrap diff = -0.00010 with CI [-0.02889,0.02868] --> SIGNIFICANT
-B_siliquastri_C_chinensis -->  median(dNdS_A)-median(dNdS_X) = 0.097, mean bootstrap diff = -0.00001 with CI [-0.02696,0.02695] --> SIGNIFICANT
+A_obtectus_C_maculatus --> 	   median(dS_A)-median(dS_X) = 0.098, mean bootstrap diff =  0.00014 with CI [-0.03081,0.03110] --> SIGNIFICANT
+C_chinensis_C_maculatus --> 	 median(dS_A)-median(dS_X) = 0.050, mean bootstrap diff =  0.00019 with CI [-0.01798,0.01836] --> SIGNIFICANT
+B_siliquastri_C_maculatus -->  median(dS_A)-median(dS_X) = 0.120, mean bootstrap diff =  0.00004 with CI [-0.02476,0.02484] --> SIGNIFICANT
+A_obtectus_C_chinensis --> 	   median(dS_A)-median(dS_X) = 0.072, mean bootstrap diff =  0.00009 with CI [-0.03635,0.03653] --> SIGNIFICANT
+A_obtectus_B_siliquastri --> 	 median(dS_A)-median(dS_X) = 0.093, mean bootstrap diff = -0.00010 with CI [-0.02889,0.02868] --> SIGNIFICANT
+B_siliquastri_C_chinensis -->  median(dS_A)-median(dS_X) = 0.097, mean bootstrap diff = -0.00001 with CI [-0.02696,0.02695] --> SIGNIFICANT
 ```
 
 ***Coccinella* and *Tribolium***
 
 ```text
-C_magnifica_C_septempunctata --> 	 median(dNdS_A)-median(dNdS_X) = 0.048, mean bootstrap diff = -0.00007 with CI [-0.01728,0.01715] --> SIGNIFICANT
-T_castaneum_T_freemani --> 	       median(dNdS_A)-median(dNdS_X) = -0.002, mean bootstrap diff = 0.00002 with CI [-0.01600,0.01603] --> (nonsignificant)
+C_magnifica_C_septempunctata --> 	 median(dS_A)-median(dS_X) = 0.048, mean bootstrap diff = -0.00007 with CI [-0.01728,0.01715] --> SIGNIFICANT
+T_castaneum_T_freemani --> 	       median(dS_A)-median(dS_X) = -0.002, mean bootstrap diff = 0.00002 with CI [-0.01600,0.01603] --> (nonsignificant)
 ```
 
 
@@ -676,173 +676,62 @@ Conservation rank goes from 1 to 5, with 5 being highly conserved (up to drosoph
 I will do a median regression with the dNdS as response variable and the chromosome location (as factor) and conservation rank as a explanatory variable. I will start with including an interaction, and then do model comparisons with simpler models that lack the interaction, and then also lack the conservation rank to get useful p-values that aren't just in comparison to an intercept. In summary, the interaction usually doesn't matter but the main effect does.
 
 * *C. chinensis* Wald test p-values:
-  * `chromosome * conservation_rank`: p=0.46
-  * `conservation_distance`: p=0.0
+  * `chromosome * conservation_distance`: p=0.751
+  * `conservation_distance`: p=0.169
 * *B. siliquastri* Wald test p-values:
-  * `chromosome * conservation_rank`: p=0.16
-  * `conservation_distance`: p=0.0
+  * `chromosome * conservation_distance`: p=0.619
+  * `conservation_distance`: p=0.732
 * *A. obtectus* Wald test p-values:
-  * `chromosome * conservation_rank`: p=0.02
-  * `conservation_distance`: p=0.0
+  * `chromosome * conservation_distance`: p=0.737
+  * `conservation_distance`: p=0.363
 
 
 <details>
-  <summary>detailed results for model reduction approach</summary>
+  <summary>results for models without conservation distance</summary>
+
+Mind that in all comparison the intercept is females in distance 1.
 
 #### *C. chinensis*
 
-##### `chromosome * conservation_rank` 
-
-Wald p-value: p=0.46
 
 ```text
-Df Residuals: 8894
-Df Model: 3
-===============================================================================================================
-                                                  coef    std err          t      P>|t|      [0.025      0.975]
----------------------------------------------------------------------------------------------------------------
-Intercept                                       0.2890      0.005     62.440      0.000       0.280       0.298
-C(chromosome)[T.X]                             -0.0392      0.041     -0.946      0.344      -0.120       0.042
-level_most_dist_ortholog                       -0.0451      0.001    -43.828      0.000      -0.047      -0.043
-C(chromosome)[T.X]:level_most_dist_ortholog     0.0064      0.009      0.739      0.460      -0.011       0.023
-===============================================================================================================
-wald test for 'C(chromosome)[T.X]:level_most_dist_ortholog = 0' interaction: F test: F=0.5467707052309159, p=0.45965970768644115, df_denom=8.89e+03, df_num=1
-```
-
-Interaction is not significant
-
-
-##### `chromosome + conservation_distance`
-
-Wald p-value: p=0.0
-
-```text
-Df Residuals: 8895
-Df Model: 2
-============================================================================================
-                               coef    std err          t      P>|t|      [0.025      0.975]
---------------------------------------------------------------------------------------------
-Intercept                    0.2886      0.005     62.751      0.000       0.280       0.298
-C(chromosome)[T.X]          -0.0074      0.005     -1.407      0.160      -0.018       0.003
-level_most_dist_ortholog    -0.0450      0.001    -44.037      0.000      -0.047      -0.043
-============================================================================================
-wald test for 'level_most_dist_ortholog = 0' major effect: F test: F=1939.2469848907688, p=0.0, df_denom=8.9e+03, df_num=1
-```
-
-conservation distance as major effect is strongly significant!
-
-##### `chromosome`
-
-
-```text
-Df Residuals: 8896
+Df Residuals: 9090
 Df Model: 1
 ======================================================================================
-                         coef    std err          t      P>|t|      [0.025      0.975]
+                         coef    std err          z      P>|z|      [0.025      0.975]
 --------------------------------------------------------------------------------------
-Intercept              0.0836      0.001     71.187      0.000       0.081       0.086
-C(chromosome)[T.X]    -0.0169      0.006     -2.694      0.007      -0.029      -0.005
+Intercept             -1.7839      0.030    -58.616      0.000      -1.844      -1.724
+C(chromosome)[T.X]     0.5665      0.136      4.172      0.000       0.300       0.833
 ======================================================================================
 ```
 
 
 #### *B. siliquastri*
 
-##### `chromosome * conservation_rank` 
-
-Wald p-value: p=0.16 -> interaction not significant
-
 ```text
-Df Residuals: 9377
-Df Model: 3
-===============================================================================================================
-                                                  coef    std err          t      P>|t|      [0.025      0.975]
----------------------------------------------------------------------------------------------------------------
-Intercept                                       0.2595      0.004     60.159      0.000       0.251       0.268
-C(chromosome)[T.X]                              0.0267      0.028      0.940      0.347      -0.029       0.082
-level_most_dist_ortholog                       -0.0394      0.001    -41.470      0.000      -0.041      -0.038
-C(chromosome)[T.X]:level_most_dist_ortholog    -0.0084      0.006     -1.408      0.159      -0.020       0.003
-===============================================================================================================
-wald test for 'C(chromosome)[T.X]:level_most_dist_ortholog = 0' interaction: F test: F=1.983056216885961, p=0.1591019632980278, df_denom=9.38e+03, df_num=1
-```
-
-##### `chromosome + conservation_distance`
-
-Wald p-value: p=0.0 -> conservation distance is very significant!
-
-```text
-Df Residuals: 9378
-Df Model: 2
-============================================================================================
-                               coef    std err          t      P>|t|      [0.025      0.975]
---------------------------------------------------------------------------------------------
-Intercept                    0.2608      0.004     61.217      0.000       0.252       0.269
-C(chromosome)[T.X]          -0.0146      0.004     -3.818      0.000      -0.022      -0.007
-level_most_dist_ortholog    -0.0397      0.001    -42.319      0.000      -0.042      -0.038
-============================================================================================
-wald test for 'level_most_dist_ortholog = 0' major effect: F test: F=1790.8940643435014, p=0.0, df_denom=9.38e+03, df_num=1
-```
-
-##### `chromosome`
-
-```text
-Df Residuals: 9379
+Df Residuals: 9457
 Df Model: 1
 ======================================================================================
-                         coef    std err          t      P>|t|      [0.025      0.975]
+                         coef    std err          z      P>|z|      [0.025      0.975]
 --------------------------------------------------------------------------------------
-Intercept              0.0772      0.001     90.618      0.000       0.076       0.079
-C(chromosome)[T.X]    -0.0246      0.004     -5.817      0.000      -0.033      -0.016
+Intercept             -2.4419      0.039    -63.107      0.000      -2.518      -2.366
+C(chromosome)[T.X]     0.4108      0.163      2.517      0.012       0.091       0.731
 ======================================================================================
 ```
+
 
 
 #### *A. obtectus*
 
-##### `chromosome * conservation_rank` 
-
-Wald p-value: p=0.024 -> interaction is significant
 
 ```text
-Df Residuals: 9614
-Df Model: 3
-===============================================================================================================
-                                                  coef    std err          t      P>|t|      [0.025      0.975]
----------------------------------------------------------------------------------------------------------------
-Intercept                                       0.2750      0.004     63.197      0.000       0.267       0.284
-C(chromosome)[T.X]                             -0.0848      0.032     -2.683      0.007      -0.147      -0.023
-level_most_dist_ortholog                       -0.0438      0.001    -45.766      0.000      -0.046      -0.042
-C(chromosome)[T.X]:level_most_dist_ortholog     0.0149      0.007      2.259      0.024       0.002       0.028
-===============================================================================================================
-wald test for 'C(chromosome)[T.X]:level_most_dist_ortholog = 0' interaction: F test: F=5.101063831192631, p=0.02393348873932328, df_denom=9.61e+03, df_num=1
-```
-
-##### `chromosome + conservation_distance`
-
-
-```text
-Df Residuals: 9615
-Df Model: 2
-============================================================================================
-                               coef    std err          t      P>|t|      [0.025      0.975]
---------------------------------------------------------------------------------------------
-Intercept                    0.2737      0.004     63.562      0.000       0.265       0.282
-C(chromosome)[T.X]          -0.0120      0.003     -3.464      0.001      -0.019      -0.005
-level_most_dist_ortholog    -0.0436      0.001    -45.970      0.000      -0.045      -0.042
-============================================================================================
-wald test for 'level_most_dist_ortholog = 0' major effect: F test: F=2113.237569646739, p=0.0, df_denom=9.62e+03, df_num=1
-```
-
-##### `chromosome`
-
-```text
-Df Residuals: 9616
+Df Residuals: 9669
 Df Model: 1
 ======================================================================================
-                         coef    std err          t      P>|t|      [0.025      0.975]
+                         coef    std err          z      P>|z|      [0.025      0.975]
 --------------------------------------------------------------------------------------
-Intercept              0.0718      0.001     89.896      0.000       0.070       0.073
-C(chromosome)[T.X]    -0.0232      0.004     -5.837      0.000      -0.031      -0.015
+Intercept             -3.1106      0.051    -60.565      0.000      -3.211      -3.010
+C(chromosome)[T.X]     0.7266      0.189      3.844      0.000       0.356       1.097
 ======================================================================================
 ```
 
@@ -1180,32 +1069,47 @@ Everything, including all interactions is strongly significant.
 Autosomes:
 
 ```text
-////////////////// A :::: ABDOMEN //////////////////
-Df Residuals: 4497
-Df Model: 3
-==================================================================================================================
-                                                     coef    std err          t      P>|t|      [0.025      0.975]
-------------------------------------------------------------------------------------------------------------------
-Intercept                                          2.8242      0.145     19.438      0.000       2.539       3.109
-C(SB_abdomen)[T.male]                              0.9775      0.174      5.618      0.000       0.636       1.319
-level_most_dist_ortholog                          -0.2490      0.032     -7.902      0.000      -0.311      -0.187
-level_most_dist_ortholog:C(SB_abdomen)[T.male]    -0.1290      0.039     -3.308      0.001      -0.205      -0.053
-==================================================================================================================
+////////////////// A :::: abdomen //////////////////
+Df Residuals: 4491
+Df Model: 9
+==========================================================================================================================
+                                                             coef    std err          t      P>|t|      [0.025      0.975]
+--------------------------------------------------------------------------------------------------------------------------
+* Intercept                                                  2.3458      0.201     11.699      0.000       1.953       2.739
+* C(level_most_dist_ortholog)[T.2]                           0.9374      0.385      2.433      0.015       0.182       1.693
+  C(level_most_dist_ortholog)[T.3]                          -0.2688      0.221     -1.217      0.224      -0.702       0.164
+* C(level_most_dist_ortholog)[T.4]                          -0.4974      0.208     -2.395      0.017      -0.905      -0.090
+* C(level_most_dist_ortholog)[T.5]                          -0.7675      0.203     -3.782      0.000      -1.165      -0.370
+  C(SB_abdomen)[T.male]                                      0.1587      0.238      0.667      0.505      -0.308       0.625
+  C(level_most_dist_ortholog)[T.2]:C(SB_abdomen)[T.male]    -0.4441      0.427     -1.041      0.298      -1.280       0.392
+* C(level_most_dist_ortholog)[T.3]:C(SB_abdomen)[T.male]     0.5256      0.261      2.014      0.044       0.014       1.037
+* C(level_most_dist_ortholog)[T.4]:C(SB_abdomen)[T.male]     0.5331      0.248      2.150      0.032       0.047       1.019
+  C(level_most_dist_ortholog)[T.5]:C(SB_abdomen)[T.male]     0.0966      0.243      0.398      0.691      -0.379       0.573
+==========================================================================================================================
+model predicted intercept (female-biased rank1): 2.345814
+abdomen:A:rank1 medians 	 male: 2.462 	female: 2.346
 
-////////////////// A :::: HEAD+THORAX //////////////////
-Df Residuals: 1512
-Df Model: 3
-======================================================================================================================
-                                                         coef    std err          t      P>|t|      [0.025      0.975]
-----------------------------------------------------------------------------------------------------------------------
-Intercept                                              3.2551      0.282     11.523      0.000       2.701       3.809
-C(SB_head_thorax)[T.male]                              2.6746      0.336      7.953      0.000       2.015       3.334
-level_most_dist_ortholog                              -0.3525      0.064     -5.518      0.000      -0.478      -0.227
-level_most_dist_ortholog:C(SB_head_thorax)[T.male]    -0.5275      0.079     -6.703      0.000      -0.682      -0.373
-======================================================================================================================
+////////////////// A :::: head_thorax //////////////////
+Df Residuals: 1506
+Df Model: 9
+==============================================================================================================================
+                                                                 coef    std err          t      P>|t|      [0.025      0.975]
+------------------------------------------------------------------------------------------------------------------------------
+* Intercept                                                      3.2921      0.312     10.554      0.000       2.680       3.904
+* C(level_most_dist_ortholog)[T.2]                               0.9822      0.550      1.785      0.074      -0.097       2.061
+* C(level_most_dist_ortholog)[T.3]                              -1.2224      0.352     -3.476      0.001      -1.912      -0.533
+* C(level_most_dist_ortholog)[T.4]                              -1.5377      0.330     -4.658      0.000      -2.185      -0.890
+* C(level_most_dist_ortholog)[T.5]                              -1.7838      0.321     -5.560      0.000      -2.413      -1.155
+  C(SB_head_thorax)[T.male]                                      0.1743      0.373      0.467      0.641      -0.558       0.906
+  C(level_most_dist_ortholog)[T.2]:C(SB_head_thorax)[T.male]    -0.2789      0.623     -0.448      0.654      -1.500       0.942
+* C(level_most_dist_ortholog)[T.3]:C(SB_head_thorax)[T.male]     1.6594      0.417      3.982      0.000       0.842       2.477
+* C(level_most_dist_ortholog)[T.4]:C(SB_head_thorax)[T.male]     1.2386      0.396      3.129      0.002       0.462       2.015
+  C(level_most_dist_ortholog)[T.5]:C(SB_head_thorax)[T.male]    -0.3203      0.389     -0.823      0.410      -1.083       0.443
+==============================================================================================================================
+model predicted intercept (female-biased rank1): 3.292097
+head_thorax:A:rank1 medians 	 male: 3.454 	female: 3.292
 ```
 
-The actual calculation of the coefficients is a bit unclear to me. the intercept should be female-biased/rank1, which has these medians in the plot: `abdomen=2.346` and `head+thorax=3.292` (they are the same from the plotting function as in the statistical analysis), which does not agree with the coefficients from the models. When I run the model again without interactions, the intercept coefficient increases for both tissues and becomes further away from the plotted/calculated means. The rank order is right, the male median is higher than the female (`abdomen male median = 2.462`, `h+t male median = 3.454`), and the `C(SB_head_thorax)[T.male]` coefficient is larger for head+thorax, where the difference between male and female median is greater (for rank 1). The coefficients are therefore probably some mathematical estimates for rank 1 that take the complete data set and its structure into account, but I don't know for sure how that works. In conclusion it's fine?
 
 <details>
   <summary>X-statistics (low sample size and therefore weird)</summary>
@@ -1449,7 +1353,7 @@ The darker parts at the top is the proportion of positively selected genes.
 
 ## median quantile dN/dS test
 
-I am using `quantreg` again, like for the log2FC again, where I have a continuous response variable. 
+I am using `quantreg` again, like for the log2FC, where I have a continuous response variable. 
 
 ### *C. chinensis* dN/dS with expression data
 
