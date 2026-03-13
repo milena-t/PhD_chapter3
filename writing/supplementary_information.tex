@@ -196,7 +196,7 @@ SRR3113348, SRR3113384, SRR3113350, SRR3113385, SRR3113352, SRR3113386, SRR31134
 \end{figure}
 
 
-\subsection*{Additional plots for $\text{d}_N$ and $\text{d}_S$}
+% \subsection*{Additional plots for $\text{d}_N$ and $\text{d}_S$}
 
 \begin{figure}[H]
 
@@ -238,15 +238,13 @@ SRR3113348, SRR3113384, SRR3113350, SRR3113385, SRR3113352, SRR3113386, SRR31134
     
     \caption{\textbf{d$_S$ vs. d$_N$ scatterplots and violin plots of d$_S$ values from X-linked and autosomal orthologs.} 
     Pairwise comparisons between members of three lineages with violin plots of d$_S$ values for X-linked and 
-    autosomal 1-to-1 orthologs, and scatterplots of d$_S$ vs. d$_N$. Permutation tests (n=10000) show that d$_S$ is 
-    significantly lower for X-linked orthologs in all comparisons within \textit{Bruchini} (\textbf{A}) and 
-    \textit{Coccinella} (\textbf{B}), but not \textit{Tribolium} (\textbf{C}).
+    autosomal 1-to-1 orthologs, and scatterplots of d$_S$ vs. d$_N$. For permutation tests see Table S2.% (n=10000) show that d$_S$ is significantly lower for X-linked orthologs in all comparisons within \textit{Bruchini} (\textbf{A}) and \textit{Coccinella} (\textbf{B}), but not \textit{Tribolium} (\textbf{C}).
     }\label{dS_plots}
     
 \end{figure}
 
 
-\subsubsection*{dS permutation test results}
+\subsubsection*{d$_S$ permutation test}
 
 \begin{table}[H]
     \centering
@@ -316,14 +314,14 @@ SRR3113348, SRR3113384, SRR3113350, SRR3113385, SRR3113352, SRR3113386, SRR31134
     \end{subfigure}
     
     
-    \caption{\textbf{d$_N$/d$_S$ ratio and permutation tests for significance.} 
-    Pairwise comparisons between members of three species groups with violin plots of d$_N$/d$_S$ values 
-    for X-linked and autosomal 1-to-1 orthologs, and permutation tests (10000 permutations) to assess significance. 
-    The permutation test show frequency histograms of median differences between autosomal and X-linked d$_N$/d$_S$, 
-    with the shaded area showing the 95\% confidence interval according to a normal distribution. 
-    The vertical pink line shows the true observed difference in mean between autosomal and X-linked d$_N$/d$_S$.
-    All pairwise comparisons show significantly lower d$_N$/d$_S$ values on X-linked orthologs. 
-    The within-family comparisons are performed for three species groups: 
+    \caption{\textbf{Pairwise comparisons of evolutionary rates between X-linked and autosomal genes.} 
+    Violin plots show the distribution of d$_N$/d$_S$ values for X-linked and autosomal 1:1 orthologs in pairwise 
+    comparisons within three beetle lineages: Bruchini (\textbf{A}), Coccinella (\textbf{B}), and Tribolium (\textbf{C}). 
+    Significance was assessed using permutation tests (10,000 permutations). Histograms show the permutation distribution 
+    of differences in mean d$_N$/d$_S$ between autosomal and X-linked genes. The shaded region indicates the 95\% 
+    confidence interval under the null distribution, and the vertical pink line marks the observed difference 
+    in mean d$_N$/d$_S$ between chromosome classes. In all comparisons, X-linked orthologs show significantly lower d$_N$/d$_S$ 
+    values than autosomal orthologs. The within-family comparisons are performed for three species groups: 
     \textit{Bruchini} (\textbf{A}), \textit{Coccinella} (\textbf{B}) and \textit{Tribolium} (\textbf{C}).
     }\label{dNdS_ratios}
     
@@ -368,15 +366,14 @@ SRR3113348, SRR3113384, SRR3113350, SRR3113385, SRR3113352, SRR3113386, SRR31134
     \end{subfigure}
     
     
-    \caption{\textbf{positively selected orthologs split into autosomal or X-linked.} 
-    Positively selected genes are determined via likelihood ratio test comparison between paml site models M1a and M2a. 
-    The permutation tests show frequency histograms of median differences between the percentage of orthologs for 10000 
-    permutations with positively selected codons between autosomal and X-linked orthologs, with the shaded area showing 
-    the 95\% confidence interval according to a normal distribution. 
-    The vertical pink line shows the true observed difference in percentage of orthologs with positively selected
-    codons between autosomal and X-linked orthologs.
-    \textit{Bruchini} (\textbf{A}), show an enrichment of positively selected X-linked orthologs in all pairwise comparisons, 
-    while \textit{Coccinella} (\textbf{B}) and \textit{Tribolium} (\textbf{C}) show no significant difference.
+    \caption{\textbf{Positive selection in X-linked and autosomal orthologs.} 
+    Orthologs were classified as positively selected using likelihood ratio tests comparing PAML site models M1a and M2a. 
+    The proportion of genes containing positively selected codons was compared between autosomal and X-linked orthologs. 
+    Histograms show the permutation distribution (10,000 permutations) of the difference in the percentage of positively 
+    selected genes between chromosome classes. The shaded region indicates the 95\% confidence interval under the null 
+    distribution, and the vertical pink line marks the observed difference. Bruchini (\textbf{A}) shows a significant 
+    enrichment of positively selected X-linked orthologs across all pairwise comparisons, whereas Coccinella (\textbf{B}) 
+    and Tribolium (\textbf{C}) show no significant difference.
     }\label{site_models}
     
 \end{figure}
@@ -386,10 +383,12 @@ SRR3113348, SRR3113384, SRR3113350, SRR3113385, SRR3113352, SRR3113386, SRR31134
 
 \begin{table}[H]
     \centering
-    \caption{Percentages of each gene age category from the perspective of \textit{C. maculatus} in pairwise comparisons
-    to \textit{C. chinensis}, \textit{B. siliquastri}, and \textit{A. obtectus}. Percentages and absolute counts are shown. Since the
-    distance is determined from the perspective of \textit{C. maculatus} orthologs, the \textit{B. siliqastri} and \textit{A. obtectus}
-    comparisons can have a minimum distance category of 1 and 2 respectively.}
+    \caption{Gene age categories of \textit{C. maculatus} orthologs in the X chromosome and the autosomes. 
+    Percentages and absolute counts of genes in each ortholog age category are shown for pairwise comparisons between 
+    \textit{C. maculatus} and \textit{C. chinensis}, \textit{B. siliquastri}, and \textit{A. obtectus}. 
+    Age categories are defined relative to \textit{C. maculatus} orthologs. Because evolutionary distance 
+    is measured from the \textit{C. maculatus} lineage, the minimum detectable age category differs among comparisons, 
+    with \textit{B. siliquastri} and \textit{A. obtectus} comparisons starting at categories 1 and 2, respectively.}
     \label{SItab:conservation}
     \begin{tabular}{c |c | c}
         \multicolumn{3}{c}{\textit{C. chinensis}}\\
@@ -446,12 +445,12 @@ SRR3113348, SRR3113384, SRR3113350, SRR3113385, SRR3113352, SRR3113386, SRR31134
 \end{table}
 
 
-\subsubsection*{Median Quantile regression results}
+\subsubsection*{Median Quantile regression}
 
 \begin{table}[H]
     \centering
-    \caption{Median regression results of \texttt{dNdS $\sim$ chromosome + gene age}. 
-    The intercept is autosomal genes of gene age 1.}
+    \caption{Median regression results for the model \texttt{dNdS $\sim$ chromosome + gene age}. 
+    The intercept corresponds to autosomal genes in the youngest gene-age category (age=1).}
     \label{SItab:conservation}
     \begin{tabular}{c |c | c|c}
         \multicolumn{3}{c}{\textit{C. chinensis} (df=4)}\\
@@ -510,13 +509,13 @@ SRR3113348, SRR3113384, SRR3113350, SRR3113385, SRR3113352, SRR3113386, SRR31134
 
 \iffalse
 
-\subsubsection*{logistic regression results}
+\subsubsection*{logistic regression}
 
 \begin{table}[H]
     \centering
-    \caption{Logistic regression results of \texttt{pos. sel. $\sim$ chromosome + gene age}. 
-    The intercept is autosomal genes of gene age 1. The positive coefficients indicate that the X-chromosome
-    is enriched for genes under positive selection.}
+    \caption{Logistic regression results for the model \texttt{pos. sel. $\sim$ chromosome + gene age}. 
+    The intercept corresponds to autosomal genes in gene-age category 1 (reference level). 
+    Positive coefficients for the chromosome term indicate an increased probability of positive selection among X-linked genes.}
     \label{SItab:conservation}
     \begin{tabular}{c |c | c|c}
         \multicolumn{3}{c}{\textit{C. chinensis} (df=1)}\\
@@ -557,26 +556,28 @@ SRR3113348, SRR3113384, SRR3113350, SRR3113385, SRR3113352, SRR3113386, SRR31134
 
 \fi
 
-\subsection*{Additional differential expression analyses}
+% \subsection*{Additional differential expression analyses}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\linewidth]{../data/DE_analysis/all_sex_bias_proportion.png}
-    \caption{Proportion of sex-bias of X-linked and autosomal genes for reproductive (abdominal) or somatic tissues (head and thorax)}
+    \caption{Proportions of male-biased, female-biased, and unbiased genes among X-linked and autosomal 
+    loci in reproductive (abdominal) and somatic (head and thorax) tissues.}
     \label{SIfig:SB_prop}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=\linewidth]{../data/DE_analysis/X_sex_bias.png}
-    \caption{dosage compensation}
+    \caption{Gene expression difference between the sexes, in the two tissue categories, across the X chromosome in C. maculatus. }
     \label{SIfig:dosagecompensation}
 \end{figure}
 
 
 \begin{table}[H]
     \centering
-    \caption{Multinomial logistic regression of sex-bias categories by gene age. The intercept is male-bias and conservaiton distance 1.}
+    \caption{Multinomial logistic regression of sex-bias category on the autosomes and the X chromosome as a function of gene age. 
+    The reference category is male-biased genes in gene-age category 1 (intercept).}
     \label{SItab:mLogReg}
     \begin{tabular}{l |c  |c| c}
         \multicolumn{4}{c}{autosomal abdomen (df=8)}\\
@@ -717,8 +718,9 @@ SRR3113348, SRR3113384, SRR3113350, SRR3113385, SRR3113352, SRR3113386, SRR31134
 
 \begin{table}[H]
     \centering
-    \caption{Median regression results of autosomal orthologs: \texttt{log2FC $\sim$ sex-bias category * gene age}. 
-    The intercept is female-biased genes of gene age 1, the wald-test is performed for all two-way interactions at once.}
+    \caption{Median regression results for autosomal orthologs (model: \texttt{log2FC $\sim$ sex-bias category * gene age}). 
+    The intercept corresponds to female-biased genes in gene-age category 1. 
+    The Wald test evaluates the joint significance of all two-way interaction terms.}
     \label{SItab:A_logFCconservation}
     \begin{tabular}{l |c |c| c}
         \multicolumn{4}{c}{autosomal abdomen (df=9)}\\
@@ -783,8 +785,8 @@ SRR3113348, SRR3113384, SRR3113350, SRR3113385, SRR3113352, SRR3113386, SRR31134
 
 \begin{table}[H]
     \centering
-    \caption{Median regression results of X-linked orthologs: \texttt{log2FC $\sim$ sex-bias category * gene age}. 
-    The intercept is female-biased genes of gene age 1, the wald-test is performed for all two-way interactions at once.}
+    \caption{Median regression results for X-linked orthologs (model: \texttt{log2FC $\sim$ sex-bias category * gene age}). 
+    The intercept corresponds to female-biased genes in gene-age category 1. The Wald test evaluates the joint significance of all two-way interaction terms.}
     \label{SItab:X_logFCconservation}
     \begin{tabular}{l |c |c | c}
         \multicolumn{4}{c}{X-linked abdomen (df=8)}\\
@@ -846,8 +848,7 @@ SRR3113348, SRR3113384, SRR3113350, SRR3113385, SRR3113352, SRR3113386, SRR31134
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.75\linewidth]{../data/DE_analysis/dNdS_vs_conservation_rank_medians_lineplot_head_thorax_only_A.png}
-    \caption{d$_N$/d$_S$ of autosomal orthologs by chromosome and gene age split by sex bias categories accodring to head and thorax tissue. Blue is male-biased, grey is
-    unbiased and red is female-biased.}
+    \caption{d$_N$/d$_S$ across gene age for male-biased (blue), unbiased (grey), and female-biased (red) autosomal genes of somatic tissues.}
     \label{SIfig:SBmag_a}
 \end{figure}
 
@@ -855,8 +856,7 @@ SRR3113348, SRR3113384, SRR3113350, SRR3113385, SRR3113352, SRR3113386, SRR31134
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.75\linewidth]{../data/DE_analysis/dNdS_vs_conservation_rank_medians_lineplot_head_thorax_only_X.png}
-    \caption{d$_N$/d$_S$ of X-linked orthologs by chromosome and gene age split by sex bias categories accodring to head and thorax tissue. Blue is male-biased, grey is
-    unbiased and red is female-biased.}
+    \caption{d$_N$/d$_S$ across gene age for male-biased (blue), unbiased (grey), and female-biased (red) X-linked genes of somatic tissues.}
     \label{SIfig:SBmag_ht}
 \end{figure}
 
