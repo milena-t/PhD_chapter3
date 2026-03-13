@@ -16,6 +16,7 @@
 \usepackage{multicol}
 \usepackage[colorlinks=true, allcolors=blue]{hyperref}
 \usepackage{lscape} 
+\usepackage{authblk}
 
 \renewcommand\arraystretch{1.25}
 
@@ -48,11 +49,18 @@
 \counterwithout*{figure}{section} % this is the only way i got the figure number and in-text reference to match, no idea what kind of black magic is happening here though
 
 
-\title{How many genes are in a gene family? Uniform annotation methods for comparative genomics}
-\author{Milena Trabert, Lila Maladesky, Elina Immonen}
-\date{May 2025}
+\title{Sex-biased gene turnover and dosage compensation shape Slower/Faster-X dynamics in beetles}
+\author[1]{Milena Trabert}
+\author[2,3]{Lila Maladesky}
+\author[1]{Elina Immonen}
+\date{ }
+\affil[1]{Department of Ecology and Genetics (Evolutionary Biology program), Evolutionary Biology Centre, Norbyvägen 18D, 75236, Uppsala University, Uppsala}
+\affil[2]{Erasmus Mundus Master Programme in Evolutionary Biology MEME, Uppsala, Sweden}
+\affil[3]{Department of Biology (Biodiversity and Evolution), Ekologihuset, Kontaktvägen 10, 223 62, Lund University, Sweden}
 
 \begin{document}
+\maketitle
+\newpage
 \renewcommand{\arraystretch}{1.5}
 \pagenumbering{gobble}
 \renewcommand{\thetable}{S\arabic{table}}
@@ -89,6 +97,31 @@
     \end{tabular}
 \end{table}
 
+\subsection*{Sample SRR numbers}
+
+\subsubsection*{Differential expression analysis in Cmac}
+
+Samples from virgin individuals of \textit{C. maculauts}, abdominal and head+thorax tissues. There are two technical replicates (lanes) for each biological replicate, which were merged after trimming, resulting in one read library for each biological replicate before mapping and counting.
+
+SRR3113348, SRR3113384, SRR3113350, SRR3113385, SRR3113352, SRR3113386, SRR3113420, SRR3113365, SRR3113421, SRR3113366, SRR3113422, SRR3113367, SRR3113345, SRR3113380, SRR3113346, SRR3113382, SRR3113347, SRR3113383, SRR3113364, SRR3113361, SRR3113381, SRR3113362, SRR3113418, and SRR3113363
+
+\subsubsection*{RNA-seq evidence for genome annotation}
+
+\begin{itemize}
+\item \textbf{\textit{T. freemani}}: SRR15965976, SRR15965980, SRR15965983, SRR15965985, SRR14070854, SRR14070855, SRR14070871, and SRR14070870
+\item \textbf{\textit{C. maculatus}}: ERR12383274, ERR12383248, ERR12383255, ERR12383289, ERR12383294, ERR12383314, ERR12383271, ERR12383290, ERR12383279, and ERR12383266
+\item \textbf{\textit{C. magnifica}}: no species-specific RNA-seq data available
+\end{itemize}
+
+
+\subsection*{Ortholog numbers}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.49\linewidth]{../data/fastX_ortholog_ident/BRH_A_linked_counts_heatmap_noDiorhabda.png}
+    \includegraphics[width=0.49\linewidth]{../data/fastX_ortholog_ident/BRH_X_linked_counts_heatmap_noDiorhabda.png}
+    \caption{Pairwise 1-to-1 orthologs identified via blast best reciprocal hits, exclusively autosomal and exclusively X-linked.}
+    \label{SIfig:ortholog_counts}
+\end{figure}
 
 \subsection*{Synteny}
 
@@ -811,21 +844,5 @@
     \label{SIfig:GO_venn_X}
 \end{figure}
 
-
-\subsection*{Sample SRR numbers}
-
-\subsubsection*{Differential expression analysis in Cmac}
-
-Samples from virgin individuals of \textit{C. maculauts}, abdominal and head+thorax tissues. There are two technical replicates (lanes) for each biological replicate, which were merged after trimming, resulting in one read library for each biological replicate before mapping and counting.
-
-SRR3113348, SRR3113384, SRR3113350, SRR3113385, SRR3113352, SRR3113386, SRR3113420, SRR3113365, SRR3113421, SRR3113366, SRR3113422, SRR3113367, SRR3113345, SRR3113380, SRR3113346, SRR3113382, SRR3113347, SRR3113383, SRR3113364, SRR3113361, SRR3113381, SRR3113362, SRR3113418, and SRR3113363
-
-\subsubsection*{RNA-seq evidence for genome annotation}
-
-\begin{itemize}
-\item \textbf{\textit{T. freemani}}: SRR15965976, SRR15965980, SRR15965983, SRR15965985, SRR14070854, SRR14070855, SRR14070871, and SRR14070870
-\item \textbf{\textit{C. maculatus}}: ERR12383274, ERR12383248, ERR12383255, ERR12383289, ERR12383294, ERR12383314, ERR12383271, ERR12383290, ERR12383279, and ERR12383266
-\item \textbf{\textit{C. magnifica}}: no species-specific RNA-seq data available
-\end{itemize}
 
 \end{document}

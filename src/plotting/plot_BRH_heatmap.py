@@ -17,23 +17,23 @@ def ortholog_tables(username = "miltr339", x_syntenic = False):
         f"{dir_path}A_obtectus_B_siliquastri_BRH.tsv",
         f"{dir_path}A_obtectus_C_chinensis_BRH.tsv",
         f"{dir_path}A_obtectus_C_maculatus_BRH.tsv",
-        f"{dir_path}A_obtectus_D_carinulata_BRH.tsv",
-        f"{dir_path}A_obtectus_D_sublineata_BRH.tsv",
+        # f"{dir_path}A_obtectus_D_carinulata_BRH.tsv",
+        # f"{dir_path}A_obtectus_D_sublineata_BRH.tsv",
         f"{dir_path}B_siliquastri_B_siliquastri_BRH.tsv",
         f"{dir_path}B_siliquastri_C_chinensis_BRH.tsv",
         f"{dir_path}B_siliquastri_C_maculatus_BRH.tsv",
-        f"{dir_path}B_siliquastri_D_carinulata_BRH.tsv",
-        f"{dir_path}B_siliquastri_D_sublineata_BRH.tsv",
+        # f"{dir_path}B_siliquastri_D_carinulata_BRH.tsv",
+        # f"{dir_path}B_siliquastri_D_sublineata_BRH.tsv",
         f"{dir_path}C_chinensis_C_chinensis_BRH.tsv",
         f"{dir_path}C_chinensis_C_maculatus_BRH.tsv",
-        f"{dir_path}C_chinensis_D_carinulata_BRH.tsv",
-        f"{dir_path}C_chinensis_D_sublineata_BRH.tsv",
+        # f"{dir_path}C_chinensis_D_carinulata_BRH.tsv",
+        # f"{dir_path}C_chinensis_D_sublineata_BRH.tsv",
         f"{dir_path}C_maculatus_C_maculatus_BRH.tsv",
-        f"{dir_path}C_maculatus_D_carinulata_BRH.tsv",
-        f"{dir_path}C_maculatus_D_sublineata_BRH.tsv",
-        f"{dir_path}D_carinulata_D_carinulata_BRH.tsv",
-        f"{dir_path}D_carinulata_D_sublineata_BRH.tsv",
-        f"{dir_path}D_sublineata_D_sublineata_BRH.tsv",
+        # f"{dir_path}C_maculatus_D_carinulata_BRH.tsv",
+        # f"{dir_path}C_maculatus_D_sublineata_BRH.tsv",
+        # f"{dir_path}D_carinulata_D_carinulata_BRH.tsv",
+        # f"{dir_path}D_carinulata_D_sublineata_BRH.tsv",
+        # f"{dir_path}D_sublineata_D_sublineata_BRH.tsv",
         f"{dir_path}T_castaneum_T_freemani_BRH.tsv",
         f"{dir_path}T_castaneum_T_castaneum_BRH.tsv",
         f"{dir_path}T_freemani_T_freemani_BRH.tsv",
@@ -46,23 +46,23 @@ def ortholog_tables(username = "miltr339", x_syntenic = False):
         f"{dir_path}A_obtectus_B_siliquastri_BRH.tsv",
         f"{dir_path}A_obtectus_C_chinensis_BRH.tsv",
         f"{dir_path}A_obtectus_C_maculatus_BRH.tsv",
-        f"{dir_path}A_obtectus_D_carinulata_BRH_X_syntenic.tsv",
-        f"{dir_path}A_obtectus_D_sublineata_BRH.tsv",
+        # f"{dir_path}A_obtectus_D_carinulata_BRH_X_syntenic.tsv",
+        # f"{dir_path}A_obtectus_D_sublineata_BRH.tsv",
         f"{dir_path}B_siliquastri_B_siliquastri_BRH.tsv",
         f"{dir_path}B_siliquastri_C_chinensis_BRH.tsv",
         f"{dir_path}B_siliquastri_C_maculatus_BRH.tsv",
-        f"{dir_path}B_siliquastri_D_carinulata_BRH_X_syntenic.tsv",
-        f"{dir_path}B_siliquastri_D_sublineata_BRH.tsv",
+        # f"{dir_path}B_siliquastri_D_carinulata_BRH_X_syntenic.tsv",
+        # f"{dir_path}B_siliquastri_D_sublineata_BRH.tsv",
         f"{dir_path}C_chinensis_C_chinensis_BRH.tsv",
         f"{dir_path}C_chinensis_C_maculatus_BRH.tsv",
-        f"{dir_path}C_chinensis_D_carinulata_BRH_X_syntenic.tsv",
-        f"{dir_path}C_chinensis_D_sublineata_BRH.tsv",
+        # f"{dir_path}C_chinensis_D_carinulata_BRH_X_syntenic.tsv",
+        # f"{dir_path}C_chinensis_D_sublineata_BRH.tsv",
         f"{dir_path}C_maculatus_C_maculatus_BRH.tsv",
-        f"{dir_path}C_maculatus_D_carinulata_BRH_X_syntenic.tsv",
-        f"{dir_path}C_maculatus_D_sublineata_BRH.tsv",
-        f"{dir_path}D_carinulata_D_carinulata_BRH.tsv",
-        f"{dir_path}D_carinulata_D_sublineata_BRH_X_syntenic.tsv",
-        f"{dir_path}D_sublineata_D_sublineata_BRH.tsv",
+        # f"{dir_path}C_maculatus_D_carinulata_BRH_X_syntenic.tsv",
+        # f"{dir_path}C_maculatus_D_sublineata_BRH.tsv",
+        # f"{dir_path}D_carinulata_D_carinulata_BRH.tsv",
+        # f"{dir_path}D_carinulata_D_sublineata_BRH_X_syntenic.tsv",
+        # f"{dir_path}D_sublineata_D_sublineata_BRH.tsv",
     ]
     if x_syntenic:
         return dirs_list_x_syntenic, dir_path
@@ -94,7 +94,7 @@ def count_orthologs(brh_table_path:str, chr_type:str = "A", verbose = False) -> 
 
 
 
-def make_array_for_heatmap(brh_tables_list:list, chr_type:str = "A", verbose = False):
+def make_array_for_heatmap(brh_tables_list:list, chr_type:str = "A", verbose = False, species_excl=[]):
     """
     make an array to plot as a heatmap
     """
@@ -106,6 +106,10 @@ def make_array_for_heatmap(brh_tables_list:list, chr_type:str = "A", verbose = F
         brh_table = brh_table.split("/")[-1]
         brh_table = brh_table.replace("_BRH.tsv", "")
         brh_table = brh_table.replace("_BRH_X_syntenic.tsv", "")
+        for sp_excl in species_excl:
+            if sp_excl in brh_table:
+                print(f"pass {sp_excl}")
+                continue
         try:
             gen1, spec1, gen2, spec2 =brh_table.split("_")
         except:
@@ -128,6 +132,10 @@ def make_array_for_heatmap(brh_tables_list:list, chr_type:str = "A", verbose = F
         brh_table = brh_table_path.split("/")[-1]
         brh_table = brh_table.replace("_BRH.tsv", "")
         brh_table = brh_table.replace("_BRH_X_syntenic.tsv", "")
+        for sp_excl in species_excl:
+            if sp_excl in brh_table:
+                print(f"pass {sp_excl}")
+                continue
         try:
             gen1, spec1, gen2, spec2 =brh_table.split("_")
         except:
@@ -249,11 +257,14 @@ if __name__ == "__main__":
 
     if True:
         for chromosome in ["A", "X"]:
-            ortholog_counts_array,species_list = make_array_for_heatmap(all_tables_list, chr_type=chromosome, verbose=False)
+            ortholog_counts_array,species_list = make_array_for_heatmap(all_tables_list, chr_type=chromosome, verbose=True, species_excl=["D_carinulata","D_sublineata"])
+
             if Dcar_anc_X:
                 plot_heatmap(ortholog_counts_array,species_list, filename=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/BRH_{chromosome}_linked_counts_heatmap_ancestra_Dcar_X.png", title = f"{chromosome}-linked pairwise orthologs counts\n(using the D. carinulata ancestral\nX-syntenic chromosome)")
             else:
-                plot_heatmap(ortholog_counts_array,species_list, filename=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/BRH_{chromosome}_linked_counts_heatmap.png", title = f"{chromosome}-linked pairwise orthologs counts")
+                species_list = [sp for sp in species_list if "D_car" not in sp and "D_sub" not in sp]
+                print(species_list)
+                plot_heatmap(ortholog_counts_array,species_list, filename=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/BRH_{chromosome}_linked_counts_heatmap_noDiorhabda.png", title = f"{chromosome}-linked pairwise orthologs counts")
     
     ## count gametologs
     print(f"--> count within-species gametologs")
