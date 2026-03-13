@@ -717,7 +717,7 @@ C(level_most_dist_ortholog)[T.5]:C(SB_{tissue})[T.male]=0"""
 
 if __name__ == "__main__":
 
-    username = "milena"
+    username = "miltr339"
     table_paths_dict = get_full_table_path(username=username)
 
     if True:
@@ -731,7 +731,7 @@ if __name__ == "__main__":
             # make_rank_summary_table(path, outfile_path=outfile_path, min_LFC=1, p_threshold=0.05)
             summary_table_paths[chromosome] = outfile_path
 
-        if True:
+        if False:
             plot_outfile_name=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/DE_conservation_rank_proportions.png"
             make_category_proportion_plot(rank_summary_path_A=summary_table_paths["A"], 
                                       rank_summary_path_X=summary_table_paths["X"],

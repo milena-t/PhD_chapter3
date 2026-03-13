@@ -1321,7 +1321,7 @@ if __name__ == "__main__":
         lineplot=True   # if True, plot (conservation distance separated) line plot of dNdS medians with standard error
                         # if False, plot dNds boxplot
                         # if "only_chr" is specified below plot only one chromosome category, otherwise plot A and X in the same plot
-        if False:
+        if True:
             ## plot dNdS or pos sel separated by sex bias, A/X and age rank
             if pos_sel:
                 filename=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/pos_sel_vs_conservation_rank_boxplot.png"
@@ -1330,7 +1330,7 @@ if __name__ == "__main__":
             else:
                 filename=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/dNdS_vs_conservation_rank_boxplot.png"
             ###################################################
-            boxplot_dNdS(full_tables_dict, outfile=filename, pos_sel=pos_sel, lineplot=lineplot, only_chr="A")
+            boxplot_dNdS(full_tables_dict, outfile=filename, pos_sel=pos_sel, lineplot=lineplot, only_chr="X")
             ###################################################
         else:
             ### boxplot for dNdS by sex bias and A/X but with rank categories merged

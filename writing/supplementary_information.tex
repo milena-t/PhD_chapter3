@@ -49,7 +49,7 @@
 \counterwithout*{figure}{section} % this is the only way i got the figure number and in-text reference to match, no idea what kind of black magic is happening here though
 
 
-\title{Sex-biased gene turnover and dosage compensation shape Slower/Faster-X dynamics in beetles}
+\title{Sex-biased gene turnover and dosage compensation shape Slower/Faster-X dynamics in beetles: Supplementary information}
 \author[1]{Milena Trabert}
 \author[2,3]{Lila Maladesky}
 \author[1]{Elina Immonen}
@@ -123,6 +123,7 @@ SRR3113348, SRR3113384, SRR3113350, SRR3113385, SRR3113352, SRR3113386, SRR31134
     \label{SIfig:ortholog_counts}
 \end{figure}
 
+
 \subsection*{Synteny}
 
 \subsubsection*{\textit{B. siliquastri} vs. \textit{A. obtectus}}
@@ -175,6 +176,24 @@ SRR3113348, SRR3113384, SRR3113350, SRR3113385, SRR3113352, SRR3113386, SRR31134
     \label{SIfig:synteny_TcasBsil}
 \end{figure}
 
+\subsection*{Ortholog overlap in \textit{Bruchini}}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.49\linewidth]{../data/GO_enrichment/geneID_overlap_Venn_A.png}
+    \includegraphics[width=0.49\linewidth]{../data/GO_enrichment/geneID_overlap_Venn_A_pos_sel_genes.png}
+    \caption{Overlap of A-linked orthologs from \textit{C. maculatus} identified in all three \textit{Bruchini} pairwise comparisons (right) 
+    and same for subset that is positively selected (left)}
+    \label{SIfig:GO_venn_A}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.49\linewidth]{../data/GO_enrichment/geneID_overlap_Venn_X.png}
+    \includegraphics[width=0.49\linewidth]{../data/GO_enrichment/geneID_overlap_Venn_X_pos_sel_genes.png}
+    \caption{Overlap of X-linked orthologs from \textit{C. maculatus} identified in all three \textit{Bruchini} pairwise comparisons (right) 
+    and same for subset that is positively selected (left)}
+    \label{SIfig:GO_venn_X}
+\end{figure}
 
 
 \subsection*{Additional plots for $\text{d}_N$ and $\text{d}_S$}
@@ -489,6 +508,8 @@ SRR3113348, SRR3113384, SRR3113350, SRR3113385, SRR3113352, SRR3113386, SRR31134
     \end{tabular}
 \end{table}
 
+\iffalse
+
 \subsubsection*{logistic regression results}
 
 \begin{table}[H]
@@ -534,6 +555,8 @@ SRR3113348, SRR3113384, SRR3113350, SRR3113385, SRR3113352, SRR3113386, SRR31134
     \end{tabular}
 \end{table}
 
+\fi
+
 \subsection*{Additional differential expression analyses}
 
 \begin{figure}[H]
@@ -553,8 +576,7 @@ SRR3113348, SRR3113384, SRR3113350, SRR3113385, SRR3113352, SRR3113386, SRR31134
 
 \begin{table}[H]
     \centering
-    \caption{Multinomial logistic regression of sex-bias categories by gene age. Due to very low sample size for the X-linked 
-    orthologs, the analysis was only performed for autosomal orthologs. The intercept is male-bias and conservaiton distance 1.}
+    \caption{Multinomial logistic regression of sex-bias categories by gene age. The intercept is male-bias and conservaiton distance 1.}
     \label{SItab:mLogReg}
     \begin{tabular}{l |c  |c| c}
         \multicolumn{4}{c}{autosomal abdomen (df=8)}\\
@@ -619,6 +641,74 @@ SRR3113348, SRR3113384, SRR3113350, SRR3113385, SRR3113352, SRR3113386, SRR31134
         gene age:4 &  0.0969 &  0.346 & 0.730 \\
         \hline
         gene age:5 &  0.9757 &  3.504 & 0.000 \\
+        \hline
+    \end{tabular}
+
+\hspace{1cm}
+
+    \begin{tabular}{l |c  |c| c}
+        \multicolumn{4}{c}{X-linked abdomen (df=8)}\\
+        \hline
+        Main effect & coefficient & z-statistic & p-value \\
+        \hline
+        \hline
+        \multicolumn{4}{l}{unbiased}\\
+        \hline
+        Intercept &-1.179e-08 &-8.34e-09 & 1.000 \\
+        \hline
+        gene age:2 &     1.0986 &     0.703 & 0.482 \\
+        \hline
+        gene age:3 &     0.5978 &     0.409 & 0.683 \\
+        \hline
+        gene age:4 &     0.7249 &     0.507 & 0.612 \\
+        \hline
+        gene age:5 &     1.4857 &     1.048 & 0.295 \\
+        \hline
+        \hline
+        \multicolumn{4}{l}{female-biased}\\
+        \hline
+        Intercept &-2.358e-08   & -1.67e-08 & 1.000 \\
+        \hline
+        gene age:2 &    -19.3497   &    -0.002 & 0.998 \\
+        \hline
+        gene age:3 &     0.3102   &     0.211 & 0.833 \\
+        \hline
+        gene age:4 &     0.4162   &     0.290 & 0.772 \\
+        \hline
+        gene age:5 &     0.3955   &     0.279 & 0.780 \\
+        \hline
+    \end{tabular}
+    \hspace{0.5cm}
+    \begin{tabular}{l |c | c| c}
+        \multicolumn{4}{c}{X-linked head + thorax (df=8)}\\
+        \hline
+        Main effect & coefficient & z-statistic & p-value \\
+        \hline
+        \hline
+        \multicolumn{4}{l}{unbiased}\\
+        \hline
+        Intercept &  0.6931 &     0.566 & 0.571 \\
+        \hline
+        gene age:2 &  16.7844 &     0.009 & 0.993 \\
+        \hline
+        gene age:3 &  1.8458 &     1.354 & 0.176 \\
+        \hline
+        gene age:4 &  1.3262 &     1.057 & 0.291 \\
+        \hline
+        gene age:5 &  2.0700 &     1.679 & 0.093 \\
+        \hline
+        \hline
+        \multicolumn{4}{l}{female-biased}\\
+        \hline
+        Intercept & -42.1347 & -7.1e-06 & 1.000 \\
+        \hline
+        gene age:2 &  12.0892 & 2.01e-09 & 1.000 \\
+        \hline
+        gene age:3 &  42.6455 & 7.18e-06 & 1.000 \\
+        \hline
+        gene age:4 &  42.0657 & 7.09e-06 & 1.000 \\
+        \hline
+        gene age:5 &  41.6301 & 7.01e-06 & 1.000 \\
         \hline
     \end{tabular}
 \end{table}
@@ -808,6 +898,7 @@ SRR3113348, SRR3113384, SRR3113350, SRR3113385, SRR3113352, SRR3113386, SRR31134
     \end{tabular}
 \end{table}
 
+\iffalse
 
 \begin{figure}[H]
     \centering
@@ -824,25 +915,7 @@ SRR3113348, SRR3113384, SRR3113350, SRR3113385, SRR3113352, SRR3113386, SRR31134
     \label{SIfig:SBcat_ht}
 \end{figure}
 
-
-\subsection*{GO-term enrichment}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.49\linewidth]{../data/GO_enrichment/geneID_overlap_Venn_A.png}
-    \includegraphics[width=0.49\linewidth]{../data/GO_enrichment/geneID_overlap_Venn_A_pos_sel_genes.png}
-    \caption{overlap of A-linked orthologs from \textit{C. maculatus} identified in all three \textit{Bruchini} pairwise comparisons \(right\) 
-    and same for subset that is positively selected \(left\)}
-    \label{SIfig:GO_venn_A}
-\end{figure}
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.49\linewidth]{../data/GO_enrichment/geneID_overlap_Venn_X.png}
-    \includegraphics[width=0.49\linewidth]{../data/GO_enrichment/geneID_overlap_Venn_X_pos_sel_genes.png}
-    \caption{overlap of X-linked orthologs from \textit{C. maculatus} identified in all three \textit{Bruchini} pairwise comparisons \(right\) 
-    and same for subset that is positively selected \(left\)}
-    \label{SIfig:GO_venn_X}
-\end{figure}
+\fi
 
 
 \end{document}
