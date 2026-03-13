@@ -145,26 +145,31 @@
 
 
 \begin{figure}[H]
-    \begin{minipage}[t]{0.60\textwidth}
+    \begin{minipage}[t]{0.77\textwidth}
         \vspace{0pt}
         \begin{overpic}[width=0.95\textwidth]{../data/DE_analysis/dNdS_vs_conservation_rank_medians_lineplot_abdomen_only_A.png}
-            \put(10,65){\textbf{A}}
+            \put(10,55){\textbf{A}}
         \end{overpic}
+        \begin{overpic}[width=0.95\textwidth]{../data/DE_analysis/dNdS_vs_conservation_rank_medians_lineplot_abdomen_only_X.png}
+            \put(10,55){\textbf{B}}
+        \end{overpic}
+        %\includegraphics[width=0.95\textwidth]{../data/DE_analysis/dNdS_vs_conservation_rank_medians_lineplot_abdomen_only_X.png}
     \end{minipage}
-    \begin{minipage}[t]{0.38\textwidth}
+    \begin{minipage}[t]{0.21\textwidth}
         \vspace{0pt}
-        \begin{overpic}[width=0.49\textwidth]{../data/DE_analysis/pos_sel_merged_conservation_rank_boxplot_abdomen.png}
-            \put(10,98){\textbf{B}}
+        \begin{overpic}[width=\textwidth]{../data/DE_analysis/pos_sel_merged_conservation_rank_boxplot_abdomen.png}
+            \put(10,98){\textbf{C}}
         \end{overpic}
-        \includegraphics[width=0.49\textwidth]{../data/DE_analysis/pos_sel_merged_conservation_rank_boxplot_head_thorax.png}
+        \includegraphics[width=\textwidth]{../data/DE_analysis/pos_sel_merged_conservation_rank_boxplot_head_thorax.png}
     \end{minipage}
     \hfill
     
     \caption{\textbf{gene age and sex-bias analysis}: X-axes ticks show sample size in parentheses, as well as 
     gene age (1 to 5), or autosomal or X-linkage of orthologs (A or X). 
-    (\textbf{A}): median d$_N$d$_S$ and standard error of autosomal orthologs, split by gene age as well as sex-bias 
-    category according to abdominal tissues with male-bias being blue, unbiased being grey and female-biased being red.
-    (\textbf{B}): Proportion of genes under positive selection according to paml site model analysis (darker section) split by 
+    (\textbf{A},\textbf{B}): median d$_N$d$_S$ and standard error of autosomal orthologs, split by gene age as well as sex-bias 
+    category according to abdominal tissues with male-bias being blue, unbiased being grey and female-biased being red. 
+    \textbf{A}: autosomal, \textbf{B}: X-linked. 
+    (\textbf{C}): Proportion of genes under positive selection according to paml site model analysis (darker section) split by 
     Autosomal and X-linked orthologs, as well as male-biased (blue), unbiased (grey) and female-biased (red) orthologs according
     to either abdominal tissue (reproductive) or head and thorax tissue (somatic).
     }

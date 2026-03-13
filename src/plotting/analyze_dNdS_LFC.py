@@ -600,10 +600,12 @@ def make_phylogeny_rank_nested_dict(summary_file_df, tissue, max_dNdS=2, pos_sel
     return dNdS_dict
 
 
-def boxplot_dNdS(full_table_paths_dict, outfile, maxdNdS=2, partner_species="C_chinensis", pos_sel = False, lineplot=False, only_chr="A"):
+def boxplot_dNdS(full_table_paths_dict, outfile, maxdNdS=2, partner_species="C_chinensis", pos_sel = False, lineplot=False, only_chr=""):
 
     if pos_sel:
         lineplot=False
+    if only_chr != "":
+        pos_sel = False
 
     X_df = pd.read_csv(full_table_paths_dict["X"], sep="\t")
     A_df = pd.read_csv(full_table_paths_dict["A"], sep="\t")
@@ -632,7 +634,10 @@ def boxplot_dNdS(full_table_paths_dict, outfile, maxdNdS=2, partner_species="C_c
     fs = 30 # font size
 
     # set figure aspect ratio
-    aspect_ratio = 12 / 8
+    if only_chr == "":
+        aspect_ratio = 12 / 8
+    else:
+        aspect_ratio = 14 / 8
     height_pixels = 1000  # Height in pixels
     width_pixels = int(height_pixels * aspect_ratio)  # Width in pixels
 
@@ -774,7 +779,7 @@ def boxplot_dNdS(full_table_paths_dict, outfile, maxdNdS=2, partner_species="C_c
                         xvals = medians_dict[chr][SB_cat][1]
                         SEMs = errors_dict[chr][SB_cat]
 
-                        if chr=="A":
+                        if chr=="A" or only_chr != "":
                             color = colors_dict[SB_cat]["fill"] # previously edge but that looks very confusing
                             linest = ":" # (0, (3, 5, 1, 5))# 'dashdotted'
                         else:
@@ -1293,7 +1298,7 @@ def run_fisher_test(counts_dict, verbose = False):
 
 if __name__ == "__main__":
 
-    username = "milena"
+    username = "miltr339"
     full_tables_dict = get_full_table_path(username=username)
     reorg_table_outfile = f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/paml_stats_outfile_table.tsv"
     
@@ -1316,7 +1321,7 @@ if __name__ == "__main__":
 
     if True:
         ## plotting
-        pos_sel = True # if True plot bar charts with proportion of positive selection
+        pos_sel = False # if True plot bar charts with proportion of positive selection
                         # if False, plot boxplot with dNdS values
         lineplot=True   # if True, plot (conservation distance separated) line plot of dNdS medians with standard error
                         # if False, plot dNds boxplot
@@ -1330,7 +1335,7 @@ if __name__ == "__main__":
             else:
                 filename=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/dNdS_vs_conservation_rank_boxplot.png"
             ###################################################
-            boxplot_dNdS(full_tables_dict, outfile=filename, pos_sel=pos_sel, lineplot=lineplot, only_chr="X")
+            boxplot_dNdS(full_tables_dict, outfile=filename, pos_sel=pos_sel, lineplot=lineplot, only_chr="A")
             ###################################################
         else:
             ### boxplot for dNdS by sex bias and A/X but with rank categories merged
