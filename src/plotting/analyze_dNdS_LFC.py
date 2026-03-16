@@ -526,7 +526,7 @@ def plot_dNdS_rank_conserved(summary_paths_AX_list:dict, outfile = "", maxdNdS =
         plot_dNdS_subplot(lists_A=partner_lists_A[partner], lists_X=partner_lists_X[partner], fs=fs, row=i,title=plot_title, colors_dict=colors, plot_x_axis=plot_x_axis, ylab=y_label)
         if plot_x_axis:
             # fig.supxlabel(f"(number of genes)\nconservation rank of C. maculatus ortholog", fontsize = fs, labelpad=20)
-            ax[i].set_xlabel(f"(number of genes)\northolog conservation distance", fontsize = fs, labelpad=100)
+            ax[i].set_xlabel(f"(number of genes)\ngene age", fontsize = fs, labelpad=100)
 
         # layout (left, bottom, right, top)
         plt.tight_layout(rect=[0.0, 0.05, 1, 1])
@@ -1319,7 +1319,7 @@ if __name__ == "__main__":
         statistical_analysis_dNdS(full_tables_dict, table_outfile=f"", include_sex_bias=do_chinensis_sex_bias)
         ###################################################
 
-    if True:
+    if False:
         ## plotting
         pos_sel = False # if True plot bar charts with proportion of positive selection
                         # if False, plot boxplot with dNdS values
@@ -1377,7 +1377,7 @@ if __name__ == "__main__":
         run_fisher_test(fisher_counts_dict, verbose=True)
         ###################################################
 
-    if False:
+    if True:
         ###################################################
         ## boxplot dNdS by rank and chromosome but no sex bias
         filename=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/dNdS_vs_conservation_rank.png"
