@@ -3,8 +3,6 @@
 
 ## Workflow
 
-<details>
-
 ```mermaid
 graph TD;
     species_Ass(species assemblies);
@@ -34,20 +32,22 @@ graph TD;
 ```   
 
 
-### sex chromosome identification
+## sex chromosome identification
 
 SATC R package
 
 * **Bruchids**
-  * *C. maculatus:* from Kaufmann et al.: 
+  * *C. maculatus:* from Kaufmann et al. 2023: 
     ```python
     { X : ['utg000057l_1','utg000114l_1','utg000139l_1','utg000191l_1','utg000326l_1','utg000359l_1','utg000532l_1','utg000602l_1'],
       Y : ['utg000322l_1','utg 000312c_1','utg 000610l_1','utg 001235l_1']}
-    ## superscaffolded
+    ``` 
+  * superscaffolded by us
+    ```python
     { X : ['scaffold_10','scaffold_14','scaffold_23','scaffold_31','scaffold_34','scaffold_83'],
       Y : ['scaffold_26','scaffold_48','scaffold_103','scaffold_112','scaffold_164']}
-    ``` 
-  
+    ```
+
   * *C. chinensis:*
     identified by me, but the assembly is very fragmented so there is a lot of contigs.
 
@@ -62,7 +62,6 @@ SATC R package
     ``` 
   * *A. obtectus* Identified by me and Göran's project about it
     ```python
-    #### TODO double check these contig IDs
     { X : ["CAVLJG010000002.1","CAVLJG010003236.1","CAVLJG010003544.1","CAVLJG010000099.1","CAVLJG010000155.1","CAVLJG010000244.1","CAVLJG010000377.1","CAVLJG010000488.1",],
       Y : ["CAVLJG010000343.1","CAVLJG010002896.1","CAVLJG010000233.1","CAVLJG010000566.1","CAVLJG010000588.1",]}
     ``` 
@@ -71,7 +70,7 @@ SATC R package
 * **Tribolium**
   * [Tribolium castaneum](https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_031307605.1/)
   ```python
-  { X : ['NC_087403.1'], # I think based on synteny, not identified on the NCBI
+  { X : ['NC_087403.1'], # based on synteny, not identified on the NCBI
     Y : ['unidentified']}
   ```
   * [Tribolium freemani](https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_022388455.1/)
