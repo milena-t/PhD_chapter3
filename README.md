@@ -70,12 +70,12 @@ SATC R package
 * **Tribolium**
   * [Tribolium castaneum](https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_031307605.1/)
   ```python
-  { X : ['NC_087403.1'], # based on synteny, not identified on the NCBI
+  { X : ['NC_087403.1'],
     Y : ['unidentified']}
   ```
   * [Tribolium freemani](https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_022388455.1/)
   ```python
-  { X : ['CM039461.1'], # identified as linkage group X (LGX) on the NCBI
+  { X : ['CM039461.1'],
     Y : ['unidentified']}
   ```
 
