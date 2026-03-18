@@ -526,7 +526,7 @@ def plot_dNdS_rank_conserved(summary_paths_AX_list:dict, outfile = "", maxdNdS =
         plot_dNdS_subplot(lists_A=partner_lists_A[partner], lists_X=partner_lists_X[partner], fs=fs, row=i,title=plot_title, colors_dict=colors, plot_x_axis=plot_x_axis, ylab=y_label)
         if plot_x_axis:
             # fig.supxlabel(f"(number of genes)\nconservation rank of C. maculatus ortholog", fontsize = fs, labelpad=20)
-            ax[i].set_xlabel(f"(number of genes)\northolog conservation distance", fontsize = fs, labelpad=100)
+            ax[i].set_xlabel(f"(number of genes)\ngene age", fontsize = fs, labelpad=100)
 
         # layout (left, bottom, right, top)
         plt.tight_layout(rect=[0.0, 0.05, 1, 1])
@@ -600,10 +600,12 @@ def make_phylogeny_rank_nested_dict(summary_file_df, tissue, max_dNdS=2, pos_sel
     return dNdS_dict
 
 
-def boxplot_dNdS(full_table_paths_dict, outfile, maxdNdS=2, partner_species="C_chinensis", pos_sel = False, lineplot=False, only_chr="A"):
+def boxplot_dNdS(full_table_paths_dict, outfile, maxdNdS=2, partner_species="C_chinensis", pos_sel = False, lineplot=False, only_chr=""):
 
     if pos_sel:
         lineplot=False
+    if only_chr != "":
+        pos_sel = False
 
     X_df = pd.read_csv(full_table_paths_dict["X"], sep="\t")
     A_df = pd.read_csv(full_table_paths_dict["A"], sep="\t")
@@ -632,7 +634,10 @@ def boxplot_dNdS(full_table_paths_dict, outfile, maxdNdS=2, partner_species="C_c
     fs = 30 # font size
 
     # set figure aspect ratio
-    aspect_ratio = 12 / 8
+    if only_chr == "":
+        aspect_ratio = 12 / 8
+    else:
+        aspect_ratio = 14 / 8
     height_pixels = 1000  # Height in pixels
     width_pixels = int(height_pixels * aspect_ratio)  # Width in pixels
 
@@ -774,7 +779,7 @@ def boxplot_dNdS(full_table_paths_dict, outfile, maxdNdS=2, partner_species="C_c
                         xvals = medians_dict[chr][SB_cat][1]
                         SEMs = errors_dict[chr][SB_cat]
 
-                        if chr=="A":
+                        if chr=="A" or only_chr != "":
                             color = colors_dict[SB_cat]["fill"] # previously edge but that looks very confusing
                             linest = ":" # (0, (3, 5, 1, 5))# 'dashdotted'
                         else:
@@ -1293,7 +1298,7 @@ def run_fisher_test(counts_dict, verbose = False):
 
 if __name__ == "__main__":
 
-    username = "milena"
+    username = "miltr339"
     full_tables_dict = get_full_table_path(username=username)
     reorg_table_outfile = f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/paml_stats_outfile_table.tsv"
     
@@ -1314,14 +1319,14 @@ if __name__ == "__main__":
         statistical_analysis_dNdS(full_tables_dict, table_outfile=f"", include_sex_bias=do_chinensis_sex_bias)
         ###################################################
 
-    if True:
+    if False:
         ## plotting
-        pos_sel = True # if True plot bar charts with proportion of positive selection
+        pos_sel = False # if True plot bar charts with proportion of positive selection
                         # if False, plot boxplot with dNdS values
         lineplot=True   # if True, plot (conservation distance separated) line plot of dNdS medians with standard error
                         # if False, plot dNds boxplot
                         # if "only_chr" is specified below plot only one chromosome category, otherwise plot A and X in the same plot
-        if False:
+        if True:
             ## plot dNdS or pos sel separated by sex bias, A/X and age rank
             if pos_sel:
                 filename=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/pos_sel_vs_conservation_rank_boxplot.png"
@@ -1372,7 +1377,7 @@ if __name__ == "__main__":
         run_fisher_test(fisher_counts_dict, verbose=True)
         ###################################################
 
-    if False:
+    if True:
         ###################################################
         ## boxplot dNdS by rank and chromosome but no sex bias
         filename=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/dNdS_vs_conservation_rank.png"
