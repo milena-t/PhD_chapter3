@@ -78,17 +78,18 @@ The individual steps consist of:
     parser.add_argument('--fasttreebin', type=str, help="Absolute path to an executeable to run fasttree, default: FastTree")
 
     paml = parser.add_mutually_exclusive_group(required=True)
-    paml.add_argument('--codeml', action='store_true', help="run codeml (specify path to executeable in --codemlbin)")
+    paml.add_argument('--codeml', action='store_true', help="run codeml (specify path to executeable in --codemlbin or config file in --codeml_config_path)")
     paml.add_argument('--yn00', action='store_true', help="run yn00 (specify path to executeable in --yn00bin)")
 
     site_or_branch = parser.add_mutually_exclusive_group(required=False)
-    site_or_branch.add_argument('--branch_model', action='store_true', help="run codeml branch-model with model=1")
+    site_or_branch.add_argument('--branch_pairwise', action='store_true', help="if you run the branch model and there are only two species, you can choose to explicitly run in pairwise mode (runmode=-2 instead of runmode=1) which does not require a species tree")
+    site_or_branch.add_argument('--branch_model', action='store_true', help="run codeml branch-model with model=1 and runmode=1 (suitable for pairwise and multi-species comparisons)")
     site_or_branch.add_argument('--site_model_LRT', action='store_true', help="run codeml site-model with M1a and M2a, do LRT and extract site-classes table")
 
     paml_bin = parser.add_mutually_exclusive_group(required=False)
     paml_bin.add_argument('--codemlbin', type=str, help="path to the codeml executeable")
     paml_bin.add_argument('--yn00bin', type=str, help="path to the yn00 executeable")
-    paml_bin.add_argument('--codeml_config_path', type=str, help="if any paml executeables can be called from PATH, give here the location of the codeml.ctl default file")
+    paml_bin.add_argument('--codeml_config_path', type=str, help="if any paml executeables can be called from PATH, give here the location of the codeml.ctl file")
 
     parser.add_argument('--verbose', action='store_true', help="enable verbose mode")
     parser.add_argument('--overwrite', action='store_true', help="overwrite existing output files with default names from previous runs")
@@ -409,6 +410,7 @@ if __name__ == '__main__':
     run_yn00 = args.yn00
     yn00_bin = args.yn00bin
     run_codeml =args.codeml
+    codeml_run_pairwise = args.branch_pairwise
     codeml_bin = args.codemlbin
     codeml_config_source = args.codeml_config_path
     
@@ -549,7 +551,7 @@ if __name__ == '__main__':
     ###########################################
 
     #   from the paml documentation in the yn00 section p. 41:
-    #       " We recommend that you use the ML method (runmode= 2, CodonFreq = 2 in codeml.ctl)
+    #       " We recommend that you use the ML method (runmode=-2, CodonFreq = 2 in codeml.ctl)
     #         as much as possible even for pairwise sequence comparison. "
     #   --> recommend codeml not yn00
 
@@ -557,19 +559,23 @@ if __name__ == '__main__':
     ########## make tree
 
     tree_outfile = f"{outdir_path}tree.tre"
-    fasttree_command = f"{fasttree_bin} {clustal_outfile} > {tree_outfile}"
-    if verbose:
-        print(" *  running FastTree\n")
-    result = subprocess.run(fasttree_command, shell = True, capture_output=True, text=True)
-    # Check if the command was successful
-    if result.returncode == 0:
+    if codeml_run_pairwise:
         if verbose:
-            print(fasttree_command)
-            print(f"FastTree ran successfully")
+            print(" *  running codeml pairwise mode -> no tree generated!\n")
     else:
-        raise RuntimeError(f"FastTree failed! command: \n{fasttree_command}")
-    if os.path.getsize(tree_outfile) == 0:
-        raise RuntimeError(f"{tree_outfile} is empty!")
+        fasttree_command = f"{fasttree_bin} {clustal_outfile} > {tree_outfile}"
+        if verbose:
+            print(" *  running FastTree\n")
+        result = subprocess.run(fasttree_command, shell = True, capture_output=True, text=True)
+        # Check if the command was successful
+        if result.returncode == 0:
+            if verbose:
+                print(fasttree_command)
+                print(f"FastTree ran successfully")
+        else:
+            raise RuntimeError(f"FastTree failed! command: \n{fasttree_command}")
+        if os.path.getsize(tree_outfile) == 0:
+            raise RuntimeError(f"{tree_outfile} is empty!")
 
     ##########
 
@@ -678,17 +684,18 @@ if __name__ == '__main__':
     if run_codeml:
         ######### modify the newick tree to work with codeml
         tree_modified = tree_outfile.replace(".tre", "_10chr_leafnames.tre")
-
-        with open(f"{tree_outfile}", 'r') as f, open(f"{tree_modified}", 'w') as o:
+        
+        if not codeml_run_pairwise:
+            with open(f"{tree_outfile}", 'r') as f, open(f"{tree_modified}", 'w') as o:
+                if verbose:
+                    print(f"\t - modify the newick tree {tree_modified} so that each leaf consists only of a 10 character string")
+                newick_tree = f.read()
+                mod_tree, num_species = truncate_leaf_names(newick_tree)
+                o.write(f"\t{num_species} 1\n") # the numbers are first the number of species and then the number of trees (which is a format specification but i hardcoded 1 since i always have only one tree)
+                o.write(mod_tree)
+                
             if verbose:
-                print(f"\t - modify the newick tree {tree_modified} so that each leaf consists only of a 10 character string")
-            newick_tree = f.read()
-            mod_tree, num_species = truncate_leaf_names(newick_tree)
-            o.write(f"\t{num_species} 1\n") # the numbers are first the number of species and then the number of trees (which is a format specification but i hardcoded 1 since i always have only one tree)
-            o.write(mod_tree)
-            
-        if verbose:
-            print(f"\t\t--> Modified tree saved to {tree_modified}\n")
+                print(f"\t\t--> Modified tree saved to {tree_modified}\n")
 
         tree_loc = tree_modified.split("/")[-1]
         pal2nal_loc = pal2nal_alignment.split("/")[-1]
@@ -718,19 +725,27 @@ if __name__ == '__main__':
 
     ###################################
     ## codeml branch model
-    if run_codeml and args.branch_model:
+    if run_codeml and not args.site_model_LRT:
         if verbose:
             print(f"\n *  run codeml branch-model")
 
-        codeml_settings_dict = {"seqfile" : f"{pal2nal_loc}", 
-                    "treefile" : f"{tree_loc}", "outfile" : "codeml.out", 
-                    "model" : "1", # default paml model is 1
-                    "verbose" : "1",
-                    "seqtype" : "1",
-                    #"runmode" : "2", # 2 is an automatic run mode, the default is 0 which is a user generated tree
-                    "CodonFreq" : "2" 
-                    } 
-        
+        if args.branch_model:
+            codeml_settings_dict = {"seqfile" : f"{pal2nal_loc}", 
+                        "treefile" : f"{tree_loc}", "outfile" : "codeml.out", 
+                        "model" : "1", # default paml model is 1
+                        "verbose" : "1",
+                        "seqtype" : "1",
+                        "CodonFreq" : "2" 
+                        } 
+        elif codeml_run_pairwise:
+            codeml_settings_dict = {"seqfile" : f"{pal2nal_loc}", 
+                        "outfile" : "codeml.out", 
+                        "model" : "1", # default paml model is 1
+                        "verbose" : "1",
+                        "seqtype" : "1",
+                        "runmode" : "-2", # 2 is an automatic run mode, the default is 0 which is a user generated tree, -2 is the one specified for pairwise comparisons
+                        "CodonFreq" : "2" 
+                        } 
         start_time = time.time()
         modify_paml_config(codeml_settings_dict=codeml_settings_dict, codeml_config_path=codeml_config, verbose=False)
         codeml_command = "codeml > codeml.log"
