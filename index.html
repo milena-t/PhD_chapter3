@@ -114,7 +114,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 <body>
 
-<h1>Revisions Phil Trans</h1>
+<h1>Revisions for <i>Phil. Trans.</i></h1>
 
 Git repository <a href="https://github.com/milena-t/PhD_chapter3">here</a>
 
@@ -125,16 +125,48 @@ Git repository <a href="https://github.com/milena-t/PhD_chapter3">here</a>
     <li>Clarify and elaborate a bit on the dosage compensation stuff and the lack of information on DC in coleoptera
         (or leave out all together? I don't think it's smart to get too into evolution of dosage compensation, that's off topic, 
         but we also don't really have data to be much more specific than we are now. The main sticking point is the definition of a dosage compensated gene as unbiased)</li>
-    <li>The stuff about the mating system and Ne. maybe make an infographic about it?</li>
-    <li></li>
+    <li>The stuff about the mating system and NeX/NeA. maybe make an infographic about it?</li>
+</ul>
+
+<h2>Formatting and copy-editing</h2>
+
+<ul>
+    <li>Update all permutation tests to be tables and not figures to avoid mistakes with sample size numbers due to inconsistent filtering. 
+        Re-do the permutation test based on the complete table to make sure that the filtering is right.
+    </li>
+    <li>Some mistakes in SI figure references</li>
 </ul>
 
 <h2>Methodological improvements</h2>
 
-This is mostly about the right way to use paml to calculate dN, dS and positive selection. A recent paml manual (2024) is <a href="https://github.com/abacus-gene/paml/blob/master/doc/pamlDOC.pdf">here</a>.
-
+<p>
+    This is mostly about the right way to use paml to calculate dN, dS and positive selection. A recent paml manual (2024) is <a href="https://github.com/abacus-gene/paml/blob/master/doc/pamlDOC.pdf">here</a>.
+    My script that automates the entire pipeline to run paml from nucleotide sequences is in the repository linked at the top: <code>src/blast_BRH/calculate_pairwise_dNdS.py</code> 
+    (even though the script is called "<code>_dNdS</code>", it also contains an option to run the site model)
+</p>
+    
 <h3>branch models: dN/dS</h3>
 
+<p>
+    Pairwise estimation with <code>codeml</code> is fine according to the manual above, I should not use <code>YN00</code>, the question is only about the model settings in the config file.
+</p>
+
+<ul>
+    <li>pairwise according to manual: <code>runmode= -2, CodonFreq = 2</code> (for information on <code>runmode = -2</code> see p. 35 in the paml manual linked above 
+        (my script already implements the shortening of species names mentioned there).</li>
+    <li>pairwie how i did it: <code>runmode= 1, CodonFreq = 2</code> which reads a tree from a tree structure file I generate with FastTree from the pairwise alignment. 
+        I think I do it this way because the script was originally intended for multi-species comparisons and when we decided to restrict to pairwise I never changed it.
+        (for information on <code>runmode = -2</code> see p. 19 in the paml manual)</li>
+</ul>
+
+
+<p>
+    I think that these will give very similar results, because I hypothesize that <code>runmode= 1</code> with a two-species tree collapses into <code>runmode= -2</code> 
+    with maybe some rounding error. I implemented the <code>--branch_pairwise</code> flag (<span style="color: #BD351E">untested!</span>) in the pipeline script to run this. I will run on a subset of the orthologs for the normal 
+    branch model and test a correlation to see how similar they are. If it's not very similar, I can re-run the entire thing in this mode and re-do the analysis. It would be a bit 
+    annoying to update all the SI tables but the rest is pretty automated.
+</p>
+    
 <h3>site models: positive selection</h3>
 
 </body>
