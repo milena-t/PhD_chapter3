@@ -118,7 +118,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 Git repository <a href="https://github.com/milena-t/PhD_chapter3">here</a>
 
-<h2>Conceptual clarifications</h2>
+<h2>Intro and Discussion changes</h2>
 
 <ul>
     <li>Introduce adaptive and neutral fasterX</li>
@@ -139,13 +139,22 @@ Git repository <a href="https://github.com/milena-t/PhD_chapter3">here</a>
 
 <h2>Methodological improvements</h2>
 
+<h3>Small things that don't necessarily need changes</h3>
+
+This doesn't need re-analysis but maybe some changes in the text to clarify.
+
+<ul>
+    <li>Age ranks: It was suggested to convert these from categorical variables to true distances like MYA for splits, but this is not possible, see response letter</li>
+    <li>Some clarification about the ascertainment bias of the old orthologs, also see response letter</li>
+</ul>
+
 <p>
-    This is mostly about the right way to use paml to calculate dN, dS and positive selection. A recent paml manual (2024) is <a href="https://github.com/abacus-gene/paml/blob/master/doc/pamlDOC.pdf">here</a>.
+    The rest is mostly about the right way to use paml to calculate dN, dS and positive selection. A recent paml manual (2024) is <a href="https://github.com/abacus-gene/paml/blob/master/doc/pamlDOC.pdf">here</a>.
     My script that automates the entire pipeline to run paml from nucleotide sequences is in the repository linked at the top: <code>src/blast_BRH/calculate_pairwise_dNdS.py</code> 
     (even though the script is called "<code>_dNdS</code>", it also contains an option to run the site model)
 </p>
     
-<h3>branch models: dN/dS</h3>
+<h3>paml branch models: dN/dS</h3>
 
 <p>
     Pairwise estimation with <code>codeml</code> is fine according to the manual above, I should not use <code>YN00</code>, the question is only about the model settings in the config file.
@@ -167,8 +176,27 @@ Git repository <a href="https://github.com/milena-t/PhD_chapter3">here</a>
     annoying to update all the SI tables but the rest is pretty automated.
 </p>
     
-<h3>site models: positive selection</h3>
+<h3>paml site models: positive selection</h3>
 
+<p>
+    The reviewer is a bit vague here, but we interpret their comments to mean that they think the pairwise comparison does not offer enough statistical power to accurately infer positive selection, 
+    and that we would need multi-species comparisons for that. the site models are described on p. 29 of the above manual, and I can find no mention that there is a minimum number of species 
+    required for sufficient statistical power. It may depend on the amount of sequence divergence as well. I will test the validity of this argument similar as above, by re-running a smaller test set of orthologs. In order to determine the accuracy of our pairwise method, I need to identify which 
+    orthologs are both pairwie 1-to-1 and phylogeny-wide 1-to-1. If my method is correct, I expect to find phylogeny-wide positive selection if at least one pair shows positive selection.
+</p>
 
+<p>
+    A good description of paml useage is in the methods of <a href="https://doi.org/10.3390/genes9050234">Krasovec <i>et al.</i></a> (2018), but since they do multi-species comparison they use a 
+    clustering approach to identify the 1-to-1 orthologs.
+</p>
+
+<ol>
+    <li>identify phylogeny-wide 1-to-1 orthologs and associate with ortholog pairs</li>
+    <li>run the site model for the phylogeny-wide pairs</li>
+    <li>associate the new positive selection results with the original pairwise results</li>
+    <li><i>optional</i>: correlate the mean ω<sub>0</sub> values of all the original pairs with the single ω<sub>0</sub> values of the phylogeny-wide orthologs</li>
+</ol>
+
+This is not as certain. I am unsure if it is even accurate to compare the orthologs in this way, and if the
 
 </body>
