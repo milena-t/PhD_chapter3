@@ -4,7 +4,10 @@
 ## install instructions https://github.com/jonathanmarvens/argtable2
 
 ## use this configure for clustalo to tell it where the local install of argtable is
-./configure --prefix=/proj/naiss2023-6-65/Milena/software_install/clustal_omega/clustal-omega-1.2.4 CPPFLAGS="-I/proj/naiss2023-6-65/Milena/software_install/clustal_omega/argtable2-13/include" CFLAGS="-I/proj/naiss2023-6-65/Milena/software_install/clustal_omega/argtable2-13/include" LDFLAGS="-L/proj/naiss2023-6-65/Milena/software_install/clustal_omega/argtable2-13/lib"
+
+# ./configure --prefix=/proj/naiss2023-6-65/Milena/software_install/clustal_omega/clustal-omega-1.2.4 CPPFLAGS="-I/proj/naiss2023-6-65/Milena/software_install/clustal_omega/argtable2-13/include" CFLAGS="-I/proj/naiss2023-6-65/Milena/software_install/clustal_omega/argtable2-13/include" LDFLAGS="-L/proj/naiss2023-6-65/Milena/software_install/clustal_omega/argtable2-13/lib"
+
+./configure --prefix=/Users/milena/work/clustal-omega-1.2.4 CPPFLAGS="-I/Users/milena/work/argtable2-13/include" CFLAGS="-I/Users/milena/work/argtable2-13/include" LDFLAGS="-L/Users/milena/work/argtable2-13/lib"
 make
 make install
 
