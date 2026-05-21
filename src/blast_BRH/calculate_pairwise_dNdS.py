@@ -118,7 +118,7 @@ The individual steps consist of:
     if not args.yn00bin:
         args.yn00bin = "yn00"
     if args.codeml:
-        if not args.branch_model and not args.site_model_LRT:
+        if not args.branch_model and not args.site_model_LRT and not args.branch_pairwise:
             raise RuntimeError(f"if you use --codeml, you need to specify if you want --branch_model or --site_model_LRT !")
     # if not args.verbose:
     #     args.verbose=False

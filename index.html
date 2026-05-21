@@ -197,6 +197,17 @@ This doesn't need re-analysis but maybe some changes in the text to clarify.
     <li><i>optional</i>: correlate the mean ω<sub>0</sub> values of all the original pairs with the single ω<sub>0</sub> values of the phylogeny-wide orthologs</li>
 </ol>
 
-This is not as certain. I am unsure if it is even accurate to compare the orthologs in this way, and if the
+<p>    
+    This is not as certain. I am unsure if it is even accurate to compare the orthologs in this way, and if it's really a dealbraker if 
+    the results are inaccurate. If i use the site-model for only the most conserved orthologs, I would have to re-do the 
+    ortholog inference probably with the clustering approach from <a href="https://doi.org/10.3390/genes9050234">Krasovec <i>et al.</i></a>
+    instead of the blast BRH method. 
+</p>
+
+<p>
+    I might also try the branch-site model, where i specify a foreground branch to compare to the new pairwise ortholog. 
+    However you are really not supposed to just test every possible foreground branch for detection of positive selection
+    like i would have to, but instead have a prior hypothesis of one or a few to try that are biologically interesting. 
+</p>
 
 </body>
