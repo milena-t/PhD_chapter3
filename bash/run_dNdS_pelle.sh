@@ -2,7 +2,7 @@
 #SBATCH -A uppmax2026-1-8
 #SBATCH -c 1
 #SBATCH --mem=6G
-#SBATCH -t 1-00:00:00
+#SBATCH -t 1:00:00
 #SBATCH --mail-type=ALL
 #SBATCH -J run_dNdS
 #SBATCH -o run_dNdS.log
@@ -14,13 +14,14 @@ PAL2NAL_UPPMAX=/proj/naiss2023-6-65/Lila/beetle_genomes/pal2nal.v14/pal2nal.pl
 CLUSTALO_UPPMAX=/proj/naiss2023-6-65/Milena/software_install/clustal_omega/clustal-omega-1.2.4/bin/clustalo
 PAML_UPPMAX=/sw/bioinfo/paml/4.10.7/rackham/bin/codeml
 PAML_CONFIG=/sw/bioinfo/paml/4.10.7/rackham/examples/codeml.ctl
-IN_DIR=/proj/naiss2023-6-65/Milena/chapter3/dNdS_calculations/brh_sequences_X/
+# IN_DIR=/proj/naiss2023-6-65/Milena/chapter3/dNdS_calculations/brh_sequences_A/
+IN_DIR=/proj/naiss2023-6-65/Milena/chapter3/revision/dNdS_testing/test_seqs_A/
 
 python3 /proj/naiss2023-6-65/Milena/chapter3/PhD_chapter3/src/blast_BRH/calculate_pairwise_dNdS.py \
     --cds "${IN_DIR}${INFILE}" \
     --pal2nalbin $PAL2NAL_UPPMAX \
     --codeml \
-    --branch_model \
+    --branch_pairwise \
     --codeml_config_path $PAML_CONFIG \
     --clustalbin $CLUSTALO_UPPMAX \
     
