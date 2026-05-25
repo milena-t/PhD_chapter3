@@ -28,7 +28,7 @@ echo "----------------------->"
 echo ""
 
 python3 /proj/naiss2023-6-65/Milena/chapter3/PhD_chapter3/src/blast_BRH/calculate_pairwise_dNdS.py \
-    --cds "${IN_DIR}${INFILE}" \
+    --cds "${INFILE}" \
     --pal2nalbin $PAL2NAL_UPPMAX \
     --codeml \
     --branch_pairwise \
