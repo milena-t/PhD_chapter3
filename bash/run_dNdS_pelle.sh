@@ -7,7 +7,7 @@
 #SBATCH -J run_dNdS
 #SBATCH -o run_dNdS.log
 
-ml FastTree/2.2-GCCcore-13.3.0 Biopython/1.86-gfbf-2025b PAML/4.10.9-GCCcore-13.3.0
+ml FastTree/2.2-GCCcore-13.3.0 Biopython/1.84-gfbf-2024a PAML/4.10.9-GCCcore-13.3.0
 ## TODO check right module names
 INFILE=$1
 # sbatch ../../PhD_chapter3/bash/run_dNdS_pelle.sh test_seqs_A/B_siliquastri_C_maculatus_A-linked_ortholog_970.fasta
