@@ -19,6 +19,14 @@ PAML_CONFIG=/sw/bioinfo/paml/4.10.7/rackham/examples/codeml.ctl
 # IN_DIR=/proj/naiss2023-6-65/Milena/chapter3/dNdS_calculations/brh_sequences_A/
 IN_DIR=/proj/naiss2023-6-65/Milena/chapter3/revision/dNdS_testing/test_seqs_A/
 
+for INFILE in ${IN_DIR}*
+do
+
+echo ""
+echo ""
+echo "----------------------->"
+echo ""
+
 python3 /proj/naiss2023-6-65/Milena/chapter3/PhD_chapter3/src/blast_BRH/calculate_pairwise_dNdS.py \
     --cds "${IN_DIR}${INFILE}" \
     --pal2nalbin $PAL2NAL_UPPMAX \
@@ -27,6 +35,10 @@ python3 /proj/naiss2023-6-65/Milena/chapter3/PhD_chapter3/src/blast_BRH/calculat
     --codeml_config_path $PAML_CONFIG \
     --clustalbin $CLUSTALO_UPPMAX \
     
+echo ""
+
+done
+
     # --codemlbin $PAML_UPPMAX \
     # --verbose \
     # --overwrite
