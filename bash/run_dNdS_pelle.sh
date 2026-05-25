@@ -7,9 +7,10 @@
 #SBATCH -J run_dNdS
 #SBATCH -o run_dNdS.log
 
-ml FastTree/2.2-GCCcore-13.3.0 Biopython/1.84-foss-2024a PAML/4.10.9-GCCcore-13.3.0
+ml FastTree/2.2-GCCcore-13.3.0 Biopython/1.86-gfbf-2025b PAML/4.10.9-GCCcore-13.3.0
+## TODO check right module names
 INFILE=$1
-bash ../../PhD_chapter3/bash/run_dNdS_pelle.sh B_siliquastri_C_maculatus_A-linked_ortholog_970.fasta
+# bash ../../PhD_chapter3/bash/run_dNdS_pelle.sh B_siliquastri_C_maculatus_A-linked_ortholog_970.fasta
 
 PAL2NAL_UPPMAX=/proj/naiss2023-6-65/Lila/beetle_genomes/pal2nal.v14/pal2nal.pl
 CLUSTALO_UPPMAX=/proj/naiss2023-6-65/Milena/software_install/clustal_omega/clustal-omega-1.2.4/bin/clustalo
