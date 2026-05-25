@@ -34,6 +34,7 @@ python3 /proj/naiss2023-6-65/Milena/chapter3/PhD_chapter3/src/blast_BRH/calculat
     --branch_pairwise \
     --codeml_config_path $PAML_CONFIG \
     --clustalbin $CLUSTALO_UPPMAX \
+    --overwrite \
     
 echo ""
 
@@ -41,7 +42,6 @@ done
 
     # --codemlbin $PAML_UPPMAX \
     # --verbose \
-    # --overwrite
     # --fasttreebin /Users/miltr339/Desktop/FastTree \
     # --yn00 \
     # --yn00bin /Users/miltr339/work/paml/src/yn00 \
