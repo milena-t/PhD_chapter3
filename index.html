@@ -168,12 +168,19 @@ This doesn't need re-analysis but maybe some changes in the text to clarify.
         (for information on <code>runmode = -2</code> see p. 19 in the paml manual)</li>
 </ul>
 
+<h4>My thoughts</h4>
 
 <p>
     I think that these will give very similar results, because I hypothesize that <code>runmode= 1</code> with a two-species tree collapses into <code>runmode= -2</code> 
-    with maybe some rounding error. I implemented the <code>--branch_pairwise</code> flag (<span style="color: #BD351E">untested!</span>) in the pipeline script to run this. I will run on a subset of the orthologs for the normal 
+    with maybe some rounding error. I implemented the <code>--branch_pairwise</code> flag in the pipeline script to run this. I will run on a subset of the orthologs for the normal 
     branch model and test a correlation to see how similar they are. If it's not very similar, I can re-run the entire thing in this mode and re-do the analysis. It would be a bit 
     annoying to update all the SI tables but the rest is pretty automated.
+</p>
+
+<h4>Test results</h4>
+
+<p>
+    I will test with a subset of 200 autosomal genes which are all the <code>B_siliquastri_C_maculatus_A-linked_ortholog_9*</code> orthologs.
 </p>
     
 <h3>paml site models: positive selection</h3>
