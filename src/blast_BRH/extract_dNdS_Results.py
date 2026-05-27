@@ -257,19 +257,29 @@ def get_site_classes(results_dir, outfile_name = ""):
 
 if __name__ == "__main__":
     
-    chr_types = ["X","A"]
-    for chr_type in chr_types:
+    if False:
+        chr_types = ["X","A"]
+        for chr_type in chr_types:
 
-        results_path_LRT = f"/proj/naiss2023-6-65/Milena/chapter3/dNdS_calculations/brh_results_{chr_type}/"
-        results_path_dNdS = f"/proj/naiss2023-6-65/Milena/chapter3/dNdS_calculations/brh_results_{chr_type}_branch_model/"
-        print(chr_type)
-        print(f"\n//////////////////// {chr_type} ////////////////////\n")
+            results_path_LRT = f"/proj/naiss2023-6-65/Milena/chapter3/dNdS_calculations/brh_results_{chr_type}/"
+            results_path_dNdS = f"/proj/naiss2023-6-65/Milena/chapter3/dNdS_calculations/brh_results_{chr_type}_branch_model/"
+            print(chr_type)
+            print(f"\n//////////////////// {chr_type} ////////////////////\n")
 
-        # get_dNdS_pairs_dict(results_path_dNdS, outfile_name= f"dNdS_dS_summary_{chr_type}-linked_updated_species.txt", only_dNdS=False)
-        get_site_classes(results_path_LRT, outfile_name= f"site_classes_summary_{chr_type}-linked.txt")
-        # get_dNdS_values_by_ortholog(results_path_dNdS, outfile_name= f"dNdS_by_ortholog_{chr_type}-linked_updated_species.txt", only_dNdS=False)
+            # get_dNdS_pairs_dict(results_path_dNdS, outfile_name= f"dNdS_dS_summary_{chr_type}-linked_updated_species.txt", only_dNdS=False)
+            get_site_classes(results_path_LRT, outfile_name= f"site_classes_summary_{chr_type}-linked.txt")
+            # get_dNdS_values_by_ortholog(results_path_dNdS, outfile_name= f"dNdS_by_ortholog_{chr_type}-linked_updated_species.txt", only_dNdS=False)
 
-#     [f"{dirpath}{d}/2NG.dNdS" for d in os.listdir(results_path)]
+    #     [f"{dirpath}{d}/2NG.dNdS" for d in os.listdir(results_path)]
+
+    if True:
+
+        ## revisions
+        results_def_dNdS = f"/proj/naiss2023-6-65/Milena/chapter3/revision/dNdS_testing/test_res_default_A/"
+        get_dNdS_values_by_ortholog(results_def_dNdS, outfile_name= f"dNdS_by_ortholog_default_revisions.txt", only_dNdS=False)
+
+        results_pw_dNdS = f"/proj/naiss2023-6-65/Milena/chapter3/revision/dNdS_testing/test_res_pairwise_A/"
+        get_dNdS_values_by_ortholog(results_pw_dNdS, outfile_name= f"dNdS_by_ortholog_pairwise_revisions.txt", only_dNdS=False)
 
 # interactive -A uppmax2026-1-8 -t 5:00:00
 # module load Biopython/1.86-gfbf-2025b
