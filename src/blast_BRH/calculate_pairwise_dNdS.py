@@ -748,6 +748,7 @@ if __name__ == '__main__':
                         "model" : "1", # default paml model is 1
                         "verbose" : "1",
                         "seqtype" : "1",
+                        "runmode" : "1",
                         "CodonFreq" : "2" 
                         } 
         elif codeml_run_pairwise:
