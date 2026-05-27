@@ -119,7 +119,7 @@ The individual steps consist of:
         args.yn00bin = "yn00"
     if args.codeml:
         if not args.branch_model and not args.site_model_LRT and not args.branch_pairwise:
-            raise RuntimeError(f"if you use --codeml, you need to specify if you want --branch_model or --site_model_LRT !")
+            raise RuntimeError(f"if you use --codeml, you need to specify if you want --branch_model, --branch_pairwise or --site_model_LRT !")
     # if not args.verbose:
     #     args.verbose=False
     
@@ -742,6 +742,7 @@ if __name__ == '__main__':
             print(f"\n *  run codeml branch-model")
 
         if args.branch_model:
+            model_name = f" "
             codeml_settings_dict = {"seqfile" : f"{pal2nal_loc}", 
                         "treefile" : f"{tree_loc}", "outfile" : "codeml.out", 
                         "model" : "1", # default paml model is 1
@@ -750,6 +751,7 @@ if __name__ == '__main__':
                         "CodonFreq" : "2" 
                         } 
         elif codeml_run_pairwise:
+            model_name = f" pairwise"
             codeml_settings_dict = {"seqfile" : f"{pal2nal_loc}", 
                         "outfile" : "codeml.out", 
                         "model" : "1", # default paml model is 1
@@ -767,10 +769,10 @@ if __name__ == '__main__':
         end_time = time.time()
 
         if verbose:
-            print("done with codeml")
+            print(f"done with codeml{model_name}")
             passed_time = end_time - start_time
             if verbose:
-                print(f"codeml took {passed_time:.2f} seconds, or {passed_time/60.0:.2f} minutes")
+                print(f"codeml{model_name} took {passed_time:.2f} seconds, or {passed_time/60.0:.2f} minutes")
 
         #### done with codeml, calculate dNdS based on that:
         dN_filepath = "2NG.dN"
@@ -780,7 +782,15 @@ if __name__ == '__main__':
         if is_file_non_empty(dN_filepath) and is_file_non_empty(dS_filepath):
             if verbose:
                 print(f"\n================ calcualte dN/dS ratio:")
+            calculate_dNdS(dN_filepath, dS_filepath, dNdS_filepath)
 
+        dN_filepath = "2ML.dN"
+        dS_filepath = "2ML.dS"
+        dNdS_filepath = "2ML.dNdS"
+        
+        if is_file_non_empty(dN_filepath) and is_file_non_empty(dS_filepath):
+            if verbose:
+                print(f"\n================ calcualte dN/dS ratio:")
             calculate_dNdS(dN_filepath, dS_filepath, dNdS_filepath)
 
     ###################################

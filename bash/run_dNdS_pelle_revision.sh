@@ -35,6 +35,7 @@ python3 /proj/naiss2023-6-65/Milena/chapter3/PhD_chapter3/src/blast_BRH/calculat
     --codeml_config_path $PAML_CONFIG \
     --clustalbin $CLUSTALO_UPPMAX \
     --overwrite \
+    --verbose \
     
 echo ""
 
