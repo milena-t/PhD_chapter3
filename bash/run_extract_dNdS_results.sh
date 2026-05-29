@@ -7,7 +7,7 @@
 #SBATCH -J LRT_extract_results
 #SBATCH -o LRT_extract_results.log
 
-module load Biopython/1.84-foss-2024a
+module load Biopython/1.84-gfbf-2024a
 
 echo "python3 /proj/naiss2023-6-65/Milena/chapter3/PhD_chapter3/src/blast_BRH/extract_dNdS_Results.py" 
 echo 
