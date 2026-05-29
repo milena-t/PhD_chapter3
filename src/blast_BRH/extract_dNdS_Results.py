@@ -153,27 +153,25 @@ def get_dNdS_values_by_ortholog(results_dir, outfile_name = "", file_prefix="2NG
                 file_dS = f"{run_directory}/{file_prefix}.dS"
                 file_dN = f"{run_directory}/{file_prefix}.dN"
                 
-                filenotfound = False
+                
                 if os.path.isfile(file_dNdS) :
                     value_dNdS = extract_dNdS_file(file_dNdS, dS_file=False)
                 else:
                     value_dNdS="not_found" 
+                    raise RuntimeError(f"one of these files does not exist in the run directory!\n{run_directory}\n - {file_dNdS}\n")
 
                 if os.path.isfile(file_dS) :
                     value_dS = extract_dNdS_file(file_dS, dS_file=True)
                 else:
                     value_dS="not_found" 
-                    filenotfound=True
+                    raise RuntimeError(f"one of these files does not exist in the run directory!\n{run_directory}\n - {file_dS}\n")
 
                 if os.path.isfile(file_dN):
                     value_dN = extract_dNdS_file(file_dN, dS_file=True)
                 else:
                     value_dN="not_found" 
-                    filenotfound=True
-
-                if filenotfound:
-                    raise RuntimeError(f"one of these files does not exist in the run directory!\n{run_directory}\n - {file_dNdS}\n - {file_dS}\n - {file_dS}\n")
-
+                    # raise RuntimeError(f"one of these files does not exist in the run directory!\n{run_directory}\n - {file_dN}\n")
+                print(f" * {d}")
                 outfile.write(f"{d}:dN={value_dN},dS={value_dS},dNdS={value_dNdS}\n")
                 # print(f"{d}:dN={value_dN},dS={value_dS},dNdS={value_dNdS}\n")
                 # break
