@@ -12,4 +12,4 @@ ml FastTree/2.2-GCCcore-13.3.0 Biopython/1.84-gfbf-2024a argtable/2.13-GCCcore-1
 
 echo "python3 /proj/coleoptera-genomics-2025/snic2021-6-30/Milena/chapter3/PhD_chapter3/src/blast_BRH/calculate_batch_pw_dNdS.py"
 echo 
-python3 /proj/coleoptera-genomics-2025/snic2021-6-30/Milena/chapter3/PhD_chapter3/src/blast_BRH/calculate_batch_pw_dNdS.py "A"
+python3 /proj/coleoptera-genomics-2025/snic2021-6-30/Milena/chapter3/PhD_chapter3/src/blast_BRH/calculate_batch_pw_dNdS.py "X"
