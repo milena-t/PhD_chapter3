@@ -113,29 +113,30 @@ def get_dNdS_pairs_dict(results_dir, outfile_name = "", only_dNdS = True):
         print(f"outfile saved to: {outfile_name}\nin {results_dir}")
 
 
-def get_dNdS_values_by_ortholog(results_dir, outfile_name = "", file_prefix="2NG"):
+def get_dNdS_values_by_ortholog(results_dir, outfile_name = "", file_prefix="2NG", nested_pair_dirs=True):
     """
     Extract dN, dS and dN/dS values from paml results, save for each ortholog individually like the site classes
     """
     pair_dirs = []
-    for d in os.listdir(results_dir):
-        if os.path.isfile(d):
-            continue
-        d_sp = d.split("_")
-        try:
-            species1 = f"{d_sp[0]}_{d_sp[1]}"
-            species2 = f"{d_sp[2]}_{d_sp[3]}"
-        except:
-            print(f"{d} cannot be parsed as species")
-            continue
-        if species1 != species2:
-            pair_dirs.append(d)
+    if nested_pair_dirs:
+        for d in os.listdir(results_dir):
+            if os.path.isfile(d):
+                continue
+            d_sp = d.split("_")
+            try:
+                species1 = f"{d_sp[0]}_{d_sp[1]}"
+                species2 = f"{d_sp[2]}_{d_sp[3]}"
+            except:
+                print(f"{d} cannot be parsed as species")
+                continue
+            if species1 != species2:
+                pair_dirs.append(d)
+    else:
+        pair_dirs = [""]
 
     outfile_name = f"{results_dir}{outfile_name}"
     with open(outfile_name, "w") as outfile:
         for pair_dir in pair_dirs:
-            if len(pair_dir) == 1:
-                pair_dir = ""
             print(f" --> {pair_dir}")
             if ".out" in pair_dir or ".log" in pair_dir or ".txt" in pair_dir:
                 print(f"\t! log file ignired")
@@ -290,10 +291,10 @@ if __name__ == "__main__":
 
         ## revisions
         results_def_dNdS = f"/proj/coleoptera-genomics-2025/snic2021-6-30/Milena/chapter3/revision/dNdS_testing/test_res_default_A/"
-        get_dNdS_values_by_ortholog(results_def_dNdS, outfile_name= f"dNdS_by_ortholog_default_revisions.txt", file_prefix="2NG")
+        get_dNdS_values_by_ortholog(results_def_dNdS, outfile_name= f"dNdS_by_ortholog_default_revisions.txt", file_prefix="2NG", nested_pair_dirs=False)
 
         results_pw_dNdS = f"/proj/coleoptera-genomics-2025/snic2021-6-30/Milena/chapter3/revision/dNdS_testing/test_res_pairwise_A/"
-        get_dNdS_values_by_ortholog(results_pw_dNdS, outfile_name= f"dNdS_by_ortholog_pairwise_revisions.txt", file_prefix="2ML")
+        get_dNdS_values_by_ortholog(results_pw_dNdS, outfile_name= f"dNdS_by_ortholog_pairwise_revisions.txt", file_prefix="2ML", nested_pair_dirs=False)
 
 # interactive -A uppmax2026-1-8 -t 5:00:00
 # module load Biopython/1.86-gfbf-2025b
