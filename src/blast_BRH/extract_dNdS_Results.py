@@ -305,7 +305,6 @@ if __name__ == "__main__":
 
             for chr_type in chr_types:
                 results_path_dNdS = f"/proj/coleoptera-genomics-2025/snic2021-6-30/Milena/chapter3/dNdS_calculations/brh_results_{chr_type}_branch_model/"
-                print(chr_type)
                 print(f"\n//////////////////// {chr_type} ////////////////////\n")
                 get_dNdS_values_by_ortholog(results_path_dNdS, outfile_name= f"dNdS_by_{chr_type}_ortholog_pairwise_revisions.txt", file_prefix="2ML")
 
