@@ -468,6 +468,7 @@ def plot_dS_vs_dNdS(A_dict:dict, X_dict:dict, filename = "dS_vs_dNdS.png", dark_
         axes[species_count-1,row].set_xlabel("dS", fontsize = fs)
         if plot_dN:
             axes[col,0].set_ylabel("dN", fontsize = fs)
+            axes[col,row].plot([0, 1], [0, 1], transform=axes[col,row].transAxes, color = "#656565", linestyle="dashed")
         else:
             axes[col,0].set_ylabel("dNdS", fontsize = fs)
         axes[col,row].set_xlim(-0.08,2.08)
