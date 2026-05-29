@@ -3,6 +3,7 @@ Make batches of dNdS to calculate at once. splits it into several jobs of orthol
 """
 
 import os
+import sys
 
 
 def make_nested_lists(dir_path, include_list = []):
@@ -61,16 +62,19 @@ if __name__ == "__main__":
     pelle = False
 
     if not os.path.isdir(datadir):
-        datadir = f"/proj/naiss2023-6-65/Milena/chapter3/dNdS_calculations/"
-        bash_dir = f"/proj/naiss2023-6-65/Milena/chapter3/PhD_chapter3/bash"
+        datadir = f"/proj/coleoptera-genomics-2025/snic2021-6-30/Milena/chapter3/dNdS_calculations/"
+        bash_dir = f"/proj/coleoptera-genomics-2025/snic2021-6-30/Milena/chapter3/PhD_chapter3/bash"
         dNdS_exec = f"sbatch"
         pelle = True
     
     #############################
     ###############
     #######
-
-    chr_type = "A"
+    
+    if len(sys.argv)==2:
+        chr_type = sys.argv[1]
+    else:
+        chr_type = "A"
     
     #######
     
