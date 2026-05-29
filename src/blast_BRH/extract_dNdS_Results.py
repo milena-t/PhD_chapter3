@@ -170,13 +170,13 @@ def get_dNdS_values_by_ortholog(results_dir, outfile_name = "", file_prefix="2NG
                     value_dS = extract_dNdS_file(file_dS, dS_file=True)
                 else:
                     value_dS="not_found" 
-                    raise RuntimeError(f"one of these files does not exist in the run directory!\n{run_directory}\n - {file_dS}\n")
+                    # raise RuntimeError(f"one of these files does not exist in the run directory!\n{run_directory}\n - {file_dS}\n")
 
                 if os.path.isfile(file_dN):
                     value_dN = extract_dNdS_file(file_dN, dS_file=True)
                 else:
                     value_dN="not_found" 
-                    raise RuntimeError(f"one of these files does not exist in the run directory!\n{run_directory}\n - {file_dN}\n")
+                    # raise RuntimeError(f"one of these files does not exist in the run directory!\n{run_directory}\n - {file_dN}\n")
                 print(f" * {file_dN}")
                 outfile.write(f"{d}:dN={value_dN},dS={value_dS},dNdS={value_dNdS}\n")
                 # print(f"{d}:dN={value_dN},dS={value_dS},dNdS={value_dNdS}\n")
