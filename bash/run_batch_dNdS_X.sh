@@ -42,7 +42,7 @@ do
         --cds "${FILE}" \
         --pal2nalbin $PAL2NAL \
         --codeml \
-        --branch_model \
+        --branch_pairwise \
         --codeml_config_path $PAML_CONFIG \
         --clustalbin $CLUSTALO \
         --fasttreebin $FASTTREE \
@@ -52,4 +52,5 @@ do
     echo ">>> DONE ${FILE}"
 
 done
+        # --branch_model \
         # --verbose
