@@ -31,7 +31,7 @@ python3 /proj/naiss2023-6-65/Milena/chapter3/PhD_chapter3/src/blast_BRH/calculat
     --cds "${INFILE}" \
     --pal2nalbin $PAL2NAL_UPPMAX \
     --codeml \
-    --branch_model \
+    --branch_pairwise \
     --codeml_config_path $PAML_CONFIG \
     --clustalbin $CLUSTALO_UPPMAX \
     --overwrite \
@@ -40,7 +40,7 @@ python3 /proj/naiss2023-6-65/Milena/chapter3/PhD_chapter3/src/blast_BRH/calculat
 echo ""
 
 done
-    # --branch_pairwise
+    # --branch_model \
     # --codemlbin $PAML_UPPMAX \
     # --verbose \
     # --fasttreebin /Users/miltr339/Desktop/FastTree \

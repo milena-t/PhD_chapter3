@@ -774,24 +774,26 @@ if __name__ == '__main__':
             if verbose:
                 print(f"codeml{model_name} took {passed_time:.2f} seconds, or {passed_time/60.0:.2f} minutes")
 
-        #### done with codeml, calculate dNdS based on that:
-        dN_filepath = "2NG.dN"
-        dS_filepath = "2NG.dS"
-        dNdS_filepath = "2NG.dNdS"
-        
-        if is_file_non_empty(dN_filepath) and is_file_non_empty(dS_filepath):
-            if verbose:
-                print(f"\n================ calcualte dN/dS ratio:")
-            calculate_dNdS(dN_filepath, dS_filepath, dNdS_filepath)
+        if args.branch_model:
+            #### done with codeml, calculate dNdS based on that:
+            dN_filepath = "2NG.dN"
+            dS_filepath = "2NG.dS"
+            dNdS_filepath = "2NG.dNdS"
+            
+            if is_file_non_empty(dN_filepath) and is_file_non_empty(dS_filepath):
+                if verbose:
+                    print(f"\n================ calcualte dN/dS ratio:")
+                calculate_dNdS(dN_filepath, dS_filepath, dNdS_filepath)
 
-        dN_filepath = "2ML.dN"
-        dS_filepath = "2ML.dS"
-        dNdS_filepath = "2ML.dNdS"
-        
-        if is_file_non_empty(dN_filepath) and is_file_non_empty(dS_filepath):
-            if verbose:
-                print(f"\n================ calcualte dN/dS ratio:")
-            calculate_dNdS(dN_filepath, dS_filepath, dNdS_filepath)
+        elif codeml_run_pairwise:
+            dN_filepath = "2ML.dN"
+            dS_filepath = "2ML.dS"
+            dNdS_filepath = "2ML.dNdS"
+            
+            if is_file_non_empty(dN_filepath) and is_file_non_empty(dS_filepath):
+                if verbose:
+                    print(f"\n================ calcualte dN/dS ratio:")
+                calculate_dNdS(dN_filepath, dS_filepath, dNdS_filepath)
 
     ###################################
     ## codeml site classes
