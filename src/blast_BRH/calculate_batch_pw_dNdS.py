@@ -103,7 +103,9 @@ if __name__ == "__main__":
     # outdir = f"{datadir}brh_results_{chr_type}_Dcar_X_syntenic/"
 
     os.chdir(outdir)
-    x_paths_nested_dict = make_nested_lists(X_path, include_list=["C_magnifica","C_septempunctata","T_castaneum","T_freemani"])
+    # x_paths_nested_dict = make_nested_lists(X_path, include_list=["C_magnifica","C_septempunctata","T_castaneum","T_freemani"])
+    x_paths_nested_dict = make_nested_lists(X_path, include_list=["A_obtectus","B_siliquastri","C_chinensis","C_maculatus"])
+    
     sp1_list=list(x_paths_nested_dict.keys())
 
     ########
