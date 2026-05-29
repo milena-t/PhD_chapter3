@@ -12,7 +12,7 @@ ml FastTree/2.2-GCCcore-13.3.0 Biopython/1.84-gfbf-2024a PAML/4.10.9-GCCcore-13.
 INFILE=$1
 # sbatch ../../PhD_chapter3/bash/run_dNdS_pelle.sh B_siliquastri_C_maculatus_A-linked_ortholog_970.fasta
 
-PAL2NAL_UPPMAX=/proj/naiss2023-6-65/Lila/beetle_genomes/pal2nal.v14/pal2nal.pl
+PAL2NAL_UPPMAX=/proj/coleoptera-genomics-2025/snic2021-6-30/Lila/beetle_genomes/pal2nal.v14/pal2nal.pl
 CLUSTALO_UPPMAX=/proj/coleoptera-genomics-2025/snic2021-6-30/Milena/software_install/clustal_omega/clustal-omega-1.2.4/bin/clustalo
 PAML_UPPMAX=/sw/bioinfo/paml/4.10.7/rackham/bin/codeml
 PAML_CONFIG=/sw/bioinfo/paml/4.10.7/rackham/examples/codeml.ctl
