@@ -13,11 +13,11 @@ INFILE=$1
 # sbatch ../../PhD_chapter3/bash/run_dNdS_pelle.sh B_siliquastri_C_maculatus_A-linked_ortholog_970.fasta
 
 PAL2NAL_UPPMAX=/proj/naiss2023-6-65/Lila/beetle_genomes/pal2nal.v14/pal2nal.pl
-CLUSTALO_UPPMAX=/proj/naiss2023-6-65/Milena/software_install/clustal_omega/clustal-omega-1.2.4/bin/clustalo
+CLUSTALO_UPPMAX=/proj/coleoptera-genomics-2025/snic2021-6-30/Milena/software_install/clustal_omega/clustal-omega-1.2.4/bin/clustalo
 PAML_UPPMAX=/sw/bioinfo/paml/4.10.7/rackham/bin/codeml
 PAML_CONFIG=/sw/bioinfo/paml/4.10.7/rackham/examples/codeml.ctl
-# IN_DIR=/proj/naiss2023-6-65/Milena/chapter3/dNdS_calculations/brh_sequences_A/
-IN_DIR=/proj/naiss2023-6-65/Milena/chapter3/revision/dNdS_testing/test_seqs_A/
+# IN_DIR=/proj/coleoptera-genomics-2025/snic2021-6-30/Milena/chapter3/dNdS_calculations/brh_sequences_A/
+IN_DIR=/proj/coleoptera-genomics-2025/snic2021-6-30/Milena/chapter3/revision/dNdS_testing/test_seqs_A/
 
 for INFILE in ${IN_DIR}*
 do
@@ -27,7 +27,7 @@ echo ""
 echo "----------------------->"
 echo ""
 
-python3 /proj/naiss2023-6-65/Milena/chapter3/PhD_chapter3/src/blast_BRH/calculate_pairwise_dNdS.py \
+python3 /proj/coleoptera-genomics-2025/snic2021-6-30/Milena/chapter3/PhD_chapter3/src/blast_BRH/calculate_pairwise_dNdS.py \
     --cds "${INFILE}" \
     --pal2nalbin $PAL2NAL_UPPMAX \
     --codeml \
