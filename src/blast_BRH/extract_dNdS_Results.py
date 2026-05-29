@@ -147,11 +147,14 @@ def get_dNdS_values_by_ortholog(results_dir, outfile_name = "", file_prefix="2NG
             for d in os.listdir(f"{results_dir}{pair_dir}"):
                 if pair_dir == "":
                     run_directory = f"{results_dir}{d}" 
+                    if ".out" in run_directory or ".log" in run_directory or ".txt" in run_directory:
+                        print(f"\t! log file ignired")
+                        continue
                 else:
                     run_directory = f"{results_dir}{pair_dir}/{d}" 
-                if ".out" in run_directory or ".log" in pair_dir or ".txt" in pair_dir:
-                    print(f"\t! log file ignired")
-                    continue
+                    if ".out" in run_directory or ".log" in pair_dir or ".txt" in pair_dir:
+                        print(f"\t! log file ignired")
+                        continue
                 file_dNdS = f"{run_directory}/{file_prefix}.dNdS"
                 file_dS = f"{run_directory}/{file_prefix}.dS"
                 file_dN = f"{run_directory}/{file_prefix}.dN"
