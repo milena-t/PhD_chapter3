@@ -145,7 +145,10 @@ def get_dNdS_values_by_ortholog(results_dir, outfile_name = "", file_prefix="2NG
                 raise RuntimeError(f"parsed dir {results_dir}{pair_dir} does not exist!")
 
             for d in os.listdir(f"{results_dir}{pair_dir}"):
-                run_directory = f"{results_dir}{pair_dir}/{d}" 
+                if pair_dir == "":
+                    run_directory = f"{results_dir}{d}" 
+                else:
+                    run_directory = f"{results_dir}{pair_dir}/{d}" 
                 if ".out" in run_directory or ".log" in pair_dir or ".txt" in pair_dir:
                     print(f"\t! log file ignired")
                     continue
