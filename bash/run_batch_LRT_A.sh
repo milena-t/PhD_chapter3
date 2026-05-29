@@ -12,13 +12,14 @@ IN_LIST=$@ # space separated list of filenames, do like 100 at a time
 
 CHR_TYPE=A
 
-RUN_DIR=/proj/naiss2023-6-65/Milena/chapter3/PhD_chapter3/src/blast_BRH/
+RUN_DIR=/proj/coleoptera-genomics-2025/snic2021-6-30/Milena/chapter3/PhD_chapter3/src/blast_BRH/
 if [ -d "$RUN_DIR" ]; then
     module load FastTree/2.2-GCCcore-13.3.0
-    module load  Biopython/1.84-foss-2024a ## this is the default one don't load the other one! it is missing some stuff
-    IN_DIR=/proj/naiss2023-6-65/Milena/chapter3/dNdS_calculations/brh_sequences_${CHR_TYPE}/
-    PAL2NAL=/proj/naiss2023-6-65/Lila/beetle_genomes/pal2nal.v14/pal2nal.pl
-    CLUSTALO=/proj/naiss2023-6-65/Milena/software_install/clustal_omega/clustal-omega-1.2.4/bin/clustalo
+    module load Biopython/1.84-gfbf-2024a
+    module load argtable/2.13-GCCcore-13.3.0
+    IN_DIR=/proj/coleoptera-genomics-2025/snic2021-6-30/Milena/chapter3/dNdS_calculations/brh_sequences_${CHR_TYPE}/
+    PAL2NAL=/proj/coleoptera-genomics-2025/snic2021-6-30/Lila/beetle_genomes/pal2nal.v14/pal2nal.pl
+    CLUSTALO=/proj/coleoptera-genomics-2025/snic2021-6-30/Milena/software_install/clustal_omega/clustal-omega-1.2.4/bin/clustalo
     PAML=/sw/bioinfo/paml/4.10.7/rackham/bin/codeml
     FASTTREE=FastTree
     PAML_CONFIG=/sw/bioinfo/paml/4.10.7/rackham/examples/codeml.ctl
