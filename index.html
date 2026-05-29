@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Chapter 3 revisions</title>
+<title>Chapter 3</title>
 <style>
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
@@ -113,115 +113,100 @@ document.addEventListener("DOMContentLoaded", function () {
 </head>
 
 <body>
+    <!--
+        grey : #9A9A9A
+        red : #BD351E
+    -->
 
-<h1>Revisions for <i>Phil. Trans.</i></h1>
-
-Git repository <a href="https://github.com/milena-t/PhD_chapter3">here</a>
-
-<h2>Intro and Discussion changes</h2>
-
-<ul>
-    <li>Introduce adaptive and neutral fasterX</li>
-    <li>Clarify and elaborate a bit on the dosage compensation stuff and the lack of information on DC in coleoptera
-        (or leave out all together? I don't think it's smart to get too into evolution of dosage compensation, that's off topic, 
-        but we also don't really have data to be much more specific than we are now. The main sticking point is the definition of a dosage compensated gene as unbiased)</li>
-    <li>The stuff about the mating system and NeX/NeA. maybe make an infographic about it?</li>
-</ul>
-
-<h2>Formatting and copy-editing</h2>
-
-<ul>
-    <li>Update all permutation tests to be tables and not figures to avoid mistakes with sample size numbers due to inconsistent filtering. 
-        Re-do the permutation test based on the complete table to make sure that the filtering is right.
-    </li>
-    <li>Some mistakes in SI figure references</li>
-</ul>
-
-<h2>Methodological improvements</h2>
-
-<h3>Small things that don't necessarily need changes</h3>
-
-This doesn't need re-analysis but maybe some changes in the text to clarify.
-
-<ul>
-    <li>Age ranks: It was suggested to convert these from categorical variables to true distances like MYA for splits, but this is not possible, see response letter</li>
-    <li>Some clarification about the ascertainment bias of the old orthologs, also see response letter</li>
-</ul>
+<h1>Fast and Slow X dynamics in <i>Coleoptera</i></h1>
 
 <p>
-    The rest is mostly about the right way to use paml to calculate dN, dS and positive selection. A recent paml manual (2024) is <a href="https://github.com/abacus-gene/paml/blob/master/doc/pamlDOC.pdf">here</a>.
-    My script that automates the entire pipeline to run paml from nucleotide sequences is in the repository linked at the top: <code>src/blast_BRH/calculate_pairwise_dNdS.py</code> 
-    (even though the script is called "<code>_dNdS</code>", it also contains an option to run the site model)
+    Git repository <a href="https://github.com/milena-t/PhD_chapter3">here</a>
 </p>
-    
-<h3>paml branch models: dN/dS</h3>
+<p>
+    Revision stuff <a href="revisions.html">here</a>
+</p>
+
+<h2>Prerequisites</h2>
+
+<h3>Genome annotations</h3>
 
 <p>
-    Pairwise estimation with <code>codeml</code> is fine according to the manual above, I should not use <code>YN00</code>, the question is only about the model settings in the config file.
+    Annotate <i>T. freemani</i> and <i>C. septempunctata</i> from scratch because it's not available, see SI for details
 </p>
 
-<ul>
-    <li>pairwise according to manual: <code>runmode= -2, CodonFreq = 2</code> (for information on <code>runmode = -2</code> see p. 35 in the paml manual linked above 
-        (my script already implements the shortening of species names mentioned there).</li>
-    <li>pairwie how i did it: <code>runmode= 1, CodonFreq = 2</code> which reads a tree from a tree structure file I generate with FastTree from the pairwise alignment. 
-        I think I do it this way because the script was originally intended for multi-species comparisons and when we decided to restrict to pairwise I never changed it.
-        (for information on <code>runmode = -2</code> see p. 19 in the paml manual)</li>
-</ul>
-
-<h4>My thoughts</h4>
+<h3>Synteny</h3>
 
 <p>
-    I think that these will give very similar results, because I hypothesize that <code>runmode= 1</code> with a two-species tree collapses into <code>runmode= -2</code> 
-    with maybe some rounding error. I implemented the <code>--branch_pairwise</code> flag in the pipeline script to run this. I will run on a subset of the orthologs for the normal 
-    branch model and test a correlation to see how similar they are. If it's not very similar, I can re-run the entire thing in this mode and re-do the analysis. It would be a bit 
-    annoying to update all the SI tables but the rest is pretty automated.
+    Run <a href="https://github.com/wyp1125/MCScanX">MCScanX</a> for synteny analysis. It is not super easy to use and a bunch of stuff is hardcoded that is not mentioned anywhere in the documentation.
 </p>
+<details>
+    <summary>Toggle down for details on all the problems I had</summary>
 
-<h4>Test results</h4>
-<p>
-    I use 200 <i>B. siliquastri</i>-<i>C. maculatus</i> autosomal orthologs to test
-</p>
+    MCScanX is based on protein synteny from blastp searches. The documentation is not super useful beyond the installation instructions, so I was recommended 
+    <a href="https://www.nature.com/articles/s41596-024-00968-2#Sec29">this workflow</a>, which I will use for detailed instructions, but for preparing the input files, 
+    I am using my own scripts and not their provided ones (esp. the perl scripts have hard-coded aspects that assume ncbi assemblies and annotations, which doesn't apply to my data). 
+    MCScanX only takes one input: the prefix of both files below. It says directory in the documentation but that's wrong. You run from the same directory as the files are in and the 
+    command is just <code>./MCScanX prefix</code> where the input files are <code>prefix.gff</code> and <code>prefix.blast</code> in the same directory.
 
-<p float="left">
-  <img loading="lazy" src="data/revision_tests/codeml_dNdS_correlation.png" width="80%" />
-</p>
+    <ul>
+        <li><b><code>prefix.gff</code>:</b> I used my script <code>src/make_bedfile_for_MCScanX.py</code> which makes all the files according to the format required, including reformatting the contig names, 
+            and also creating a lookup table to associate the new contig names with the original ones from the annotations. 
+            The files are then all merged with <code>cat *.bed > prefix.gff</code></li>
+        <li><b><code>prefix.blast</code>:</b> I am using blastp according to the above cited workflow on all the species 
+            <code>bash/blastp_for_synteny.sh</code>. All blast results are again merged <code>cat *.blast > prefix.blast</code>.</li>
+    </ul>
 
-<p>
-    I will test with a subset of 200 autosomal genes which are all the <code>B_siliquastri_C_maculatus_A-linked_ortholog_9*</code> orthologs.
-</p>
-    
-<h3>paml site models: positive selection</h3>
 
-<p>
-    The reviewer is a bit vague here, but we interpret their comments to mean that they think the pairwise comparison does not offer enough statistical power to accurately infer positive selection, 
-    and that we would need multi-species comparisons for that. the site models are described on p. 29 of the above manual, and I can find no mention that there is a minimum number of species 
-    required for sufficient statistical power. It may depend on the amount of sequence divergence as well. I will test the validity of this argument similar as above, by re-running a smaller test set of orthologs. In order to determine the accuracy of our pairwise method, I need to identify which 
-    orthologs are both pairwie 1-to-1 and phylogeny-wide 1-to-1. If my method is correct, I expect to find phylogeny-wide positive selection if at least one pair shows positive selection.
-</p>
+    If the error message is <code>no alighments generated</code>: The log file reads no blast alignments. For me, this was caused by the file extension of the annotation file. 
+    I named it <code>.bed</code> but it should be <code>.gff</code> (because it is somehow hardcoded and there is no test to see if a file actually exists?)
 
-<p>
-    A good description of paml useage is in the methods of <a href="https://doi.org/10.3390/genes9050234">Krasovec <i>et al.</i></a> (2018), but since they do multi-species comparison they use a 
-    clustering approach to identify the 1-to-1 orthologs.
-</p>
+</details>
+
+<h2>Calculate dN/dS with paml</h2>
+
+<h3>Ortholog identification</h3>
 
 <ol>
-    <li>identify phylogeny-wide 1-to-1 orthologs and associate with ortholog pairs</li>
-    <li>run the site model for the phylogeny-wide pairs</li>
-    <li>associate the new positive selection results with the original pairwise results</li>
-    <li><i>optional</i>: correlate the mean ω<sub>0</sub> values of all the original pairs with the single ω<sub>0</sub> values of the phylogeny-wide orthologs</li>
+    <li>make isoform filtered proteinfasta files of all species from the annotation</li>
+    <li>run all-vs-all blast between all pairs with <code>bash/blastp_for_synteny.sh</code> (same blast results as I use for synteny</li>
+    <li>get best reciprocal hits between all pairs <code>src/blast_BRH/make_blastBRH_all_species.py</code>
+    <ol>
+        <li>python script with command line arguments<code>src/blast_BRH/get_blast_BRH.py</code></li>
+        <li>use the bash script <code>bash/BRH_orthologs.sh</code> to iterate over all pairs and run the python script</li>
+        <span style="color: #9A9A9A">
+        <li>
+            There is <code>src/blast_BRH/make_blastBRH_all_species.py</code>, but it is old and not used for the final analysis but I'm scared to delete it</li></span>
+    </ol>
+    </li>
+    <li>make nucleotide fasta files of ortholog pairs to use for paml with <code>src/blast_BRH/make_pairwise_BRH_fasta_files.py</code></li>
 </ol>
 
-<p>    
-    This is not as certain. I am unsure if it is even accurate to compare the orthologs in this way, and if it's really a dealbraker if 
-    the results are inaccurate. If i use the site-model for only the most conserved orthologs, I would have to re-do the 
-    ortholog inference probably with the clustering approach from <a href="https://doi.org/10.3390/genes9050234">Krasovec <i>et al.</i></a>
-    instead of the blast BRH method. 
-</p>
+<details>
+<summary>Numbers of identified orthologs between all pairs</summary>
+    
+    <p float="left">
+        <img loading="lazy" src="data/fastX_ortholog_ident/BRH_A_linked_counts_heatmap_noDiorhabda.png" width="29%" />
+        <img loading="lazy" src="data/fastX_ortholog_ident/BRH_X_linked_counts_heatmap_noDiorhabda.png" width="29%" />
+    </p>
+</details>
+
+<h3>dN/dS analysis</h3>
+
+<h4><code>paml codeml</code></h4>
 
 <p>
-    I might also try the branch-site model, where i specify a foreground branch to compare to the new pairwise ortholog. 
-    However you are really not supposed to just test every possible foreground branch for detection of positive selection
-    like i would have to, but instead have a prior hypothesis of one or a few to try that are biologically interesting. 
+    I will run <codeml>codeml</codeml> as is specified in the manual for pairwise analyses with <code>runmode= -2, CodonFreq = 2</code>. In order to properly parallelize this the scripts are 
+    nested like this:
+</p>
+    <ol>
+        <li><code>src/blast_BRH/calculate_pairwise_dNdS.py</code> is the main script that runs the pipeline based on one input fasta file</li>
+        <li><code>bash/run_batch_dNdS_A.sh</code> (or X) loops over a list of input files to run the main script</li>
+        <li><code>src/blast_BRH/calculate_batch_pw_dNdS.py</code> separates the entire list of input files into several batches to run in parallel</li>
+        <li><code>bash/run_python_wrapper_for_batch_dNdS.sh</code> runs the batch-separation script as a slurm job since it can be quite computationally intensive for long nested files lists</li>
+    </ol>
+<p>
+    This launches a long list jobs, each iterating
 </p>
 
 </body>

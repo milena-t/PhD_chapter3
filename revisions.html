@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chapter 3 revisions</title>
+<style>
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  background-color: #ebeaee;
+  max-width: 1500px;
+  margin: 2em auto;
+  padding: 0 1em;
+  line-height: 1.5;
+  color: #24292f;
+}
+h1, h2, h3, h4, h5, h6 { margin-top: 1.6em; }
+h1 { border-bottom: 1px solid #d0d7de; padding-bottom: .3em; }
+h2 { border-bottom: 1px solid #d0d7de; padding-bottom: .3em; }
+code {
+  background: #eff1f3;
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+  font-size: 90%;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+pre {
+  background: #f6f8fa;
+  padding: 1em;
+  border-radius: 6px;
+  overflow-x: auto;
+}
+pre code { background: none; padding: 0; }
+table { border-collapse: collapse; margin: 1em 0; }
+table th, table td { border: 1px solid #909bb5; padding: 6px 10px; }
+table th { background: #d0d4df; }
+img { max-width: 100%; height: auto; }
+details { margin: 0.8em 0; }
+summary { cursor: pointer; }
+iframe { border: 1px solid #d0d7de; border-radius: 4px; }
+a { color: #416793; }
+
+</style>
+<style>
+
+/* Style the tab */
+.tab {
+  overflow: hidden;
+  border: 1px solid #909bb5;
+  background-color: #d0d4df;
+}
+
+/* Style the buttons that are used to open the tab content */
+.tab button {
+  background-color: inherit;
+  float: left;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 14px 16px;
+  transition: 0.3s;
+}
+
+/* Change background color of buttons on hover */
+.tab button:hover {
+  background-color: #909bb5;
+}
+
+/* Create an active/current tablink class */
+.tab button.active {
+  background-color: #909bb5;
+}
+
+/* Style the tab content */
+.tabcontent {
+  display: none;
+  padding: 6px 12px;
+  border: 1px solid #909bb5;
+  border-top: none;
+}
+
+</style>
+<script>
+function openTab(evt, cityName) {
+  // only change tabs on the same level to allow nested tabs etc.
+  const tab = document.getElementById(cityName);
+  const parenttab = tab.parentNode;
+
+  // Hide sibling tab panels.
+  for (const el of document.getElementsByClassName("tabcontent")) {
+    if (el.parentNode === parenttab) el.style.display = "none";
+  }
+
+  // Clear "active" only on tablinks at the same level. A tablink's grandparent
+  // (button -> .tab div -> parenttab) is the panel container.
+  for (const btn of document.getElementsByClassName("tablinks")) {
+    if (btn.parentNode.parentNode === parenttab) btn.classList.remove("active");
+  }
+
+  tab.style.display = "block";
+  evt.currentTarget.classList.add("active");
+}
+
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  document.querySelectorAll(".tab").forEach(function (tabBar) {
+    var firstBtn = tabBar.querySelector("button.tablinks");
+    if (firstBtn) firstBtn.click();
+  });
+});
+</script>
+</head>
+
+<body>
+
+<h1>Revisions for <i>Phil. Trans.</i></h1>
+
+<h2>Intro and Discussion changes</h2>
+
+<ul>
+    <li>Introduce adaptive and neutral fasterX</li>
+    <li>Clarify and elaborate a bit on the dosage compensation stuff and the lack of information on DC in coleoptera
+        (or leave out all together? I don't think it's smart to get too into evolution of dosage compensation, that's off topic, 
+        but we also don't really have data to be much more specific than we are now. The main sticking point is the definition of a dosage compensated gene as unbiased)</li>
+    <li>The stuff about the mating system and NeX/NeA. maybe make an infographic about it?</li>
+</ul>
+
+<h2>Formatting and copy-editing</h2>
+
+<ul>
+    <li>Update all permutation tests to be tables and not figures to avoid mistakes with sample size numbers due to inconsistent filtering. 
+        Re-do the permutation test based on the complete table to make sure that the filtering is right.
+    </li>
+    <li>Some mistakes in SI figure references</li>
+</ul>
+
+<h2>Methodological improvements</h2>
+
+<h3>Small things that don't necessarily need changes</h3>
+
+This doesn't need re-analysis but maybe some changes in the text to clarify.
+
+<ul>
+    <li>Age ranks: It was suggested to convert these from categorical variables to true distances like MYA for splits, but this is not possible, see response letter</li>
+    <li>Some clarification about the ascertainment bias of the old orthologs, also see response letter</li>
+</ul>
+
+<p>
+    The rest is mostly about the right way to use paml to calculate dN, dS and positive selection. A recent paml manual (2024) is <a href="https://github.com/abacus-gene/paml/blob/master/doc/pamlDOC.pdf">here</a>.
+    My script that automates the entire pipeline to run paml from nucleotide sequences is in the repository linked at the top: <code>src/blast_BRH/calculate_pairwise_dNdS.py</code> 
+    (even though the script is called "<code>_dNdS</code>", it also contains an option to run the site model)
+</p>
+    
+<h3>paml branch models: dN/dS</h3>
+
+<p>
+    Pairwise estimation with <code>codeml</code> is fine according to the manual above, I should not use <code>YN00</code>, the question is only about the model settings in the config file.
+</p>
+
+<ul>
+    <li>pairwise according to manual: <code>runmode= -2, CodonFreq = 2</code> (for information on <code>runmode = -2</code> see p. 35 in the paml manual linked above 
+        (my script already implements the shortening of species names mentioned there).</li>
+    <li>pairwie how i did it: <code>runmode= 1, CodonFreq = 2</code> which reads a tree from a tree structure file I generate with FastTree from the pairwise alignment. 
+        I think I do it this way because the script was originally intended for multi-species comparisons and when we decided to restrict to pairwise I never changed it.
+        (for information on <code>runmode = -2</code> see p. 19 in the paml manual)</li>
+</ul>
+
+<h4>My thoughts</h4>
+
+<p>
+    I think that these will give very similar results, because I hypothesize that <code>runmode= 1</code> with a two-species tree collapses into <code>runmode= -2</code> 
+    with maybe some rounding error. I implemented the <code>--branch_pairwise</code> flag in the pipeline script to run this. I will run on a subset of the orthologs for the normal 
+    branch model and test a correlation to see how similar they are. If it's not very similar, I can re-run the entire thing in this mode and re-do the analysis. It would be a bit 
+    annoying to update all the SI tables but the rest is pretty automated.
+</p>
+
+<h4>Test results</h4>
+<p>
+    I use 200 <i>B. siliquastri</i>-<i>C. maculatus</i> autosomal orthologs to test
+</p>
+
+<p float="left">
+  <img loading="lazy" src="data/revision_tests/codeml_dNdS_correlation.png" width="80%" />
+</p>
+
+<p>
+    I will test with a subset of 200 autosomal genes which are all the <code>B_siliquastri_C_maculatus_A-linked_ortholog_9*</code> orthologs.
+</p>
+    
+<h3>paml site models: positive selection</h3>
+
+<p>
+    The reviewer is a bit vague here, but we interpret their comments to mean that they think the pairwise comparison does not offer enough statistical power to accurately infer positive selection, 
+    and that we would need multi-species comparisons for that. the site models are described on p. 29 of the above manual, and I can find no mention that there is a minimum number of species 
+    required for sufficient statistical power. It may depend on the amount of sequence divergence as well. I will test the validity of this argument similar as above, by re-running a smaller test set of orthologs. In order to determine the accuracy of our pairwise method, I need to identify which 
+    orthologs are both pairwie 1-to-1 and phylogeny-wide 1-to-1. If my method is correct, I expect to find phylogeny-wide positive selection if at least one pair shows positive selection.
+</p>
+
+<p>
+    A good description of paml useage is in the methods of <a href="https://doi.org/10.3390/genes9050234">Krasovec <i>et al.</i></a> (2018), but since they do multi-species comparison they use a 
+    clustering approach to identify the 1-to-1 orthologs.
+</p>
+
+<ol>
+    <li>identify phylogeny-wide 1-to-1 orthologs and associate with ortholog pairs</li>
+    <li>run the site model for the phylogeny-wide pairs</li>
+    <li>associate the new positive selection results with the original pairwise results</li>
+    <li><i>optional</i>: correlate the mean ω<sub>0</sub> values of all the original pairs with the single ω<sub>0</sub> values of the phylogeny-wide orthologs</li>
+</ol>
+
+<p>    
+    This is not as certain. I am unsure if it is even accurate to compare the orthologs in this way, and if it's really a dealbraker if 
+    the results are inaccurate. If i use the site-model for only the most conserved orthologs, I would have to re-do the 
+    ortholog inference probably with the clustering approach from <a href="https://doi.org/10.3390/genes9050234">Krasovec <i>et al.</i></a>
+    instead of the blast BRH method. 
+</p>
+
+<p>
+    I might also try the branch-site model, where i specify a foreground branch to compare to the new pairwise ortholog. 
+    However you are really not supposed to just test every possible foreground branch for detection of positive selection
+    like i would have to, but instead have a prior hypothesis of one or a few to try that are biologically interesting. 
+</p>
+
+</body>
