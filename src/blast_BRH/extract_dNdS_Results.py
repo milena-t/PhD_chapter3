@@ -113,7 +113,7 @@ def get_dNdS_pairs_dict(results_dir, outfile_name = "", only_dNdS = True):
         print(f"outfile saved to: {outfile_name}\nin {results_dir}")
 
 
-def get_dNdS_values_by_ortholog(results_dir, outfile_name = "", only_dNdS = True):
+def get_dNdS_values_by_ortholog(results_dir, outfile_name = "", file_prefix="2NG"):
     """
     Extract dN, dS and dN/dS values from paml results, save for each ortholog individually like the site classes
     """
@@ -146,15 +146,15 @@ def get_dNdS_values_by_ortholog(results_dir, outfile_name = "", only_dNdS = True
                 if ".out" in run_directory or ".log" in pair_dir or ".txt" in pair_dir:
                     print(f"\t! log file ignired")
                     continue
-                file_dNdS = f"{run_directory}/2NG.dNdS"
-                file_dS = f"{run_directory}/2NG.dS"
-                file_dN = f"{run_directory}/2NG.dN"
+                file_dNdS = f"{run_directory}/{file_prefix}.dNdS"
+                file_dS = f"{run_directory}/{file_prefix}.dS"
+                file_dN = f"{run_directory}/{file_prefix}.dN"
                 if os.path.isfile(file_dNdS) and os.path.isfile(file_dS) and os.path.isfile(file_dN):
                     value_dNdS = extract_dNdS_file(file_dNdS, dS_file=False)
                     value_dS = extract_dNdS_file(file_dS, dS_file=True)
                     value_dN = extract_dNdS_file(file_dN, dS_file=True)
                 else:
-                    # raise RuntimeError(f"one of these files does not exist!\n{file_dNdS}\n{file_dS}\n{file_dS}\n")
+                    raise RuntimeError(f"one of these files does not exist!\n - {file_dNdS}\n - {file_dS}\n - {file_dS}\n")
                     value_dNdS="not_found"
                     value_dS="not_found"
                     value_dN="not_found"
@@ -261,8 +261,8 @@ if __name__ == "__main__":
         chr_types = ["X","A"]
         for chr_type in chr_types:
 
-            results_path_LRT = f"/proj/naiss2023-6-65/Milena/chapter3/dNdS_calculations/brh_results_{chr_type}/"
-            results_path_dNdS = f"/proj/naiss2023-6-65/Milena/chapter3/dNdS_calculations/brh_results_{chr_type}_branch_model/"
+            results_path_LRT = f"/proj/coleoptera-genomics-2025/snic2021-6-30/Milena/chapter3/dNdS_calculations/brh_results_{chr_type}/"
+            results_path_dNdS = f"/proj/coleoptera-genomics-2025/snic2021-6-30/Milena/chapter3/dNdS_calculations/brh_results_{chr_type}_branch_model/"
             print(chr_type)
             print(f"\n//////////////////// {chr_type} ////////////////////\n")
 
@@ -275,11 +275,11 @@ if __name__ == "__main__":
     if True:
 
         ## revisions
-        results_def_dNdS = f"/proj/naiss2023-6-65/Milena/chapter3/revision/dNdS_testing/test_res_default_A/"
-        get_dNdS_values_by_ortholog(results_def_dNdS, outfile_name= f"dNdS_by_ortholog_default_revisions.txt", only_dNdS=False)
+        results_def_dNdS = f"/proj/coleoptera-genomics-2025/snic2021-6-30/Milena/chapter3/revision/dNdS_testing/test_res_default_A/"
+        get_dNdS_values_by_ortholog(results_def_dNdS, outfile_name= f"dNdS_by_ortholog_default_revisions.txt", file_prefix="2NG")
 
-        results_pw_dNdS = f"/proj/naiss2023-6-65/Milena/chapter3/revision/dNdS_testing/test_res_pairwise_A/"
-        get_dNdS_values_by_ortholog(results_pw_dNdS, outfile_name= f"dNdS_by_ortholog_pairwise_revisions.txt", only_dNdS=False)
+        results_pw_dNdS = f"/proj/coleoptera-genomics-2025/snic2021-6-30/Milena/chapter3/revision/dNdS_testing/test_res_pairwise_A/"
+        get_dNdS_values_by_ortholog(results_pw_dNdS, outfile_name= f"dNdS_by_ortholog_pairwise_revisions.txt", file_prefix="2ML")
 
 # interactive -A uppmax2026-1-8 -t 5:00:00
 # module load Biopython/1.86-gfbf-2025b
