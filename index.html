@@ -223,15 +223,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
 <pre>
     <code>
- A_obtectus    vs. B_siliquastri:    median(dNdS_A)-median(dNdS_X) = 0.091, mean bootstrap diff = 0.00004  with CI [-0.03090,0.03098] -> SIGNIFICANT
+ A_obtectus    vs. B_siliquastri:    median(dNdS_A)-median(dNdS_X) = 0.091, mean bootstrap diff =  0.00004 with CI [-0.03090,0.03098] -> SIGNIFICANT
  A_obtectus    vs. C_maculatus:      median(dNdS_A)-median(dNdS_X) = 0.109, mean bootstrap diff = -0.00003 with CI [-0.03241,0.03234] -> SIGNIFICANT
  A_obtectus    vs. C_chinensis:      median(dNdS_A)-median(dNdS_X) = 0.076, mean bootstrap diff = -0.00003 with CI [-0.03737,0.03730] -> SIGNIFICANT
  B_siliquastri vs. C_maculatus:      median(dNdS_A)-median(dNdS_X) = 0.133, mean bootstrap diff = -0.00009 with CI [-0.02648,0.02630] -> SIGNIFICANT
- B_siliquastri vs. C_chinensis:      median(dNdS_A)-median(dNdS_X) = 0.107, mean bootstrap diff = 0.00008  with CI [-0.02959,0.02975] -> SIGNIFICANT
- C_chinensis   vs. C_maculatus:      median(dNdS_A)-median(dNdS_X) = 0.048, mean bootstrap diff = 0.00013  with CI [-0.01822,0.01848] -> SIGNIFICANT
+ B_siliquastri vs. C_chinensis:      median(dNdS_A)-median(dNdS_X) = 0.107, mean bootstrap diff =  0.00008 with CI [-0.02959,0.02975] -> SIGNIFICANT
+ C_chinensis   vs. C_maculatus:      median(dNdS_A)-median(dNdS_X) = 0.048, mean bootstrap diff =  0.00013 with CI [-0.01822,0.01848] -> SIGNIFICANT
  
  C_magnifica   vs. C_septempunctata: median(dNdS_A)-median(dNdS_X) = 0.047, mean bootstrap diff = -0.00001 with CI [-0.01085,0.01082] -> SIGNIFICANT
- T_castaneum   vs. T_freemani:       median(dNdS_A)-median(dNdS_X) = 0.002, mean bootstrap diff = 0.00001 with CI [-0.01141,0.01143] -> (nonsignificant)
+ T_castaneum   vs. T_freemani:       median(dNdS_A)-median(dNdS_X) = 0.002, mean bootstrap diff =  0.00001 with CI [-0.01141,0.01143] -> (nonsignificant)
     </code>
 </pre>
     
@@ -250,7 +250,24 @@ I also re-did all the plots, but the results stay the same, only the numbers and
 
 </details>
 
+<h4>dN/dS analysis</h4>
 
+The script used for this is <code>src/plot_dNdS.py</code>. The significance changes in some pairs. 
 
+<pre>
+    <code>
+ A_obtectus vs. B_siliquastri:     median(dNdS_A)-median(dNdS_X) = 0.017, mean bootstrap diff =  0.00028 with CI [-0.09869,0.09924] -> (nonsignificant)
+ A_obtectus vs. C_chinensis:       median(dNdS_A)-median(dNdS_X) = 0.019, mean bootstrap diff = -0.00017 with CI [-0.15943,0.15908] -> (nonsignificant)
+ A_obtectus vs. C_maculatus:       median(dNdS_A)-median(dNdS_X) = 0.019, mean bootstrap diff =  0.00000 with CI [-0.00743,0.00743] -> SIGNIFICANT
+ B_siliquastri vs. C_chinensis:    median(dNdS_A)-median(dNdS_X) = 0.021, mean bootstrap diff =  0.00004 with CI [-0.02563,0.02572] -> (nonsignificant)
+ B_siliquastri vs. C_maculatus:    median(dNdS_A)-median(dNdS_X) = 0.022, mean bootstrap diff = -0.00001 with CI [-0.00801,0.00800] -> SIGNIFICANT
+ C_chinensis vs. C_maculatus:      median(dNdS_A)-median(dNdS_X) = 0.020, mean bootstrap diff = -0.00007 with CI [-0.01240,0.01226] -> SIGNIFICANT
+
+ C_magnifica vs. C_septempunctata: median(dNdS_A)-median(dNdS_X) = 0.024, mean bootstrap diff = -0.00001 with CI [-0.01225,0.01224] -> SIGNIFICANT
+ T_castaneum vs. T_freemani:       median(dNdS_A)-median(dNdS_X) = 0.021, mean bootstrap diff = -0.00006 with CI [-0.00972,0.00961] -> SIGNIFICANT
+    </code>
+</pre>
+
+<h4>Combine dN/dS and positive selection</h4>
 
 </body>

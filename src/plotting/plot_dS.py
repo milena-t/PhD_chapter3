@@ -7,106 +7,8 @@ import scipy.stats as sts
 from math import sqrt, isnan
 import matplotlib.pyplot as plt
 import scipy.stats
-from plot_dNdS import get_summary_paths,violinplot_pair_single
+from plot_dNdS import get_summary_paths,violinplot_pair_single,read_dNdS_dS_summary_file,permutate_dNdS,calculate_list_CI
 
-
-def read_dNdS_dS_summary_file(summary_path, only_dS, exclude_list = [], max_dS=10, by_ortholog_file=True):
-    """
-    read dNdS and dS summary outfiles into a dict by species pair
-    out_dict = { pair : {
-                    "dS" : [],
-                    "dNdS" : []
-                    }
-                }
-    by_ortholog_file=False is the default setting for when each line is a species pair and all dN or dNdS values
-    if True, then it's the output file from extract dNdS rresults
-
-    max_dS=10 is a very high default that effectively filters nothing
-    """
-    out_dict = {}
-    pairs_done = []
-    if by_ortholog_file:
-        separator = ":"
-        max_dN = max_dS
-    else:
-        separator = " : "
-    with open(summary_path, "r") as summary:
-        for line in summary.readlines():
-            try:
-                pair_ident, dNdS_vals = line.strip().split(separator)
-            except:
-                raise RuntimeError(f"could not parse line: \n{line[:500]} ...")
-            
-            if ".log" in pair_ident or len(pair_ident)<5:
-                continue
-            d_sp = pair_ident.split("_")
-            try:
-                species1 = f"{d_sp[0]}_{d_sp[1]}"
-                species2 = f"{d_sp[2]}_{d_sp[3]}"
-            except:
-                raise RuntimeError(f"{pair_ident} cannot be parsed as species from '{line[:100]}'")
-            if d_sp[-1] != "dS" and d_sp[-1] != "dNdS":
-                raise RuntimeError(f"{pair_ident} cannot be parsed as dNdS or dS values")
-            
-            # skip when species pair contains one excluded species
-            if species1 in exclude_list or species2 in exclude_list:
-                continue
-
-            pair = f"{species1}_{species2}"
-            if pair not in out_dict and only_dS == False:
-                out_dict[pair] = {
-                    "dS" : [],
-                    "dNdS" : []
-                }
-            elif pair not in out_dict and by_ortholog_file and only_dS:
-                out_dict[pair] = []
-
-            if by_ortholog_file:
-                vals_dict = {"dN" : np.nan, "dS" : np.nan, "dNdS" : np.nan}
-                for value in dNdS_vals.split(","):
-                    name,number_ = value.split("=")
-                    if number_ == "not_found":
-                        number = np.nan
-                    else:
-                        number = float(number_)
-                        if name == "dN" and number > max_dN:
-                            number = np.nan
-                        elif name == "dS" and number > max_dS:
-                            number = np.nan
-                    vals_dict[name] = number
-
-                if np.isnan(vals_dict["dS"]) or np.isnan(vals_dict["dN"]) or np.isnan(vals_dict["dNdS"]):
-                    continue
-                elif only_dS:
-                    out_dict[pair].append(vals_dict["dS"])
-                else:
-                    out_dict[pair]["dS"].append(vals_dict["dS"])
-                    out_dict[pair]["dNdS"].append(vals_dict["dNdS"])
-                    
-                
-            else:
-                pairs_done.append(pair)
-                values_list = [float(dNdS) if dNdS != 0.0 else np.NaN for dNdS in dNdS_vals.split(",")]
-                if d_sp[-1] == "dS":
-                    if only_dS and max_dS==0:
-                        out_dict[pair] = values_list
-                    elif only_dS and max_dS>0:
-                        out_dict[pair] = [val for val in values_list if val < max_dS]
-                    else:
-                        out_dict[pair]["dS"] = values_list
-                if d_sp[-1] == "dNdS" and only_dS == False:
-                    out_dict[pair]["dNdS"] = values_list
-    
-    print(f"read summary file with {len(out_dict)} species pair(s)")
-    if True and only_dS:
-        for key,value in out_dict.items():
-            print(f"\t * {key}: {len(value)}")
-    elif True:
-        for key,value in out_dict.items():
-            print(f"\t * {key}:")
-            for metric,list in value.items():
-                print(f"\t\t- {metric}: {len(list)}")
-    return out_dict
 
 def read_filtered_dNdS_summary(summary_path, excl_list=[], max_dS=2):
     """
@@ -151,56 +53,6 @@ def get_species_list(dNdS_dict):
     assert len(species) == calculate_num_species(dNdS_dict)
     return(species)
 
-
-
-def permute_dNdS(dNdS_A, dNdS_X):
-    """
-    return resampled A and X
-    """
-    n_A = len(dNdS_A)
-    dNdS_all = dNdS_A + dNdS_X
-    permut = np.random.permutation(dNdS_all) ## permutation: sampling without replacement
-    new_A = permut[0:n_A]
-    new_X = permut[n_A:]
-    return new_A, new_X
-
-
-def permutate_dNdS(dNdS_A, dNdS_X, num_permut = 1000, mean=False):
-    """
-    permutate n times and calculate the differences of median between all pairs
-    """
-    medians_diff_list = [np.NaN] * num_permut
-    print(f"... running {num_permut} permutations ...")
-    if mean:
-        for i in range(num_permut):
-            new_A, new_X = permute_dNdS(dNdS_A=dNdS_A, dNdS_X=dNdS_X)
-            m_A = np.nanmedian(new_A)
-            m_X = np.nanmedian(new_X)
-            medians_diff_list[i] = m_A - m_X
-    else: # median
-        for i in range(num_permut):
-            new_A, new_X = permute_dNdS(dNdS_A=dNdS_A, dNdS_X=dNdS_X)
-            m_A = np.nanmean(new_A)
-            m_X = np.nanmean(new_X)
-            medians_diff_list[i] = m_A - m_X
-    
-    return medians_diff_list
-
-
-def calculate_list_CI(values_list:list, cl = 0.95, verbose = False):
-    """
-    calculate 95% confidence interval of a list of float values
-    """
-    mean_coeff = np.mean(values_list)
-    std_coeff = np.std(values_list)
-            
-    # Sample statistics
-    lower, upper = sts.norm.interval(cl, loc = mean_coeff, scale = std_coeff) 
-    norm_coeffs = [mean_coeff,std_coeff, lower, upper]
-    if verbose:
-        print(f"\t\tmean correlation coefficient: {mean_coeff:.3f}, standard deviation {std_coeff:.3f}, 95% confidence interval: [{lower:.3f}, {upper:.3f}]")
-    # ci = sts.t.interval(cl, df=len(values_list)-1, loc=np.mean(values_list), scale=np.std(values_list, ddof=1) / np.sqrt(len(values_list)))
-    return(norm_coeffs)
 
 
 if True:
@@ -768,11 +620,11 @@ if __name__ == "__main__":
     ## make the scatterplots
     else:
         print(f"reading A ...")
-        dS_dict_A = read_dNdS_dS_summary_file(summary_paths[data_files["A"][0]], only_dS = False, max_dS=2, exclude_list=species_excl)
+        dS_dict_A = read_dNdS_dS_summary_file(summary_paths[data_files["A"][0]], only_metric = "", max_dS=2, exclude_list=species_excl)
         # print(dS_dict_A)
 
         print(f"reading X ...")
-        dS_dict_X = read_dNdS_dS_summary_file(summary_paths[data_files["X"][0]], only_dS = False, max_dS=2, exclude_list=species_excl)
+        dS_dict_X = read_dNdS_dS_summary_file(summary_paths[data_files["X"][0]], only_metric = "", max_dS=2, exclude_list=species_excl)
         # print(dS_dict_X)
         
         ## plotting
