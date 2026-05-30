@@ -10,7 +10,7 @@ import scipy.stats
 from plot_dNdS import get_summary_paths,violinplot_pair_single
 
 
-def read_dNdS_dS_summary_file(summary_path, only_dS, exclude_list = [], max_dS=0):
+def read_dNdS_dS_summary_file(summary_path, only_dS, exclude_list = [], max_dS=10, by_ortholog_file=True):
     """
     read dNdS and dS summary outfiles into a dict by species pair
     out_dict = { pair : {
@@ -18,22 +18,33 @@ def read_dNdS_dS_summary_file(summary_path, only_dS, exclude_list = [], max_dS=0
                     "dNdS" : []
                     }
                 }
+    by_ortholog_file=False is the default setting for when each line is a species pair and all dN or dNdS values
+    if True, then it's the output file from extract dNdS rresults
+
+    max_dS=10 is a very high default that effectively filters nothing
     """
     out_dict = {}
     pairs_done = []
+    if by_ortholog_file:
+        separator = ":"
+        max_dN = max_dS
+    else:
+        separator = " : "
     with open(summary_path, "r") as summary:
         for line in summary.readlines():
             try:
-                pair_ident, dNdS_vals = line.strip().split(" : ")
+                pair_ident, dNdS_vals = line.strip().split(separator)
             except:
                 raise RuntimeError(f"could not parse line: \n{line[:500]} ...")
             
+            if ".log" in pair_ident or len(pair_ident)<5:
+                continue
             d_sp = pair_ident.split("_")
             try:
                 species1 = f"{d_sp[0]}_{d_sp[1]}"
                 species2 = f"{d_sp[2]}_{d_sp[3]}"
             except:
-                raise RuntimeError(f"{pair_ident} cannot be parsed as species")
+                raise RuntimeError(f"{pair_ident} cannot be parsed as species from '{line[:100]}'")
             if d_sp[-1] != "dS" and d_sp[-1] != "dNdS":
                 raise RuntimeError(f"{pair_ident} cannot be parsed as dNdS or dS values")
             
@@ -42,24 +53,59 @@ def read_dNdS_dS_summary_file(summary_path, only_dS, exclude_list = [], max_dS=0
                 continue
 
             pair = f"{species1}_{species2}"
-            if pair not in pairs_done and only_dS == False:
+            if pair not in out_dict and only_dS == False:
                 out_dict[pair] = {
                     "dS" : [],
                     "dNdS" : []
                 }
-            pairs_done.append(pair)
+            elif pair not in out_dict and by_ortholog_file and only_dS:
+                out_dict[pair] = []
 
-            values_list = [float(dNdS) if dNdS != 0.0 else np.NaN for dNdS in dNdS_vals.split(",")]
-            if d_sp[-1] == "dS":
-                if only_dS and max_dS==0:
-                    out_dict[pair] = values_list
-                elif only_dS and max_dS>0:
-                    out_dict[pair] = [val for val in values_list if val < max_dS]
+            if by_ortholog_file:
+                vals_dict = {"dN" : np.nan, "dS" : np.nan, "dNdS" : np.nan}
+                for value in dNdS_vals.split(","):
+                    name,number_ = value.split("=")
+                    if number_ == "not_found":
+                        number = np.nan
+                    else:
+                        number = float(number_)
+                        if name == "dN" and number > max_dN:
+                            number = np.nan
+                        elif name == "dS" and number > max_dS:
+                            number = np.nan
+                    vals_dict[name] = number
+
+                if np.isnan(vals_dict["dS"]) or np.isnan(vals_dict["dN"]) or np.isnan(vals_dict["dNdS"]):
+                    continue
+                elif only_dS:
+                    out_dict[pair].append(vals_dict["dS"])
                 else:
-                    out_dict[pair]["dS"] = values_list
-            if d_sp[-1] == "dNdS" and only_dS == False:
-                out_dict[pair]["dNdS"] = values_list
-
+                    out_dict[pair]["dS"].append(vals_dict["dS"])
+                    out_dict[pair]["dNdS"].append(vals_dict["dNdS"])
+                    
+                
+            else:
+                pairs_done.append(pair)
+                values_list = [float(dNdS) if dNdS != 0.0 else np.NaN for dNdS in dNdS_vals.split(",")]
+                if d_sp[-1] == "dS":
+                    if only_dS and max_dS==0:
+                        out_dict[pair] = values_list
+                    elif only_dS and max_dS>0:
+                        out_dict[pair] = [val for val in values_list if val < max_dS]
+                    else:
+                        out_dict[pair]["dS"] = values_list
+                if d_sp[-1] == "dNdS" and only_dS == False:
+                    out_dict[pair]["dNdS"] = values_list
+    
+    print(f"read summary file with {len(out_dict)} species pair(s)")
+    if True and only_dS:
+        for key,value in out_dict.items():
+            print(f"\t * {key}: {len(value)}")
+    elif True:
+        for key,value in out_dict.items():
+            print(f"\t * {key}:")
+            for metric,list in value.items():
+                print(f"\t\t- {metric}: {len(list)}")
     return out_dict
 
 def read_filtered_dNdS_summary(summary_path, excl_list=[], max_dS=2):
@@ -613,13 +659,14 @@ def plot_dS_vs_dNdS_one_pair(A_dict:dict, X_dict:dict, filename = "dS_vs_dNdS.pn
         violinplot_pair_single(data_A_X=dS_AX, col=1, n_A=n_A, n_X=n_X, mean_A=mean_A, mean_X=mean_X, axes = axes, colors_dict=colors_dict, fs=fs, ylab = "dS", ymax = ymax)
 
         # plot dNdS scatters
-        axes[0].scatter(dS_A, dNdS_A, color = colors_dict["A"], s=35)
-        axes[0].scatter(dS_X, dNdS_X, color = colors_dict["X"], s=35)
+        axes[0].scatter(dS_A, dNdS_A, color = colors_dict["A"], s=fs*1.25)
+        axes[0].scatter(dS_X, dNdS_X, color = colors_dict["X"], s=fs*1.25)
         axes[0].tick_params(axis='x', labelsize=fs)
         axes[0].tick_params(axis='y', labelsize=fs)
         axes[0].set_xlabel("dS", fontsize = fs)
         if plot_dN:
             axes[0].set_ylabel("dN", fontsize = fs)
+            axes[0].plot([0, 1], [0, 1], transform=axes[0].transAxes, color = "#656565", linestyle="dashed")
         else:
             axes[0].set_ylabel("dNdS", fontsize = fs)
         axes[0].set_xlim(-0.08,2.08)
@@ -666,14 +713,15 @@ def plot_dS_vs_dNdS_one_pair(A_dict:dict, X_dict:dict, filename = "dS_vs_dNdS.pn
 
 
 if __name__ == "__main__":
-    username = "miltr339"
+    # username = "miltr339"
+    username = "milena"
     chromosome = "A"
     data_files = {"A" : ["A_dNdS", "A_LRT"],
                   "X" : ["X_dNdS", "X_LRT"]}
     summary_paths = get_summary_paths(username=username)
 
     # bruchini
-    if True:
+    if False:
         species_excl = ["D_carinulata", "D_sublineata", "T_castaneum", "T_freemani", "C_septempunctata", "C_magnifica"]
         filename =f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/dS_vs_dN_scatterplot_bruchini.png"
     # coccinella
@@ -687,13 +735,13 @@ if __name__ == "__main__":
     
     
     ## analysis of only dS for each pair, permutation test
-    if True:
+    if False:
         print(f"/////////////// A ///////////////")
-        dS_dict_A = read_dNdS_dS_summary_file(summary_paths[data_files["A"][0]], only_dS = True, exclude_list=species_excl,max_dS=2)
+        dS_dict_A = read_dNdS_dS_summary_file(summary_paths[data_files["A"][0]], only_dS = True, exclude_list=species_excl,max_dS=2, by_ortholog_file=True)
         # print(dS_dict_A)
 
         print(f"/////////////// X ///////////////")
-        dS_dict_X = read_dNdS_dS_summary_file(summary_paths[data_files["X"][0]], only_dS = True, exclude_list=species_excl,max_dS=2)
+        dS_dict_X = read_dNdS_dS_summary_file(summary_paths[data_files["X"][0]], only_dS = True, exclude_list=species_excl,max_dS=2, by_ortholog_file=True)
         # print(dS_dict_X)
         
         species = get_species_list(dS_dict_A)
@@ -720,11 +768,11 @@ if __name__ == "__main__":
     ## make the scatterplots
     else:
         print(f"reading A ...")
-        dS_dict_A = read_dNdS_dS_summary_file(summary_paths[data_files["A"][0]], only_dS = False, exclude_list=species_excl)
+        dS_dict_A = read_dNdS_dS_summary_file(summary_paths[data_files["A"][0]], only_dS = False, max_dS=2, exclude_list=species_excl)
         # print(dS_dict_A)
 
         print(f"reading X ...")
-        dS_dict_X = read_dNdS_dS_summary_file(summary_paths[data_files["X"][0]], only_dS = False, exclude_list=species_excl)
+        dS_dict_X = read_dNdS_dS_summary_file(summary_paths[data_files["X"][0]], only_dS = False, max_dS=2, exclude_list=species_excl)
         # print(dS_dict_X)
         
         ## plotting

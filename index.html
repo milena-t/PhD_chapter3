@@ -206,7 +206,51 @@ document.addEventListener("DOMContentLoaded", function () {
         <li><code>bash/run_python_wrapper_for_batch_dNdS.sh</code> runs the batch-separation script as a slurm job since it can be quite computationally intensive for long nested files lists</li>
     </ol>
 <p>
-    This launches a long list jobs, each iterating
+    This launches a long list jobs, each iterating over a batch of files. The resulting output is a list where each ortholog ID has a line, with dN, dS and inferred dNdS values.
+    Since this does not consider maximum dN and dS the inferred dNdS should not be considered. The files are in this repository:
 </p>
+
+<ul>
+    <li><code>data/DE_analysis/paml_summary_tables/dNdS_by_A_ortholog_pairwise_revisions.txt</code></li>
+    <li><code>data/DE_analysis/paml_summary_tables/dNdS_by_X_ortholog_pairwise_revisions.txt</code></li>
+</ul>
+
+<h4>dS analysis</h4>
+
+<p>
+    All analyses performed with <code>src/plot_dS.py</code>. I look at only dS values, filtered to only include dS &lt; 2. The bootstrap results are this for 10000 permutations:
+</p>
+
+<pre>
+    <code>
+ A_obtectus    vs. B_siliquastri:    median(dNdS_A)-median(dNdS_X) = 0.091, mean bootstrap diff = 0.00004  with CI [-0.03090,0.03098] -> SIGNIFICANT
+ A_obtectus    vs. C_maculatus:      median(dNdS_A)-median(dNdS_X) = 0.109, mean bootstrap diff = -0.00003 with CI [-0.03241,0.03234] -> SIGNIFICANT
+ A_obtectus    vs. C_chinensis:      median(dNdS_A)-median(dNdS_X) = 0.076, mean bootstrap diff = -0.00003 with CI [-0.03737,0.03730] -> SIGNIFICANT
+ B_siliquastri vs. C_maculatus:      median(dNdS_A)-median(dNdS_X) = 0.133, mean bootstrap diff = -0.00009 with CI [-0.02648,0.02630] -> SIGNIFICANT
+ B_siliquastri vs. C_chinensis:      median(dNdS_A)-median(dNdS_X) = 0.107, mean bootstrap diff = 0.00008  with CI [-0.02959,0.02975] -> SIGNIFICANT
+ C_chinensis   vs. C_maculatus:      median(dNdS_A)-median(dNdS_X) = 0.048, mean bootstrap diff = 0.00013  with CI [-0.01822,0.01848] -> SIGNIFICANT
+ 
+ C_magnifica   vs. C_septempunctata: median(dNdS_A)-median(dNdS_X) = 0.047, mean bootstrap diff = -0.00001 with CI [-0.01085,0.01082] -> SIGNIFICANT
+ T_castaneum   vs. T_freemani:       median(dNdS_A)-median(dNdS_X) = 0.002, mean bootstrap diff = 0.00001 with CI [-0.01141,0.01143] -> (nonsignificant)
+    </code>
+</pre>
+    
+I also re-did all the plots, but the results stay the same, only the numbers and sample sizes change slightly
+
+<details>
+<summary>Toggle down for plots</summary>
+
+<p float="left">
+    <img loading="lazy" src="data/fastX_ortholog_ident/dS_vs_dN_scatterplot_bruchini.png" width="50%" />
+</p>
+<p float="left">
+    <img loading="lazy" src="data/fastX_ortholog_ident/dS_vs_dN_scatterplot_coccinella.png" width="25%" />
+    <img loading="lazy" src="data/fastX_ortholog_ident/dS_vs_dN_scatterplot_tribolium.png" width="25%" />
+</p>
+
+</details>
+
+
+
 
 </body>
