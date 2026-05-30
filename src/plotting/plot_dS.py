@@ -687,7 +687,7 @@ if __name__ == "__main__":
     
     
     ## analysis of only dS for each pair, permutation test
-    if False:
+    if True:
         print(f"/////////////// A ///////////////")
         dS_dict_A = read_dNdS_dS_summary_file(summary_paths[data_files["A"][0]], only_dS = True, exclude_list=species_excl,max_dS=2)
         # print(dS_dict_A)

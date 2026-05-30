@@ -11,9 +11,11 @@ from matplotlib.colors import LinearSegmentedColormap
 
 def get_summary_paths(username = "miltr339"):
     summary_paths = {
-        "A_dNdS" : f"/Users/{username}/work/pairwise_blast_chapter_2_3/brh_tables/brh_results_A/dNdS_summary_A-linked.txt",
+        "A_dNdS_old" : f"/Users/{username}/work/pairwise_blast_chapter_2_3/brh_tables/brh_results_A/dNdS_summary_A-linked.txt",
+        "A_dNdS" : f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/dNdS_by_A_ortholog_pairwise_revisions.txt",
         "A_LRT" : f"/Users/{username}/work/pairwise_blast_chapter_2_3/brh_tables/brh_results_A/site_classes_summary_A-linked.txt",
-        "X_dNdS" : f"/Users/{username}/work/pairwise_blast_chapter_2_3/brh_tables/brh_results_X/dNdS_summary_X-linked.txt",
+        "X_dNdS_old" : f"/Users/{username}/work/pairwise_blast_chapter_2_3/brh_tables/brh_results_X/dNdS_summary_X-linked.txt",
+        "X_dNdS" : f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/dNdS_by_X_ortholog_pairwise_revisions.txt",
         "X_LRT" : f"/Users/{username}/work/pairwise_blast_chapter_2_3/brh_tables/brh_results_X/site_classes_summary_X-linked.txt",
         "A_LRT_BH_corr" : f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/site_classes_summary_A_BH_corrected.txt",
         "X_LRT_BH_corr" : f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/site_classes_summary_X_BH_corrected.txt",
