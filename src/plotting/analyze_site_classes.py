@@ -6,7 +6,7 @@ and then p and w from the site classes table. Either two or three site classes, 
 !!! statistical analysis using a logistic regression is in PhD_chapter3/src/plotting/analyze_dNdS_LFC.py 
 """
 
-from plot_dNdS import get_summary_paths,read_dNdS_summary_file,get_species_list
+from plot_dNdS import get_summary_paths,read_dNdS_dS_summary_file,get_species_list
 import os
 import numpy as np
 import bootstrap_dNdS 
@@ -373,16 +373,15 @@ if __name__ == "__main__":
 
     ## plot 
 
-
-    # username = "milena"
-    username = "miltr339"
+    username = "milena"
+    # username = "miltr339"
     chromosome = "A"
     data_files = {"A" : ["A_dNdS", "A_LRT_BH_corr"],
                   "X" : ["X_dNdS", "X_LRT_BH_corr"]}
     summary_paths = get_summary_paths(username=username)
 
     # bruchini
-    if True:
+    if False:
         species_excl = ["D_carinulata", "D_sublineata", "T_castaneum", "T_freemani", "C_septempunctata", "C_magnifica"]
         filename =f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/LRT_site_model_plot_bruchini.png"
         filename_dNdS =f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/pos_sel_dNdS_summary_plot_bruchini.png"
@@ -451,8 +450,8 @@ if __name__ == "__main__":
         ## plot pos sel bar chart and dNdS violin plot at the same time
         violin_ymax=0
         summary_paths = get_summary_paths(username=username)
-        dNdS_dict_A = read_dNdS_summary_file(summary_paths[data_files["A"][0]], excl_list=species_excl)
-        dNdS_dict_X = read_dNdS_summary_file(summary_paths[data_files["X"][0]], excl_list=species_excl)
+        dNdS_dict_A = read_dNdS_dS_summary_file(summary_paths[data_files["A"][0]], exclude_list=species_excl, max_dS=2, only_metric="dNdS")
+        dNdS_dict_X = read_dNdS_dS_summary_file(summary_paths[data_files["X"][0]], exclude_list=species_excl, max_dS=2, only_metric="dNdS")
         print(dNdS_dict_A.keys())
         if len(pairs_list)>1:
             print(f"plot pairwise matrix ...")

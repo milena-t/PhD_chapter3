@@ -116,7 +116,7 @@ def read_dNdS_dS_summary_file(summary_path, only_metric="", exclude_list = [], m
     print(f"read summary file with {len(out_dict)} species pair(s)")
     if True and only_metric!="":
         for key,value in out_dict.items():
-            print(f"\t * {key}: {len(value)} , {value[:25]}")
+            print(f"\t * {key}: {len(value)}")
     elif True:
         for key,value in out_dict.items():
             print(f"\t * {key}:")
