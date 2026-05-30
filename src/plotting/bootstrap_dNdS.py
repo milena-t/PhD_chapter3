@@ -1,5 +1,4 @@
-from plot_dNdS import get_summary_paths,get_species_list,violinplot_pair,violinplot_pair_single
-from plot_dS import read_dNdS_dS_summary_file
+from plot_dNdS import get_summary_paths,get_species_list,violinplot_pair,violinplot_pair_single,read_dNdS_dS_summary_file
 import scipy.stats as sts
 import numpy as np
 from tqdm import tqdm
@@ -13,7 +12,7 @@ def read_filtered_dNdS_summary(summary_path, excl_list=[], max_dS=2, max_dNdS = 
     """
     read the dNdS and dS values, filter for min_dS, and return only dNdS values that meet the criteria
     """
-    summary_dict = read_dNdS_dS_summary_file(summary_path=summary_path, exclude_list=excl_list, only_dS=False)
+    summary_dict = read_dNdS_dS_summary_file(summary_path=summary_path, exclude_list=excl_list, max_dS=max_dS)
     dNdS_dict = {pair : [] for pair in summary_dict.keys()}
     for pair, lists_dict in summary_dict.items():
         dNdS_unfiltered = lists_dict["dNdS"]
@@ -259,8 +258,8 @@ def plot_dNdS_permutations_one_pair(boot_diff:dict, measure_diff:dict, A_dict:di
 
     cols = species_count
     rows = 1
-    fig, axes = plt.subplots(rows, cols, figsize=(16, 8)) # for less than three rows
-    fs = 30
+    fig, axes = plt.subplots(rows, cols, figsize=(16, 9)) # for less than three rows
+    fs = 33
     plt.rcParams['text.usetex'] = True
 
     colors_dict = {
@@ -623,15 +622,15 @@ def plot_dNdS_pos_sel_one_pair(A_dict_dNdS:dict, X_dict_dNdS:dict, pos_list_A:di
 
 if __name__ == """__main__""":
 
-    # username = "milena"
-    username = "miltr339"
+    username = "milena"
+    # username = "miltr339"
     chromosome = "A"
     data_files = {"A" : ["A_dNdS", "A_LRT"],
                   "X" : ["X_dNdS", "X_LRT"]}
     summary_paths = get_summary_paths(username=username)
 
     # bruchini
-    if True:
+    if False:
         species_excl = ["D_carinulata", "D_sublineata", "T_castaneum", "T_freemani", "C_septempunctata", "C_magnifica"]
         filename =f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/fastX_permutation_bruchini.png"
     # coccinella
@@ -644,16 +643,15 @@ if __name__ == """__main__""":
         filename =f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/fastX_permutation_tribolium.png"
     
     print(" * reading dNdS_dict_A ... ")
-    dNdS_dict_A = read_filtered_dNdS_summary(summary_paths[data_files["A"][0]], excl_list=species_excl, max_dS=2, max_dNdS=2)
+    dNdS_dict_A = read_dNdS_dS_summary_file(summary_paths[data_files["A"][0]], exclude_list=species_excl, max_dS=2, only_metric="dNdS")
     print(" * reading dNdS_dict_X ... ")
-    dNdS_dict_X = read_filtered_dNdS_summary(summary_paths[data_files["X"][0]], excl_list=species_excl, max_dS=2, max_dNdS=2)
+    dNdS_dict_X = read_dNdS_dS_summary_file(summary_paths[data_files["X"][0]], exclude_list=species_excl, max_dS=2, only_metric="dNdS")
     
     species = get_species_list(dNdS_dict_A, exclude_list=species_excl)
     pairs_list = list(dNdS_dict_A.keys())
 
     bootstraps = { pair : [] for pair in pairs_list}
     median_diffs = {pair : np.NaN for pair in pairs_list}
-
     
     ### test with 100, takes a bit of time otherwise
     ### actual analysis with 10000
