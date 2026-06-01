@@ -128,7 +128,7 @@ def read_ortholog_dNdS(summary_path, excl_list = [], pair_split_string="_"):
                 if ortholog_dir[-4:] == ".out" or ortholog_dir[-4:] == ".log" or len(ortholog_dir)<5:
                     continue
                 else:
-                    raise RuntimeError(f"cannot parse pair number in {pair_name}, from filepath: {ortholog_dir}")
+                    raise RuntimeError(f"cannot parse pair number in {pair_name}, from filepath: {ortholog_dir} using the split string '{pair_split_string}'")
 
             species1,species2=species_names_from_pair(pair_name)
             pair = f"{species1}_{species2}"

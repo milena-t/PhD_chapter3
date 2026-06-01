@@ -325,4 +325,23 @@ I also re-did all the plots, but the results stay the same, only the numbers and
     </p>
 </details>
 
+<h2>Orthologs separated by gene age</h2>
+
+<p>
+    We hypothesize that the evolutionary rates are different for older vs. younger genes and therefore incorporate a measure of gene age (from the perspective of 
+    <i>C. maculatus</i> into our analyses). It describes what species is the most distant to still contain a 1-to-1 ortholog: a gene of age 1 is the youngest and 
+    the ortholog is only shared with the closest sister species of <i>C. chinensis</i>, while a gene age of 5 is the most conserved with an ortholog in <i>D. melanogaster</i>.
+</p>
+
+<ol>
+    <li><code>src/make_DE_analysis_table.py</code>: make the tables for A and X (already includes the expression as well)
+        <ul>
+            <li><code>data/DE_analysis/paml_summary_tables/DE_summary_table_A_chr.tsv</code></li>
+            <li><code>data/DE_analysis/paml_summary_tables/DE_summary_table_X_chr.tsv</code></li>
+        </ul>
+    </li>
+    <li><code>src/plotting/analyze_dNdS_LFC.py</code>: plot the boxplots of dNdS split by age rank</li>
+</ol>
+
+
 </body>
