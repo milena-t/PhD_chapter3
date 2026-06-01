@@ -362,10 +362,11 @@ I also re-did all the plots, but the results stay the same, only the numbers and
 
 <p>
     Median quantile regression with wald test to drop explanatory variables and see if they make a significant difference. This way We can get a p-value for just the gene age 
-    (and gene age by chromosome interaction) without worrying about the intercept for interpretation. The code is also in <code>src/plotting/analyze_dNdS_LFC.py</code>, 
-    in the function <code>statistical_analysis_dNdS(... , include_sex_bias=False)</code>.
+    (and gene age by chromosome interaction) without worrying about the intercept for interpretation. Further, the results below do agree with the permutation test and show a 
+    significantly lower dNdS on X, but it also takes the gene age effect into account.
 </p>
 <p>
+    The code is also in <code>src/plotting/analyze_dNdS_LFC.py</code>, in the function <code>statistical_analysis_dNdS(... , include_sex_bias=False)</code>. 
     Since the response variable is dNdS, the analysis can be done from the perspective of <i>C. maculatus</i> with each of the three other <i>Bruchini</i> species.
 </p>
 
@@ -388,7 +389,8 @@ I also re-did all the plots, but the results stay the same, only the numbers and
 </div>
 
 <div id="dNdS_age_wald_B_siliquastri" class="tabcontent">
-    <p><code>dNdS_vs_gene_age_medianreg_wald_test_B_siliquastri.txt</code>Interaction gene age by chromosome not significant but gene age alone strongly significant
+    <p><code>dNdS_vs_gene_age_medianreg_wald_test_B_siliquastri.txt</code>Interaction gene age by chromosome is significant. Therefore the reduced nested model doesn't really matter anymore 
+        but it is still significant.
     </p>
     <iframe
         src="data/stats_summary_files/dNdS_vs_gene_age_medianreg_wald_test_B_siliquastri.txt"
@@ -411,4 +413,60 @@ I also re-did all the plots, but the results stay the same, only the numbers and
     </iframe>
 </div>
     
+<h3>positive selection</h3>
+
+<p>
+    There is no plot here it's not statistically significant, see below.
+</p>
+
+<h4>statistical analysis</h4>
+
+<p>
+    The statistical analysis here is a logistic regression with positive selection as the categorically binary response variable to infer an effect of gene age and chromosome.
+    The code is also in <code>src/plotting/analyze_dNdS_LFC.py</code>, in the function <code>statistical_analysis_pos_sel(... , include_sex_bias=False)</code>. 
+</p>
+<p>
+    In all cases, both chromosome by gene age interaction as well as gene age as a main effect are insignificant. When both are excluded, chromosome class becomes significant
+    with a positive coefficient (enrichment of positively selected genes on the X), which is in agreement with the permutation test.
+</p>
+
+<div class="tab">
+    <button class="tablinks" onclick="openTab(event, 'pos_sel_age_wald_C_chinensis')"><i>C. chinensis</i></button>
+    <button class="tablinks" onclick="openTab(event, 'pos_sel_age_wald_B_siliquastri')"><i>B. siliquastri</i></button>
+    <button class="tablinks" onclick="openTab(event, 'pos_sel_age_wald_A_obtectus')"><i>A. obtectus</i></button>
+</div>
+
+<div id="pos_sel_age_wald_C_chinensis" class="tabcontent">
+    <p><code>pos_sel_vs_gene_age_LR_wald_test_C_chinensis.txt</code></p>
+    <iframe
+        src="data/stats_summary_files/pos_sel_vs_gene_age_LR_wald_test_C_chinensis.txt"
+        frameBorder="0"
+        class=""
+        scrolling="auto"
+        style="width:100%; height:30vh;">
+    </iframe>
+</div>
+
+<div id="pos_sel_age_wald_B_siliquastri" class="tabcontent">
+    <p><code>pos_sel_vs_gene_age_LR_wald_test_B_siliquastri.txt</code></p>
+    <iframe
+        src="data/stats_summary_files/pos_sel_vs_gene_age_LR_wald_test_B_siliquastri.txt"
+        frameBorder="0"
+        class=""
+        scrolling="auto"
+        style="width:100%; height:30vh;">
+    </iframe>
+</div>
+
+<div id="pos_sel_age_wald_A_obtectus" class="tabcontent">
+    <p><code>pos_sel_vs_gene_age_LR_wald_test_A_obtectus.txt</code></p>
+    <iframe
+        src="data/stats_summary_files/pos_sel_vs_gene_age_LR_wald_test_A_obtectus.txt"
+        frameBorder="0"
+        class=""
+        scrolling="auto"
+        style="width:100%; height:30vh;">
+    </iframe>
+</div>
+
 </body>

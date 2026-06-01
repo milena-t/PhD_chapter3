@@ -1,0 +1,68 @@
+////////////////// B_siliquastri //////////////////
+
+---------------> test with chromosome * ortholog_distance interaction
+
+                           Logit Regression Results                           
+==============================================================================
+Dep. Variable:     positive_selection   No. Observations:                 9459
+Model:                          Logit   Df Residuals:                     9451
+Method:                           MLE   Df Model:                            7
+Date:                Mon, 01 Jun 2026   Pseudo R-squ.:                0.001628
+Time:                        14:17:33   Log-Likelihood:                -2667.3
+converged:                       True   LL-Null:                       -2671.6
+Covariance Type:            nonrobust   LLR p-value:                    0.2751
+=======================================================================================================================
+                                                          coef    std err          z      P>|z|      [0.025      0.975]
+-----------------------------------------------------------------------------------------------------------------------
+Intercept                                              -2.3682      0.198    -11.983      0.000      -2.756      -1.981
+C(chromosome)[T.X]                                      1.2696      0.840      1.511      0.131      -0.377       2.916
+C(level_most_dist_ortholog)[T.3]                       -0.1980      0.238     -0.831      0.406      -0.665       0.269
+C(level_most_dist_ortholog)[T.4]                       -0.0545      0.213     -0.256      0.798      -0.472       0.363
+C(level_most_dist_ortholog)[T.5]                       -0.0675      0.203     -0.332      0.740      -0.466       0.331
+C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.3]    -0.6493      1.138     -0.571      0.568      -2.880       1.581
+C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.4]    -0.5899      0.938     -0.629      0.529      -2.428       1.249
+C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.5]    -0.9530      0.861     -1.107      0.268      -2.640       0.734
+=======================================================================================================================
+wald test for C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.3] = 0,
+                    C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.4] = 0,
+                    C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.5] = 0 interaction: <Wald test (chi2): statistic=1.7807926684907882, p-value=0.6191235595018998, df_denom=3>
+
+---------------> test with only chromosome + ortholog_distance major effects and no interaction
+
+                           Logit Regression Results                           
+==============================================================================
+Dep. Variable:     positive_selection   No. Observations:                 9459
+Model:                          Logit   Df Residuals:                     9454
+Method:                           MLE   Df Model:                            4
+Date:                Mon, 01 Jun 2026   Pseudo R-squ.:                0.001323
+Time:                        14:17:33   Log-Likelihood:                -2668.1
+converged:                       True   LL-Null:                       -2671.6
+Covariance Type:            nonrobust   LLR p-value:                    0.1322
+====================================================================================================
+                                       coef    std err          z      P>|z|      [0.025      0.975]
+----------------------------------------------------------------------------------------------------
+Intercept                           -2.3306      0.191    -12.173      0.000      -2.706      -1.955
+C(chromosome)[T.X]                   0.4098      0.164      2.502      0.012       0.089       0.731
+C(level_most_dist_ortholog)[T.3]    -0.2297      0.232     -0.991      0.322      -0.684       0.225
+C(level_most_dist_ortholog)[T.4]    -0.0830      0.207     -0.401      0.688      -0.488       0.322
+C(level_most_dist_ortholog)[T.5]    -0.1114      0.197     -0.565      0.572      -0.498       0.275
+====================================================================================================
+wald test for C(level_most_dist_ortholog)[T.3] = 0,C(level_most_dist_ortholog)[T.4] = 0,C(level_most_dist_ortholog)[T.5] = 0 major effect: <Wald test (chi2): statistic=1.286711173706038, p-value=0.732291032824465, df_denom=3>
+
+---------------> test without conservation rank to see if excluding it makes chromosome significant
+
+                           Logit Regression Results                           
+==============================================================================
+Dep. Variable:     positive_selection   No. Observations:                 9459
+Model:                          Logit   Df Residuals:                     9457
+Method:                           MLE   Df Model:                            1
+Date:                Mon, 01 Jun 2026   Pseudo R-squ.:                0.001079
+Time:                        14:17:33   Log-Likelihood:                -2668.7
+converged:                       True   LL-Null:                       -2671.6
+Covariance Type:            nonrobust   LLR p-value:                   0.01633
+======================================================================================
+                         coef    std err          z      P>|z|      [0.025      0.975]
+--------------------------------------------------------------------------------------
+Intercept             -2.4419      0.039    -63.107      0.000      -2.518      -2.366
+C(chromosome)[T.X]     0.4108      0.163      2.517      0.012       0.091       0.731
+======================================================================================

@@ -252,7 +252,7 @@ def statistical_analysis_dNdS(full_table_paths_dict, table_outfile="", max_dNdS=
 
     
 
-def statistical_analysis_pos_sel(full_table_paths_dict, include_sex_bias=False):
+def statistical_analysis_pos_sel(full_table_paths_dict, table_outfile = "pos_sel_stats.txt", include_sex_bias=False):
     A_df = pd.read_csv(full_table_paths_dict["A"], sep="\t")
     partners_list = list(set(A_df["other_species"]))
     print(partners_list)
@@ -270,113 +270,116 @@ def statistical_analysis_pos_sel(full_table_paths_dict, include_sex_bias=False):
     df["LFC_head_thorax"] = abs(df["LFC_head_thorax"])
 
     for partner in partners_list:
-        print(f"\n////////////////// {partner} //////////////////")
-        filt_df = df[df["other_species"]==partner]
-        filt_df = filt_df[filt_df["positive_selection"] != "NaN"]
-        filt_df = filt_df[filt_df["positive_selection"].notna()]
-        filt_df["positive_selection"] = filt_df["positive_selection"].map({False: 0, True: 1})
-        
-        if True:
-            formula = f"positive_selection ~ (LFC_abdomen + LFC_head_thorax + C(SB_abdomen) + C(SB_head_thorax)) * C(chromosome) * level_most_dist_ortholog"
+        table_outfile_species = table_outfile.replace(".txt", f"_{partner}.txt")
+        with open(table_outfile_species, "w") as table_out:
+            table_out.write(f"////////////////// {partner} //////////////////")
+            filt_df = df[df["other_species"]==partner]
+            filt_df = filt_df[filt_df["positive_selection"] != "NaN"]
+            filt_df = filt_df[filt_df["positive_selection"].notna()]
+            filt_df["positive_selection"] = filt_df["positive_selection"].map({False: 0, True: 1})
+            
+            if True:
+                formula = f"positive_selection ~ (LFC_abdomen + LFC_head_thorax + C(SB_abdomen) + C(SB_head_thorax)) * C(chromosome) * level_most_dist_ortholog"
 
-            # when adjusting to the same as contninuous dNdS -> remove LFC and merge significant and nonsignificant into one category where there are three factor levels
+                # when adjusting to the same as contninuous dNdS -> remove LFC and merge significant and nonsignificant into one category where there are three factor levels
 
-            # the syntax with the parentheses (LFC_abdomen + LFC_head_thorax) * C(chromosome) means this:
-            # LFC_abdomen + LFC_head_thorax + C(chromosome) + LFC_abdomen:C(chromosome) + LFC_head_thorax:C(chromosome)
-            if include_sex_bias and "C_chinensis" in partner:
-                # only significantly sex-biased genes -> remove LFC
-                formula_a = f"positive_selection ~  C(SB_abdomen)  * C(chromosome) * C(level_most_dist_ortholog)"
-                formula_a_no = f"positive_selection ~  C(SB_abdomen)  * C(chromosome)"
-                formula_ht = f"positive_selection ~  C(SB_head_thorax)  * (C(chromosome) + C(level_most_dist_ortholog))"
-                formula_ht_no = f"positive_selection ~  C(SB_head_thorax)  * C(chromosome)"
-                formula_no = f"positive_selection ~  C(chromosome) * C(level_most_dist_ortholog)"
-                formula_nono = f"positive_selection ~  C(chromosome)"
-                
-                print(f"\n\n------------> abdomen\n\n")
-                test = smf.logit(formula=formula_a, data=filt_df).fit()
-                print(test.summary())
-                print(f"\n\n------------> NO AGE RANK: abdomen\n\n")
-                test = smf.logit(formula=formula_a_no, data=filt_df).fit()
-                print(test.summary())
-                print(f"\n\n------------> head+thorax\n\n")
-                test = smf.logit(formula=formula_ht, data=filt_df).fit()
-                print(test.summary())
-                print(f"\n\n------------> NO AGE RANK: head+thorax\n\n")
-                test = smf.logit(formula=formula_ht_no, data=filt_df).fit()
-                print(test.summary())
-                print(f"\n\n------------> no sex bias\n\n")
-                test = smf.logit(formula=formula_no, data=filt_df).fit()
-                print(test.summary())
-                print(f"\n\n------------> no conservation rank\n\n")
-                test = smf.logit(formula=formula_nono, data=filt_df).fit()
-                print(test.summary())
+                # the syntax with the parentheses (LFC_abdomen + LFC_head_thorax) * C(chromosome) means this:
+                # LFC_abdomen + LFC_head_thorax + C(chromosome) + LFC_abdomen:C(chromosome) + LFC_head_thorax:C(chromosome)
+                if include_sex_bias and "C_chinensis" in partner:
+                    # only significantly sex-biased genes -> remove LFC
+                    formula_a = f"positive_selection ~  C(SB_abdomen)  * C(chromosome) * C(level_most_dist_ortholog)"
+                    formula_a_no = f"positive_selection ~  C(SB_abdomen)  * C(chromosome)"
+                    formula_ht = f"positive_selection ~  C(SB_head_thorax)  * (C(chromosome) + C(level_most_dist_ortholog))"
+                    formula_ht_no = f"positive_selection ~  C(SB_head_thorax)  * C(chromosome)"
+                    formula_no = f"positive_selection ~  C(chromosome) * C(level_most_dist_ortholog)"
+                    formula_nono = f"positive_selection ~  C(chromosome)"
+                    
+                    table_out.write(f"\n\n------------> abdomen\n\n")
+                    test = smf.logit(formula=formula_a, data=filt_df).fit()
+                    table_out.write(test.summary().as_text())
+                    table_out.write(f"\n\n------------> NO AGE RANK: abdomen\n\n")
+                    test = smf.logit(formula=formula_a_no, data=filt_df).fit()
+                    table_out.write(test.summary().as_text())
+                    table_out.write(f"\n\n------------> head+thorax\n\n")
+                    test = smf.logit(formula=formula_ht, data=filt_df).fit()
+                    table_out.write(test.summary().as_text())
+                    table_out.write(f"\n\n------------> NO AGE RANK: head+thorax\n\n")
+                    test = smf.logit(formula=formula_ht_no, data=filt_df).fit()
+                    table_out.write(test.summary().as_text())
+                    table_out.write(f"\n\n------------> no sex bias\n\n")
+                    test = smf.logit(formula=formula_no, data=filt_df).fit()
+                    table_out.write(test.summary().as_text())
+                    table_out.write(f"\n\n------------> no conservation rank\n\n")
+                    test = smf.logit(formula=formula_nono, data=filt_df).fit()
+                    table_out.write(test.summary().as_text())
 
 
-            elif include_sex_bias == False:
-                
-                ########### test interaction
-                print(f"\n\n---------------> test with chromosome * ortholog_distance interaction\n\n")
-                formula = f"positive_selection ~  C(chromosome) * C(level_most_dist_ortholog)"
-                test = smf.logit(formula=formula, data=filt_df).fit()
-                print(test.summary())
+                elif include_sex_bias == False:
+                    
+                    ########### test interaction
+                    table_out.write(f"\n\n---------------> test with chromosome * ortholog_distance interaction\n\n")
+                    formula = f"positive_selection ~  C(chromosome) * C(level_most_dist_ortholog)"
+                    test = smf.logit(formula=formula, data=filt_df).fit()
+                    table_out.write(test.summary().as_text())
 
-                interactions_by_partner = {
-                "A_obtectus" : """C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.4] = 0,
-                C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.5] = 0""",
-                "B_siliquastri" : """C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.3] = 0,
-                C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.4] = 0,
-                C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.5] = 0""",
-                "C_chinensis" : """C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.2] = 0,
-                C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.3] = 0,
-                C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.4] = 0,
-                C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.5] = 0"""
-                }
-                
-                
+                    interactions_by_partner = {
+                    "A_obtectus" : """C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.4] = 0,
+                    C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.5] = 0""",
+                    "B_siliquastri" : """C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.3] = 0,
+                    C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.4] = 0,
+                    C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.5] = 0""",
+                    "C_chinensis" : """C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.2] = 0,
+                    C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.3] = 0,
+                    C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.4] = 0,
+                    C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.5] = 0"""
+                    }
+                    
+                    
+                    try:
+                        # test two-way interaction
+                        wald_test = test.wald_test(interactions_by_partner[partner], scalar = True)
+                        table_out.write(f"\nwald test for {interactions_by_partner[partner]} interaction: {wald_test}")
+                    except:
+                        table_out.write("\nno Wald test could be performed")
+
+                    ########### test major effect age rank
+                    table_out.write(f"\n\n---------------> test with only chromosome + ortholog_distance major effects and no interaction\n\n")
+                    formula = f"positive_selection ~  C(chromosome) + C(level_most_dist_ortholog)"
+                    test = smf.logit(formula=formula, data=filt_df).fit()
+                    table_out.write(test.summary().as_text())
+
+                    ME_by_pair = {
+                        "C_chinensis" : """C(level_most_dist_ortholog)[T.2] = 0,C(level_most_dist_ortholog)[T.3] = 0,C(level_most_dist_ortholog)[T.4] = 0,C(level_most_dist_ortholog)[T.5] = 0""",
+                        "B_siliquastri" : """C(level_most_dist_ortholog)[T.3] = 0,C(level_most_dist_ortholog)[T.4] = 0,C(level_most_dist_ortholog)[T.5] = 0""",
+                        "A_obtectus" : """C(level_most_dist_ortholog)[T.4] = 0,C(level_most_dist_ortholog)[T.5] = 0""",
+                    }
+
+                    wald_test = test.wald_test(ME_by_pair[partner], scalar = True)
+                    try:
+                        # test major effect of age rank
+                        table_out.write(f"\nwald test for {ME_by_pair[partner]} major effect: {wald_test}")
+                    except:
+                        table_out.write("\nno Wald test could be performed")
+
+                    ########### test only chromosome effect
+                    table_out.write(f"\n\n---------------> test without conservation rank to see if excluding it makes chromosome significant\n\n")
+                    # do one test without age rank to see if chromosome becomes significant to explain the results from the permutation test
+                    formula = f"positive_selection ~  C(chromosome)"
+                    test = smf.logit(formula=formula, data=filt_df).fit()
+                    table_out.write(test.summary().as_text())
+
                 try:
-                    # test two-way interaction
-                    wald_test = test.wald_test(interactions_by_partner[partner], scalar = True)
-                    print(f"\nwald test for {interactions_by_partner[partner]} interaction: {wald_test}")
+                    interactions_test_string = """
+                    LFC_head_thorax:C(chromosome)[T.X]:level_most_dist_ortholog = 0,
+                    LFC_abdomen:C(chromosome)[T.X]:level_most_dist_ortholog = 0,
+                    C(SB_abdomen)[T.male]:C(chromosome)[T.X]:level_most_dist_ortholog = 0,
+                    C(SB_head_thorax)[T.male]:C(chromosome)[T.X]:level_most_dist_ortholog = 0
+                    """
+                    wald_test = test.wald_test(interactions_test_string, scalar = True)
+                    table_out.write(f"\nwald test: {wald_test}")
                 except:
-                    print("\nno Wald test could be performed")
-
-                ########### test major effect age rank
-                print(f"\n\n---------------> test with only chromosome + ortholog_distance major effects and no interaction\n\n")
-                formula = f"positive_selection ~  C(chromosome) + C(level_most_dist_ortholog)"
-                test = smf.logit(formula=formula, data=filt_df).fit()
-                print(test.summary())
-
-                ME_by_pair = {
-                    "C_chinensis" : """C(level_most_dist_ortholog)[T.2] = 0,C(level_most_dist_ortholog)[T.3] = 0,C(level_most_dist_ortholog)[T.4] = 0,C(level_most_dist_ortholog)[T.5] = 0""",
-                    "B_siliquastri" : """C(level_most_dist_ortholog)[T.3] = 0,C(level_most_dist_ortholog)[T.4] = 0,C(level_most_dist_ortholog)[T.5] = 0""",
-                    "A_obtectus" : """C(level_most_dist_ortholog)[T.4] = 0,C(level_most_dist_ortholog)[T.5] = 0""",
-                }
-
-                wald_test = test.wald_test(ME_by_pair[partner], scalar = True)
-                try:
-                    # test major effect of age rank
-                    print(f"\nwald test for {ME_by_pair[partner]} major effect: {wald_test}")
-                except:
-                    print("\nno Wald test could be performed")
-
-                ########### test only chromosome effect
-                print(f"\n\n---------------> test without conservation rank to see if excluding it makes chromosome significant\n\n")
-                # do one test without age rank to see if chromosome becomes significant to explain the results from the permutation test
-                formula = f"positive_selection ~  C(chromosome)"
-                test = smf.logit(formula=formula, data=filt_df).fit()
-                print(test.summary())
-
-            try:
-                interactions_test_string = """
-                LFC_head_thorax:C(chromosome)[T.X]:level_most_dist_ortholog = 0,
-                LFC_abdomen:C(chromosome)[T.X]:level_most_dist_ortholog = 0,
-                C(SB_abdomen)[T.male]:C(chromosome)[T.X]:level_most_dist_ortholog = 0,
-                C(SB_head_thorax)[T.male]:C(chromosome)[T.X]:level_most_dist_ortholog = 0
-                """
-                wald_test = test.wald_test(interactions_test_string, scalar = True)
-                print(f"wald test: {wald_test}")
-            except:
-                pass
+                    pass
+        print(f"outfile written to {table_outfile_species}")
 
 
 
@@ -1313,7 +1316,7 @@ if __name__ == "__main__":
             compare_conservation_rank_proportions(full_tables_dict, other_species=species)
 
     ###### dNdS stats and plotting
-    if True:
+    if False:
         ## stats
         ## median quantile regression for dNdS as continuous response
         do_chinensis_sex_bias=False # if False do only dNdS ~ gene age * chromosome for Bruchini
@@ -1363,12 +1366,13 @@ if __name__ == "__main__":
 
     ###### site model (pos. sel) stats and some plotting
     ## if plotting not here then in PhD_chapter3/src/plotting/analyze_site_classes.py
-    if False:
+    if True:
         ## analyze positive selection in site classes
         ## logistic regression for categorical response (positive selection True/False)
         do_chinensis_sex_bias=False
+        table_name = f"/Users/{username}/work/PhD_code/PhD_chapter3/data/stats_summary_files/pos_sel_vs_gene_age_LR_wald_test.txt"
         ###################################################
-        statistical_analysis_pos_sel(full_table_paths_dict=full_tables_dict, include_sex_bias=do_chinensis_sex_bias)
+        statistical_analysis_pos_sel(full_table_paths_dict=full_tables_dict, table_outfile=table_name, include_sex_bias=do_chinensis_sex_bias)
         ###################################################
     
     if False:
