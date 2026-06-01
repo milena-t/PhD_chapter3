@@ -1325,7 +1325,7 @@ if __name__ == "__main__":
             compare_conservation_rank_proportions(full_tables_dict, other_species=species)
 
     ###### dNdS stats and plotting
-    if True:
+    if False:
         ## stats
         ## median quantile regression for dNdS as continuous response
         do_chinensis_sex_bias=True # if False do only dNdS ~ gene age * chromosome for Bruchini
@@ -1337,7 +1337,7 @@ if __name__ == "__main__":
         ## the outfile argument doesn't work, but to get it into a outfile run the command line as
         ## python3 analyze_dNdS_LFC.py > /Users/miltr339/work/PhD_code/PhD_chapter3/data/stats_summary_files/dNdS_vs_gene_age_medianreg_wald_test.txt
 
-    if False:
+    if True:
         ## plotting
         pos_sel = False # if True plot bar charts with proportion of positive selection
                         # if False, plot boxplot with dNdS values
@@ -1353,7 +1353,7 @@ if __name__ == "__main__":
             else:
                 filename=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/dNdS_vs_conservation_rank_boxplot.png"
             ###################################################
-            boxplot_dNdS(full_tables_dict, outfile=filename, pos_sel=pos_sel, lineplot=lineplot, only_chr="A")
+            boxplot_dNdS(full_tables_dict, outfile=filename, pos_sel=pos_sel, lineplot=lineplot, only_chr="X")
             ###################################################
         else:
             ### boxplot for dNdS by sex bias and A/X but with rank categories merged

@@ -696,7 +696,7 @@ I also re-did all the plots, but the results stay the same, only the numbers and
 
 <p>
     dNdS is modelled as a continuous response again using a median quantile regression using the function <code>statistical_analysis_dNdS(..., do_chinensis_sex_bias=True)</code> 
-    to now actually include differential expression in the dNdS by age rank analysis.
+    to now actually include differential expression in the dNdS by age rank analysis. The plots are created with <code>boxplot_dNdS(..., pos_sel=False, lineplot=True)</code>
 </p>
 
 <div class="tab">
@@ -707,6 +707,9 @@ I also re-did all the plots, but the results stay the same, only the numbers and
 </div>
 
 <div id="A_abdomen_quantreg_DE_vs_age_vs_dNdS" class="tabcontent">
+    <p float="left">
+        <img loading="lazy" src="data/DE_analysis/dNdS_vs_conservation_rank_medians_lineplot_abdomen_only_A.png" width="45%" />
+    </p>
     <p><code>dNdS_vs_gene_age_medianreg_wald_test_C_chinensis_logFC_A_abdomen.txt</code></p>
     <iframe
         src="data/stats_summary_files/dNdS_vs_gene_age_medianreg_wald_test_C_chinensis_logFC_A_abdomen.txt"
@@ -718,6 +721,9 @@ I also re-did all the plots, but the results stay the same, only the numbers and
 </div>
 
 <div id="X_abdomen_quantreg_DE_vs_age_vs_dNdS" class="tabcontent">
+    <p float="left">
+        <img loading="lazy" src="data/DE_analysis/dNdS_vs_conservation_rank_medians_lineplot_abdomen_only_X.png" width="45%" />
+    </p>
     <p><code>dNdS_vs_gene_age_medianreg_wald_test_C_chinensis_logFC_X_abdomen.txt</code></p>
     <iframe
         src="data/stats_summary_files/dNdS_vs_gene_age_medianreg_wald_test_C_chinensis_logFC_X_abdomen.txt"
@@ -728,6 +734,9 @@ I also re-did all the plots, but the results stay the same, only the numbers and
     </iframe>
 </div>
 <div id="A_ht_quantreg_DE_vs_age_vs_dNdS" class="tabcontent">
+    <p float="left">
+        <img loading="lazy" src="data/DE_analysis/dNdS_vs_conservation_rank_medians_lineplot_head_thorax_only_A.png" width="45%" />
+    </p>
     <p><code>dNdS_vs_gene_age_medianreg_wald_test_C_chinensis_logFC_A_head_thorax.txt</code></p>
     <iframe
         src="data/stats_summary_files/dNdS_vs_gene_age_medianreg_wald_test_C_chinensis_logFC_A_head_thorax.txt"
@@ -739,6 +748,9 @@ I also re-did all the plots, but the results stay the same, only the numbers and
 </div>
 
 <div id="X_ht_quantreg_DE_vs_age_vs_dNdS" class="tabcontent">
+    <p float="left">
+        <img loading="lazy" src="data/DE_analysis/dNdS_vs_conservation_rank_medians_lineplot_head_thorax_only_X.png" width="45%" />
+    </p>
     <p><code>dNdS_vs_gene_age_medianreg_wald_test_C_chinensis_logFC_X_head_thorax.txt</code></p>
     <iframe
         src="data/stats_summary_files/dNdS_vs_gene_age_medianreg_wald_test_C_chinensis_logFC_X_head_thorax.txt"
