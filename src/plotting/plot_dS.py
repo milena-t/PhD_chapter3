@@ -359,8 +359,8 @@ def plot_dS_vs_dNdS(A_dict:dict, X_dict:dict, filename = "dS_vs_dNdS.png", dark_
         violinplot_pair(data_A_X=dS_AX, row=row, col=col, n_A=n_A, n_X=n_X, mean_A=mean_A, mean_X=mean_X, axes = axes, colors_dict=colors_dict, fs=fs, ymax=ymax)
 
         # plot dNdS scatters
-        axes[col,row].scatter(dS_A, dNdS_A, color = colors_dict["A"], s=35)
-        axes[col,row].scatter(dS_X, dNdS_X, color = colors_dict["X"], s=35)
+        axes[col,row].scatter(dS_A, dNdS_A, color = colors_dict["A"], s=35, alpha=0.5, edgecolors="none")
+        axes[col,row].scatter(dS_X, dNdS_X, color = colors_dict["X"], s=35, alpha=0.5, edgecolors="none")
         axes[col,row].tick_params(axis='x', labelsize=fs)
         axes[col,row].tick_params(axis='y', labelsize=fs)
         axes[species_count-1,row].set_xlabel("dS", fontsize = fs)
@@ -511,8 +511,8 @@ def plot_dS_vs_dNdS_one_pair(A_dict:dict, X_dict:dict, filename = "dS_vs_dNdS.pn
         violinplot_pair_single(data_A_X=dS_AX, col=1, n_A=n_A, n_X=n_X, mean_A=mean_A, mean_X=mean_X, axes = axes, colors_dict=colors_dict, fs=fs, ylab = "dS", ymax = ymax)
 
         # plot dNdS scatters
-        axes[0].scatter(dS_A, dNdS_A, color = colors_dict["A"], s=fs*1.25)
-        axes[0].scatter(dS_X, dNdS_X, color = colors_dict["X"], s=fs*1.25)
+        axes[0].scatter(dS_A, dNdS_A, color = colors_dict["A"], s=fs*1.25, alpha=0.5, edgecolors="none")
+        axes[0].scatter(dS_X, dNdS_X, color = colors_dict["X"], s=fs*1.25, alpha=0.5, edgecolors="none")
         axes[0].tick_params(axis='x', labelsize=fs)
         axes[0].tick_params(axis='y', labelsize=fs)
         axes[0].set_xlabel("dS", fontsize = fs)
@@ -565,8 +565,8 @@ def plot_dS_vs_dNdS_one_pair(A_dict:dict, X_dict:dict, filename = "dS_vs_dNdS.pn
 
 
 if __name__ == "__main__":
-    # username = "miltr339"
-    username = "milena"
+    username = "miltr339"
+    # username = "milena"
     chromosome = "A"
     data_files = {"A" : ["A_dNdS", "A_LRT"],
                   "X" : ["X_dNdS", "X_LRT"]}
