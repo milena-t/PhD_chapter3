@@ -206,8 +206,17 @@ document.addEventListener("DOMContentLoaded", function () {
         <li><code>bash/run_python_wrapper_for_batch_dNdS.sh</code> runs the batch-separation script as a slurm job since it can be quite computationally intensive for long nested files lists</li>
     </ol>
 <p>
-    This launches a long list jobs, each iterating over a batch of files. The resulting output is a list where each ortholog ID has a line, with dN, dS and inferred dNdS values.
-    Since this does not consider maximum dN and dS the inferred dNdS should not be considered. The files are in this repository:
+    This launches a long list jobs, one for each batch of orthologs, that all run in parallel. Each job individually should all take less than an hour. I have separated everything for A and X 
+    into its own directories, so the outermost bash script <code>bash/run_python_wrapper_for_batch_dNdS.sh</code> has to be run from either the A or X species directory and then also pass 
+    the corresponding "A" or "X" command line argument to the batching python script.
+    This results in a separate directory for each ortholog where the dN and dS values are in separate files called <code>2ML.dN</code> and <code>2ML.dS</code>, and the script calculates 
+    a dNdS value already into a separate file called <code>2ML.dNdS</code>. Since this does not take any filtering for maximum dN and dS value into account that we apply later, 
+    this will not be used in the future.
+</p>
+  
+<p>
+    the dN and dS values can be summarized into one list using <code>src/blast_BRH/extract_dNdS_Results.py</code> (and <code>bash/run_extract_dNdS_results.sh</code> to run it as a 
+    slurm job since this also takes a bit to loop through all the autosomes). This again results in two separate files, one for A and one for X orthologs.
 </p>
 
 <ul>
