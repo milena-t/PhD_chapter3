@@ -279,22 +279,27 @@ def statistical_analysis_pos_sel(full_table_paths_dict, table_outfile = "pos_sel
     df["LFC_head_thorax"] = abs(df["LFC_head_thorax"])
 
     for partner in partners_list:
-        table_outfile_species = table_outfile.replace(".txt", f"_{partner}.txt")
-        with open(table_outfile_species, "w") as table_out:
-            table_out.write(f"////////////////// {partner} //////////////////")
-            filt_df = df[df["other_species"]==partner]
-            filt_df = filt_df[filt_df["positive_selection"] != "NaN"]
-            filt_df = filt_df[filt_df["positive_selection"].notna()]
-            filt_df["positive_selection"] = filt_df["positive_selection"].map({False: 0, True: 1})
+        if include_sex_bias:
+            table_outfile_species = table_outfile.replace(".txt", f"_pos_sel_{partner}.txt")
+        else:
+            table_outfile_species = table_outfile.replace(".txt", f"_{partner}.txt")
+        
+        filt_df = df[df["other_species"]==partner]
+        filt_df = filt_df[filt_df["positive_selection"] != "NaN"]
+        filt_df = filt_df[filt_df["positive_selection"].notna()]
+        filt_df["positive_selection"] = filt_df["positive_selection"].map({False: 0, True: 1})
+        
+        if True:
+            formula = f"positive_selection ~ (LFC_abdomen + LFC_head_thorax + C(SB_abdomen) + C(SB_head_thorax)) * C(chromosome) * level_most_dist_ortholog"
             
-            if True:
-                formula = f"positive_selection ~ (LFC_abdomen + LFC_head_thorax + C(SB_abdomen) + C(SB_head_thorax)) * C(chromosome) * level_most_dist_ortholog"
+            # when adjusting to the same as contninuous dNdS -> remove LFC and merge significant and nonsignificant into one category where there are three factor levels
 
-                # when adjusting to the same as contninuous dNdS -> remove LFC and merge significant and nonsignificant into one category where there are three factor levels
-
-                # the syntax with the parentheses (LFC_abdomen + LFC_head_thorax) * C(chromosome) means this:
-                # LFC_abdomen + LFC_head_thorax + C(chromosome) + LFC_abdomen:C(chromosome) + LFC_head_thorax:C(chromosome)
-                if include_sex_bias and "C_chinensis" in partner:
+            # the syntax with the parentheses (LFC_abdomen + LFC_head_thorax) * C(chromosome) means this:
+            # LFC_abdomen + LFC_head_thorax + C(chromosome) + LFC_abdomen:C(chromosome) + LFC_head_thorax:C(chromosome)
+            if include_sex_bias and "C_chinensis" in partner:
+                with open(table_outfile_species, "w") as table_out:
+                    table_out.write(f"////////////////// {partner} //////////////////\n")
+                    table_out.write(f"{formula}\n")
                     # only significantly sex-biased genes -> remove LFC
                     formula_a = f"positive_selection ~  C(SB_abdomen)  * C(chromosome) * C(level_most_dist_ortholog)"
                     formula_a_no = f"positive_selection ~  C(SB_abdomen)  * C(chromosome)"
@@ -323,8 +328,10 @@ def statistical_analysis_pos_sel(full_table_paths_dict, table_outfile = "pos_sel
                     table_out.write(test.summary().as_text())
 
 
-                elif include_sex_bias == False:
-                    
+            elif include_sex_bias == False:
+                with open(table_outfile_species, "w") as table_out:
+                    table_out.write(f"////////////////// {partner} //////////////////\n")
+                    table_out.write(f"{formula}\n")
                     ########### test interaction
                     table_out.write(f"\n\n---------------> test with chromosome * ortholog_distance interaction\n\n")
                     formula = f"positive_selection ~  C(chromosome) * C(level_most_dist_ortholog)"
@@ -1337,7 +1344,7 @@ if __name__ == "__main__":
         ## the outfile argument doesn't work, but to get it into a outfile run the command line as
         ## python3 analyze_dNdS_LFC.py > /Users/miltr339/work/PhD_code/PhD_chapter3/data/stats_summary_files/dNdS_vs_gene_age_medianreg_wald_test.txt
 
-    if True:
+    if False:
         ## plotting
         pos_sel = False # if True plot bar charts with proportion of positive selection
                         # if False, plot boxplot with dNdS values
@@ -1375,10 +1382,10 @@ if __name__ == "__main__":
 
     ###### site model (pos. sel) stats and some plotting
     ## if plotting not here then in PhD_chapter3/src/plotting/analyze_site_classes.py
-    if False:
+    if True:
         ## analyze positive selection in site classes
         ## logistic regression for categorical response (positive selection True/False)
-        do_chinensis_sex_bias=False
+        do_chinensis_sex_bias=True
         table_name = f"/Users/{username}/work/PhD_code/PhD_chapter3/data/stats_summary_files/pos_sel_vs_gene_age_LR_wald_test.txt"
         ###################################################
         statistical_analysis_pos_sel(full_table_paths_dict=full_tables_dict, table_outfile=table_name, include_sex_bias=do_chinensis_sex_bias)
