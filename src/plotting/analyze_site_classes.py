@@ -6,7 +6,7 @@ and then p and w from the site classes table. Either two or three site classes, 
 !!! statistical analysis using a logistic regression is in PhD_chapter3/src/plotting/analyze_dNdS_LFC.py 
 """
 
-from plot_dNdS import get_summary_paths,read_dNdS_dS_summary_file,get_species_list
+from plot_dNdS import get_summary_paths,read_dNdS_dS_summary_file,calculate_list_CI
 import os
 import numpy as np
 import bootstrap_dNdS 
@@ -347,8 +347,6 @@ def binary_barplot_single_pair(data_A, data_X, row, n_A, n_X, axes, colors_dict,
 
 
 if __name__ == "__main__":
-    
-
 
     if False:
         ## compute statistics to terminal
@@ -373,20 +371,20 @@ if __name__ == "__main__":
 
     ## plot 
 
-    username = "milena"
-    # username = "miltr339"
+    # username = "milena"
+    username = "miltr339"
     chromosome = "A"
     data_files = {"A" : ["A_dNdS", "A_LRT_BH_corr"],
                   "X" : ["X_dNdS", "X_LRT_BH_corr"]}
     summary_paths = get_summary_paths(username=username)
 
     # bruchini
-    if False:
+    if True:
         species_excl = ["D_carinulata", "D_sublineata", "T_castaneum", "T_freemani", "C_septempunctata", "C_magnifica"]
         filename =f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/LRT_site_model_plot_bruchini.png"
         filename_dNdS =f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/pos_sel_dNdS_summary_plot_bruchini.png"
     # coccinella
-    elif False:
+    elif True:
         species_excl = ["D_carinulata", "D_sublineata", "T_castaneum", "T_freemani", "B_siliquastri", "A_obtectus", "C_maculatus", "C_chinensis"]
         filename =f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/LRT_site_model_plot_coccinella.png"
         filename_dNdS =f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/pos_sel_dNdS_summarylot_coccinella.png"
@@ -411,10 +409,10 @@ if __name__ == "__main__":
 
     pairs_list = list(summary_dict_X.keys())
 
-    if False: 
+    if True: 
         ### plot bootstraps
         bootstraps = {pair : [] for pair in pairs_list}
-        mean_num_pos_sel = {pair : np.NaN for pair in pairs_list}
+        mean_num_pos_sel = {pair : np.nan for pair in pairs_list}
         
         ####
         #  test with 100, takes a bit of time otherwise
@@ -426,26 +424,31 @@ if __name__ == "__main__":
             pos_props_X = pos_list_X[pair]
             mean_num_pos_sel[pair] = np.nanmean(pos_props_A) - np.nanmean(pos_props_X)
             bootstraps[pair] = bootstrap_dNdS.permutate_dNdS(dNdS_A=pos_props_A, dNdS_X=pos_props_X, num_permut=num_permutations)
+            mean_cor,std_cor,lower_CI,upper_CI = calculate_list_CI(bootstraps[pair])
             mean_boot = np.mean(bootstraps[pair])
-            print(f" *  {pair} mean({type_plot}_A)-mean({type_plot}_X)  --> \t{mean_num_pos_sel[pair]:.4f}, mean bootstrap diff {mean_boot:.6f}")
-            
-        if type_plot == "prop":
-            violin_ymax=0.2
-            binary=False
-        else:
-            violin_ymax=0
-            binary=True
+            if mean_num_pos_sel[pair]<lower_CI or mean_num_pos_sel[pair]>upper_CI:
+                print(f" *  {pair} mean({type_plot}_A)-mean({type_plot}_X) --> \t{mean_num_pos_sel[pair]:.4f}, mean bootstrap diff = {mean_boot:.5f} with CI [{lower_CI:.5f},{upper_CI:.5f}] --> SIGNIFICANT")
+            else:
+                print(f" *  {pair} mean({type_plot}_A)-mean({type_plot}_X) --> \t{mean_num_pos_sel[pair]:.4f}, mean bootstrap diff = {mean_boot:.5f} with CI [{lower_CI:.5f},{upper_CI:.5f}] --> (nonsignificant)")
 
-        if len(pairs_list)>1:
-            print(f"plot pairwise matrix ...")
-            bootstrap_dNdS.plot_dNdS_permutations(boot_diff=bootstraps,measure_diff=mean_num_pos_sel, A_dict=pos_list_A, X_dict=pos_list_X, 
-                                                filename=filename, hist_label = f"mean({type_plot}_A)-mean({type_plot}_X)", violin_label=f"{type_plot}. pos. sel.", 
-                                                violin_ymax=violin_ymax, transparent=False, binary=binary)
-        else:
-            print(f"plot one pair ...")
-            bootstrap_dNdS.plot_dNdS_permutations_one_pair(boot_diff=bootstraps,measure_diff=mean_num_pos_sel, A_dict=pos_list_A, X_dict=pos_list_X, 
-                                                filename=filename, hist_label = f"mean({type_plot}_A)-mean({type_plot}_X)", violin_label=f"{type_plot}. pos. sel.", 
-                                                violin_ymax=violin_ymax, transparent=False, binary=binary)
+        if False: 
+            if type_plot == "prop":
+                violin_ymax=0.2
+                binary=False
+            else:
+                violin_ymax=0
+                binary=True
+
+            if len(pairs_list)>1:
+                print(f"plot pairwise matrix ...")
+                bootstrap_dNdS.plot_dNdS_permutations(boot_diff=bootstraps,measure_diff=mean_num_pos_sel, A_dict=pos_list_A, X_dict=pos_list_X, 
+                                                    filename=filename, hist_label = f"mean({type_plot}_A)-mean({type_plot}_X)", violin_label=f"{type_plot}. pos. sel.", 
+                                                    violin_ymax=violin_ymax, transparent=False, binary=binary)
+            else:
+                print(f"plot one pair ...")
+                bootstrap_dNdS.plot_dNdS_permutations_one_pair(boot_diff=bootstraps,measure_diff=mean_num_pos_sel, A_dict=pos_list_A, X_dict=pos_list_X, 
+                                                    filename=filename, hist_label = f"mean({type_plot}_A)-mean({type_plot}_X)", violin_label=f"{type_plot}. pos. sel.", 
+                                                    violin_ymax=violin_ymax, transparent=False, binary=binary)
     else:
         ## plot pos sel bar chart and dNdS violin plot at the same time
         violin_ymax=0

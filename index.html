@@ -163,6 +163,27 @@ document.addEventListener("DOMContentLoaded", function () {
 
 </details>
 
+<details>
+    <summary>Toggle down for synteny plots</summary>
+
+    <ul>
+        <li>the X-chromosomes are bs9 for <i>B. siliquastri</i> and ao1950 for <i>A. obtectus</i> (second from the bottom) </li>
+        <li>the X-chromosomes are cm124 for <i>C. maculatus</i> and ao1950 for <i>A. obtectus</i> (second from the top) </li>
+        <li>the X-chromosomes are mc64 for <i>C. magnifica</i> and cs7 for <i>C. septempunctata</i> (second from the bottom) </li>
+        <li>the X-chromosomes are tc36 for <i>T. castaneum</i> and tf4 for <i>T. freemani</i> (first from the bottom) </li>
+        <li>the X-chromosomes are bs9 for <i>B. siliquastri</i> and tc36 for <i>T. castaneum</i> (third and second from the bottom) </li>
+    </ul>
+
+    <p>
+        <img loading="lazy" src="data/synteny_plots/plot_ctl_Aobt_Bsil.png" width="30%" />
+        <img loading="lazy" src="data/synteny_plots/plot_ctl_Cmac_Aobt.png" width="30%" />
+        <img loading="lazy" src="data/synteny_plots/plot_ctl_Csep_Cmag.png" width="30%" />
+        <img loading="lazy" src="data/synteny_plots/plot_ctl_Tcas_Tfre.png" width="30%" />
+        <img loading="lazy" src="data/synteny_plots/plot_ctl_Tcas_Bsil.png" width="30%" />
+    </p>
+
+</details>
+
 <h2>Calculate dN/dS with paml</h2>
 
 <h3>Ortholog identification</h3>
@@ -303,10 +324,47 @@ I also re-did all the plots, but the results stay the same, only the numbers and
     </p>
 </details>
 
+<h4>Positive selection analysis</h4>
+
+<p>This does not change for the revision.</p>
+
+<details>
+    <summary>Toggle down for bootstrap results</summary>
+
+    <pre>
+        <code>
+ A_obtectus vs. B_siliquastri        mean(bin_A)-mean(bin_X) = -0.0353, mean bootstrap diff = -0.00027 with CI [-0.02688,0.02634] -> SIGNIFICANT
+ A_obtectus vs. C_chinensis          mean(bin_A)-mean(bin_X) = -0.0450, mean bootstrap diff =  0.00011 with CI [-0.02587,0.02609] -> SIGNIFICANT
+ A_obtectus vs. C_maculatus          mean(bin_A)-mean(bin_X) = -0.0417, mean bootstrap diff =  0.00014 with CI [-0.02064,0.02091] -> SIGNIFICANT
+ B_siliquastri vs. C_chinensis       mean(bin_A)-mean(bin_X) = -0.0542, mean bootstrap diff =  0.00023 with CI [-0.03372,0.03419] -> SIGNIFICANT
+ B_siliquastri vs. C_maculatus       mean(bin_A)-mean(bin_X) = -0.0359, mean bootstrap diff = -0.00004 with CI [-0.02762,0.02753] -> SIGNIFICANT
+ C_chinensis vs. C_maculatus         mean(bin_A)-mean(bin_X) = -0.0846, mean bootstrap diff =  0.00000 with CI [-0.03933,0.03933] -> SIGNIFICANT
+ C_magnifica   vs. C_septempunctata  mean(bin_A)-mean(bin_X) =  0.0227, mean bootstrap diff = -0.00024 with CI [-0.02851,0.02803] -> (nonsignificant)
+ T_castaneum   vs. T_freemani        mean(bin_A)-mean(bin_X) = -0.0066, mean bootstrap diff = -0.00004 with CI [-0.02975,0.02968] -> (nonsignificant)
+        </code>
+    </pre>
+</details>
+
+<details>
+    <summary>Toggle down for bootstrap plots</summary>
+    
+    <p>
+        The numbers in these don't match with the combined dNdS + positive selection plot because of different filtering steps.
+    </p>
+    
+    <p float="left">
+        <img loading="lazy" src="data/fastX_ortholog_ident/LRT_site_model_plot_bruchini.png" width="50%" />
+    </p>
+    <p float="left">
+        <img loading="lazy" src="data/fastX_ortholog_ident/LRT_site_model_plot_coccinella.png" width="25%" />
+        <img loading="lazy" src="data/fastX_ortholog_ident/LRT_site_model_plot_tribolium.png" width="25%" />
+    </p>
+</details>
+
 <h4>Combine dN/dS and positive selection</h4>
 
 <p>
-    TODO change figure captions to explain abbreviations.
+    This is the plot that combines dNdS and positive selection that appears in the main text of the paper
 </p>
 
 <details>
