@@ -527,7 +527,7 @@ I also re-did all the plots, but the results stay the same, only the numbers and
     </iframe>
 </div>
 
-<h2>Incorporate sex-biased expression</h2>
+<h2>Sex-biased expression and age rank</h2>
 
 <p>
     The data contains head+thorax (somatic) and abdominal (reproductive) tissues, and we will further apply a split between autosomes  and the X chromosome.
@@ -540,7 +540,10 @@ I also re-did all the plots, but the results stay the same, only the numbers and
 
 <h4>sex bias as categorical response variable</h4>
 
-<p>We are running a multiomial logistic regression where the sex-bias categories (male, female, unbiased) are discrete categorical response variables.</p>
+<p>
+    We are running a multiomial logistic regression where the sex-bias categories (male, female, unbiased) are discrete categorical response variables.
+    The function in the code is <code>make_log_reg_table()</code>
+</p>
 
 <details>
     <summary>Toggle down for plot</summary>
@@ -553,8 +556,7 @@ I also re-did all the plots, but the results stay the same, only the numbers and
 
 </details>
 
-<details>
-    <summary>Toggle down for statistical analysis</summary>
+<h4>statistical analysis</h4>
 
     <div class="tab">
         <button class="tablinks" onclick="openTab(event, 'A_abdomen_logreg_DE_vs_age')">Abdomen (reproductive): Autosomes</button>
@@ -605,7 +607,6 @@ I also re-did all the plots, but the results stay the same, only the numbers and
             style="width:100%; height:30vh;">
         </iframe>
     </div>
-</details>
 
 <h4>Log2FC as continuous response variable</h4>
 
@@ -628,8 +629,7 @@ I also re-did all the plots, but the results stay the same, only the numbers and
 
 </details>
 
-<details>
-    <summary>Toggle down for statistical analysis</summary>
+<h4>statistical analysis</h4>
 
     <p>
         The plot was created with <code>logFC_quantile_regression(..., sep_MF=False)</code> in the above script, in order to include the sex-bias category as an explanatory variable
@@ -685,6 +685,68 @@ I also re-did all the plots, but the results stay the same, only the numbers and
             style="width:100%; height:30vh;">
         </iframe>
     </div>
-</details>
+
+<h2>Sex-biased expression, age rank and paml results</h2>
+
+<p>
+    Since sex-biased expression can evolve very quickly between species, the analysis will be further restricted to only <i>C. chinensis</i> as the closest relative of <i>C. maculatus</i>. All of this analysis is in <code>src/plotting/analyze_dNdS_LFC.py</code> (even though it only has dNdS in the name, there's bool arguments to switch to positive selection for the plotting).
+</p>
+
+<h3>dN/dS TODO UPDATE MAIN TEXT STATS</h3>
+
+<p>
+    dNdS is modelled as a continuous response again using a median quantile regression using the function <code>statistical_analysis_dNdS(..., do_chinensis_sex_bias=True)</code> 
+    to now actually include differential expression in the dNdS by age rank analysis.
+</p>
+
+<div class="tab">
+    <button class="tablinks" onclick="openTab(event, 'A_abdomen_quantreg_DE_vs_age_vs_dNdS')">Abdomen (reproductive): Autosomes</button>
+    <button class="tablinks" onclick="openTab(event, 'X_abdomen_quantreg_DE_vs_age_vs_dNdS')">Abdomen (reproductive): X-chromosome</button>
+    <button class="tablinks" onclick="openTab(event, 'A_ht_quantreg_DE_vs_age_vs_dNdS')">Head + Thorax (somatic): Autosomes</button>
+    <button class="tablinks" onclick="openTab(event, 'X_ht_quantreg_DE_vs_age_vs_dNdS')">Head + Thorax (somatic): X-chromosome</button>
+</div>
+
+<div id="A_abdomen_quantreg_DE_vs_age_vs_dNdS" class="tabcontent">
+    <p><code>dNdS_vs_gene_age_medianreg_wald_test_C_chinensis_logFC_A_abdomen.txt</code></p>
+    <iframe
+        src="data/stats_summary_files/dNdS_vs_gene_age_medianreg_wald_test_C_chinensis_logFC_A_abdomen.txt"
+        frameBorder="0"
+        class=""
+        scrolling="auto"
+        style="width:100%; height:30vh;">
+    </iframe>
+</div>
+
+<div id="X_abdomen_quantreg_DE_vs_age_vs_dNdS" class="tabcontent">
+    <p><code>dNdS_vs_gene_age_medianreg_wald_test_C_chinensis_logFC_X_abdomen.txt</code></p>
+    <iframe
+        src="data/stats_summary_files/dNdS_vs_gene_age_medianreg_wald_test_C_chinensis_logFC_X_abdomen.txt"
+        frameBorder="0"
+        class=""
+        scrolling="auto"
+        style="width:100%; height:30vh;">
+    </iframe>
+</div>
+<div id="A_ht_quantreg_DE_vs_age_vs_dNdS" class="tabcontent">
+    <p><code>dNdS_vs_gene_age_medianreg_wald_test_C_chinensis_logFC_A_head_thorax.txt</code></p>
+    <iframe
+        src="data/stats_summary_files/dNdS_vs_gene_age_medianreg_wald_test_C_chinensis_logFC_A_head_thorax.txt"
+        frameBorder="0"
+        class=""
+        scrolling="auto"
+        style="width:100%; height:30vh;">
+    </iframe>
+</div>
+
+<div id="X_ht_quantreg_DE_vs_age_vs_dNdS" class="tabcontent">
+    <p><code>dNdS_vs_gene_age_medianreg_wald_test_C_chinensis_logFC_X_head_thorax.txt</code></p>
+    <iframe
+        src="data/stats_summary_files/dNdS_vs_gene_age_medianreg_wald_test_C_chinensis_logFC_X_head_thorax.txt"
+        frameBorder="0"
+        class=""
+        scrolling="auto"
+        style="width:100%; height:30vh;">
+    </iframe>
+</div>
 
 </body>

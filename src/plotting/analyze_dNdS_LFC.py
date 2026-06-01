@@ -93,58 +93,62 @@ def statistical_analysis_dNdS(full_table_paths_dict, table_outfile="", max_dNdS=
     df["LFC_head_thorax"] = abs(df["LFC_head_thorax"])
     
     for partner in partners_list:
-        table_outfile_species = table_outfile.replace(".txt", f"_{partner}.txt")
-        with open(table_outfile_species, "w") as table_out:
         
-            df_ren = df.rename(columns={'dN/dS': f"{partner}_dNdS"})
-            filt_df = df_ren[df_ren["other_species"]==partner]
-            filt_df[f"{partner}_dNdS"] = pd.to_numeric(filt_df[f"{partner}_dNdS"], errors='coerce')
-            filt_df = filt_df[filt_df[f"{partner}_dNdS"]>0]
-            filt_df = filt_df[filt_df[f"{partner}_dNdS"].notna()]
-            filt_df = filt_df[filt_df[f"{partner}_dNdS"] < max_dNdS]
-            table_out.write(f"\n////////////////// {partner} //////////////////")
+        
+        df_ren = df.rename(columns={'dN/dS': f"{partner}_dNdS"})
+        filt_df = df_ren[df_ren["other_species"]==partner]
+        filt_df[f"{partner}_dNdS"] = pd.to_numeric(filt_df[f"{partner}_dNdS"], errors='coerce')
+        filt_df = filt_df[filt_df[f"{partner}_dNdS"]>0]
+        filt_df = filt_df[filt_df[f"{partner}_dNdS"].notna()]
+        filt_df = filt_df[filt_df[f"{partner}_dNdS"] < max_dNdS]
 
-            if False:
-                ### test filtering stuff and see if there is anything that could make problems
-                def test_filtering(colname, nan_only=False):
-                    print(f"   {colname} filtering:")
-                    if nan_only:
-                        pass
-                    else:
-                        zeros_test = (a_df_f[f"{colname}"] <= 0).sum()
-                        zeros_test2 = (filt_df[f"{colname}"] <= 0).sum()
-                        print(f"\ttest if all 0 was removed: {zeros_test} -> {zeros_test2} (should go down to zero)")
-                    nan_test = a_df_f[f"{colname}"].isna().sum()
-                    nan_test2 = filt_df[f"{colname}"].isna().sum()
-                    print(f"\ttest if all nan was removed: {nan_test} -> {nan_test2} (should go down to zero)")
-                    infinity = np.isfinite(filt_df[f"{colname}"]).all()
-                    print(f"\tall values <inf :  {infinity}")
+        if False:
+            ### test filtering stuff and see if there is anything that could make problems
+            def test_filtering(colname, nan_only=False):
+                print(f"   {colname} filtering:")
+                if nan_only:
+                    pass
+                else:
+                    zeros_test = (a_df_f[f"{colname}"] <= 0).sum()
+                    zeros_test2 = (filt_df[f"{colname}"] <= 0).sum()
+                    print(f"\ttest if all 0 was removed: {zeros_test} -> {zeros_test2} (should go down to zero)")
+                nan_test = a_df_f[f"{colname}"].isna().sum()
+                nan_test2 = filt_df[f"{colname}"].isna().sum()
+                print(f"\ttest if all nan was removed: {nan_test} -> {nan_test2} (should go down to zero)")
+                infinity = np.isfinite(filt_df[f"{colname}"]).all()
+                print(f"\tall values <inf :  {infinity}")
 
-                test_filtering(f"{partner}_dNdS")
-                test_filtering(f"LFC_abdomen")
-                test_filtering(f"chromosome", nan_only=True)
-                test_filtering(f"level_most_dist_ortholog")
+            test_filtering(f"{partner}_dNdS")
+            test_filtering(f"LFC_abdomen")
+            test_filtering(f"chromosome", nan_only=True)
+            test_filtering(f"level_most_dist_ortholog")
 
-            if include_sex_bias and "C_chinensis" in partner:
+        if include_sex_bias and "C_chinensis" in partner:
+
+            table_outfile_ = table_outfile.replace(".txt", f"_{partner}_logFC.txt")
                 
-                for chr in ["A", "X"]:
+            for chr in ["A", "X"]:
+                table_outfile__ = table_outfile_.replace(".txt", f"_{chr}.txt")
+                
+                df = pd.read_csv(full_table_paths_dict[chr], sep="\t")
+                df = df.rename(columns={'LFC_head+thorax': 'LFC_head_thorax'})
+                df = df.rename(columns={'FDR_pval_head+thorax': 'FDR_pval_head_thorax'})
 
-                    df = pd.read_csv(full_table_paths_dict[chr], sep="\t")
-                    df = df.rename(columns={'LFC_head+thorax': 'LFC_head_thorax'})
-                    df = df.rename(columns={'FDR_pval_head+thorax': 'FDR_pval_head_thorax'})
+                df["SB_abdomen"] = df.apply(make_sex_bias_cat_row, axis=1, args=("abdomen",))
+                df["SB_head_thorax"] = df.apply(make_sex_bias_cat_row, axis=1, args=("head_thorax",))
+                df["LFC_abdomen"] = abs(df["LFC_abdomen"])
+                df["LFC_head_thorax"] = abs(df["LFC_head_thorax"])
+                df_ren = df.rename(columns={'dN/dS': f"{partner}_dNdS"})
+                filt_df = df_ren[df_ren["other_species"]==partner]
+                filt_df[f"{partner}_dNdS"] = pd.to_numeric(filt_df[f"{partner}_dNdS"], errors='coerce')
+                filt_df = filt_df[filt_df[f"{partner}_dNdS"]>0]
+                filt_df = filt_df[filt_df[f"{partner}_dNdS"].notna()]
+                filt_df = filt_df[filt_df[f"{partner}_dNdS"] < max_dNdS]
 
-                    df["SB_abdomen"] = df.apply(make_sex_bias_cat_row, axis=1, args=("abdomen",))
-                    df["SB_head_thorax"] = df.apply(make_sex_bias_cat_row, axis=1, args=("head_thorax",))
-                    df["LFC_abdomen"] = abs(df["LFC_abdomen"])
-                    df["LFC_head_thorax"] = abs(df["LFC_head_thorax"])
-                    df_ren = df.rename(columns={'dN/dS': f"{partner}_dNdS"})
-                    filt_df = df_ren[df_ren["other_species"]==partner]
-                    filt_df[f"{partner}_dNdS"] = pd.to_numeric(filt_df[f"{partner}_dNdS"], errors='coerce')
-                    filt_df = filt_df[filt_df[f"{partner}_dNdS"]>0]
-                    filt_df = filt_df[filt_df[f"{partner}_dNdS"].notna()]
-                    filt_df = filt_df[filt_df[f"{partner}_dNdS"] < max_dNdS]
-
-                    for tissue in ["abdomen", "head_thorax"]:
+                for tissue in ["abdomen", "head_thorax"]:
+                    table_outfile_species = table_outfile__.replace(".txt", f"_{tissue}.txt")
+                    with open(table_outfile_species, "w") as table_out:
+                        table_out.write(f"\n////////////////// {partner} //////////////////")
                         table_out.write(f"\n\n----- {chr} -----> {tissue}\n\n")
                         formula = f"{partner}_dNdS ~  C(SB_{tissue}) * C(level_most_dist_ortholog)"
                         interactions_test_string_u=f"""C(SB_{tissue})[T.unbiased]:C(level_most_dist_ortholog)[T.2] = 0,
@@ -191,9 +195,14 @@ def statistical_analysis_dNdS(full_table_paths_dict, table_outfile="", max_dNdS=
                                 table_out.write(f"\nwald test for main effect conservation_distance: {wald_test}")
                             except:
                                 table_out.write("\nno Wald test could be performed")
+                    print(f"-------------> outfile written to: \n{table_outfile_species}")
 
 
-            elif include_sex_bias == False:
+        elif include_sex_bias == False:
+
+            table_outfile_species = table_outfile.replace(".txt", f"_{partner}.txt")
+            with open(table_outfile_species, "w") as table_out:
+                table_out.write(f"\n////////////////// {partner} //////////////////")
 
                 ########### test interaction
                 table_out.write(f"\n\n---------------> test with chromosome * ortholog_distance interaction\n\n")
@@ -1316,10 +1325,10 @@ if __name__ == "__main__":
             compare_conservation_rank_proportions(full_tables_dict, other_species=species)
 
     ###### dNdS stats and plotting
-    if False:
+    if True:
         ## stats
         ## median quantile regression for dNdS as continuous response
-        do_chinensis_sex_bias=False # if False do only dNdS ~ gene age * chromosome for Bruchini
+        do_chinensis_sex_bias=True # if False do only dNdS ~ gene age * chromosome for Bruchini
                                     # if True do dNdS ~ gene age * sex bias + chromosome for Chinensis
         table_name = f"/Users/{username}/work/PhD_code/PhD_chapter3/data/stats_summary_files/dNdS_vs_gene_age_medianreg_wald_test.txt"
         ###################################################
@@ -1366,7 +1375,7 @@ if __name__ == "__main__":
 
     ###### site model (pos. sel) stats and some plotting
     ## if plotting not here then in PhD_chapter3/src/plotting/analyze_site_classes.py
-    if True:
+    if False:
         ## analyze positive selection in site classes
         ## logistic regression for categorical response (positive selection True/False)
         do_chinensis_sex_bias=False
