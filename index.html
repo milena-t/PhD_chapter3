@@ -326,7 +326,7 @@ I also re-did all the plots, but the results stay the same, only the numbers and
 
 <h4>Positive selection analysis</h4>
 
-<p>This does not change for the revision.</p>
+<p>This does not change for the revision, the code is <code>src/plotting/analyze_site_classes.py</code>.</p>
 
 <details>
     <summary>Toggle down for bootstrap results</summary>
@@ -412,7 +412,7 @@ I also re-did all the plots, but the results stay the same, only the numbers and
         are present in that. The median/quantiles in the boxplots change slightly but the overall trend remains.
     </p>
     <p float="left">
-        <img loading="lazy" src="data/DE_analysis/dNdS_vs_conservation_rank_all_comparisons.png" width="20%" />
+        <img loading="lazy" src="data/DE_analysis/dNdS_vs_conservation_rank_all_comparisons.png" width="17.5%" />
     </p>
 </details>
 
@@ -526,5 +526,165 @@ I also re-did all the plots, but the results stay the same, only the numbers and
         style="width:100%; height:30vh;">
     </iframe>
 </div>
+
+<h2>Incorporate sex-biased expression</h2>
+
+<p>
+    The data contains head+thorax (somatic) and abdominal (reproductive) tissues, and we will further apply a split between autosomes  and the X chromosome.
+    This analysis is based on the same summary table as the age rank before, created with <code>src/make_DE_analysis_table.py</code>.
+</p>
+
+<h3>sex bias and age rank</h3>
+
+<p>We investigate if the sex bias changes significantly across age ranks, the code is in <code>src/plotting/analyze_phylo_rank_LFC.py</code></p>
+
+<h4>sex bias as categorical response variable</h4>
+
+<p>We are running a multiomial logistic regression where the sex-bias categories (male, female, unbiased) are discrete categorical response variables.</p>
+
+<details>
+    <summary>Toggle down for plot</summary>
+
+    <p>The plot was created with <code>make_category_proportion_plot()</code> in the above script.</p>
+
+    <p float="left">
+        <img loading="lazy" src="data/DE_analysis/DE_conservation_rank_proportions_sep_panels.png" width="45%" />
+    </p>
+
+</details>
+
+<details>
+    <summary>Toggle down for statistical analysis</summary>
+
+    <div class="tab">
+        <button class="tablinks" onclick="openTab(event, 'A_abdomen_logreg_DE_vs_age')">Abdomen (reproductive): Autosomes</button>
+        <button class="tablinks" onclick="openTab(event, 'X_abdomen_logreg_DE_vs_age')">Abdomen (reproductive): X-chromosome</button>
+        <button class="tablinks" onclick="openTab(event, 'A_ht_logreg_DE_vs_age')">Head + Thorax (somatic): Autosomes</button>
+        <button class="tablinks" onclick="openTab(event, 'X_ht_logreg_DE_vs_age')">Head + Thorax (somatic): X-chromosome</button>
+    </div>
+    
+    <div id="A_abdomen_logreg_DE_vs_age" class="tabcontent">
+        <p><code>sex_bias_by_age_rank_logreg_A_abdomen.txt</code></p>
+        <iframe
+            src="data/stats_summary_files/sex_bias_by_age_rank_logreg_A_abdomen.txt"
+            frameBorder="0"
+            class=""
+            scrolling="auto"
+            style="width:100%; height:30vh;">
+        </iframe>
+    </div>
+    
+    <div id="X_abdomen_logreg_DE_vs_age" class="tabcontent">
+        <p><code>sex_bias_by_age_rank_logreg_X_abdomen.txt</code></p>
+        <iframe
+            src="data/stats_summary_files/sex_bias_by_age_rank_logreg_X_abdomen.txt"
+            frameBorder="0"
+            class=""
+            scrolling="auto"
+            style="width:100%; height:30vh;">
+        </iframe>
+    </div>
+    <div id="A_ht_logreg_DE_vs_age" class="tabcontent">
+        <p><code>sex_bias_by_age_rank_logreg_A_head_thorax.txt</code></p>
+        <iframe
+            src="data/stats_summary_files/sex_bias_by_age_rank_logreg_A_head_thorax.txt"
+            frameBorder="0"
+            class=""
+            scrolling="auto"
+            style="width:100%; height:30vh;">
+        </iframe>
+    </div>
+    
+    <div id="X_ht_logreg_DE_vs_age" class="tabcontent">
+        <p><code>sex_bias_by_age_rank_logreg_X_head_thorax.txt</code></p>
+        <iframe
+            src="data/stats_summary_files/sex_bias_by_age_rank_logreg_X_head_thorax.txt"
+            frameBorder="0"
+            class=""
+            scrolling="auto"
+            style="width:100%; height:30vh;">
+        </iframe>
+    </div>
+</details>
+
+<h4>Log2FC as continuous response variable</h4>
+
+<p>
+    Unlike before, when the sex bias was three categories (male, female, unbiased), here we only look at significantly differentially expressed genes (excluding all unbiased ones), 
+    and their numerical log2FC value. The quantile regression (<code>logFC_quantile_regression()</code> in the same file as above) uses absolute log2FC values and then male/female-biased 
+    categories as additional explanatory variables.
+</p>
+
+<details>
+    <summary>Toggle down for plot</summary>
+
+    <p>
+        The plot was created with <code>check_DE_phylogeny_rank_conserved()</code>.
+    </p>
+
+    <p float="left">
+        <img loading="lazy" src="data/DE_analysis/conservation_rank_sig_sex_bias_proportion.png" width="45%" />
+    </p>
+
+</details>
+
+<details>
+    <summary>Toggle down for statistical analysis</summary>
+
+    <p>
+        The plot was created with <code>logFC_quantile_regression(..., sep_MF=False)</code> in the above script, in order to include the sex-bias category as an explanatory variable
+        and not run separate analyses for male and female-biased genes.
+    </p>
+
+    <div class="tab">
+        <button class="tablinks" onclick="openTab(event, 'A_abdomen_quantreg_DE_vs_age')">Abdomen (reproductive): Autosomes</button>
+        <button class="tablinks" onclick="openTab(event, 'X_abdomen_quantreg_DE_vs_age')">Abdomen (reproductive): X-chromosome</button>
+        <button class="tablinks" onclick="openTab(event, 'A_ht_quantreg_DE_vs_age')">Head + Thorax (somatic): Autosomes</button>
+        <button class="tablinks" onclick="openTab(event, 'X_ht_quantreg_DE_vs_age')">Head + Thorax (somatic): X-chromosome</button>
+    </div>
+    
+    <div id="A_abdomen_quantreg_DE_vs_age" class="tabcontent">
+        <p><code>sex_bias_by_age_rank_quantreg_A_abdomen.txt</code></p>
+        <iframe
+            src="data/stats_summary_files/sex_bias_by_age_rank_quantreg_A_abdomen.txt"
+            frameBorder="0"
+            class=""
+            scrolling="auto"
+            style="width:100%; height:30vh;">
+        </iframe>
+    </div>
+    
+    <div id="X_abdomen_quantreg_DE_vs_age" class="tabcontent">
+        <p><code>sex_bias_by_age_rank_quantreg_X_abdomen.txt</code></p>
+        <iframe
+            src="data/stats_summary_files/sex_bias_by_age_rank_quantreg_X_abdomen.txt"
+            frameBorder="0"
+            class=""
+            scrolling="auto"
+            style="width:100%; height:30vh;">
+        </iframe>
+    </div>
+    <div id="A_ht_quantreg_DE_vs_age" class="tabcontent">
+        <p><code>sex_bias_by_age_rank_quantreg_A_head_thorax.txt</code></p>
+        <iframe
+            src="data/stats_summary_files/sex_bias_by_age_rank_quantreg_A_head_thorax.txt"
+            frameBorder="0"
+            class=""
+            scrolling="auto"
+            style="width:100%; height:30vh;">
+        </iframe>
+    </div>
+    
+    <div id="X_ht_quantreg_DE_vs_age" class="tabcontent">
+        <p><code>sex_bias_by_age_rank_quantreg_X_head_thorax.txt</code></p>
+        <iframe
+            src="data/stats_summary_files/sex_bias_by_age_rank_quantreg_X_head_thorax.txt"
+            frameBorder="0"
+            class=""
+            scrolling="auto"
+            style="width:100%; height:30vh;">
+        </iframe>
+    </div>
+</details>
 
 </body>

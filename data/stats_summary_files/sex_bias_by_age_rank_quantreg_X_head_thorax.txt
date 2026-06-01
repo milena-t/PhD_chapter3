@@ -1,0 +1,33 @@
+////////////////// X :::: head_thorax //////////////////
+
+sex bias categories: {'male', 'female'}                         QuantReg Regression Results                          
+==============================================================================
+Dep. Variable:        LFC_head_thorax   Pseudo R-squared:               0.2266
+Model:                       QuantReg   Bandwidth:                      0.7237
+Method:                 Least Squares   Sparsity:                        1.506
+Date:                Mon, 01 Jun 2026   No. Observations:                   38
+Time:                        16:12:51   Df Residuals:                       31
+                                        Df Model:                            6
+==============================================================================================================================
+                                                                 coef    std err          t      P>|t|      [0.025      0.975]
+------------------------------------------------------------------------------------------------------------------------------
+Intercept                                                      3.5536      0.448      7.935      0.000       2.640       4.467
+C(level_most_dist_ortholog)[T.3]                              -0.2525      0.696     -0.363      0.719      -1.672       1.167
+C(level_most_dist_ortholog)[T.4]                               0.6955      0.521      1.335      0.192      -0.367       1.758
+C(level_most_dist_ortholog)[T.5]                              -1.9830      0.476     -4.168      0.000      -2.953      -1.013
+C(SB_head_thorax)[T.male]                                      0.0147      0.448      0.033      0.974      -0.899       0.928
+C(level_most_dist_ortholog)[T.3]:C(SB_head_thorax)[T.male]    -1.7354      0.954     -1.819      0.079      -3.681       0.210
+C(level_most_dist_ortholog)[T.4]:C(SB_head_thorax)[T.male]    -3.0057      0.597     -5.033      0.000      -4.224      -1.788
+C(level_most_dist_ortholog)[T.5]:C(SB_head_thorax)[T.male]    -0.3380      0.505     -0.670      0.508      -1.367       0.691
+==============================================================================================================================
+
+The smallest eigenvalue is 9.84e-16. This might indicate that there are
+strong multicollinearity problems or that the design matrix is singular.
+wald test for 
+    C(level_most_dist_ortholog)[T.3]:C(SB_head_thorax)[T.male]=0,
+    C(level_most_dist_ortholog)[T.4]:C(SB_head_thorax)[T.male]=0,
+    C(level_most_dist_ortholog)[T.5]:C(SB_head_thorax)[T.male]=0 interaction:
+<F test: F=11.295123253124459, p=3.59965843456653e-05, df_denom=31, df_num=3>
+model predicted intercept (female-biased rank1): 0    3.55362
+dtype: float64
+head_thorax:X:rank1 medians 	 male: 3.568 	female: nan

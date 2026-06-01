@@ -1,0 +1,33 @@
+////////////////// A :::: head_thorax //////////////////
+
+sex bias categories: {'male', 'female'}                         QuantReg Regression Results                          
+==============================================================================
+Dep. Variable:        LFC_head_thorax   Pseudo R-squared:              0.09735
+Model:                       QuantReg   Bandwidth:                      0.6053
+Method:                 Least Squares   Sparsity:                        2.719
+Date:                Mon, 01 Jun 2026   No. Observations:                 1516
+Time:                        16:12:51   Df Residuals:                     1506
+                                        Df Model:                            9
+==============================================================================================================================
+                                                                 coef    std err          t      P>|t|      [0.025      0.975]
+------------------------------------------------------------------------------------------------------------------------------
+Intercept                                                      3.2921      0.312     10.554      0.000       2.680       3.904
+C(level_most_dist_ortholog)[T.2]                               0.9822      0.550      1.785      0.074      -0.097       2.061
+C(level_most_dist_ortholog)[T.3]                              -1.2224      0.352     -3.476      0.001      -1.912      -0.533
+C(level_most_dist_ortholog)[T.4]                              -1.5377      0.330     -4.658      0.000      -2.185      -0.890
+C(level_most_dist_ortholog)[T.5]                              -1.7838      0.321     -5.560      0.000      -2.413      -1.155
+C(SB_head_thorax)[T.male]                                      0.1743      0.373      0.467      0.641      -0.558       0.906
+C(level_most_dist_ortholog)[T.2]:C(SB_head_thorax)[T.male]    -0.2789      0.623     -0.448      0.654      -1.500       0.942
+C(level_most_dist_ortholog)[T.3]:C(SB_head_thorax)[T.male]     1.6594      0.417      3.982      0.000       0.842       2.477
+C(level_most_dist_ortholog)[T.4]:C(SB_head_thorax)[T.male]     1.2386      0.396      3.129      0.002       0.462       2.015
+C(level_most_dist_ortholog)[T.5]:C(SB_head_thorax)[T.male]    -0.3203      0.389     -0.823      0.410      -1.083       0.443
+==============================================================================================================================
+wald test for 
+    C(level_most_dist_ortholog)[T.2]:C(SB_head_thorax)[T.male]=0,
+    C(level_most_dist_ortholog)[T.3]:C(SB_head_thorax)[T.male]=0,
+    C(level_most_dist_ortholog)[T.4]:C(SB_head_thorax)[T.male]=0,
+    C(level_most_dist_ortholog)[T.5]:C(SB_head_thorax)[T.male]=0 interaction:
+<F test: F=32.641579038982044, p=3.9451091179901946e-26, df_denom=1.51e+03, df_num=4>
+model predicted intercept (female-biased rank1): 0    3.292097
+dtype: float64
+head_thorax:A:rank1 medians 	 male: 3.454 	female: 3.292

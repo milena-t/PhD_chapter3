@@ -1,0 +1,33 @@
+////////////////// A :::: abdomen //////////////////
+
+sex bias categories: {'male', 'female'}                         QuantReg Regression Results                          
+==============================================================================
+Dep. Variable:            LFC_abdomen   Pseudo R-squared:              0.03739
+Model:                       QuantReg   Bandwidth:                      0.3606
+Method:                 Least Squares   Sparsity:                        2.373
+Date:                Mon, 01 Jun 2026   No. Observations:                 4501
+Time:                        16:12:51   Df Residuals:                     4491
+                                        Df Model:                            9
+==========================================================================================================================
+                                                             coef    std err          t      P>|t|      [0.025      0.975]
+--------------------------------------------------------------------------------------------------------------------------
+Intercept                                                  2.3458      0.201     11.699      0.000       1.953       2.739
+C(level_most_dist_ortholog)[T.2]                           0.9374      0.385      2.433      0.015       0.182       1.693
+C(level_most_dist_ortholog)[T.3]                          -0.2688      0.221     -1.217      0.224      -0.702       0.164
+C(level_most_dist_ortholog)[T.4]                          -0.4974      0.208     -2.395      0.017      -0.905      -0.090
+C(level_most_dist_ortholog)[T.5]                          -0.7675      0.203     -3.783      0.000      -1.165      -0.370
+C(SB_abdomen)[T.male]                                      0.1587      0.238      0.667      0.505      -0.308       0.625
+C(level_most_dist_ortholog)[T.2]:C(SB_abdomen)[T.male]    -0.4441      0.427     -1.041      0.298      -1.280       0.392
+C(level_most_dist_ortholog)[T.3]:C(SB_abdomen)[T.male]     0.5256      0.261      2.014      0.044       0.014       1.037
+C(level_most_dist_ortholog)[T.4]:C(SB_abdomen)[T.male]     0.5331      0.248      2.150      0.032       0.047       1.019
+C(level_most_dist_ortholog)[T.5]:C(SB_abdomen)[T.male]     0.0966      0.243      0.398      0.691      -0.379       0.573
+==========================================================================================================================
+wald test for 
+    C(level_most_dist_ortholog)[T.2]:C(SB_abdomen)[T.male]=0,
+    C(level_most_dist_ortholog)[T.3]:C(SB_abdomen)[T.male]=0,
+    C(level_most_dist_ortholog)[T.4]:C(SB_abdomen)[T.male]=0,
+    C(level_most_dist_ortholog)[T.5]:C(SB_abdomen)[T.male]=0 interaction:
+<F test: F=9.410935635146945, p=1.4240868271786183e-07, df_denom=4.49e+03, df_num=4>
+model predicted intercept (female-biased rank1): 0    2.345814
+dtype: float64
+abdomen:A:rank1 medians 	 male: 2.462 	female: 2.346

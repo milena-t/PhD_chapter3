@@ -1,0 +1,36 @@
+////////////////// X :::: abdomen //////////////////
+
+sex bias categories: {'male', 'female'}                         QuantReg Regression Results                          
+==============================================================================
+Dep. Variable:            LFC_abdomen   Pseudo R-squared:               0.1214
+Model:                       QuantReg   Bandwidth:                      0.6093
+Method:                 Least Squares   Sparsity:                        1.745
+Date:                Mon, 01 Jun 2026   No. Observations:                  136
+Time:                        16:12:51   Df Residuals:                      127
+                                        Df Model:                            8
+==========================================================================================================================
+                                                             coef    std err          t      P>|t|      [0.025      0.975]
+--------------------------------------------------------------------------------------------------------------------------
+Intercept                                                  8.5262      0.872      9.775      0.000       6.800      10.252
+C(level_most_dist_ortholog)[T.2]                          -1.0504      0.617     -1.703      0.091      -2.271       0.170
+C(level_most_dist_ortholog)[T.3]                          -5.9624      0.975     -6.114      0.000      -7.892      -4.033
+C(level_most_dist_ortholog)[T.4]                          -5.6147      0.903     -6.219      0.000      -7.401      -3.828
+C(level_most_dist_ortholog)[T.5]                          -6.8057      0.879     -7.739      0.000      -8.546      -5.066
+C(SB_abdomen)[T.male]                                     -5.1565      1.234     -4.180      0.000      -7.598      -2.716
+C(level_most_dist_ortholog)[T.2]:C(SB_abdomen)[T.male]    -1.0504      0.617     -1.703      0.091      -2.271       0.170
+C(level_most_dist_ortholog)[T.3]:C(SB_abdomen)[T.male]     4.1746      1.446      2.886      0.005       1.312       7.037
+C(level_most_dist_ortholog)[T.4]:C(SB_abdomen)[T.male]     4.4626      1.283      3.479      0.001       1.925       7.001
+C(level_most_dist_ortholog)[T.5]:C(SB_abdomen)[T.male]     5.3478      1.246      4.292      0.000       2.882       7.814
+==========================================================================================================================
+
+The smallest eigenvalue is 1.37e-14. This might indicate that there are
+strong multicollinearity problems or that the design matrix is singular.
+wald test for 
+    C(level_most_dist_ortholog)[T.2]:C(SB_abdomen)[T.male]=0,
+    C(level_most_dist_ortholog)[T.3]:C(SB_abdomen)[T.male]=0,
+    C(level_most_dist_ortholog)[T.4]:C(SB_abdomen)[T.male]=0,
+    C(level_most_dist_ortholog)[T.5]:C(SB_abdomen)[T.male]=0 interaction:
+<F test: F=10.601492315225403, p=1.915720903475371e-07, df_denom=127, df_num=4>
+model predicted intercept (female-biased rank1): 0    8.526173
+dtype: float64
+abdomen:X:rank1 medians 	 male: 3.370 	female: 8.526
