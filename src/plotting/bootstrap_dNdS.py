@@ -42,7 +42,7 @@ def permutate_dNdS(dNdS_A, dNdS_X, num_permut = 1000, mean=False):
     """
     permutate n times and calculate the differences of median between all pairs
     """
-    medians_diff_list = [np.NaN] * num_permut
+    medians_diff_list = [np.nan] * num_permut
     print(f"... running {num_permut} permutations ...")
     if mean:
         for i in range(num_permut):
@@ -199,7 +199,7 @@ def plot_dNdS_permutations(boot_diff:dict, measure_diff:dict, A_dict:dict, X_dic
         
         ### plot violins or binary bar charts
 
-        ## exclude all the NaNs because violinplot can't handle them
+        ## exclude all the nans because violinplot can't handle them
         data_A_nan = np.array(A_dict[pair], dtype=float)
         data_X_nan = np.array(X_dict[pair], dtype=float)
         data_A = [dNdS_A for dNdS_A in data_A_nan if not np.isnan(dNdS_A) ]
@@ -323,7 +323,7 @@ def plot_dNdS_permutations_one_pair(boot_diff:dict, measure_diff:dict, A_dict:di
         
         ### plot violins or binary bar charts
 
-        ## exclude all the NaNs because violinplot can't handle them
+        ## exclude all the nans because violinplot can't handle them
         data_A_nan = np.array(A_dict[pair], dtype=float)
         data_X_nan = np.array(X_dict[pair], dtype=float)
         data_A = [dNdS_A for dNdS_A in data_A_nan if not np.isnan(dNdS_A) ]
@@ -445,7 +445,7 @@ def plot_dNdS_pos_sel(A_dict_dNdS:dict, X_dict_dNdS:dict, pos_list_A:dict, pos_l
     
         
         ### plot binary bar charts
-        ## exclude all the NaNs because violinplot can't handle them
+        ## exclude all the nans because violinplot can't handle them
         data_A_nan = np.array(pos_list_A[pair], dtype=float)
         data_X_nan = np.array(pos_list_X[pair], dtype=float)
         data_A = [dNdS_A for dNdS_A in data_A_nan if not np.isnan(dNdS_A) ]
@@ -468,7 +468,7 @@ def plot_dNdS_pos_sel(A_dict_dNdS:dict, X_dict_dNdS:dict, pos_list_A:dict, pos_l
         site_classes.binary_barplot_pair(data_A=data_A, data_X=data_X, row=row, col=col, n_A=n_A, n_X=n_X, axes=axes, colors_dict=colors_dict, fs = fs, ylab ="pos. sel. genes")
         
         ### plot violins
-        ## exclude all the NaNs because violinplot can't handle them
+        ## exclude all the nans because violinplot can't handle them
         try:
             data_A_nan = np.array(A_dict_dNdS[pair], dtype=float)
             data_X_nan = np.array(X_dict_dNdS[pair], dtype=float)
@@ -559,7 +559,7 @@ def plot_dNdS_pos_sel_one_pair(A_dict_dNdS:dict, X_dict_dNdS:dict, pos_list_A:di
         
         ### plot binary bar charts
 
-        ## exclude all the NaNs because violinplot can't handle them
+        ## exclude all the nans because violinplot can't handle them
         data_A_nan = np.array(pos_list_A[pair], dtype=float)
         data_X_nan = np.array(pos_list_X[pair], dtype=float)
         data_A = [dNdS_A for dNdS_A in data_A_nan if not np.isnan(dNdS_A) ]
@@ -581,7 +581,7 @@ def plot_dNdS_pos_sel_one_pair(A_dict_dNdS:dict, X_dict_dNdS:dict, pos_list_A:di
         print(f"{species1_lab} vs. {species2_lab} --> sig.pos.sel bar plot")
 
         ### plot violins
-        ## exclude all the NaNs because violinplot can't handle them
+        ## exclude all the nans because violinplot can't handle them
         data_A_nan = np.array(A_dict_dNdS[pair], dtype=float)
         data_X_nan = np.array(X_dict_dNdS[pair], dtype=float)
         data_A = [dNdS_A for dNdS_A in data_A_nan if not np.isnan(dNdS_A) ]
@@ -651,7 +651,7 @@ if __name__ == """__main__""":
     pairs_list = list(dNdS_dict_A.keys())
 
     bootstraps = { pair : [] for pair in pairs_list}
-    median_diffs = {pair : np.NaN for pair in pairs_list}
+    median_diffs = {pair : np.nan for pair in pairs_list}
     
     ### test with 100, takes a bit of time otherwise
     ### actual analysis with 10000

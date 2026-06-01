@@ -102,7 +102,7 @@ def read_dNdS_dS_summary_file(summary_path, only_metric="", exclude_list = [], m
                 
             else:
                 pairs_done.append(pair)
-                values_list = [float(dNdS) if dNdS != 0.0 else np.NaN for dNdS in dNdS_vals.split(",")]
+                values_list = [float(dNdS) if dNdS != 0.0 else np.nan for dNdS in dNdS_vals.split(",")]
                 if d_sp[-1] == "dS":
                     if only_metric=="dS" and max_dS==0:
                         out_dict[pair] = values_list
@@ -160,7 +160,7 @@ def permutate_dNdS(dNdS_A, dNdS_X, num_permut = 1000, mean=False):
     """
     permutate n times and calculate the differences of median between all pairs
     """
-    medians_diff_list = [np.NaN] * num_permut
+    medians_diff_list = [np.nan] * num_permut
     print(f"... running {num_permut} permutations ...")
 
     def permute_dNdS(dNdS_A, dNdS_X):
@@ -215,8 +215,8 @@ def make_means_array_from_dict(dNdS_dict, verbose = True):
     species_count = len(species_list)
     species_index = {species : i for i, species in enumerate(species_list)}
 
-    # initialize array of np.NaN
-    pairwise_dNdS = np.full((species_count,species_count), np.NaN)
+    # initialize array of np.nan
+    pairwise_dNdS = np.full((species_count,species_count), np.nan)
 
     ## fill the initalized table with the counts
     for pair, dNdS_list in dNdS_dict.items():
@@ -229,12 +229,12 @@ def make_means_array_from_dict(dNdS_dict, verbose = True):
         species2 = f"{gen2}_{spec2}"
         index2 = species_index[species2]
         if species1 == species2:
-            pairwise_dNdS[index1, index2] = np.NaN
+            pairwise_dNdS[index1, index2] = np.nan
         else:
             if not np.isnan(dNdS_list).all():
                 mean_dNdS = np.nanmean(dNdS_list)
             else:
-                mean_dNdS = np.NaN
+                mean_dNdS = np.nan
             pairwise_dNdS[index1, index2] = mean_dNdS
             pairwise_dNdS[index2, index1] = mean_dNdS
 
@@ -412,7 +412,7 @@ def plot_dNdS_violins(A_dict:dict, X_dict:dict, filename = "dNdS_ratios_A_X.png"
             axes[row,row].text(0.8,0.2,f"{species1}", rotation = 90, fontsize = fs)
             diagonals_done.append(row)
             
-        ## exclude all the NaNs because violinplot can't handle them
+        ## exclude all the nans because violinplot can't handle them
         data_A_nan = np.array(A_dict[pair], dtype=float)
         data_X_nan = np.array(X_dict[pair], dtype=float)
         data_A = [dNdS_A for dNdS_A in data_A_nan if not np.isnan(dNdS_A) ]
