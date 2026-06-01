@@ -327,6 +327,10 @@ I also re-did all the plots, but the results stay the same, only the numbers and
 
 <h2>Orthologs separated by gene age</h2>
 
+<h3>dNdS</h3>
+
+<h4>Data preparation and visualization</h4>
+
 <p>
     We hypothesize that the evolutionary rates are different for older vs. younger genes and therefore incorporate a measure of gene age (from the perspective of 
     <i>C. maculatus</i> into our analyses). It describes what species is the most distant to still contain a 1-to-1 ortholog: a gene of age 1 is the youngest and 
@@ -334,14 +338,77 @@ I also re-did all the plots, but the results stay the same, only the numbers and
 </p>
 
 <ol>
-    <li><code>src/make_DE_analysis_table.py</code>: make the tables for A and X (already includes the expression as well)
+    <li><code>src/make_DE_analysis_table.py</code>: make the summary tables for A and X (already includes the expression as well).
         <ul>
             <li><code>data/DE_analysis/paml_summary_tables/DE_summary_table_A_chr.tsv</code></li>
             <li><code>data/DE_analysis/paml_summary_tables/DE_summary_table_X_chr.tsv</code></li>
         </ul>
     </li>
-    <li><code>src/plotting/analyze_dNdS_LFC.py</code>: plot the boxplots of dNdS split by age rank</li>
+    <li><code>src/plotting/analyze_dNdS_LFC.py</code>: plot the boxplots of dNdS split by age rank (last section, function <code>plot_dNdS_rank_conserved()</code>)</li>
 </ol>
 
+<details>
+    <summary>toggle down for plot</summary>
+    <p>
+        The sample size numbers don't change here after revision because this already comes from the summary table with the expression data and is therefore downfiltered to only include genes that
+        are present in that. The median/quantiles in the boxplots change slightly but the overall trend remains.
+    </p>
+    <p float="left">
+        <img loading="lazy" src="data/DE_analysis/dNdS_vs_conservation_rank_all_comparisons.png" width="20%" />
+    </p>
+</details>
 
+<h4>statistical analysis</h4>
+
+<p>
+    Median quantile regression with wald test to drop explanatory variables and see if they make a significant difference. This way We can get a p-value for just the gene age 
+    (and gene age by chromosome interaction) without worrying about the intercept for interpretation. The code is also in <code>src/plotting/analyze_dNdS_LFC.py</code>, 
+    in the function <code>statistical_analysis_dNdS(... , include_sex_bias=False)</code>.
+</p>
+<p>
+    Since the response variable is dNdS, the analysis can be done from the perspective of <i>C. maculatus</i> with each of the three other <i>Bruchini</i> species.
+</p>
+
+<div class="tab">
+    <button class="tablinks" onclick="openTab(event, 'dNdS_age_wald_C_chinensis')"><i>C. chinensis</i></button>
+    <button class="tablinks" onclick="openTab(event, 'dNdS_age_wald_B_siliquastri')"><i>B. siliquastri</i></button>
+    <button class="tablinks" onclick="openTab(event, 'dNdS_age_wald_A_obtectus')"><i>A. obtectus</i></button>
+</div>
+
+<div id="dNdS_age_wald_C_chinensis" class="tabcontent">
+    <p><code>dNdS_vs_gene_age_medianreg_wald_test_C_chinensis.txt</code>Interaction gene age by chromosome not significant but gene age alone strongly significant.
+    Chromosome alone is insignificant, only becomes significant when excluding gene age as explanatory variable.</p>
+    <iframe
+        src="data/stats_summary_files/dNdS_vs_gene_age_medianreg_wald_test_C_chinensis.txt"
+        frameBorder="0"
+        class=""
+        scrolling="auto"
+        style="width:100%; height:30vh;">
+    </iframe>
+</div>
+
+<div id="dNdS_age_wald_B_siliquastri" class="tabcontent">
+    <p><code>dNdS_vs_gene_age_medianreg_wald_test_B_siliquastri.txt</code>Interaction gene age by chromosome not significant but gene age alone strongly significant
+    </p>
+    <iframe
+        src="data/stats_summary_files/dNdS_vs_gene_age_medianreg_wald_test_B_siliquastri.txt"
+        frameBorder="0"
+        class=""
+        scrolling="auto"
+        style="width:100%; height:30vh;">
+    </iframe>
+</div>
+
+<div id="dNdS_age_wald_A_obtectus" class="tabcontent">
+    <p><code>dNdS_vs_gene_age_medianreg_wald_test_A_obtectus.txt</code>Interaction gene age by chromosome not significant but gene age alone strongly significant
+    </p>
+    <iframe
+        src="data/stats_summary_files/dNdS_vs_gene_age_medianreg_wald_test_A_obtectus.txt"
+        frameBorder="0"
+        class=""
+        scrolling="auto"
+        style="width:100%; height:30vh;">
+    </iframe>
+</div>
+    
 </body>

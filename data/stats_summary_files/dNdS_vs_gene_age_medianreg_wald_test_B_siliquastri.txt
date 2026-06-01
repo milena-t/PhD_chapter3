@@ -1,0 +1,67 @@
+
+////////////////// B_siliquastri //////////////////
+
+---------------> test with chromosome * ortholog_distance interaction
+
+
+                         QuantReg Regression Results                          
+==============================================================================
+Dep. Variable:     B_siliquastri_dNdS   Pseudo R-squared:              0.07479
+Model:                       QuantReg   Bandwidth:                     0.01306
+Method:                 Least Squares   Sparsity:                       0.1375
+Date:                Mon, 01 Jun 2026   No. Observations:                 9459
+Time:                        12:42:30   Df Residuals:                     9451
+                                        Df Model:                            7
+=======================================================================================================================
+                                                          coef    std err          t      P>|t|      [0.025      0.975]
+-----------------------------------------------------------------------------------------------------------------------
+Intercept                                               0.1494      0.004     39.320      0.000       0.142       0.157
+C(chromosome)[T.X]                                      0.0729      0.025      2.963      0.003       0.025       0.121
+C(level_most_dist_ortholog)[T.3]                       -0.0077      0.004     -1.723      0.085      -0.016       0.001
+C(level_most_dist_ortholog)[T.4]                       -0.0515      0.004    -12.595      0.000      -0.059      -0.043
+C(level_most_dist_ortholog)[T.5]                       -0.0873      0.004    -22.344      0.000      -0.095      -0.080
+C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.3]    -0.0919      0.030     -3.052      0.002      -0.151      -0.033
+C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.4]    -0.0852      0.027     -3.204      0.001      -0.137      -0.033
+C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.5]    -0.0869      0.025     -3.489      0.000      -0.136      -0.038
+=======================================================================================================================
+wald test for 'chromosome*conservation_distance' interaction: <F test: F=4.111605181807107, p=0.006341705252298383, df_denom=9.45e+03, df_num=3>
+
+---------------> test with only chromosome + ortholog_distance major effects and no interaction
+
+
+                         QuantReg Regression Results                          
+==============================================================================
+Dep. Variable:     B_siliquastri_dNdS   Pseudo R-squared:              0.07446
+Model:                       QuantReg   Bandwidth:                     0.01308
+Method:                 Least Squares   Sparsity:                       0.1378
+Date:                Mon, 01 Jun 2026   No. Observations:                 9459
+Time:                        12:42:30   Df Residuals:                     9454
+                                        Df Model:                            4
+====================================================================================================
+                                       coef    std err          t      P>|t|      [0.025      0.975]
+----------------------------------------------------------------------------------------------------
+Intercept                            0.1499      0.004     39.796      0.000       0.142       0.157
+C(chromosome)[T.X]                  -0.0140      0.004     -3.921      0.000      -0.021      -0.007
+C(level_most_dist_ortholog)[T.3]    -0.0099      0.004     -2.242      0.025      -0.019      -0.001
+C(level_most_dist_ortholog)[T.4]    -0.0518      0.004    -12.794      0.000      -0.060      -0.044
+C(level_most_dist_ortholog)[T.5]    -0.0877      0.004    -22.677      0.000      -0.095      -0.080
+====================================================================================================
+wald test for 'conservation_distance' major effect: <F test: F=517.5781841164313, p=1.9055362063174e-311, df_denom=9.45e+03, df_num=3>
+
+---------------> test without conservation rank to see if excluding it makes chromosome significant
+
+
+                         QuantReg Regression Results                          
+==============================================================================
+Dep. Variable:     B_siliquastri_dNdS   Pseudo R-squared:             0.002747
+Model:                       QuantReg   Bandwidth:                     0.01451
+Method:                 Least Squares   Sparsity:                       0.1523
+Date:                Mon, 01 Jun 2026   No. Observations:                 9459
+Time:                        12:42:30   Df Residuals:                     9457
+                                        Df Model:                            1
+======================================================================================
+                         coef    std err          t      P>|t|      [0.025      0.975]
+--------------------------------------------------------------------------------------
+Intercept              0.0760      0.001     95.093      0.000       0.074       0.078
+C(chromosome)[T.X]    -0.0217      0.004     -5.502      0.000      -0.029      -0.014
+======================================================================================

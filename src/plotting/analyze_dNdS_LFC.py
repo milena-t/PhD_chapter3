@@ -93,157 +93,160 @@ def statistical_analysis_dNdS(full_table_paths_dict, table_outfile="", max_dNdS=
     df["LFC_head_thorax"] = abs(df["LFC_head_thorax"])
     
     for partner in partners_list:
+        table_outfile_species = table_outfile.replace(".txt", f"_{partner}.txt")
+        with open(table_outfile_species, "w") as table_out:
         
-        df_ren = df.rename(columns={'dN/dS': f"{partner}_dNdS"})
-        filt_df = df_ren[df_ren["other_species"]==partner]
-        filt_df[f"{partner}_dNdS"] = pd.to_numeric(filt_df[f"{partner}_dNdS"], errors='coerce')
-        filt_df = filt_df[filt_df[f"{partner}_dNdS"]>0]
-        filt_df = filt_df[filt_df[f"{partner}_dNdS"].notna()]
-        filt_df = filt_df[filt_df[f"{partner}_dNdS"] < max_dNdS]
-        print(f"\n////////////////// {partner} //////////////////")
+            df_ren = df.rename(columns={'dN/dS': f"{partner}_dNdS"})
+            filt_df = df_ren[df_ren["other_species"]==partner]
+            filt_df[f"{partner}_dNdS"] = pd.to_numeric(filt_df[f"{partner}_dNdS"], errors='coerce')
+            filt_df = filt_df[filt_df[f"{partner}_dNdS"]>0]
+            filt_df = filt_df[filt_df[f"{partner}_dNdS"].notna()]
+            filt_df = filt_df[filt_df[f"{partner}_dNdS"] < max_dNdS]
+            table_out.write(f"\n////////////////// {partner} //////////////////")
 
-        if False:
-            ### test filtering stuff and see if there is anything that could make problems
-            def test_filtering(colname, nan_only=False):
-                print(f"   {colname} filtering:")
-                if nan_only:
-                    pass
-                else:
-                    zeros_test = (a_df_f[f"{colname}"] <= 0).sum()
-                    zeros_test2 = (filt_df[f"{colname}"] <= 0).sum()
-                    print(f"\ttest if all 0 was removed: {zeros_test} -> {zeros_test2} (should go down to zero)")
-                nan_test = a_df_f[f"{colname}"].isna().sum()
-                nan_test2 = filt_df[f"{colname}"].isna().sum()
-                print(f"\ttest if all nan was removed: {nan_test} -> {nan_test2} (should go down to zero)")
-                infinity = np.isfinite(filt_df[f"{colname}"]).all()
-                print(f"\tall values <inf :  {infinity}")
+            if False:
+                ### test filtering stuff and see if there is anything that could make problems
+                def test_filtering(colname, nan_only=False):
+                    print(f"   {colname} filtering:")
+                    if nan_only:
+                        pass
+                    else:
+                        zeros_test = (a_df_f[f"{colname}"] <= 0).sum()
+                        zeros_test2 = (filt_df[f"{colname}"] <= 0).sum()
+                        print(f"\ttest if all 0 was removed: {zeros_test} -> {zeros_test2} (should go down to zero)")
+                    nan_test = a_df_f[f"{colname}"].isna().sum()
+                    nan_test2 = filt_df[f"{colname}"].isna().sum()
+                    print(f"\ttest if all nan was removed: {nan_test} -> {nan_test2} (should go down to zero)")
+                    infinity = np.isfinite(filt_df[f"{colname}"]).all()
+                    print(f"\tall values <inf :  {infinity}")
 
-            test_filtering(f"{partner}_dNdS")
-            test_filtering(f"LFC_abdomen")
-            test_filtering(f"chromosome", nan_only=True)
-            test_filtering(f"level_most_dist_ortholog")
+                test_filtering(f"{partner}_dNdS")
+                test_filtering(f"LFC_abdomen")
+                test_filtering(f"chromosome", nan_only=True)
+                test_filtering(f"level_most_dist_ortholog")
 
-        if include_sex_bias and "C_chinensis" in partner:
-            
-            for chr in ["A", "X"]:
-
-                df = pd.read_csv(full_table_paths_dict[chr], sep="\t")
-                df = df.rename(columns={'LFC_head+thorax': 'LFC_head_thorax'})
-                df = df.rename(columns={'FDR_pval_head+thorax': 'FDR_pval_head_thorax'})
-
-                df["SB_abdomen"] = df.apply(make_sex_bias_cat_row, axis=1, args=("abdomen",))
-                df["SB_head_thorax"] = df.apply(make_sex_bias_cat_row, axis=1, args=("head_thorax",))
-                df["LFC_abdomen"] = abs(df["LFC_abdomen"])
-                df["LFC_head_thorax"] = abs(df["LFC_head_thorax"])
-                df_ren = df.rename(columns={'dN/dS': f"{partner}_dNdS"})
-                filt_df = df_ren[df_ren["other_species"]==partner]
-                filt_df[f"{partner}_dNdS"] = pd.to_numeric(filt_df[f"{partner}_dNdS"], errors='coerce')
-                filt_df = filt_df[filt_df[f"{partner}_dNdS"]>0]
-                filt_df = filt_df[filt_df[f"{partner}_dNdS"].notna()]
-                filt_df = filt_df[filt_df[f"{partner}_dNdS"] < max_dNdS]
-
-                for tissue in ["abdomen", "head_thorax"]:
-                    print(f"\n----- {chr} -----> {tissue}")
-                    formula = f"{partner}_dNdS ~  C(SB_{tissue}) * C(level_most_dist_ortholog)"
-                    interactions_test_string_u=f"""C(SB_{tissue})[T.unbiased]:C(level_most_dist_ortholog)[T.2] = 0,
-                        C(SB_{tissue})[T.unbiased]:C(level_most_dist_ortholog)[T.3] = 0,
-                        C(SB_{tissue})[T.unbiased]:C(level_most_dist_ortholog)[T.4] = 0,
-                        C(SB_{tissue})[T.unbiased]:C(level_most_dist_ortholog)[T.5] = 0"""
-                    interactions_test_string_m=f"""C(SB_{tissue})[T.male]:C(level_most_dist_ortholog)[T.2] = 0,
-                        C(SB_{tissue})[T.male]:C(level_most_dist_ortholog)[T.3] = 0,
-                        C(SB_{tissue})[T.male]:C(level_most_dist_ortholog)[T.4] = 0,
-                        C(SB_{tissue})[T.male]:C(level_most_dist_ortholog)[T.5] = 0"""
+            if include_sex_bias and "C_chinensis" in partner:
                 
-                    test = smf.quantreg(formula=formula, data=filt_df).fit(q=0.5) # q=0.5 means we estimate the median
-                    print(test.summary())
+                for chr in ["A", "X"]:
 
-                    try:
-                        # test two-way interaction
-                        comb_string= f"{interactions_test_string_m}, {interactions_test_string_u}"
-                        wald_test = test.wald_test(comb_string, scalar = True)
-                        print(f"wald test for {comb_string} interaction: {wald_test}")
-                    except:
+                    df = pd.read_csv(full_table_paths_dict[chr], sep="\t")
+                    df = df.rename(columns={'LFC_head+thorax': 'LFC_head_thorax'})
+                    df = df.rename(columns={'FDR_pval_head+thorax': 'FDR_pval_head_thorax'})
 
-                        try:
-                            interactions_test_string_u=f"""C(SB_{tissue})[T.unbiased]:C(level_most_dist_ortholog)[T.3] = 0,
+                    df["SB_abdomen"] = df.apply(make_sex_bias_cat_row, axis=1, args=("abdomen",))
+                    df["SB_head_thorax"] = df.apply(make_sex_bias_cat_row, axis=1, args=("head_thorax",))
+                    df["LFC_abdomen"] = abs(df["LFC_abdomen"])
+                    df["LFC_head_thorax"] = abs(df["LFC_head_thorax"])
+                    df_ren = df.rename(columns={'dN/dS': f"{partner}_dNdS"})
+                    filt_df = df_ren[df_ren["other_species"]==partner]
+                    filt_df[f"{partner}_dNdS"] = pd.to_numeric(filt_df[f"{partner}_dNdS"], errors='coerce')
+                    filt_df = filt_df[filt_df[f"{partner}_dNdS"]>0]
+                    filt_df = filt_df[filt_df[f"{partner}_dNdS"].notna()]
+                    filt_df = filt_df[filt_df[f"{partner}_dNdS"] < max_dNdS]
+
+                    for tissue in ["abdomen", "head_thorax"]:
+                        table_out.write(f"\n\n----- {chr} -----> {tissue}\n\n")
+                        formula = f"{partner}_dNdS ~  C(SB_{tissue}) * C(level_most_dist_ortholog)"
+                        interactions_test_string_u=f"""C(SB_{tissue})[T.unbiased]:C(level_most_dist_ortholog)[T.2] = 0,
+                            C(SB_{tissue})[T.unbiased]:C(level_most_dist_ortholog)[T.3] = 0,
                             C(SB_{tissue})[T.unbiased]:C(level_most_dist_ortholog)[T.4] = 0,
                             C(SB_{tissue})[T.unbiased]:C(level_most_dist_ortholog)[T.5] = 0"""
-                            interactions_test_string_m=f"""C(SB_{tissue})[T.male]:C(level_most_dist_ortholog)[T.3] = 0,
+                        interactions_test_string_m=f"""C(SB_{tissue})[T.male]:C(level_most_dist_ortholog)[T.2] = 0,
+                            C(SB_{tissue})[T.male]:C(level_most_dist_ortholog)[T.3] = 0,
                             C(SB_{tissue})[T.male]:C(level_most_dist_ortholog)[T.4] = 0,
                             C(SB_{tissue})[T.male]:C(level_most_dist_ortholog)[T.5] = 0"""
-                            comb_string= f"{interactions_test_string_m}, {interactions_test_string_u}"
-                            wald_test = test.wald_test(comb_string, scalar = True)
-                            print(f"wald test for {comb_string} interaction: {wald_test}")
-                        except:
-                            print("no Wald test could be performed")
-
-                    if chr == "A":
-                        formula = f"{partner}_dNdS ~  C(SB_{tissue}) + C(level_most_dist_ortholog)"
+                    
                         test = smf.quantreg(formula=formula, data=filt_df).fit(q=0.5) # q=0.5 means we estimate the median
-                        print(test.summary())
+                        table_out.write(test.summary().as_text())
 
                         try:
                             # test two-way interaction
-                            comb_string = """C(level_most_dist_ortholog)[T.2] = 0,C(level_most_dist_ortholog)[T.3] = 0,C(level_most_dist_ortholog)[T.4] = 0,C(level_most_dist_ortholog)[T.5] = 0"""
+                            comb_string= f"{interactions_test_string_m}, {interactions_test_string_u}"
                             wald_test = test.wald_test(comb_string, scalar = True)
-                            print(f"wald test for main effect conservation_distance: {wald_test}")
+                            table_out.write(f"\nwald test for {comb_string} interaction: {wald_test}")
                         except:
-                            print("no Wald test could be performed")
+
+                            try:
+                                interactions_test_string_u=f"""C(SB_{tissue})[T.unbiased]:C(level_most_dist_ortholog)[T.3] = 0,
+                                C(SB_{tissue})[T.unbiased]:C(level_most_dist_ortholog)[T.4] = 0,
+                                C(SB_{tissue})[T.unbiased]:C(level_most_dist_ortholog)[T.5] = 0"""
+                                interactions_test_string_m=f"""C(SB_{tissue})[T.male]:C(level_most_dist_ortholog)[T.3] = 0,
+                                C(SB_{tissue})[T.male]:C(level_most_dist_ortholog)[T.4] = 0,
+                                C(SB_{tissue})[T.male]:C(level_most_dist_ortholog)[T.5] = 0"""
+                                comb_string= f"{interactions_test_string_m}, {interactions_test_string_u}"
+                                wald_test = test.wald_test(comb_string, scalar = True)
+                                table_out.write(f"\nwald test for {comb_string} interaction: {wald_test}")
+                            except:
+                                table_out.write("\nno Wald test could be performed")
+
+                        if chr == "A":
+                            formula = f"{partner}_dNdS ~  C(SB_{tissue}) + C(level_most_dist_ortholog)"
+                            test = smf.quantreg(formula=formula, data=filt_df).fit(q=0.5) # q=0.5 means we estimate the median
+                            table_out.write(test.summary().as_text())
+
+                            try:
+                                # test two-way interaction
+                                comb_string = """C(level_most_dist_ortholog)[T.2] = 0,C(level_most_dist_ortholog)[T.3] = 0,C(level_most_dist_ortholog)[T.4] = 0,C(level_most_dist_ortholog)[T.5] = 0"""
+                                wald_test = test.wald_test(comb_string, scalar = True)
+                                table_out.write(f"\nwald test for main effect conservation_distance: {wald_test}")
+                            except:
+                                table_out.write("\nno Wald test could be performed")
 
 
-        elif include_sex_bias == False:
+            elif include_sex_bias == False:
 
-            ########### test interaction
-            print(f"\n---------------> test with chromosome * ortholog_distance interaction")
-            formula = f"{partner}_dNdS ~  C(chromosome) * C(level_most_dist_ortholog)"
+                ########### test interaction
+                table_out.write(f"\n\n---------------> test with chromosome * ortholog_distance interaction\n\n")
+                formula = f"{partner}_dNdS ~  C(chromosome) * C(level_most_dist_ortholog)"
+                
+                interactions_by_partner = {
+                "A_obtectus" : """C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.4] = 0,
+                C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.5] = 0""",
+                "B_siliquastri" : """C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.3] = 0,
+                C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.4] = 0,
+                C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.5] = 0""",
+                "C_chinensis" : """C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.2] = 0,
+                C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.3] = 0,
+                C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.4] = 0,
+                C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.5] = 0"""
+                }
+
+                test = smf.quantreg(formula=formula, data=filt_df).fit(q=0.5) # q=0.5 means we estimate the median
+                table_out.write(test.summary().as_text())
             
-            interactions_by_partner = {
-            "A_obtectus" : """C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.4] = 0,
-            C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.5] = 0""",
-            "B_siliquastri" : """C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.3] = 0,
-            C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.4] = 0,
-            C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.5] = 0""",
-            "C_chinensis" : """C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.2] = 0,
-            C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.3] = 0,
-            C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.4] = 0,
-            C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.5] = 0"""
-            }
+                try:
+                    # test two-way interaction
+                    wald_test = test.wald_test(interactions_by_partner[partner], scalar = True)
+                    table_out.write(f"\nwald test for 'chromosome*conservation_distance' interaction: {wald_test}")
+                except:
+                    table_out.write("\nno Wald test could be performed")
 
-            test = smf.quantreg(formula=formula, data=filt_df).fit(q=0.5) # q=0.5 means we estimate the median
-            print(test.summary())
-        
-            try:
-                # test two-way interaction
-                wald_test = test.wald_test(interactions_by_partner[partner], scalar = True)
-                print(f"wald test for 'chromosome*conservation_distance' interaction: {wald_test}")
-            except:
-                print("no Wald test could be performed")
+                ########### test major effect age rank
+                table_out.write(f"\n\n---------------> test with only chromosome + ortholog_distance major effects and no interaction\n\n")
+                formula = f"{partner}_dNdS ~  C(chromosome) + C(level_most_dist_ortholog)"
+                ME_by_pair = {
+                    "C_chinensis" : """C(level_most_dist_ortholog)[T.2] = 0,C(level_most_dist_ortholog)[T.3] = 0,C(level_most_dist_ortholog)[T.4] = 0,C(level_most_dist_ortholog)[T.5] = 0""",
+                    "B_siliquastri" : """C(level_most_dist_ortholog)[T.3] = 0,C(level_most_dist_ortholog)[T.4] = 0,C(level_most_dist_ortholog)[T.5] = 0""",
+                    "A_obtectus" : """C(level_most_dist_ortholog)[T.4] = 0,C(level_most_dist_ortholog)[T.5] = 0""",
+                }
+                test = smf.quantreg(formula=formula, data=filt_df).fit(q=0.5) # q=0.5 means we estimate the median
+                table_out.write(test.summary().as_text())
+            
+                try:
+                    # test major effect of age rank
+                    wald_test = test.wald_test(ME_by_pair[partner], scalar = True)
+                    table_out.write(f"\nwald test for 'conservation_distance' major effect: {wald_test}")
+                except:
+                    table_out.write("\nno Wald test could be performed")
 
-            ########### test major effect age rank
-            print(f"\n---------------> test with only chromosome + ortholog_distance major effects and no interaction")
-            formula = f"{partner}_dNdS ~  C(chromosome) + C(level_most_dist_ortholog)"
-            ME_by_pair = {
-                "C_chinensis" : """C(level_most_dist_ortholog)[T.2] = 0,C(level_most_dist_ortholog)[T.3] = 0,C(level_most_dist_ortholog)[T.4] = 0,C(level_most_dist_ortholog)[T.5] = 0""",
-                "B_siliquastri" : """C(level_most_dist_ortholog)[T.3] = 0,C(level_most_dist_ortholog)[T.4] = 0,C(level_most_dist_ortholog)[T.5] = 0""",
-                "A_obtectus" : """C(level_most_dist_ortholog)[T.4] = 0,C(level_most_dist_ortholog)[T.5] = 0""",
-            }
-            test = smf.quantreg(formula=formula, data=filt_df).fit(q=0.5) # q=0.5 means we estimate the median
-            print(test.summary())
-        
-            try:
-                # test major effect of age rank
-                wald_test = test.wald_test(ME_by_pair[partner], scalar = True)
-                print(f"wald test for 'conservation_distance' major effect: {wald_test}")
-            except:
-                print("no Wald test could be performed")
+                ########### test only chromosome effect
+                table_out.write(f"\n\n---------------> test without conservation rank to see if excluding it makes chromosome significant\n\n")
+                # do one test without age rank to see if chromosome becomes significant to explain the results from the permutation test
+                formula = f"{partner}_dNdS ~  C(chromosome)"
+                test = smf.quantreg(formula=formula, data=filt_df).fit(q=0.5) # q=0.5 means we estimate the median
+                table_out.write(test.summary().as_text())
 
-            ########### test only chromosome effect
-            print(f"\n---------------> test without conservation rank to see if excluding it makes chromosome significant")
-            # do one test without age rank to see if chromosome becomes significant to explain the results from the permutation test
-            formula = f"{partner}_dNdS ~  C(chromosome)"
-            test = smf.quantreg(formula=formula, data=filt_df).fit(q=0.5) # q=0.5 means we estimate the median
-            print(test.summary())
-
+            print(f"outfile written to {table_outfile_species}")
         print("\n")
             
 
@@ -289,22 +292,22 @@ def statistical_analysis_pos_sel(full_table_paths_dict, include_sex_bias=False):
                 formula_no = f"positive_selection ~  C(chromosome) * C(level_most_dist_ortholog)"
                 formula_nono = f"positive_selection ~  C(chromosome)"
                 
-                print(f"\n------------> abdomen")
+                print(f"\n\n------------> abdomen\n\n")
                 test = smf.logit(formula=formula_a, data=filt_df).fit()
                 print(test.summary())
-                print(f"\n------------> NO AGE RANK: abdomen")
+                print(f"\n\n------------> NO AGE RANK: abdomen\n\n")
                 test = smf.logit(formula=formula_a_no, data=filt_df).fit()
                 print(test.summary())
-                print(f"\n------------> head+thorax")
+                print(f"\n\n------------> head+thorax\n\n")
                 test = smf.logit(formula=formula_ht, data=filt_df).fit()
                 print(test.summary())
-                print(f"\n------------> NO AGE RANK: head+thorax")
+                print(f"\n\n------------> NO AGE RANK: head+thorax\n\n")
                 test = smf.logit(formula=formula_ht_no, data=filt_df).fit()
                 print(test.summary())
-                print(f"\n------------> no sex bias")
+                print(f"\n\n------------> no sex bias\n\n")
                 test = smf.logit(formula=formula_no, data=filt_df).fit()
                 print(test.summary())
-                print(f"\n------------> no conservation rank")
+                print(f"\n\n------------> no conservation rank\n\n")
                 test = smf.logit(formula=formula_nono, data=filt_df).fit()
                 print(test.summary())
 
@@ -312,7 +315,7 @@ def statistical_analysis_pos_sel(full_table_paths_dict, include_sex_bias=False):
             elif include_sex_bias == False:
                 
                 ########### test interaction
-                print(f"\n---------------> test with chromosome * ortholog_distance interaction")
+                print(f"\n\n---------------> test with chromosome * ortholog_distance interaction\n\n")
                 formula = f"positive_selection ~  C(chromosome) * C(level_most_dist_ortholog)"
                 test = smf.logit(formula=formula, data=filt_df).fit()
                 print(test.summary())
@@ -333,12 +336,12 @@ def statistical_analysis_pos_sel(full_table_paths_dict, include_sex_bias=False):
                 try:
                     # test two-way interaction
                     wald_test = test.wald_test(interactions_by_partner[partner], scalar = True)
-                    print(f"wald test for {interactions_by_partner[partner]} interaction: {wald_test}")
+                    print(f"\nwald test for {interactions_by_partner[partner]} interaction: {wald_test}")
                 except:
-                    print("no Wald test could be performed")
+                    print("\nno Wald test could be performed")
 
                 ########### test major effect age rank
-                print(f"\n---------------> test with only chromosome + ortholog_distance major effects and no interaction")
+                print(f"\n\n---------------> test with only chromosome + ortholog_distance major effects and no interaction\n\n")
                 formula = f"positive_selection ~  C(chromosome) + C(level_most_dist_ortholog)"
                 test = smf.logit(formula=formula, data=filt_df).fit()
                 print(test.summary())
@@ -352,12 +355,12 @@ def statistical_analysis_pos_sel(full_table_paths_dict, include_sex_bias=False):
                 wald_test = test.wald_test(ME_by_pair[partner], scalar = True)
                 try:
                     # test major effect of age rank
-                    print(f"wald test for {ME_by_pair[partner]} major effect: {wald_test}")
+                    print(f"\nwald test for {ME_by_pair[partner]} major effect: {wald_test}")
                 except:
-                    print("no Wald test could be performed")
+                    print("\nno Wald test could be performed")
 
                 ########### test only chromosome effect
-                print(f"\n---------------> test without conservation rank to see if excluding it makes chromosome significant")
+                print(f"\n\n---------------> test without conservation rank to see if excluding it makes chromosome significant\n\n")
                 # do one test without age rank to see if chromosome becomes significant to explain the results from the permutation test
                 formula = f"positive_selection ~  C(chromosome)"
                 test = smf.logit(formula=formula, data=filt_df).fit()
@@ -1290,7 +1293,7 @@ def run_fisher_test(counts_dict, verbose = False):
             cats_order.append(f"{tissue}:{SB_cat}")
     
     ## do multiple testing correction
-    print(f"\n------------> BH-correction for multiple testing (old_p -> corrected_p):")
+    print(f"\n\n------------> BH-correction for multiple testing (old_p -> corrected_p):\n\n")
     p_adj = stats.false_discovery_control(ps=p_order)
     for i in range(len(p_adj)):
         print(f"{cats_order[i]}: {p_order[i]:.6f} -> {p_adj[i]:.6f}")
@@ -1306,18 +1309,21 @@ if __name__ == "__main__":
         ### just a basic proportion of the different conservation ranks on A and X
         ### shows that X has a higher proportion of rank-5 genes than A
         for species in ["C_chinensis", "B_siliquastri", "A_obtectus"]:
-            print(f"\n-------> {species}")
+            print(f"\n\n-------> {species}\n\n")
             compare_conservation_rank_proportions(full_tables_dict, other_species=species)
 
     ###### dNdS stats and plotting
-    if False:
+    if True:
         ## stats
         ## median quantile regression for dNdS as continuous response
-        do_chinensis_sex_bias=True # if False do only dNdS ~ gene age * chromosome for Bruchini
+        do_chinensis_sex_bias=False # if False do only dNdS ~ gene age * chromosome for Bruchini
                                     # if True do dNdS ~ gene age * sex bias + chromosome for Chinensis
+        table_name = f"/Users/{username}/work/PhD_code/PhD_chapter3/data/stats_summary_files/dNdS_vs_gene_age_medianreg_wald_test.txt"
         ###################################################
-        statistical_analysis_dNdS(full_tables_dict, table_outfile=f"", include_sex_bias=do_chinensis_sex_bias)
+        statistical_analysis_dNdS(full_tables_dict, table_outfile=table_name, include_sex_bias=do_chinensis_sex_bias)
         ###################################################
+        ## the outfile argument doesn't work, but to get it into a outfile run the command line as
+        ## python3 analyze_dNdS_LFC.py > /Users/miltr339/work/PhD_code/PhD_chapter3/data/stats_summary_files/dNdS_vs_gene_age_medianreg_wald_test.txt
 
     if False:
         ## plotting
@@ -1377,7 +1383,7 @@ if __name__ == "__main__":
         run_fisher_test(fisher_counts_dict, verbose=True)
         ###################################################
 
-    if True:
+    if False:
         ###################################################
         ## boxplot dNdS by rank and chromosome but no sex bias
         filename=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/dNdS_vs_conservation_rank.png"
