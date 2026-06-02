@@ -110,6 +110,27 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 </script>
+<script>
+function loadCSVTable(csvPath, elementId) {
+    fetch(csvPath)
+    .then(response => response.text())
+    .then(csv => {
+        const rows = csv.trim().split("\n").map(r => r.split(","));
+        let html = "<table border='1' style='width:100%; border-collapse:collapse;'>";
+
+        rows.forEach(row => {
+        html += "<tr>";
+        row.forEach(cell => html += `<td>${cell}</td>`);
+        html += "</tr>";
+        });
+
+        html += "</table>";
+        document.getElementById(elementId).innerHTML = html;
+    });
+}
+</script>
+    
+
 </head>
 
 <body>
@@ -818,5 +839,43 @@ I also re-did all the plots, but the results stay the same, only the numbers and
         style="width:100%; height:30vh;">
     </iframe>
 </div>
+
+<h2>GO-term enrichment</h2>
+
+We will use TopGo to perform GO-enrichment on the positively selected genes. I ran several different enrichment contrasts.
+
+<h3>X-chromosome vs. Autosomes comparison</h3>
+
+<p>
+    The comparisons are either all X-linked genes compared to the background set of all autosomal genes, 
+    or X-linked genes under positive selection compared to autosomal genes under positive selection
+</p>
+
+
+<div class="tab">
+    <button class="tablinks" onclick="openTab(event, 'XA_GO_all')">all genes</button>
+    <button class="tablinks" onclick="openTab(event, 'XA_GO_pos_sel')">positively selected genes</button>
+</div>
+
+<div id="XA_GO_all" class="tabcontent">
+    <div id="AX_all_table"></div>
+    <script>
+        loadCSVTable("data/GO_enrichment/all_AX_enriched_GOs.csv", "AX_all_table");
+    </script>
+        
+</div>
+
+<div id="XA_GO_pos_sel" class="tabcontent">
+    
+    <p>
+        dosage compensation is enriched here!
+    </p>
+ 
+    <div id="AX_sig_table"></div>
+    <script>
+        loadCSVTable("data/GO_enrichment/sig_AX_enriched_GOs.csv", "AX_sig_table");
+    </script>
+</div>
+
 
 </body>
