@@ -177,7 +177,7 @@ This doesn't need re-analysis but maybe some changes in the text to clarify.
 
 <h4>Test results</h4>
 <p>
-    I use 200 <i>B. siliquastri</i>-<i>C. maculatus</i> autosomal orthologs to test
+  I will test with a subset of 200 autosomal genes which are all the <code>B_siliquastri_C_maculatus_A-linked_ortholog_9*</code> orthologs.
 </p>
 
 <p float="left">
@@ -185,8 +185,14 @@ This doesn't need re-analysis but maybe some changes in the text to clarify.
 </p>
 
 <p>
-    I will test with a subset of 200 autosomal genes which are all the <code>B_siliquastri_C_maculatus_A-linked_ortholog_9*</code> orthologs.
+    The correlation is very high but not perfect. I will update the codeml analysis, These things have changed:
 </p>
+
+<ul>
+    <li>Slightly lower sample sizes (fewer genes run OK? unsure what the reason is, but the sample sizes now are noticeably different from the codeml runs to detect positive selection.)</li>
+    <li>There were some very sparse groups of high-dS value points for the <i>Coccinella</i> and <i>Tribolium</i> comparisons that are gone now. Either they match now better 
+    with the rest of the data, or they have moved high enough to be removed by the dS &lt; 2 filter.</li>
+</ul>
     
 <h3>paml site models: positive selection</h3>
 
