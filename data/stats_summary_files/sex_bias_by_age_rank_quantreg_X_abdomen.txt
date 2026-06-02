@@ -1,12 +1,13 @@
 ////////////////// X :::: abdomen //////////////////
 
-sex bias categories: {'male', 'female'}                         QuantReg Regression Results                          
+sex bias categories: {'male', 'female'}
+                         QuantReg Regression Results                          
 ==============================================================================
 Dep. Variable:            LFC_abdomen   Pseudo R-squared:               0.1214
 Model:                       QuantReg   Bandwidth:                      0.6093
 Method:                 Least Squares   Sparsity:                        1.745
-Date:                Mon, 01 Jun 2026   No. Observations:                  136
-Time:                        16:12:51   Df Residuals:                      127
+Date:                Tue, 02 Jun 2026   No. Observations:                  136
+Time:                        11:01:53   Df Residuals:                      127
                                         Df Model:                            8
 ==========================================================================================================================
                                                              coef    std err          t      P>|t|      [0.025      0.975]
@@ -33,4 +34,6 @@ wald test for
 <F test: F=10.601492315225403, p=1.915720903475371e-07, df_denom=127, df_num=4>
 model predicted intercept (female-biased rank1): 0    8.526173
 dtype: float64
-abdomen:X:rank1 medians 	 male: 3.370 	female: 8.526
+
+---> manually calculate medians:
+abdomen:X:rank1 medians 	 male: 3.3696 	female: 8.5262

@@ -149,16 +149,19 @@ def statistical_analysis_dNdS(full_table_paths_dict, table_outfile="", max_dNdS=
                     table_outfile_species = table_outfile__.replace(".txt", f"_{tissue}.txt")
                     with open(table_outfile_species, "w") as table_out:
                         table_out.write(f"\n////////////////// {partner} //////////////////")
-                        table_out.write(f"\n\n----- {chr} -----> {tissue}\n\n")
+                        table_out.write(f"\n----- {chr} -----> {tissue}\n")
                         formula = f"{partner}_dNdS ~  C(SB_{tissue}) * C(level_most_dist_ortholog)"
-                        interactions_test_string_u=f"""C(SB_{tissue})[T.unbiased]:C(level_most_dist_ortholog)[T.2] = 0,
-                            C(SB_{tissue})[T.unbiased]:C(level_most_dist_ortholog)[T.3] = 0,
-                            C(SB_{tissue})[T.unbiased]:C(level_most_dist_ortholog)[T.4] = 0,
-                            C(SB_{tissue})[T.unbiased]:C(level_most_dist_ortholog)[T.5] = 0"""
-                        interactions_test_string_m=f"""C(SB_{tissue})[T.male]:C(level_most_dist_ortholog)[T.2] = 0,
-                            C(SB_{tissue})[T.male]:C(level_most_dist_ortholog)[T.3] = 0,
-                            C(SB_{tissue})[T.male]:C(level_most_dist_ortholog)[T.4] = 0,
-                            C(SB_{tissue})[T.male]:C(level_most_dist_ortholog)[T.5] = 0"""
+                        table_out.write(f"\n\nFormula:\t {formula}\n\n")
+                        interactions_test_string_u=f"""
+    C(SB_{tissue})[T.unbiased]:C(level_most_dist_ortholog)[T.2] = 0,
+    C(SB_{tissue})[T.unbiased]:C(level_most_dist_ortholog)[T.3] = 0,
+    C(SB_{tissue})[T.unbiased]:C(level_most_dist_ortholog)[T.4] = 0,
+    C(SB_{tissue})[T.unbiased]:C(level_most_dist_ortholog)[T.5] = 0"""
+                        interactions_test_string_m=f"""
+    C(SB_{tissue})[T.male]:C(level_most_dist_ortholog)[T.2] = 0,
+    C(SB_{tissue})[T.male]:C(level_most_dist_ortholog)[T.3] = 0,
+    C(SB_{tissue})[T.male]:C(level_most_dist_ortholog)[T.4] = 0,
+    C(SB_{tissue})[T.male]:C(level_most_dist_ortholog)[T.5] = 0"""
                     
                         test = smf.quantreg(formula=formula, data=filt_df).fit(q=0.5) # q=0.5 means we estimate the median
                         table_out.write(test.summary().as_text())
@@ -167,7 +170,7 @@ def statistical_analysis_dNdS(full_table_paths_dict, table_outfile="", max_dNdS=
                             # test two-way interaction
                             comb_string= f"{interactions_test_string_m}, {interactions_test_string_u}"
                             wald_test = test.wald_test(comb_string, scalar = True)
-                            table_out.write(f"\nwald test for {comb_string} interaction: {wald_test}")
+                            table_out.write(f"\nDo Wald test for interaction(s): {comb_string}\nWald test results: {wald_test}")
                         except:
 
                             try:
@@ -185,14 +188,19 @@ def statistical_analysis_dNdS(full_table_paths_dict, table_outfile="", max_dNdS=
 
                         if chr == "A":
                             formula = f"{partner}_dNdS ~  C(SB_{tissue}) + C(level_most_dist_ortholog)"
+                            table_out.write(f"\n\nRun test without above wald-test interactions:\nFormula: {formula}\n\n")
                             test = smf.quantreg(formula=formula, data=filt_df).fit(q=0.5) # q=0.5 means we estimate the median
                             table_out.write(test.summary().as_text())
 
                             try:
                                 # test two-way interaction
-                                comb_string = """C(level_most_dist_ortholog)[T.2] = 0,C(level_most_dist_ortholog)[T.3] = 0,C(level_most_dist_ortholog)[T.4] = 0,C(level_most_dist_ortholog)[T.5] = 0"""
+                                comb_string = """
+    C(level_most_dist_ortholog)[T.2] = 0,
+    C(level_most_dist_ortholog)[T.3] = 0,
+    C(level_most_dist_ortholog)[T.4] = 0,
+    C(level_most_dist_ortholog)[T.5] = 0"""
                                 wald_test = test.wald_test(comb_string, scalar = True)
-                                table_out.write(f"\nwald test for main effect conservation_distance: {wald_test}")
+                                table_out.write(f"\nwald test for main effect conservation_distance (exclude age rank):\n{wald_test}")
                             except:
                                 table_out.write("\nno Wald test could be performed")
                     print(f"-------------> outfile written to: \n{table_outfile_species}")
@@ -209,15 +217,18 @@ def statistical_analysis_dNdS(full_table_paths_dict, table_outfile="", max_dNdS=
                 formula = f"{partner}_dNdS ~  C(chromosome) * C(level_most_dist_ortholog)"
                 
                 interactions_by_partner = {
-                "A_obtectus" : """C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.4] = 0,
-                C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.5] = 0""",
-                "B_siliquastri" : """C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.3] = 0,
-                C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.4] = 0,
-                C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.5] = 0""",
-                "C_chinensis" : """C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.2] = 0,
-                C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.3] = 0,
-                C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.4] = 0,
-                C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.5] = 0"""
+                "A_obtectus" : """
+    C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.4] = 0,
+    C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.5] = 0""",
+                "B_siliquastri" : """
+    C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.3] = 0,
+    C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.4] = 0,
+    C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.5] = 0""",
+                "C_chinensis" : """
+    C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.2] = 0,
+    C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.3] = 0,
+    C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.4] = 0,
+    C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.5] = 0"""
                 }
 
                 test = smf.quantreg(formula=formula, data=filt_df).fit(q=0.5) # q=0.5 means we estimate the median
@@ -280,7 +291,7 @@ def statistical_analysis_pos_sel(full_table_paths_dict, table_outfile = "pos_sel
 
     for partner in partners_list:
         if include_sex_bias:
-            table_outfile_species = table_outfile.replace(".txt", f"_pos_sel_{partner}.txt")
+            table_outfile_species = table_outfile.replace(".txt", f"_with_sex_bias_{partner}.txt")
         else:
             table_outfile_species = table_outfile.replace(".txt", f"_{partner}.txt")
         
@@ -297,35 +308,47 @@ def statistical_analysis_pos_sel(full_table_paths_dict, table_outfile = "pos_sel
             # the syntax with the parentheses (LFC_abdomen + LFC_head_thorax) * C(chromosome) means this:
             # LFC_abdomen + LFC_head_thorax + C(chromosome) + LFC_abdomen:C(chromosome) + LFC_head_thorax:C(chromosome)
             if include_sex_bias and "C_chinensis" in partner:
-                with open(table_outfile_species, "w") as table_out:
+                
+                # only significantly sex-biased genes -> remove LFC
+                formula_a = f"positive_selection ~  C(SB_abdomen)  * C(chromosome) * C(level_most_dist_ortholog)"
+                formula_a_no = f"positive_selection ~  C(SB_abdomen)  * C(chromosome)"
+                formula_ht = f"positive_selection ~  C(SB_head_thorax)  * (C(chromosome) + C(level_most_dist_ortholog))"
+                formula_ht_no = f"positive_selection ~  C(SB_head_thorax)  * C(chromosome)"
+                formula_no = f"positive_selection ~  C(chromosome) * C(level_most_dist_ortholog)"
+                formula_nono = f"positive_selection ~  C(chromosome)"
+                
+                table_outfile_species_abd = table_outfile_species.replace(".txt", "_abdomen.txt")
+                with open(table_outfile_species_abd, "w") as table_out:
                     table_out.write(f"////////////////// {partner} //////////////////\n")
-                    table_out.write(f"{formula}\n")
-                    # only significantly sex-biased genes -> remove LFC
-                    formula_a = f"positive_selection ~  C(SB_abdomen)  * C(chromosome) * C(level_most_dist_ortholog)"
-                    formula_a_no = f"positive_selection ~  C(SB_abdomen)  * C(chromosome)"
-                    formula_ht = f"positive_selection ~  C(SB_head_thorax)  * (C(chromosome) + C(level_most_dist_ortholog))"
-                    formula_ht_no = f"positive_selection ~  C(SB_head_thorax)  * C(chromosome)"
-                    formula_no = f"positive_selection ~  C(chromosome) * C(level_most_dist_ortholog)"
-                    formula_nono = f"positive_selection ~  C(chromosome)"
-                    
-                    table_out.write(f"\n\n------------> abdomen\n\n")
+                    table_out.write(f"\n------------> abdomen\nFormula: {formula_a}\n")
                     test = smf.logit(formula=formula_a, data=filt_df).fit()
                     table_out.write(test.summary().as_text())
-                    table_out.write(f"\n\n------------> NO AGE RANK: abdomen\n\n")
+                    table_out.write(f"\n\nrun model without age rank to see difference\n------------> NO AGE RANK: abdomen\nFormula: {formula_a_no}\n")
                     test = smf.logit(formula=formula_a_no, data=filt_df).fit()
                     table_out.write(test.summary().as_text())
-                    table_out.write(f"\n\n------------> head+thorax\n\n")
+                print(f"--------> outfile written to: {table_outfile_species_abd}")
+
+                table_outfile_species_ht = table_outfile_species.replace(".txt", "_head_thorax.txt")
+                with open(table_outfile_species_ht, "w") as table_out:
+                    table_out.write(f"////////////////// {partner} //////////////////\n")
+                    table_out.write(f"\n------------> head+thorax\nFormula: {formula_ht}\n")
                     test = smf.logit(formula=formula_ht, data=filt_df).fit()
                     table_out.write(test.summary().as_text())
-                    table_out.write(f"\n\n------------> NO AGE RANK: head+thorax\n\n")
+                    table_out.write(f"\n\nrun model without age rank to see difference\n------------> NO AGE RANK: head+thorax\nFormula: {formula_ht_no}\n")
                     test = smf.logit(formula=formula_ht_no, data=filt_df).fit()
                     table_out.write(test.summary().as_text())
-                    table_out.write(f"\n\n------------> no sex bias\n\n")
+                print(f"--------> outfile written to: {table_outfile_species_ht}")
+
+                table_outfile_species_noexpr = table_outfile_species.replace(".txt", "_no_expression_data.txt")
+                with open(table_outfile_species_noexpr, "w") as table_out:
+                    table_out.write(f"////////////////// {partner} //////////////////\n")
+                    table_out.write(f"\n------------> no sex bias\nFormula: {formula_no}\n")
                     test = smf.logit(formula=formula_no, data=filt_df).fit()
                     table_out.write(test.summary().as_text())
-                    table_out.write(f"\n\n------------> no conservation rank\n\n")
+                    table_out.write(f"\n\nrun model without age rank to see difference\n------------> no conservation rank\nFormula: {formula_nono}\n")
                     test = smf.logit(formula=formula_nono, data=filt_df).fit()
                     table_out.write(test.summary().as_text())
+                print(f"--------> outfile written to: {table_outfile_species_noexpr}")
 
 
             elif include_sex_bias == False:

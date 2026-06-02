@@ -1,12 +1,13 @@
 ////////////////// A :::: head_thorax //////////////////
 
-sex bias categories: {'male', 'female'}                         QuantReg Regression Results                          
+sex bias categories: {'male', 'female'}
+                         QuantReg Regression Results                          
 ==============================================================================
 Dep. Variable:        LFC_head_thorax   Pseudo R-squared:              0.09735
 Model:                       QuantReg   Bandwidth:                      0.6053
 Method:                 Least Squares   Sparsity:                        2.719
-Date:                Mon, 01 Jun 2026   No. Observations:                 1516
-Time:                        16:12:51   Df Residuals:                     1506
+Date:                Tue, 02 Jun 2026   No. Observations:                 1516
+Time:                        11:01:53   Df Residuals:                     1506
                                         Df Model:                            9
 ==============================================================================================================================
                                                                  coef    std err          t      P>|t|      [0.025      0.975]
@@ -30,4 +31,6 @@ wald test for
 <F test: F=32.641579038982044, p=3.9451091179901946e-26, df_denom=1.51e+03, df_num=4>
 model predicted intercept (female-biased rank1): 0    3.292097
 dtype: float64
-head_thorax:A:rank1 medians 	 male: 3.454 	female: 3.292
+
+---> manually calculate medians:
+head_thorax:A:rank1 medians 	 male: 3.4537 	female: 3.2921

@@ -1,12 +1,13 @@
 ////////////////// X :::: head_thorax //////////////////
 
-sex bias categories: {'male', 'female'}                         QuantReg Regression Results                          
+sex bias categories: {'male', 'female'}
+                         QuantReg Regression Results                          
 ==============================================================================
 Dep. Variable:        LFC_head_thorax   Pseudo R-squared:               0.2266
 Model:                       QuantReg   Bandwidth:                      0.7237
 Method:                 Least Squares   Sparsity:                        1.506
-Date:                Mon, 01 Jun 2026   No. Observations:                   38
-Time:                        16:12:51   Df Residuals:                       31
+Date:                Tue, 02 Jun 2026   No. Observations:                   38
+Time:                        11:01:53   Df Residuals:                       31
                                         Df Model:                            6
 ==============================================================================================================================
                                                                  coef    std err          t      P>|t|      [0.025      0.975]
@@ -23,11 +24,14 @@ C(level_most_dist_ortholog)[T.5]:C(SB_head_thorax)[T.male]    -0.3380      0.505
 
 The smallest eigenvalue is 9.84e-16. This might indicate that there are
 strong multicollinearity problems or that the design matrix is singular.
-wald test for 
+wald test for interactions:
+
     C(level_most_dist_ortholog)[T.3]:C(SB_head_thorax)[T.male]=0,
     C(level_most_dist_ortholog)[T.4]:C(SB_head_thorax)[T.male]=0,
-    C(level_most_dist_ortholog)[T.5]:C(SB_head_thorax)[T.male]=0 interaction:
-<F test: F=11.295123253124459, p=3.59965843456653e-05, df_denom=31, df_num=3>
+    C(level_most_dist_ortholog)[T.5]:C(SB_head_thorax)[T.male]=0
+Wald test results: <F test: F=11.295123253124459, p=3.59965843456653e-05, df_denom=31, df_num=3>
 model predicted intercept (female-biased rank1): 0    3.55362
 dtype: float64
-head_thorax:X:rank1 medians 	 male: 3.568 	female: nan
+
+---> manually calculate medians:
+head_thorax:X:rank1 medians 	 male: 3.5683 	female: nan

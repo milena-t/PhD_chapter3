@@ -690,7 +690,7 @@ def logFC_quantile_regression(summary_table_path:str, p_val_threshold= 0.05, sep
                     formula = f"LFC_{tissue} ~ C(level_most_dist_ortholog) * C(SB_{tissue})"
                     model_a = smf.quantreg(formula=formula, data=df).fit(q=0.5)
                     table_out.write(f"////////////////// {chr} :::: {tissue} //////////////////\n\n")
-                    table_out.write(f"sex bias categories: {set(df[f'SB_{tissue}'].tolist())}")
+                    table_out.write(f"sex bias categories: {set(df[f'SB_{tissue}'].tolist())}\n")
                     table_out.write(model_a.summary().as_text())
 
                     try:
@@ -706,9 +706,9 @@ def logFC_quantile_regression(summary_table_path:str, p_val_threshold= 0.05, sep
     C(level_most_dist_ortholog)[T.5]:C(SB_{tissue})[T.male]=0"""
                                 
                             wald_test = model_a.wald_test(interactions_by_partner, scalar = True)
-                            table_out.write(f"\nwald test for {interactions_by_partner} interaction:\n{wald_test}")
+                            table_out.write(f"\nwald test for interactions:\n{interactions_by_partner}\nWald test results: {wald_test}")
                         except:
-                            table_out.write("no Wald test could be performed")
+                            table_out.write(f"\nno Wald test could be performed for interactions:\n {interactions_by_partner}")
 
                     ### check if intercept is as expected: median of female:conservation_dist=1
                     model_pred = model_a.predict({f"SB_{tissue}": "female", "level_most_dist_ortholog": 1})
@@ -718,7 +718,8 @@ def logFC_quantile_regression(summary_table_path:str, p_val_threshold= 0.05, sep
                     test_median_m = np.median(df_male[df_male["level_most_dist_ortholog"]==1][f"LFC_{tissue}"].tolist())
                     df_female=df_all[df_all[f"SB_{tissue}"] == "female"]
                     test_median_f = np.median(df_female[df_female["level_most_dist_ortholog"]==1][f"LFC_{tissue}"].tolist())
-                    table_out.write(f"\n{tissue}:{chr}:rank1 medians \t male: {test_median_m:.3f} \tfemale: {test_median_f:.3f}")
+                    table_out.write(f"\n\n---> manually calculate medians:")
+                    table_out.write(f"\n{tissue}:{chr}:rank1 medians \t male: {test_median_m:.4f} \tfemale: {test_median_f:.4f}")
 
                 print(f"outfile written to: {table_outfile_tissue}")
 

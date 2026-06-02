@@ -692,7 +692,7 @@ I also re-did all the plots, but the results stay the same, only the numbers and
     Since sex-biased expression can evolve very quickly between species, the analysis will be further restricted to only <i>C. chinensis</i> as the closest relative of <i>C. maculatus</i>. All of this analysis is in <code>src/plotting/analyze_dNdS_LFC.py</code> (even though it only has dNdS in the name, there's bool arguments to switch to positive selection for the plotting).
 </p>
 
-<h3>dN/dS TODO UPDATE MAIN TEXT STATS</h3>
+<h3>dN/dS</h3>
 
 <p>
     dNdS is modelled as a continuous response again using a median quantile regression using the function <code>statistical_analysis_dNdS(..., do_chinensis_sex_bias=True)</code> 
@@ -764,21 +764,49 @@ I also re-did all the plots, but the results stay the same, only the numbers and
 <h3>positive selection</h3>
 
 <p>
-    TODO
+    This is a logistic regression since the response variable is a binary category, therefore for maths reasons I don't remember right now you can't do a wald test on that.
 </p>
 
-<details>
-    <summary>Toggle down for stats output</summary>
+<div class="tab">
+    <button class="tablinks" onclick="openTab(event, 'abdomen_logreg_DE_vs_age_vs_pos_sel')">Abdomen (reproductive)</button>
+    <button class="tablinks" onclick="openTab(event, 'ht_logreg_DE_vs_age_vs_pos_sel')">Head + Thorax (somatic)</button>
+    <button class="tablinks" onclick="openTab(event, 'no_expr_logreg_age_vs_pos_sel')">No expression data</button>
+</div>
 
-    <p><code>pos_sel_vs_gene_age_LR_wald_test_pos_sel_C_chinensis.txt</code></p>
+<div id="abdomen_logreg_DE_vs_age_vs_pos_sel" class="tabcontent">
+
+    <p><code>pos_sel_vs_gene_age_LR_wald_test_with_sex_bias_C_chinensis_abdomen.txt</code></p>
     <iframe
-        src="data/stats_summary_files/pos_sel_vs_gene_age_LR_wald_test_pos_sel_C_chinensis.txt"
+        src="data/stats_summary_files/pos_sel_vs_gene_age_LR_wald_test_with_sex_bias_C_chinensis_abdomen.txt"
         frameBorder="0"
         class=""
         scrolling="auto"
         style="width:100%; height:30vh;">
     </iframe>
+</div>
 
-</details>
+<div id="ht_logreg_DE_vs_age_vs_pos_sel" class="tabcontent">
+    
+    <p><code>pos_sel_vs_gene_age_LR_wald_test_with_sex_bias_C_chinensis_head_thorax.txt</code></p>
+    <iframe
+    src="data/stats_summary_files/pos_sel_vs_gene_age_LR_wald_test_with_sex_bias_C_chinensis_head_thorax.txt"
+        frameBorder="0"
+        class=""
+        scrolling="auto"
+        style="width:100%; height:30vh;">
+    </iframe>
+</div>
+
+<div id="no_expr_logreg_age_vs_pos_sel" class="tabcontent">
+
+    <p><code>pos_sel_vs_gene_age_LR_wald_test_with_sex_bias_C_chinensis_no_expression_data.txt</code></p>
+    <iframe
+        src="data/stats_summary_files/pos_sel_vs_gene_age_LR_wald_test_with_sex_bias_C_chinensis_no_expression_data.txt"
+        frameBorder="0"
+        class=""
+        scrolling="auto"
+        style="width:100%; height:30vh;">
+    </iframe>
+</div>
 
 </body>

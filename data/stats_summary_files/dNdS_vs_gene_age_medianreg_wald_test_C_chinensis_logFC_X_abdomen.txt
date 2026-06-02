@@ -1,15 +1,17 @@
 
 ////////////////// C_chinensis //////////////////
-
 ----- X -----> abdomen
+
+
+Formula:	 C_chinensis_dNdS ~  C(SB_abdomen) * C(level_most_dist_ortholog)
 
                          QuantReg Regression Results                          
 ==============================================================================
 Dep. Variable:       C_chinensis_dNdS   Pseudo R-squared:              0.05657
 Model:                       QuantReg   Bandwidth:                     0.04923
 Method:                 Least Squares   Sparsity:                       0.1654
-Date:                Mon, 01 Jun 2026   No. Observations:                  324
-Time:                        16:55:34   Df Residuals:                      312
+Date:                Tue, 02 Jun 2026   No. Observations:                  324
+Time:                        11:10:53   Df Residuals:                      312
                                         Df Model:                           11
 ==============================================================================================================================
                                                                  coef    std err          t      P>|t|      [0.025      0.975]
@@ -33,10 +35,13 @@ C(SB_abdomen)[T.unbiased]:C(level_most_dist_ortholog)[T.5]     0.0509      0.020
 
 The smallest eigenvalue is -3.82e-16. This might indicate that there are
 strong multicollinearity problems or that the design matrix is singular.
-wald test for C(SB_abdomen)[T.male]:C(level_most_dist_ortholog)[T.2] = 0,
-                            C(SB_abdomen)[T.male]:C(level_most_dist_ortholog)[T.3] = 0,
-                            C(SB_abdomen)[T.male]:C(level_most_dist_ortholog)[T.4] = 0,
-                            C(SB_abdomen)[T.male]:C(level_most_dist_ortholog)[T.5] = 0, C(SB_abdomen)[T.unbiased]:C(level_most_dist_ortholog)[T.2] = 0,
-                            C(SB_abdomen)[T.unbiased]:C(level_most_dist_ortholog)[T.3] = 0,
-                            C(SB_abdomen)[T.unbiased]:C(level_most_dist_ortholog)[T.4] = 0,
-                            C(SB_abdomen)[T.unbiased]:C(level_most_dist_ortholog)[T.5] = 0 interaction: <F test: F=3.598434494685913, p=0.0005142322755108191, df_denom=312, df_num=8>
+Do Wald test for interaction(s): 
+    C(SB_abdomen)[T.male]:C(level_most_dist_ortholog)[T.2] = 0,
+    C(SB_abdomen)[T.male]:C(level_most_dist_ortholog)[T.3] = 0,
+    C(SB_abdomen)[T.male]:C(level_most_dist_ortholog)[T.4] = 0,
+    C(SB_abdomen)[T.male]:C(level_most_dist_ortholog)[T.5] = 0, 
+    C(SB_abdomen)[T.unbiased]:C(level_most_dist_ortholog)[T.2] = 0,
+    C(SB_abdomen)[T.unbiased]:C(level_most_dist_ortholog)[T.3] = 0,
+    C(SB_abdomen)[T.unbiased]:C(level_most_dist_ortholog)[T.4] = 0,
+    C(SB_abdomen)[T.unbiased]:C(level_most_dist_ortholog)[T.5] = 0
+Wald test results: <F test: F=3.598434494685913, p=0.0005142322755108191, df_denom=312, df_num=8>
