@@ -888,5 +888,53 @@ We will use TopGo to perform GO-enrichment on the positively selected genes. I r
     </script>
 </div>
 
+<h3>positively selected vs. not comparison</h3>
+
+<p>
+    These comparisons are always between genes under positive selection vs. genes that are not, and the data is either subset to only-X, only-A or not subset (the whole genome).
+</p>
+
+<div class="tab">
+    <button class="tablinks" onclick="openTab(event, 'X_GO_sig')">X-exclusive</button>
+    <button class="tablinks" onclick="openTab(event, 'A_GO_sig')">A-exclusive</button>
+    <button class="tablinks" onclick="openTab(event, 'all_GO_sig')">Whole genome</button>
+</div>
+
+<div id="X_GO_sig" class="tabcontent">
+
+    <p>
+        <code>data/GO_enrichment/X_C_chinensis_enriched_GOs.csv</code>. 
+    </p>
+
+    <div id="X_GO_sig_table" style="height:30vh; overflow:auto; border:1px solid #909bb5;"></div>
+    <script>
+        loadCSVTable("data/GO_enrichment/X_C_chinensis_enriched_GOs.csv", "X_GO_sig_table");
+    </script>
+        
+</div>
+
+<div id="A_GO_sig" class="tabcontent">
+    
+    <p>
+        <code>data/GO_enrichment/A_C_chinensis_enriched_GOs.csv</code>. dosage compensation is enriched here!
+    </p>
+ 
+    <div id="A_GO_sig_table" style="height:30vh; overflow:auto; border:1px solid #909bb5;"></div>
+    <script>
+        loadCSVTable("data/GO_enrichment/A_C_chinensis_enriched_GOs.csv", "A_GO_sig_table");
+    </script>
+</div>
+
+<div id="all_GO_sig" class="tabcontent">
+    
+    <p>
+        <code>data/GO_enrichment/allsig_enriched_GOs.csv</code>. dosage compensation is enriched here!
+    </p>
+ 
+    <div id="all_GO_sig_table" style="height:30vh; overflow:auto; border:1px solid #909bb5;"></div>
+    <script>
+        loadCSVTable("data/GO_enrichment/allsig_enriched_GOs.csv", "all_GO_sig_table");
+    </script>
+</div>
 
 </body>
