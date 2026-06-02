@@ -1,5 +1,28 @@
 ////////////////// C_chinensis //////////////////
 
+------------> NO AGE RANK: abdomen
+Formula: positive_selection ~  C(SB_abdomen)  * C(chromosome)
+                           Logit Regression Results                           
+==============================================================================
+Dep. Variable:     positive_selection   No. Observations:                 9092
+Model:                          Logit   Df Residuals:                     9086
+Method:                           MLE   Df Model:                            5
+Date:                Tue, 02 Jun 2026   Pseudo R-squ.:                0.003438
+Time:                        13:12:56   Log-Likelihood:                -3779.9
+converged:                       True   LL-Null:                       -3793.0
+Covariance Type:            nonrobust   LLR p-value:                 8.595e-05
+================================================================================================================
+                                                   coef    std err          z      P>|z|      [0.025      0.975]
+----------------------------------------------------------------------------------------------------------------
+Intercept                                       -1.7425      0.063    -27.748      0.000      -1.866      -1.619
+C(SB_abdomen)[T.male]                            0.0763      0.086      0.884      0.377      -0.093       0.245
+C(SB_abdomen)[T.unbiased]                       -0.1182      0.076     -1.552      0.121      -0.267       0.031
+C(chromosome)[T.X]                               0.0842      0.321      0.262      0.793      -0.545       0.714
+C(SB_abdomen)[T.male]:C(chromosome)[T.X]         0.5321      0.451      1.181      0.238      -0.351       1.415
+C(SB_abdomen)[T.unbiased]:C(chromosome)[T.X]     0.6572      0.364      1.804      0.071      -0.057       1.371
+================================================================================================================
+
+run model with age rank to see difference
 ------------> abdomen
 Formula: positive_selection ~  C(SB_abdomen)  * C(chromosome) * C(level_most_dist_ortholog)
                            Logit Regression Results                           
@@ -8,7 +31,7 @@ Dep. Variable:     positive_selection   No. Observations:                 9092
 Model:                          Logit   Df Residuals:                     9065
 Method:                           MLE   Df Model:                           26
 Date:                Tue, 02 Jun 2026   Pseudo R-squ.:                 0.01063
-Time:                        11:48:16   Log-Likelihood:                -3752.6
+Time:                        13:12:56   Log-Likelihood:                -3752.6
 converged:                      False   LL-Null:                       -3793.0
 Covariance Type:            nonrobust   LLR p-value:                 1.670e-07
 =================================================================================================================================================
@@ -45,26 +68,3 @@ C(SB_abdomen)[T.unbiased]:C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.4]   
 C(SB_abdomen)[T.male]:C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.5]        13.7194   6.69e+06   2.05e-06      1.000   -1.31e+07    1.31e+07
 C(SB_abdomen)[T.unbiased]:C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.5]     7.9119        nan        nan        nan         nan         nan
 =================================================================================================================================================
-
-run model without age rank to see difference
-------------> NO AGE RANK: abdomen
-Formula: positive_selection ~  C(SB_abdomen)  * C(chromosome)
-                           Logit Regression Results                           
-==============================================================================
-Dep. Variable:     positive_selection   No. Observations:                 9092
-Model:                          Logit   Df Residuals:                     9086
-Method:                           MLE   Df Model:                            5
-Date:                Tue, 02 Jun 2026   Pseudo R-squ.:                0.003438
-Time:                        11:48:16   Log-Likelihood:                -3779.9
-converged:                       True   LL-Null:                       -3793.0
-Covariance Type:            nonrobust   LLR p-value:                 8.595e-05
-================================================================================================================
-                                                   coef    std err          z      P>|z|      [0.025      0.975]
-----------------------------------------------------------------------------------------------------------------
-Intercept                                       -1.7425      0.063    -27.748      0.000      -1.866      -1.619
-C(SB_abdomen)[T.male]                            0.0763      0.086      0.884      0.377      -0.093       0.245
-C(SB_abdomen)[T.unbiased]                       -0.1182      0.076     -1.552      0.121      -0.267       0.031
-C(chromosome)[T.X]                               0.0842      0.321      0.262      0.793      -0.545       0.714
-C(SB_abdomen)[T.male]:C(chromosome)[T.X]         0.5321      0.451      1.181      0.238      -0.351       1.415
-C(SB_abdomen)[T.unbiased]:C(chromosome)[T.X]     0.6572      0.364      1.804      0.071      -0.057       1.371
-================================================================================================================

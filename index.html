@@ -364,15 +364,13 @@ I also re-did all the plots, but the results stay the same, only the numbers and
 <h4>Combine dN/dS and positive selection</h4>
 
 <p>
-    This is the plot that combines dNdS and positive selection that appears in the main text of the paper
+    This is the plot that combines dNdS and positive selection that appears in the main text of the paper. 
+    The sample sizes here don't match between the dNdS violins and the pos. sel. bars anymore, I think because the new codeml mode has more occasions where the output doesn't converge 
+    or something? 
 </p>
 
 <details>
     <summary>Toggle down for plots</summary>
-    
-    <p>
-        The sample sizes here don't match between the dNdS violins and the pos. sel. bars anymore.
-    </p>
     
     <p float="left">
         <img loading="lazy" src="data/fastX_ortholog_ident/pos_sel_dNdS_summary_plot_bruchini.png" width="50%" />
@@ -765,6 +763,7 @@ I also re-did all the plots, but the results stay the same, only the numbers and
 
 <p>
     This is a logistic regression since the response variable is a binary category, therefore for maths reasons I don't remember right now you can't do a wald test on that.
+    Since we tested the impact of age rank on positively selected genes and found no significant effect, we run a model without the age rank (but scroll down to see full model with age rank).
 </p>
 
 <div class="tab">
@@ -775,6 +774,9 @@ I also re-did all the plots, but the results stay the same, only the numbers and
 
 <div id="abdomen_logreg_DE_vs_age_vs_pos_sel" class="tabcontent">
 
+    <p>
+        Only the intercept is significant, but no other differences between categories.
+    </p>
     <p><code>pos_sel_vs_gene_age_LR_wald_test_with_sex_bias_C_chinensis_abdomen.txt</code></p>
     <iframe
         src="data/stats_summary_files/pos_sel_vs_gene_age_LR_wald_test_with_sex_bias_C_chinensis_abdomen.txt"
@@ -787,6 +789,9 @@ I also re-did all the plots, but the results stay the same, only the numbers and
 
 <div id="ht_logreg_DE_vs_age_vs_pos_sel" class="tabcontent">
     
+    <p>
+        The intercept is significant as well as <code>C(SB_head_thorax)[T.unbiased]</code>, no sig. differences for anything else.
+    </p>
     <p><code>pos_sel_vs_gene_age_LR_wald_test_with_sex_bias_C_chinensis_head_thorax.txt</code></p>
     <iframe
     src="data/stats_summary_files/pos_sel_vs_gene_age_LR_wald_test_with_sex_bias_C_chinensis_head_thorax.txt"
@@ -798,6 +803,11 @@ I also re-did all the plots, but the results stay the same, only the numbers and
 </div>
 
 <div id="no_expr_logreg_age_vs_pos_sel" class="tabcontent">
+
+    <p>
+        This confirms previous results that the age rank makes no impact. The intercept is significant, which is rank 1 A. The X chromosome only becomes significant when the age rank
+        is excluded (scroll down)
+    </p>
 
     <p><code>pos_sel_vs_gene_age_LR_wald_test_with_sex_bias_C_chinensis_no_expression_data.txt</code></p>
     <iframe
