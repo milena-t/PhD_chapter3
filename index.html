@@ -110,25 +110,31 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 </script>
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 <script>
-function loadCSVTable(csvPath, elementId) {
-    fetch(csvPath)
-    .then(response => response.text())
-    .then(csv => {
-        const rows = csv.trim().split("\n").map(r => r.split(","));
-        let html = "<table border='1' style='width:100%; border-collapse:collapse;'>";
-
-        rows.forEach(row => {
-        html += "<tr>";
-        row.forEach(cell => html += `<td>${cell}</td>`);
-        html += "</tr>";
-        });
-
-        html += "</table>";
-        document.getElementById(elementId).innerHTML = html;
-    });
-}
+    function loadCSVTable(csvPath, elementId) {
+      Papa.parse(csvPath, {
+        download: true,
+        header: false,
+        complete: function(results) {
+          const rows = results.data;
+          let html = "<table style='width:100%; border-collapse:collapse;'>";
+    
+          rows.forEach(row => {
+            html += "<tr>";
+            row.forEach(cell => {
+              html += `<td style="border:1px solid #ccc; padding:4px;">${cell}</td>`;
+            });
+            html += "</tr>";
+          });
+    
+          html += "</table>";
+          document.getElementById(elementId).innerHTML = html;
+        }
+      });
+    }
 </script>
+    
     
 
 </head>
@@ -863,7 +869,11 @@ We will use TopGo to perform GO-enrichment on the positively selected genes. I r
         <code>data/GO_enrichment/all_AX_enriched_GOs.csv</code>. 
     </p>
 
-    <div id="AX_all_table"></div>
+    <div id="AX_all_table"
+        frameBorder="0"
+        class=""
+        scrolling="auto"
+        style="width:100%; height:30vh;"></div>
     <script>
         loadCSVTable("data/GO_enrichment/all_AX_enriched_GOs.csv", "AX_all_table");
     </script>
@@ -876,7 +886,11 @@ We will use TopGo to perform GO-enrichment on the positively selected genes. I r
         <code>data/GO_enrichment/sig_AX_enriched_GOs.csv</code>. dosage compensation is enriched here!
     </p>
  
-    <div id="AX_sig_table"></div>
+    <div id="AX_sig_table"
+        frameBorder="0"
+        class=""
+        scrolling="auto"
+        style="width:100%; height:30vh;"></div>
     <script>
         loadCSVTable("data/GO_enrichment/sig_AX_enriched_GOs.csv", "AX_sig_table");
     </script>
