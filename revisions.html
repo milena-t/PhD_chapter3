@@ -207,18 +207,24 @@ This doesn't need re-analysis but maybe some changes in the text to clarify.
 
 <p>
     A good description of paml useage is in the methods of <a href="https://doi.org/10.3390/genes9050234">Krasovec <i>et al.</i></a> (2018), but since they do multi-species comparison they use a 
-    clustering approach to identify the 1-to-1 orthologs.
+    clustering approach to identify the 1-to-1 orthologs. I will group 1-to-1 orthologs present in all <i>Bruchini</i> species to compare the results there.
 </p>
 
 <ol>
-    <li>identify phylogeny-wide 1-to-1 orthologs and associate with ortholog pairs</li>
-    <li>run the site model for the phylogeny-wide pairs</li>
+    <li>identify <i>Bruchini</i>-wide 1-to-1 orthologs and associate with ortholog pairs
+    <ul>
+        <li>I use <code>src/blast_BRH/make_groups_for_revision.py</code> to make the groups for bruchini</li>
+        <li>5066 out of 12216 A. obtectus orthologs do not fulfill the requirements for 1-to-1 in all species, (47 were skipped because they were not exclusive to X or A in all species)</li>
+        <li>7254 1-to-1 orthologs with all 4 species detected (<span style="color:#BD351E">the skipped and included sum up to 12320, not 12216, and I can't figure out why</span>)</li>
+        <li>6958 Autosomal, 296 X-linked orthologs</li>
+    </ul></li>
+    <li>run the site model for the <i>Bruchini</i>-wide pairs</li>
     <li>associate the new positive selection results with the original pairwise results</li>
     <li><i>optional</i>: correlate the mean ω<sub>0</sub> values of all the original pairs with the single ω<sub>0</sub> values of the phylogeny-wide orthologs</li>
 </ol>
 
 <p>    
-    This is not as certain. I am unsure if it is even accurate to compare the orthologs in this way, and if it's really a dealbraker if 
+    This is not as certain. I am unsure if it is even accurate to compare the results between pairwise and multi-species orthologs in this way, and if it's really a dealbraker if 
     the results are inaccurate. If i use the site-model for only the most conserved orthologs, I would have to re-do the 
     ortholog inference probably with the clustering approach from <a href="https://doi.org/10.3390/genes9050234">Krasovec <i>et al.</i></a>
     instead of the blast BRH method. 
