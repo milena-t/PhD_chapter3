@@ -86,10 +86,10 @@ The individual steps consist of:
     site_or_branch.add_argument('--branch_model', action='store_true', help="run codeml branch-model with model=1 and runmode=1 (suitable for pairwise and multi-species comparisons)")
     site_or_branch.add_argument('--site_model_LRT', action='store_true', help="run codeml site-model with M1a and M2a, do LRT and extract site-classes table")
 
-    paml_bin = parser.add_mutually_exclusive_group(required=False)
-    paml_bin.add_argument('--codemlbin', type=str, help="path to the codeml executeable")
-    paml_bin.add_argument('--yn00bin', type=str, help="path to the yn00 executeable")
-    paml_bin.add_argument('--codeml_config_path', type=str, help="if any paml executeables can be called from PATH, give here the location of the codeml.ctl file")
+    # paml_bin = parser.add_mutually_exclusive_group(required=False)
+    parser.add_argument('--codemlbin', type=str, help="path to the codeml executeable")
+    parser.add_argument('--yn00bin', type=str, help="path to the yn00 executeable")
+    parser.add_argument('--codeml_config_path', type=str, help="if any paml executeables can be called from PATH, give here the location of the codeml.ctl file")
 
     parser.add_argument('--verbose', action='store_true', help="enable verbose mode")
     parser.add_argument('--overwrite', action='store_true', help="overwrite existing output files with default names from previous runs")
@@ -155,13 +155,14 @@ def truncate_leaf_names(newick_tree):
     the treefile also needs to be a tree structure file (see page 15 of the paml documentation)
     """
     # Regular expression to match leaf names
-    pattern = re.compile(r'([a-zA-Z_@0-9.>-]+):')
+    # pattern = re.compile(r'([a-zA-Z_@0-9.>-]+):')
+    pattern = re.compile(r'([A-Za-z_][A-Za-z0-9._-]*):[0-9]')
     
     def truncate_match(match):
         leaf_name = match.group(1)
         leaf_name = leaf_name.replace(">", "") # remove the ">" that is included in the leaf name, because the parser for the alignment also removes ">" in the fasta format before the ID. otherwise they don't match, because the tree ID is read as ">seq_id" and the alignment id is read as "seq_id"
         # leaf_name = split_at_second_occurrence(leaf_name) # split the first iteration of the species name that orthofiner adds (i think? no idea where else it would come from) to be sure that everything matches
-        truncated_name = f"{leaf_name[:9]}"
+        truncated_name = f"{leaf_name[:10]}"
         print(f"{leaf_name} --> {truncated_name}")
         return truncated_name + ':'
     

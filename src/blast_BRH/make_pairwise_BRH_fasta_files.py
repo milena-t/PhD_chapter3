@@ -218,22 +218,13 @@ def make_bruchini_ortholog_fasta_files(brh_path, nucleotides_dict, species_list,
     print(f"\nmaking nucleotide fasta files for {chr_type}-linked orthologs")
     nucleotides_seqs_dict = {}
     print(f"reading nucleotide files...")
-    for species in brh_tables.keys():
-        species_partners = list(brh_tables[species].keys())
+    for species in species_list:
         # make dict from the nucleotide files
         if species not in nucleotides_seqs_dict.keys():
             nucleotides_seqs_dict[species] = {}
             for cds_record in SeqIO.parse(nucleotides_dict[species], "fasta"):
-                nucleotides_seqs_dict[species][cds_record.id] = cds_record                
-            # print(f"> {species} ({nucleotides_dict[species]}, {len(nucleotides_seqs_dict[species])} transcripts)")
-        
-        for species_partner in species_partners:
-            if species_partner not in nucleotides_seqs_dict.keys():
-                nucleotides_seqs_dict[species_partner] = {}
-                for cds_record in SeqIO.parse(nucleotides_dict[species_partner], "fasta"):
-                    nucleotides_seqs_dict[species_partner][cds_record.id] = cds_record
-            # print(f"> {species_partner} ({nucleotides_dict[species_partner]}, {len(nucleotides_seqs_dict[species_partner])} transcripts)")
-    
+                nucleotides_seqs_dict[species][cds_record.id] = cds_record
+
 
     brh_table = pd.read_csv(brh_path, sep=",")
     brh_filtered = brh_table[brh_table["chromosome"] == chr_type]
@@ -246,24 +237,24 @@ def make_bruchini_ortholog_fasta_files(brh_path, nucleotides_dict, species_list,
     not_found_partners_dict = {species : 0 for species in species_list}
     num_species = len(species_list)
     count_pairs = 0
-    for brh_set in brh_filtered.iterrows():
+    for i,brh_set in tqdm(brh_filtered.iterrows()):
         # print(f"ID1 = {brh_pair[1]}, ID2 = {brh_pair[3]}")
         brh_seq_records = []
+
         for species in species_list:
-            ## TODO right indexing of species transcript IDs in loop over df row
-            print(brh_set)
-            print(brh_set[species,])
             try:
                 record1 = nucleotides_seqs_dict[species][brh_set[species]]
+                record1.id=f"{brh_set[species]}_{species}_{chr_type}"
+                brh_seq_records.append(record1)
             except:
                 not_found_partners_dict[species]+=1
+                print(brh_set)
                 try:
                     transcripts_fasta = nucleotides_dict[species]
                 except:
                     raise RuntimeError(f"{species} does not have a transcripts file in 'nucleotides_dict'.")
                 # raise RuntimeError(f"{brh_pair[1]} not found in {transcripts_fasta}")
-            record1.id=f">{brh_set[species]}_{species}_{chr_type}"
-            brh_seq_records.append(record1)
+            
             id = brh_set["orthogroup_ID"]
         if len(brh_seq_records)==num_species:
             fasta_name = f"{pair_dirname}Bruchini_{chr_type}-linked_ortholog_{id}.fasta"

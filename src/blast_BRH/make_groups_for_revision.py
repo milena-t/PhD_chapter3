@@ -177,13 +177,15 @@ Something is wrong when making the dictionaries
         one_to_ones[OG_id] = OrthoGroup(groupID=OG_id,species_dict=onetoone_orthologs_dict, chromosome=focal_chr)
         OG_id+=1
 
-    skipped_list_len = len(list(set(skipped_focal_geneID_list)))
+    skipped_focal_geneID_list = list(set(skipped_focal_geneID_list))
+    intersection = list(set(skipped_focal_geneID_list) & set(one_to_ones))
+    skipped_list_len = len(skipped_focal_geneID_list)
     sum_OGs = len(one_to_ones) + skipped_list_len
     print(f"""
 {skipped_list_len} out of {all_OGs} A. obtectus orthologs do not fulfill the requirements for 1-to-1 in all species.
 ({wrong_chr} were skipped because they were not exclusive to X or A in all species)
 {len(one_to_ones)} 1-to-1 orthologs with all {len(species_list)} species detected
-{len(one_to_ones)} + {skipped_list_len } = {sum_OGs} (should be {all_OGs}, difference is {sum_OGs - all_OGs})
+{len(one_to_ones)} + {skipped_list_len } = {sum_OGs} (should be {all_OGs}, difference is {sum_OGs - all_OGs}), length of intersection: {len(intersection)})
 """)
 
     with open(outfile, "w") as output_file:
