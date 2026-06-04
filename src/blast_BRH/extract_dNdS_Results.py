@@ -274,7 +274,26 @@ def get_site_classes(results_dir, outfile_name = ""):
 
         print(f"outfile saved to: {outfile_name}\nin {results_dir}")
 
+
+
+
+def get_site_classes_multi_species_comparison(results_dir, outfile_name = ""):
+    """
+    Extracts either only dNdS values as a list, or corresponding dS values of the same ortholog as well, in a list of the same order
+    """
+
+    with open(outfile_name, "w") as outfile:
+        site_model_dirs = [f"{results_dir}/{d}" for d in os.listdir(results_dir) if os.path.isdir(f"{results_dir}/{d}")]
+        subdirectories_site_classes = [f"{d}/codeml_M1a_site_class_table.out" if os.path.exists(f"{d}/codeml_M1a_site_class_table.out") else f"{d}/codeml_M2a_site_class_table.out" for d in site_model_dirs]
+        site_classes = [f"{f} : {extract_site_classes(f)}" for f in subdirectories_site_classes]
+        
+        pair_list = "\n".join([str(res) for res in site_classes])
+        outfile.write(f"{pair_list}\n") ## !! do not forget fucking tailing newline !!
+
+    print(f"outfile saved to: {outfile_name}")
+
 if __name__ == "__main__":
+    username="miltr339"
     
     if False:
         chr_types = ["X","A"]
@@ -292,7 +311,7 @@ if __name__ == "__main__":
     #     [f"{dirpath}{d}/2NG.dNdS" for d in os.listdir(results_path)]
 
     if True:
-
+        ## REVISIONS
         if False:
             ## Tests
             results_def_dNdS = f"/proj/coleoptera-genomics-2025/snic2021-6-30/Milena/chapter3/revision/dNdS_testing/test_res_default_A/"
@@ -300,13 +319,20 @@ if __name__ == "__main__":
             results_pw_dNdS = f"/proj/coleoptera-genomics-2025/snic2021-6-30/Milena/chapter3/revision/dNdS_testing/test_res_pairwise_A/"
             get_dNdS_values_by_ortholog(results_pw_dNdS, outfile_name= f"dNdS_by_ortholog_pairwise_revisions.txt", file_prefix="2ML", nested_pair_dirs=False)
         
-        if True:
+        if False:
+            # dNdS
             chr_types = ["X","A"]
-
             for chr_type in chr_types:
                 results_path_dNdS = f"/proj/coleoptera-genomics-2025/snic2021-6-30/Milena/chapter3/dNdS_calculations/brh_results_{chr_type}_branch_model/"
                 print(f"\n//////////////////// {chr_type} ////////////////////\n")
                 get_dNdS_values_by_ortholog(results_path_dNdS, outfile_name= f"dNdS_by_{chr_type}_ortholog_pairwise_revisions.txt", file_prefix="2ML")
+        if True:
+            ## site-model
+            chr_types = ["X","A"]
+            for chr_type in chr_types:
+                results_path_LRT = f"/Users/{username}/work/pairwise_blast_chapter_2_3/brh_tables/bruchini_seqs_revision_{chr_type}/results_site_model_{chr_type}"
+                print(f"\n//////////////////// {chr_type} ////////////////////\n")
+                get_site_classes_multi_species_comparison(results_path_LRT, outfile_name= f"site_classes_summary_{chr_type}-linked.txt")
 
 # interactive -A uppmax2026-1-8 -t 5:00:00
 # module load Biopython/1.86-gfbf-2025b
