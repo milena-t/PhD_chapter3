@@ -219,8 +219,18 @@ This doesn't need re-analysis but maybe some changes in the text to clarify.
         <li>6958 Autosomal, 296 X-linked orthologs</li>
     </ul></li>
     <li>Make multifasta files for each ortholog with <code>src/blast_BRH/make_pairwise_BRH_fasta_files.py</code></li>
-    <li>run the site model for the <i>Bruchini</i>-wide pairs</li>
-    <li>associate the new positive selection results with the original pairwise results</li>
+    <li>run the site model for the <i>Bruchini</i>-wide pairs
+    <ul>
+        <li>I got impatient and ran over the group meeting and fika, so I have 2061 samples. but just for revisions this should still prove my point</li>
+    </ul></li>
+    <li>compare the new positive selection results with the original pairwise results and see if X is enriched for positively selected genes
+      <span style="color:#BD351E">
+          <ul>
+              <li><b>Autosomes:</b> 60 under pos. sel, 1881 not -> 60/1881 = 0.032</li>
+              <li><b>X-chromosome:</b> 6 under pos. sel, 268 not -> 6/268 = 0.022</li>
+          </ul>
+      </span>
+    </li>
     <li><i>optional</i>: correlate the mean ω<sub>0</sub> values of all the original pairs with the single ω<sub>0</sub> values of the phylogeny-wide orthologs</li>
 </ol>
 
