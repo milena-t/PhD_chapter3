@@ -139,7 +139,7 @@ def bootstrap_pos_sel(X_data:dict, A_data:dict, num_permutations=1000):
         print(f" * mean(pos_sel_A)-mean(pos_sel_X) --> \t{mean_diff:.5f}, mean bootstrap diff = {mean_boot:.5f} with CI [{lower_CI:.5f},{upper_CI:.5f}] --> (nonsignificant)")
 
 
-def make_4way_bin_dict(four_way_orthologs_IDs:str, four_way_pos_sel:str, species_list:list):
+def make_4way_bin_tuples(four_way_orthologs_IDs:str, four_way_pos_sel:str, species_list:list):
     """
     make dict for every geneID in the four-way orthologs that assigns positive selection, separated by species
     returns { species : {geneID:True, geneID:False, ...}, ...} with True and False showing positive selection
@@ -154,7 +154,8 @@ def make_4way_bin_dict(four_way_orthologs_IDs:str, four_way_pos_sel:str, species
             pos_sel_IDs_dict[OG_id] = sel_bin_dir[paml_outfile]
 
     # get dict with pos sel IDs
-    pos_sel_genes = {species : {} for species in species_list}
+    pos_sel_genes_sp_split = {species : {} for species in species_list}
+    pos_sel_genes = []
     count = 0
     with open(four_way_orthologs_IDs, "r") as orthologs_IDs_file:
         for line in orthologs_IDs_file.readlines():
@@ -164,10 +165,11 @@ def make_4way_bin_dict(four_way_orthologs_IDs:str, four_way_pos_sel:str, species
             except: 
                 count +=1
                 continue
-            pos_sel_genes["A_obtectus"][Aobt] = pos_sel
-            pos_sel_genes["B_siliquastri"][Bsil] = pos_sel
-            pos_sel_genes["C_maculatus"][Cchi] = pos_sel
-            pos_sel_genes["C_chinensis"][Cmac] = pos_sel
+            pos_sel_genes.append(([Aobt,Bsil,Cchi,Cmac],pos_sel))
+            pos_sel_genes_sp_split["A_obtectus"][Aobt] = pos_sel
+            pos_sel_genes_sp_split["B_siliquastri"][Bsil] = pos_sel
+            pos_sel_genes_sp_split["C_maculatus"][Cchi] = pos_sel
+            pos_sel_genes_sp_split["C_chinensis"][Cmac] = pos_sel
     print(f"{count} 4-way orthogroups failed the paml run or i did not run them because i was impatient")
     return pos_sel_genes
 
@@ -205,33 +207,39 @@ def make_pairwise_bin_dict(pairwise_orthologs_IDs:str, pairwise_pos_sel:str, spe
             sp2 = f"{sp[2]}_{sp[3]}"
             pair = f"{sp1}_{sp2}"
             OG_id = line.split(":")[0].split("linked_ortholog_")[-1]
+            
             try:
                 pos_sel = pos_sel_IDs_dict[pair][OG_id]
             except:
                 count +=1
             try:
                 gene_id1,gene_id2=line.split(":")[1].split(",")
+                
             except:
                 print(f"-------- {line} --------")
                 raise RuntimeError
             pos_sel_genes[pair][gene_id1] = pos_sel
             pos_sel_genes[pair][gene_id2] = pos_sel
+            if gene_id1 == "rna-AOBTE_LOCUS493" or gene_id2 == "rna-AOBTE_LOCUS493":
+                print(line, pos_sel)
     print(f"{count} pairwise orthogroups failed the paml run")
-    return pos_sel_IDs_dict
+    return pos_sel_genes
 
 
 
-def plot_pos_sel_overlap_bruchini(four_way_orthologs_IDs:str, four_way_pos_sel:str, pairwise_orthologs_IDs:str, pairwise_pos_sel:str, species_list:list):
+def plot_pos_sel_overlap_bruchini(four_way_orthologs_IDs:str, four_way_pos_sel:str, pairwise_orthologs_IDs:str, pairwise_pos_sel:str, species_list:list, pairs_list:list, filename = ""):
     """
     plot the number of pairwise positive selection for every 4-way ortholog
     """
-    four_way_pos_sel_genes = make_4way_bin_dict(four_way_orthologs_IDs=four_way_orthologs_IDs, four_way_pos_sel=four_way_pos_sel, species_list=species_list)
+    four_way_pos_sel_genes = make_4way_bin_tuples(four_way_orthologs_IDs=four_way_orthologs_IDs, four_way_pos_sel=four_way_pos_sel, species_list=species_list)
     pairwise_pos_sel_genes = make_pairwise_bin_dict(pairwise_orthologs_IDs=pairwise_orthologs_IDs, pairwise_pos_sel=pairwise_pos_sel, species_list=species_list)
 
-    print(f"FOUR-WAY ANALYSIS")
-    for species, pos_sel_dict in four_way_pos_sel_genes.items():
-        pos_sel_list = list(pos_sel_dict.values())
-        print(f"\t- {species}: {sum(pos_sel_list)} out of {len(pos_sel_list)} positively selected")
+    print(f"\nFOUR-WAY ANALYSIS")
+    count = 0
+    for geneID_list, pos_sel in four_way_pos_sel_genes:
+        if pos_sel:
+            count += 1
+    print(f"\t- {count} out of {len(four_way_pos_sel_genes)} positively selected")
 
     print(f"\nPAIRWISE ANALYSIS")
     for pair, pos_sel_dict in pairwise_pos_sel_genes.items():
@@ -240,54 +248,74 @@ def plot_pos_sel_overlap_bruchini(four_way_orthologs_IDs:str, four_way_pos_sel:s
 
 
     ### TODO something is very wrong from here down and i can't work it out
-    
-    print("\n\n")
+
+    print("\n")
+    print("""
+check for every four-way ortholog how many of the pairs are under positive selection.
+Check separately for four-way orthologs under positive selection and four-way orthologs under negative selection:
+    """)
     pairs = list(pairwise_pos_sel_genes.keys())
-    four_way_pos_stats = {species : {0:0, 1:0, 2:0, 3:0, "miss":0} for species in four_way_pos_sel_genes.keys()} # count the number of positively selected pairs when positive selection is detected in the four-way comparison
-    four_way_neg_stats = {species : {0:0, 1:0, 2:0, 3:0, "miss":0} for species in four_way_pos_sel_genes.keys()}
-    for species, four_way_pos_sel_dict in four_way_pos_sel_genes.items():
-        species_pairs = [pair for pair in pairs if species in pair]
-        print(f"{species}: {species_pairs}")
+    #print(pairwise_pos_sel_genes[pairs[0]])
+    four_way_pos_stats = {i:0 for i in range(len(pairs_list)+1)}
+    four_way_neg_stats = {i:0 for i in range(len(pairs_list)+1)}
     
+    for geneID_list, four_way_pos_sel in four_way_pos_sel_genes:
+        Aobt,Bsil,Cchi,Cmac=geneID_list
+        geneID_dict = {"C_maculatus":Cmac, "C_chinensis":Cchi, "B_siliquastri":Bsil, "A_obtectus":Aobt}
         count_pos_miss = 0
-        count_neg_miss = 0
-        for four_way_species_geneID,four_way_pos_sel in four_way_pos_sel_dict.items():
-            count_pos_pair = 0
-            count_neg_pair = 0
-            if four_way_pos_sel==False:
-                continue
-                # for pair in species_pairs:
-                #     try:
-                #         pairwise_pos_sel_genes[pair][four_way_species_geneID]
-                #     except:
-                #         count_neg_miss+=1
-                #         continue
-                #     if pairwise_pos_sel_genes[pair][four_way_species_geneID]:
-                #         count_pos_pair+=1
-
-            else:
-                for pair in species_pairs:
-                    try:
-                        pairwise_pos_sel_genes[pair][four_way_species_geneID]
-                    except:
-                        count_pos_miss+=1
-                        # print(four_way_species_geneID)
-                        continue
-                    if pairwise_pos_sel_genes[pair][four_way_species_geneID]==True:
-                        count_pos_pair+=1
-                    elif pairwise_pos_sel_genes[pair][four_way_species_geneID]==False:
-                        count_neg_pair+=1
-                    else:
-                        print(four_way_species_geneID)
-                        raise RuntimeError
-                four_way_neg_stats[species][count_neg_pair]+=1
-                four_way_pos_stats[species][count_pos_pair]+=1
-
-        four_way_pos_stats[species]["miss"] = count_pos_miss
-        four_way_neg_stats[species]["miss"] = count_neg_miss
+        count_pos_pair = 0
         
-        print(f"\t - 4-way pos. sel genes stats: {four_way_pos_stats[species]}")
-        print(f"\t - 4-way neg. sel genes stats: {four_way_neg_stats[species]}")
+        pairs_done = []
+        for species,geneID in geneID_dict.items():
+            for pair in pairs_list:
+                if species not in pair or pair in pairs_done:
+                    continue
+                
+                try:
+                    pairwise_pos_sel_genes[pair][geneID]
+                except:
+                    count_pos_miss+=1
+                    continue
+                if pairwise_pos_sel_genes[pair][geneID]==True:
+                    count_pos_pair+=1
+                pairs_done.append(pair)
+        
+        if four_way_pos_sel==False:
+            four_way_neg_stats[count_pos_pair]+=1
+        else:
+            four_way_pos_stats[count_pos_pair]+=1
+        
+
+    four_way_pos_stats_str = "\n".join([f"\t\tpositively selected in {num_pairs} of 3 pairs: {pos_sel} orthologs" for num_pairs,pos_sel in four_way_pos_stats.items() if num_pairs != "miss"])
+    four_way_neg_stats_str = "\n".join([f"\t\tpositively selected in {num_pairs} of 3 pairs: {pos_sel} orthologs" for num_pairs,pos_sel in four_way_neg_stats.items() if num_pairs != "miss"])
+    print(f"\t - 4-way pos. sel genes: \n{four_way_pos_stats_str}")
+    print(f"\t - 4-way neg. sel genes: \n{four_way_neg_stats_str}")
+
+    fig, ax = plt.subplots(1,2, figsize=(30, 15))
+    fs = 35
+    plt.rcParams.update({'font.size': fs})
+
+    ylab = f"num 4-way orthologs that have\nthis number of pos. sel. pairs"
+    xlab = f"num of pairs in each 4-way ortholog"
+    ax[0].bar(x=four_way_pos_stats.keys(), height=four_way_pos_stats.values(), color="#BD351E")
+    ax[0].set_title(f"4-way positively sel. genes", fontsize=fs)
+    ax[0].set_ylabel(ylab, fontsize = fs)
+    ax[0].set_xlabel(xlab, fontsize = fs)
+    ax[0].set_xticks(list(four_way_pos_stats.keys()))
+    ax[0].set_xticklabels(list(four_way_pos_stats.keys()))
+    ax[0].tick_params(axis='x', labelsize=fs)
+    ax[0].tick_params(axis='y', labelsize=fs)
+
+    ax[1].bar(x=four_way_neg_stats.keys(), height=four_way_neg_stats.values(), color="#BD351E")
+    ax[1].set_title(f"4-way not pos. sel. genes", fontsize=fs)
+    ax[1].set_xlabel(xlab, fontsize = fs)
+    ax[1].set_xticks(list(four_way_neg_stats.keys()))
+    ax[1].set_xticklabels(list(four_way_neg_stats.keys()))
+    ax[1].tick_params(axis='x', labelsize=fs)
+    ax[1].tick_params(axis='y', labelsize=fs)
+
+    plt.savefig(filename, dpi = 300, transparent = True)
+    print("Figure saved in the current working directory directory as: "+filename)
                 
 
 
@@ -311,7 +339,16 @@ if __name__ == "__main__":
         four_way_pos_sel=f"/Users/{username}/work/pairwise_blast_chapter_2_3/brh_tables/bruchini_all_orthologs_pos_sel_no_err.txt"
         pairwise_ortholog_IDs=f"/Users/{username}/work/pairwise_blast_chapter_2_3/brh_tables/pairwise_ortholog_IDs_association.txt"
         pairwise_pos_sel=f"/Users/{username}/work/pairwise_blast_chapter_2_3/brh_tables/pairwise_site_classes_summary.txt"
-        
+        species_list=sorted(["C_maculatus", "C_chinensis", "B_siliquastri", "A_obtectus"])
+        pairs_list = []
+        for species1 in species_list:
+            for species2 in species_list:
+                if species1==species2:
+                    continue
+                pairs_list.append(tuple(sorted([species1,species2])))
+        pairs_list = sorted([f"{sp1}_{sp2}" for sp1,sp2 in list(set(pairs_list))])
+        print(pairs_list)
         plot_pos_sel_overlap_bruchini(four_way_orthologs_IDs=four_way_ortholog_IDs, four_way_pos_sel=four_way_pos_sel, 
         pairwise_orthologs_IDs=pairwise_ortholog_IDs, pairwise_pos_sel=pairwise_pos_sel, 
-        species_list=["C_maculatus", "C_chinensis", "B_siliquastri", "A_obtectus"])
+        species_list=species_list, pairs_list=pairs_list, 
+        filename=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/revision_tests/codeml_pos_sel_ortholog_overlap.png")
