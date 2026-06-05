@@ -224,21 +224,34 @@ This doesn't need re-analysis but maybe some changes in the text to clarify.
         <li>I got impatient and ran over the group meeting and fika, so I have 2061 samples. but just for revisions this should still prove my point</li>
     </ul></li>
     <li>compare the new positive selection results with the original pairwise results and see if X is enriched for positively selected genes
-      <span style="color:#BD351E">
-          <ul>
-              <li><b>Autosomes:</b> 60 under pos. sel, 1881 not -> 60/1881 = 0.032</li>
-              <li><b>X-chromosome:</b> 6 under pos. sel, 268 not -> 6/268 = 0.022</li>
-          </ul>
-      </span>
+      <ul>
+        <span style="color:#BD351E">
+          <li><b>Autosomes:</b> 60 under pos. sel, 1881 not -> 60/1881 = 0.032</li>
+          <li><b>X-chromosome:</b> 6 under pos. sel, 268 not -> 6/268 = 0.022</li>
+          <li>At least the difference is not significant, so there is no significant enrichment either way: 
+            <p>
+              <code>mean(pos_sel_A)-mean(pos_sel_X) -> 0.00901, mean bootstrap diff = 0.00000 with CI [-0.02171,0.02171] -> (nonsignificant)</code>
+            </p></li>
+        </span>
+        <li>Generally a lower proportion of positively selected genes. Maybe I should pick a more strict p-value threshold even though 
+          I already correct for multiple testing? Or is that somehow inverse p-fishing?</li>
+        <li>I am unsure if comparing this is even accurate. If I find positive selection in a gene in the pairwise comparison of <i>C. maculatus</i> and 
+          <i>C. chinensis</i> but not in any of the others?</li>
+      </ul>
     </li>
-    <li><i>optional</i>: correlate the mean ω<sub>0</sub> values of all the original pairs with the single ω<sub>0</sub> values of the phylogeny-wide orthologs</li>
+    <span style="color:#909bb5">
+    <li>
+      <i>optional</i>: correlate the mean ω<sub>0</sub> values of all the original pairs with the single ω<sub>0</sub> values of the phylogeny-wide orthologs</li>
+    </span>
 </ol>
+
+<h4>Compare the results of the 4-way 1-to-1 orthologs with the pairwise comparisons</h4>
+
+
 
 <p>    
     This is not as certain. I am unsure if it is even accurate to compare the results between pairwise and multi-species orthologs in this way, and if it's really a dealbraker if 
-    the results are inaccurate. If i use the site-model for only the most conserved orthologs, I would have to re-do the 
-    ortholog inference probably with the clustering approach from <a href="https://doi.org/10.3390/genes9050234">Krasovec <i>et al.</i></a>
-    instead of the blast BRH method. 
+    the results are inaccurate.
 </p>
 
 <p>

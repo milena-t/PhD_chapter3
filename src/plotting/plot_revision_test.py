@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 from scipy.stats.stats import pearsonr
+from bootstrap_dNdS import permutate_dNdS,calculate_list_CI
 import numpy as np
 import pandas as pd
 
@@ -113,10 +114,44 @@ def plot_correlation(def_file, pair_file, filename = ""):
 
 
 
+def bootstrap_pos_sel(X_data:dict, A_data:dict, num_permutations=1000):
+    """
+    calcualte bootstrap confidence intervals of enrichment of pos.sel. genes on X or A.
+    Input data are two dictionaries that contain count numbers of positively selected genes and not pos. sel. genes
+    { pos_sel : int , non_pos_sel : int }
+    """
+    
+    X_vec = [1]*X_data["pos_sel"] + [0]*X_data["non_pos_sel"]
+    A_vec = [1]*A_data["pos_sel"] + [0]*A_data["non_pos_sel"]
+    X_mean = np.nanmean(X_vec)
+    A_mean = np.nanmean(A_vec)
+    mean_diff = A_mean - X_mean
+
+    print(f"X_mean prop: {X_mean:.5} ({len(X_vec)} samples)")
+    print(f"A_mean prop: {A_mean:.5} ({len(A_vec)} samples)")
+    
+    bootstraps = permutate_dNdS(dNdS_A=A_vec, dNdS_X=X_vec, num_permut=num_permutations)
+    mean_cor,std_cor,lower_CI,upper_CI = calculate_list_CI(bootstraps)
+    mean_boot = np.mean(bootstraps)
+    if mean_diff<lower_CI or mean_diff>upper_CI:
+        print(f" * mean(pos_sel_A)-mean(pos_sel_X) --> \t{mean_diff:.5f}, mean bootstrap diff = {mean_boot:.5f} with CI [{lower_CI:.5f},{upper_CI:.5f}] --> SIGNIFICANT")
+    else:
+        print(f" * mean(pos_sel_A)-mean(pos_sel_X) --> \t{mean_diff:.5f}, mean bootstrap diff = {mean_boot:.5f} with CI [{lower_CI:.5f},{upper_CI:.5f}] --> (nonsignificant)")
+
 
 if __name__ == "__main__":
 
     username = "miltr339"
     paths = in_paths(username=username)
 
-    plot_correlation(def_file=paths["default"], pair_file=paths["pairwise"], filename=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/revision_tests/codeml_dNdS_correlation.png")
+    if False:
+        # plot the correlation of codeml dN and dS values for pairwise comparisons of runmode=1 and runmode=-2
+        plot_correlation(def_file=paths["default"], pair_file=paths["pairwise"], filename=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/revision_tests/codeml_dNdS_correlation.png")
+    if False:
+        # do permutation test on the 4-way 1-to-1 orthologs in Bruchini
+        bootstrap_pos_sel(X_data={"pos_sel" : 6 , "non_pos_sel" : 268}, A_data={"pos_sel" : 60 , "non_pos_sel" : 1881}, num_permutations=10000)
+    
+    if True:
+        # Compare positively selected orthologs in the pairwise tests to if they are also positively selected in the 4-way comparison
+        # TODO
+        pass
