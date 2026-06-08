@@ -514,43 +514,51 @@ SRR3113348, SRR3113384, SRR3113350, SRR3113385, SRR3113352, SRR3113386, SRR31134
 \begin{table}[H]
     \centering
     \caption{Median regression results for the model \texttt{dNdS $\sim$ chromosome + gene age}. 
-    The intercept corresponds to autosomal genes in the youngest gene-age category (age=1).}
+    The intercept corresponds to autosomal genes in the youngest gene-age category (age=1). For \textit{B. siliquastri}, 
+    The Wald-test for the chromosome by gene age interaction is significant, therefore the full model 
+    \texttt{dNdS $\sim$ chromosome * gene age} is shown.}
     \label{SItab:conservation}
     \begin{tabular}{c |c | c|c}
-        \multicolumn{3}{c}{\textit{C. chinensis} (df=4)}\\
+        \multicolumn{3}{c}{\textit{C. chinensis} (df=5)}\\
         \hline
         Main effect & coefficient & t-statistic & p-value \\
         \hline
         \hline
-        Intercept & 0.2071 & 37.549 & 0.000\\
+        Intercept & 0.1848 & 32.392 & 0.000\\
         \hline
-        chromosome:X & -0.0063 & -1.207 & 0.228\\
+        chromosome:X & -0.0086 & -1.630 & 0.103\\
         \hline
-        gene age:2 & -0.0342 & -3.654 & 0.000\\
+        gene age:2 & -0.0204 & -2.117 & 0.034\\
         \hline
-        gene age:3 & -0.0431 & -6.830 & 0.000\\
+        gene age:3 & -0.0185 & -2.835 & 0.005\\
         \hline
-        gene age:4 & -0.0961 & -16.390 & 0.000\\
+        gene age:4 & -0.0754 & -12.430 & 0.000\\
         \hline
-        gene age:5 & -0.1447 & -25.61 & 0.000\\
+        gene age:5 & -0.1211 & -20.735 & 0.000\\
         \hline
     \end{tabular}
     \hspace{0.5cm}
     \begin{tabular}{c |c | c|c}
-        \multicolumn{3}{c}{\textit{B. siliquastri} (df=4)}\\
+        \multicolumn{3}{c}{\textit{B. siliquastri} (df=7)}\\
         \hline
         Main effect & coefficient & t-statistic & p-value \\
         \hline
         \hline
-        Intercept & 0.1754 & 43.986 & 0.000 \\
+        Intercept & 0.1499 &  39.796 & 0.000 \\
         \hline
-        chromosome:X & -0.0146 & -3.809 & 0.000 \\
+        chromosome:X & -0.0140 & -3.921 & 0.000 \\
         \hline
-        gene age:3 & -0.0284 & -6.064 & 0.000 \\
+        gene age:3 & -0.0099 & -2.242 & 0.025 \\
         \hline
-        gene age:4 & -0.0733 & -17.093 & 0.000 \\
+        gene age:4 & -0.0518 & -12.794 & 0.000 \\
         \hline
-        gene age:5 & -0.1130 & -27.57 & 0.000 \\
+        gene age:5 & -0.0877 & -22.677 & 0.000 \\
+        \hline
+        chromosome:X by gene age:3 & -0.0919 & -3.052 & 0.002 \\
+        \hline
+        chromosome:X by gene age:4 & -0.0852 & -3.204 & 0.001 \\
+        \hline
+        chromosome:X by gene age:5 & -0.0869 & -3.489 & 0.000 \\
         \hline
     \end{tabular}
     \hspace{0.5cm}
@@ -560,13 +568,13 @@ SRR3113348, SRR3113384, SRR3113350, SRR3113385, SRR3113352, SRR3113386, SRR31134
         Main effect & coefficient & t-statistic & p-value \\
         \hline
         \hline
-        Intercept & 0.1482 & 80.240 & 0.000 \\
+        Intercept & 0.1215 &  70.170 & 0.000 \\
         \hline
-        chromosome:X & -0.0124 & -3.575 & 0.000 \\
+        chromosome:X & -0.0119 & -3.676 & 0.000 \\
         \hline
-        gene age:4 & -0.0529 & -22.706 & 0.000 \\
+        gene age:4 & -0.0331 & -15.176 & 0.000 \\
         \hline
-        gene age:5 & -0.0919 & -45.06 & 0.000 \\
+        gene age:5 & -0.0656 & -34.336 & 0.000 \\
         \hline
     \end{tabular}
 \end{table}
