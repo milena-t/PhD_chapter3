@@ -17,6 +17,7 @@
 \usepackage[colorlinks=true, allcolors=blue]{hyperref}
 \usepackage{lscape} 
 \usepackage{authblk}
+\usepackage{wasysym}
 
 \renewcommand\arraystretch{1.25}
 
@@ -68,8 +69,77 @@
 
 % pdflatex -pdf supplementary_information.tex
 
-\section*{Supplementary information}
 
+\subsection*{$\Delta N_e$ between X chromosomes and autosomes}
+
+Assume 10 individuals progress to the next generation and compare two different mating systems. 
+An unbalanced sex ratio can occurr in species with high sexual selection, where males are under intense competition and only very few successfully mate.\\
+$\Delta N_e$ between X and A can differ due to the sex ratio of mating individuals.
+
+(X chromosomes shown in red, Y in blue). 
+
+\begin{minipage}{.5\textwidth}
+    \begin{center}
+    \textbf{Balanced sex ratio:} $\frac{\male}{\female} = \frac{5}{5}$
+    \end{center}
+\end{minipage}%
+\begin{minipage}{.5\textwidth}
+    \begin{center}
+    \textbf{Unbalanced sex ratio:} $\frac{\male}{\female} = \frac{1}{9}$
+    \end{center}
+\end{minipage}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\linewidth]{deltaNe.png}
+    \label{SIfig:synteny_BsilAobt}
+\end{figure}
+
+\vspace{0.25cm}
+\noindent
+Count X chromosomes and Autosomes that are passed on to the next generation (two X chromosomes for each female and one for each male, and two A for both males and females)
+\vspace{-0.25cm}
+
+\begin{minipage}{.5\textwidth}
+    \begin{center}
+    \begin{align*}
+        \female (5 \cdot 2) \: + \: \male (5 \cdot 1) \; &= \; 15 \text{X}\\
+        \female (5 \cdot 2) \: + \: \male (5 \cdot 2) \; &= \; 20 \text{A}
+    \end{align*}
+    \end{center}
+\end{minipage}%
+\begin{minipage}{.5\textwidth}
+    \begin{center}
+    \begin{align*}
+        \female (9 \cdot 2) \: + \male (1 \cdot 1) \; &= \; 19 \text{X}\\
+        \female (5 \cdot 2) \: + \male (5 \cdot 2) \; &= \; 20 \text{A}
+    \end{align*}
+    \end{center}
+\end{minipage}
+
+\vspace{0.25cm}
+\noindent
+Calculate difference in $N_e$ between X and A based on chromosome counts:
+\vspace{-0.25cm}
+
+\begin{minipage}{.5\textwidth}
+    \begin{center}
+    \begin{align*}
+        N_e \text{X} \; &= \; N_e \text{A} \cdot 0.75\\
+        \frac{4}{3} N_e \text{X} \; &= \; N_e \text{A}
+    \end{align*}
+    \end{center}
+\end{minipage}%
+\begin{minipage}{.5\textwidth}
+    \begin{center}
+    \begin{align*}
+        N_e \text{X} \; &= \; N_e \text{A} \cdot 0.95\\
+        \frac{20}{19} N_e \text{X} \; &= \; N_e \text{A}
+    \end{align*}
+    \end{center}
+\end{minipage}
+
+\newpage
 \subsection*{Genome annotation}
 
 \begin{table}[H]
