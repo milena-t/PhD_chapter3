@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-from scipy.stats.stats import pearsonr
+from scipy.stats import pearsonr
 from bootstrap_dNdS import permutate_dNdS,calculate_list_CI
 import numpy as np
 import pandas as pd
@@ -411,7 +411,7 @@ def plot_omega_association(ortholog_IDs_association, site_classes_pairsX, site_c
     orthologIDs_df = pd.read_csv(ortholog_IDs_association, quotechar='"', quoting=0)
     # make into proper list
     orthologIDs_df['pairs_OG_IDs_lists'] = orthologIDs_df['pairs_OG_IDs_lists'].apply(ast.literal_eval)
-    print(orthologIDs_df)
+    # print(orthologIDs_df)
 
     def read_site_classes(site_classes_infile:str, pair=True):
         """
@@ -455,7 +455,7 @@ def plot_omega_association(ortholog_IDs_association, site_classes_pairsX, site_c
     fourWay_w0_dict = read_site_classes(site_classes_infile=site_classes_4way, pair=False)
     
     # test reading positively selected pair
-    print(f"B_siliquastri_C_maculatus_A-linked_ortholog_7031 : {pairsA_w0_dict['B_siliquastri_C_maculatus_A-linked_ortholog_7031']}")
+    # print(f"B_siliquastri_C_maculatus_A-linked_ortholog_7031 : {pairsA_w0_dict['B_siliquastri_C_maculatus_A-linked_ortholog_7031']}")
 
     colors_dict = {
         # "A" : "#4d7298", # uniform_unfiltered blue
@@ -478,9 +478,10 @@ def plot_omega_association(ortholog_IDs_association, site_classes_pairsX, site_c
             if f"_{chr}-" in assoc_pairs_list[0]:
                 for pairID in assoc_pairs_list:
                     if pairID in pairs_w0_dict:
-                        count += 1
                         assoc_w0_list.append(pairs_w0_dict[pairID])
                 if len(assoc_w0_list)>0:
+                    count += 1 ## TODO check what is up with the A counts
+                    print(f"- Bruchini {chr}-linnked ortholog {fourWay_ID}: {fourway_w0} vs. mean({assoc_w0_list})")
                     fourway_A_data.append(fourway_w0)
                     pair_means_A_data.append(np.mean(assoc_w0_list))
 
