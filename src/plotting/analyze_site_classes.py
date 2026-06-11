@@ -376,12 +376,15 @@ if __name__ == "__main__":
     chromosome = "A"
     data_files = {"A" : ["A_dNdS", "A_LRT_BH_corr"],
                   "X" : ["X_dNdS", "X_LRT_BH_corr"]}
+    data_files_4way_only = {
+        "A" : ["A_dNdS", "A_LRT_BH_corr_4way_only"],
+        "X" : ["X_dNdS", "X_LRT_BH_corr_4way_only"]}
     summary_paths = get_summary_paths(username=username)
 
     # bruchini
     if True:
         species_excl = ["D_carinulata", "D_sublineata", "T_castaneum", "T_freemani", "C_septempunctata", "C_magnifica"]
-        filename =f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/LRT_site_model_plot_bruchini.png"
+        filename =f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/LRT_site_model_plot_bruchini_4_way_orthologs.png"
         filename_dNdS =f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/pos_sel_dNdS_summary_plot_bruchini.png"
     # coccinella
     elif True:
@@ -394,8 +397,8 @@ if __name__ == "__main__":
         filename =f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/LRT_site_model_plot_tribolium.png"
         filename_dNdS =f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/pos_sel_dNdS_summaryplot_tribolium.png"
 
-    summary_dict_A, no_dNdS_A = read_site_classes(summary_paths[data_files["A"][1]], excl_list=species_excl)
-    summary_dict_X, no_dNdS_X = read_site_classes(summary_paths[data_files["X"][1]], excl_list=species_excl)
+    summary_dict_A, no_dNdS_A = read_site_classes(summary_paths[data_files_4way_only["A"][1]], excl_list=species_excl)
+    summary_dict_X, no_dNdS_X = read_site_classes(summary_paths[data_files_4way_only["X"][1]], excl_list=species_excl)
     
 
     type_plot = "bin" # bin for binary or prop for proportion of sites
@@ -431,7 +434,7 @@ if __name__ == "__main__":
             else:
                 print(f" *  {pair} mean({type_plot}_A)-mean({type_plot}_X) --> \t{mean_num_pos_sel[pair]:.4f}, mean bootstrap diff = {mean_boot:.5f} with CI [{lower_CI:.5f},{upper_CI:.5f}] --> (nonsignificant)")
 
-        if False: 
+        if True: 
             if type_plot == "prop":
                 violin_ymax=0.2
                 binary=False

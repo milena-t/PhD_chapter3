@@ -184,7 +184,7 @@ This doesn't need re-analysis but maybe some changes in the text to clarify.
 </p>
 
 <p float="left">
-  <img loading="lazy" src="data/revision_tests/codeml_dNdS_correlation.png" width="80%" />
+  <img loading="lazy" src="data/revision_tests/codeml_dNdS_correlation.png" width="1000px" />
 </p>
 
 <p>
@@ -257,8 +257,34 @@ This doesn't need re-analysis but maybe some changes in the text to clarify.
 </p>
 
 <p float="left">
-  <img loading="lazy" src="data/revision_tests/codeml_pos_sel_ortholog_overlap.png" width="60%" />
+  <img loading="lazy" src="data/revision_tests/codeml_pos_sel_ortholog_overlap.png" width="900px" />
 </p>
+
+
+<p>
+    I am re-doing my pairwise analysis with only the orthologs that are also part of the 4-way ortholog sets in <i>Bruchini</i> but the results stay the same, still a significant
+    enrichment of positively selected genes on the X.
+</p>
+
+<details>
+    <summary>Toggle down for plot and reampling test</summary>
+    <p float="left">
+        <img loading="lazy" src="data/fastX_ortholog_ident/LRT_site_model_plot_bruchini_4_way_orthologs.png" width="800px" />
+    </p>
+
+    <p>Everything stays the same just the sample sizes get smaller.</p>
+
+    <pre>
+        <code>
+    A_obtectus    vs. B_siliquastri     median(bin_A)-median(bin_X) -->  -0.0549, mean bootstrap diff =  0.00012 with CI [-0.02964,0.02989] --> SIGNIFICANT
+    A_obtectus    vs. C_chinensis       median(bin_A)-median(bin_X) -->  -0.0339, mean bootstrap diff = -0.00000 with CI [-0.02765,0.02765] --> SIGNIFICANT
+    A_obtectus    vs. C_maculatus       median(bin_A)-median(bin_X) -->  -0.0357, mean bootstrap diff =  0.00015 with CI [-0.02352,0.02382] --> SIGNIFICANT
+    B_siliquastri vs. C_chinensis       median(bin_A)-median(bin_X) -->  -0.0575, mean bootstrap diff = -0.00005 with CI [-0.03679,0.03669] --> SIGNIFICANT
+    B_siliquastri vs. C_maculatus       median(bin_A)-median(bin_X) -->  -0.0445, mean bootstrap diff = -0.00039 with CI [-0.03154,0.03076] --> SIGNIFICANT
+    C_chinensis   vs. C_maculatus       median(bin_A)-median(bin_X) -->  -0.0718, mean bootstrap diff = -0.00044 with CI [-0.04355,0.04266] --> SIGNIFICANT</code>
+    </pre>
+
+</details>
 
 <p>
     I might also try the branch-site model, where i specify a foreground branch to compare to the new pairwise ortholog. 
@@ -266,4 +292,7 @@ This doesn't need re-analysis but maybe some changes in the text to clarify.
     like i would have to, but instead have a prior hypothesis of one or a few to try that are biologically interesting. 
 </p>
 
+
+
 </body>
+</html>
