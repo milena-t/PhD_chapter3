@@ -4,6 +4,7 @@ from bootstrap_dNdS import permutate_dNdS,calculate_list_CI
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
+import analyze_site_classes
 
 def in_paths(username="miltr339"):
     files_dir=f"/Users/{username}/work/chapter3/revision_tests"
@@ -373,6 +374,44 @@ def filt_site_classes(filt_lookup_table_file, site_classes_table):
     print(f"outfile written to :\n{site_classes_table_filt}")
 
 
+def make_orthologs_association_file(four_way_lookup_table, pairs_lookup_table, outfile):
+    # associate ortholog groups from lookup table
+        #read 4-way lookup table
+    four_way_df = pd.read_csv(four_way_lookup_table)
+    four_way_df["four_way_OG_ID"] = four_way_df["orthogroup_ID"]
+    four_way_df = four_way_df.set_index("orthogroup_ID")
+    four_way_df["pairs_OG_IDs_lists"] = [ [] for i in range(len(four_way_df))]
+    print(four_way_df)
+    
+    pairs_df = pd.read_csv(pairs_lookup_table, sep=":|,", names=["pair_ortholog_ID", "species1_gID", "species2_gID"])
+    pairs_df = pairs_df.set_index("pair_ortholog_ID")
+    print(pairs_df)
+
+    for pair_ortholog, (species1_gID, species2_gID) in tqdm(pairs_df.iterrows()):
+        sp_list = pair_ortholog.split("_")
+        sp1 = f"{sp_list[0]}_{sp_list[1]}"
+        sp2 = f"{sp_list[2]}_{sp_list[3]}"
+
+        # get_orthogroup_index
+        sp1_4way = four_way_df.index[four_way_df[sp1] == species1_gID][0]
+        sp2_4way = four_way_df.index[four_way_df[sp2] == species2_gID][0]
+        if sp1_4way != sp2_4way:
+            print(f"!!!! {pair_ortholog} --> {sp1}:{species1_gID}:4way_ID={sp1_4way} + {sp2}:{species2_gID}:4way_ID={sp2_4way} ")
+            raise RuntimeError(f"somehow the above pairwise geneIDs aren't part of the same four-way orthogroup")
+        four_way_df.loc[sp1_4way, "pairs_OG_IDs_lists"].append(pair_ortholog)
+    
+    print(four_way_df)
+    four_way_df.to_csv(outfile, index=False)
+    print(f"outfile saved to: {outfile}")
+                
+
+
+def plot_omega_association(ortholog_IDs_association, site_classes_pairs, site_classes_4way):
+    orthologIDs_df = pd.read_csv(ortholog_IDs_association)
+    print(orthologIDs_df)
+
+    ## TODO read site classes with analyze_site_classes.read_site_classes(summary_path)
+
 
 
 if __name__ == "__main__":
@@ -388,9 +427,14 @@ if __name__ == "__main__":
         bootstrap_pos_sel(X_data={"pos_sel" : 6 , "non_pos_sel" : 268}, A_data={"pos_sel" : 60 , "non_pos_sel" : 1881}, num_permutations=10000)
     
     four_way_ortholog_IDs=f"/Users/{username}/work/pairwise_blast_chapter_2_3/brh_tables/bruchini_orthologs.csv"
-    four_way_pos_sel=f"/Users/{username}/work/pairwise_blast_chapter_2_3/brh_tables/bruchini_all_orthologs_pos_sel_no_err.txt"
+    four_way_pos_sel=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/site_classes_bruchini_all_orthologs_pos_sel_no_err.txt"
     pairwise_ortholog_IDs=f"/Users/{username}/work/pairwise_blast_chapter_2_3/brh_tables/pairwise_ortholog_IDs_association.txt"
+    pairwise_ortholog_IDs_4way_filt = f"/Users/{username}/work/pairwise_blast_chapter_2_3/brh_tables/pairwise_ortholog_IDs_association_only_4way_orthologs.txt"
     pairwise_pos_sel=f"/Users/{username}/work/pairwise_blast_chapter_2_3/brh_tables/pairwise_site_classes_summary.txt"
+    site_classes_files = {
+            "A_LRT" : f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/site_classes_summary_A_BH_corrected_only_4way_orthologs.txt",
+            "X_LRT" : f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/site_classes_summary_X_BH_corrected_only_4way_orthologs.txt",
+        }
     species_list=sorted(["C_maculatus", "C_chinensis", "B_siliquastri", "A_obtectus"])
     pairs_list = []
     for species1 in species_list:
@@ -399,7 +443,6 @@ if __name__ == "__main__":
                 continue
             pairs_list.append(tuple(sorted([species1,species2])))
     pairs_list = sorted([f"{sp1}_{sp2}" for sp1,sp2 in list(set(pairs_list))])
-    print(pairs_list)
     
     if False:
         # Compare positively selected orthologs in the pairwise tests to if they are also positively selected in the 4-way comparison
@@ -408,11 +451,10 @@ if __name__ == "__main__":
             species_list=species_list, pairs_list=pairs_list, 
             filename=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/revision_tests/codeml_pos_sel_ortholog_overlap.png")
 
-    if True:
+    if False:
         # filter pair IDs of pairwise orthologs to include only ones that are present in 4-way orthologs
         
         # make_filtered_pairs_list(pairs_lookup_table=pairwise_ortholog_IDs, four_way_lookup_table=four_way_ortholog_IDs)
-        pairwise_ortholog_IDs_4way_filt = f"/Users/{username}/work/pairwise_blast_chapter_2_3/brh_tables/pairwise_ortholog_IDs_association_only_4way_orthologs.txt"
         
         # fitler site classes to only include orthologs that are in the above list:
         site_classes_files = {
@@ -421,3 +463,9 @@ if __name__ == "__main__":
         }
         filt_site_classes(filt_lookup_table_file = pairwise_ortholog_IDs_4way_filt, site_classes_table = site_classes_files["X_LRT_BH_corr"])
         filt_site_classes(filt_lookup_table_file = pairwise_ortholog_IDs_4way_filt, site_classes_table = site_classes_files["A_LRT_BH_corr"])
+
+    if True:
+        # correlate w_0 for the positively selected genes
+        pairs_fourWay_association = f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/ortholog_IDs_geneIDs_4_way_and_pairs_Bruchini.txt"
+        # make_orthologs_association_file(four_way_lookup_table=four_way_ortholog_IDs, pairs_lookup_table=pairwise_ortholog_IDs_4way_filt, outfile = pairs_fourWay_association)
+        plot_omega_association(ortholog_IDs_association = pairs_fourWay_association, site_classes_pairs = site_classes_files["X_LRT"], site_classes_4way=four_way_pos_sel)
