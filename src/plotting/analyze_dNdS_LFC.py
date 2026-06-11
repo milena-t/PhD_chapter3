@@ -500,7 +500,7 @@ def plot_dNdS_rank_conserved(summary_paths_AX_list:dict, outfile = "", maxdNdS =
             ax[row].tick_params(axis='x', labelsize=fs*tick_fs_factor, rotation = 90)
             # ax[row].set_xticks(ticks = tick_pos, labels = ['' for tick in tick_labels], fontsize=fs*tick_fs_factor, rotation=45, ha='right')
         ax[row].tick_params(axis='y', labelsize=fs*0.9)
-        ax[row].set_title(title, fontsize=fs)
+        ax[row].set_title(title, fontsize=fs, fontstyle='italic')
         ax[row].set_ylabel(ylab, fontsize = fs, x=0.0, y=0.625)
 
         if plot_x_axis:
@@ -860,7 +860,7 @@ def boxplot_dNdS(full_table_paths_dict, outfile, maxdNdS=2, partner_species="C_c
         ax.set_xticks(ticks = tick_pos, labels = tick_labels, fontsize=fs*tick_fs_factor)#, rotation=45, ha='right')
         ax.tick_params(axis='x', labelsize=fs*tick_fs_factor, rotation = 90)
         ax.tick_params(axis='y', labelsize=fs*0.9)
-        ax.set_title(title, fontsize=fs)
+        ax.set_title(title, fontsize=fs, fontstyle='italic')
         ax.set_xlim(min(tick_pos)-pos_adjust, max(tick_pos)+pos_adjust)
 
         ## plot rank labels
@@ -1371,10 +1371,10 @@ if __name__ == "__main__":
         ## plotting
         pos_sel = False # if True plot bar charts with proportion of positive selection
                         # if False, plot boxplot with dNdS values
-        lineplot=True   # if True, plot (conservation distance separated) line plot of dNdS medians with standard error
+        lineplot=False   # if True, plot (conservation distance separated) line plot of dNdS medians with standard error
                         # if False, plot dNds boxplot
                         # if "only_chr" is specified below plot only one chromosome category, otherwise plot A and X in the same plot
-        if True:
+        if False:
             ## plot dNdS or pos sel separated by sex bias, A/X and age rank
             if pos_sel:
                 filename=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/pos_sel_vs_conservation_rank_boxplot.png"
@@ -1405,7 +1405,7 @@ if __name__ == "__main__":
 
     ###### site model (pos. sel) stats and some plotting
     ## if plotting not here then in PhD_chapter3/src/plotting/analyze_site_classes.py
-    if True:
+    if False:
         ## analyze positive selection in site classes
         ## logistic regression for categorical response (positive selection True/False)
         do_chinensis_sex_bias=True
@@ -1426,7 +1426,7 @@ if __name__ == "__main__":
         run_fisher_test(fisher_counts_dict, verbose=True)
         ###################################################
 
-    if False:
+    if True:
         ###################################################
         ## boxplot dNdS by rank and chromosome but no sex bias
         filename=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/dNdS_vs_conservation_rank.png"
