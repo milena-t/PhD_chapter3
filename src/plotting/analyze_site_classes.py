@@ -384,7 +384,7 @@ if __name__ == "__main__":
     # bruchini
     if True:
         species_excl = ["D_carinulata", "D_sublineata", "T_castaneum", "T_freemani", "C_septempunctata", "C_magnifica"]
-        filename =f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/LRT_site_model_plot_bruchini_4_way_orthologs.png"
+        filename =f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/LRT_site_model_plot_bruchini.png"
         filename_dNdS =f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/pos_sel_dNdS_summary_plot_bruchini.png"
     # coccinella
     elif True:
@@ -397,8 +397,8 @@ if __name__ == "__main__":
         filename =f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/LRT_site_model_plot_tribolium.png"
         filename_dNdS =f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/pos_sel_dNdS_summaryplot_tribolium.png"
 
-    summary_dict_A, no_dNdS_A = read_site_classes(summary_paths[data_files_4way_only["A"][1]], excl_list=species_excl)
-    summary_dict_X, no_dNdS_X = read_site_classes(summary_paths[data_files_4way_only["X"][1]], excl_list=species_excl)
+    summary_dict_A, no_dNdS_A = read_site_classes(summary_paths[data_files["A"][1]], excl_list=species_excl)
+    summary_dict_X, no_dNdS_X = read_site_classes(summary_paths[data_files["X"][1]], excl_list=species_excl)
     
 
     type_plot = "bin" # bin for binary or prop for proportion of sites
@@ -412,7 +412,7 @@ if __name__ == "__main__":
 
     pairs_list = list(summary_dict_X.keys())
 
-    if True: 
+    if False: 
         ### plot bootstraps
         bootstraps = {pair : [] for pair in pairs_list}
         mean_num_pos_sel = {pair : np.nan for pair in pairs_list}
