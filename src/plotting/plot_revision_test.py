@@ -4,7 +4,7 @@ from bootstrap_dNdS import permutate_dNdS,calculate_list_CI
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
-import analyze_site_classes
+import ast
 
 def in_paths(username="miltr339"):
     files_dir=f"/Users/{username}/work/chapter3/revision_tests"
@@ -406,17 +406,109 @@ def make_orthologs_association_file(four_way_lookup_table, pairs_lookup_table, o
                 
 
 
-def plot_omega_association(ortholog_IDs_association, site_classes_pairs, site_classes_4way):
-    orthologIDs_df = pd.read_csv(ortholog_IDs_association)
+def plot_omega_association(ortholog_IDs_association, site_classes_pairsX, site_classes_pairsA, site_classes_4way, filename):
+
+    orthologIDs_df = pd.read_csv(ortholog_IDs_association, quotechar='"', quoting=0)
+    # make into proper list
+    orthologIDs_df['pairs_OG_IDs_lists'] = orthologIDs_df['pairs_OG_IDs_lists'].apply(ast.literal_eval)
     print(orthologIDs_df)
 
-    ## TODO read site classes with analyze_site_classes.read_site_classes(summary_path)
+    def read_site_classes(site_classes_infile:str, pair=True):
+        """
+        Read site classes into a dict with { orthologID : w0 }
+        """
+        out_dict = {}
+        with open(site_classes_infile, "r") as site_classes_file:
+            if pair:
+                for line in site_classes_file.readlines():
+                    try:
+                        filepath_str, site_classes_string = line.strip().split(" : ")
+                    except:
+                        raise RuntimeError(f"line cannot be parsed! \n{line}")
+                        # continue
+                    filepath = filepath_str.split("/")
+                    orthologID = filepath[-2]
+                    orthologID = orthologID.replace("_dNdS", "")
+                    p_string,w_string = site_classes_string.split(";")
+                    w_list = [float(val) for val in w_string.split()[1:]]
+                    if len(w_list)==3:
+                        out_dict[orthologID]=w_list[2]
+            else:
+                for line in site_classes_file.readlines():
+                    try:
+                        filepath_str, site_classes_string = line.strip().split(" : ")
+                    except:
+                        raise RuntimeError(f"line cannot be parsed! \n{line}")
+                        # continue
+                    filepath = filepath_str.split("/")
+                    orthologID = filepath[-2]
+                    orthologID = orthologID.replace("_dNdS", "")
+                    orthologID = int(orthologID.split("_")[-1])
+                    p_string,w_string = site_classes_string.split(";")
+                    w_list = [float(val) for val in w_string.split()[1:]]
+                    if len(w_list)==3:
+                        out_dict[orthologID]=w_list[2]
+        return out_dict
 
+    pairsA_w0_dict = read_site_classes(site_classes_infile=site_classes_pairsA, pair=True)
+    pairsX_w0_dict = read_site_classes(site_classes_infile=site_classes_pairsX, pair=True)
+    fourWay_w0_dict = read_site_classes(site_classes_infile=site_classes_4way, pair=False)
+    
+    # test reading positively selected pair
+    print(f"B_siliquastri_C_maculatus_A-linked_ortholog_7031 : {pairsA_w0_dict['B_siliquastri_C_maculatus_A-linked_ortholog_7031']}")
+
+    colors_dict = {
+        # "A" : "#4d7298", # uniform_unfiltered blue
+        "A" : "#F2933A", # uniform_filtered orange
+        "X" : "#b82946", # native red
+    }
+
+    fig, ax = plt.subplots(1,1, figsize=(15, 15))
+    fs = 35
+    plt.rcParams.update({'font.size': fs})
+
+    def get_plot_data(chr:str, pairs_w0_dict):
+        count = 0
+        fourway_A_data = []
+        pair_means_A_data = []
+        for fourWay_ID, fourway_w0 in fourWay_w0_dict.items():
+            assoc_orthologs = orthologIDs_df[orthologIDs_df["four_way_OG_ID"]==fourWay_ID]
+            assoc_pairs_list = assoc_orthologs["pairs_OG_IDs_lists"].values[0]
+            assoc_w0_list = []
+            if f"_{chr}-" in assoc_pairs_list[0]:
+                for pairID in assoc_pairs_list:
+                    if pairID in pairs_w0_dict:
+                        count += 1
+                        assoc_w0_list.append(pairs_w0_dict[pairID])
+                if len(assoc_w0_list)>0:
+                    fourway_A_data.append(fourway_w0)
+                    pair_means_A_data.append(np.mean(assoc_w0_list))
+
+        return count,fourway_A_data,pair_means_A_data
+    
+    countA,fourway_A_data,pair_means_A_data = get_plot_data(chr="A", pairs_w0_dict=pairsA_w0_dict)
+    countX,fourway_X_data,pair_means_X_data = get_plot_data(chr="X", pairs_w0_dict=pairsX_w0_dict)
+
+    print(f"countsA: {countA}, countsX: {countX}")
+
+    ax.plot([0, 1], [0, 1], transform=ax.transAxes, color = "#656565", linestyle="dashed", linewidth = 4)
+    ax.scatter(fourway_A_data, pair_means_A_data, color = colors_dict["A"], s=fs*4, edgecolors="none", label = "A")
+    ax.scatter(fourway_X_data, pair_means_X_data, color = colors_dict["X"], s=fs*4, edgecolors="none", label = "X")
+    ax.tick_params(axis='x', labelsize=fs)
+    ax.tick_params(axis='y', labelsize=fs)
+    ax.set_xlabel("four-way site model", fontsize = fs)
+    ax.set_ylabel("mean of pos. sel. pairs", fontsize = fs)
+    plt.legend()
+    
+    plt.tight_layout()
+    plt.savefig(filename, dpi = 300, transparent = True)
+    print(f"plot saved in current working directory as: {filename}")
 
 
 if __name__ == "__main__":
 
-    username = "miltr339"
+    # username = "miltr339"
+    username = "milena"
     paths = in_paths(username=username)
 
     if False:
@@ -467,5 +559,7 @@ if __name__ == "__main__":
     if True:
         # correlate w_0 for the positively selected genes
         pairs_fourWay_association = f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/ortholog_IDs_geneIDs_4_way_and_pairs_Bruchini.txt"
+        site_model_plotname = f"/Users/{username}/work/PhD_code/PhD_chapter3/data/revision_tests/site_model_comparison.png"
         # make_orthologs_association_file(four_way_lookup_table=four_way_ortholog_IDs, pairs_lookup_table=pairwise_ortholog_IDs_4way_filt, outfile = pairs_fourWay_association)
-        plot_omega_association(ortholog_IDs_association = pairs_fourWay_association, site_classes_pairs = site_classes_files["X_LRT"], site_classes_4way=four_way_pos_sel)
+        plot_omega_association(ortholog_IDs_association = pairs_fourWay_association, site_classes_pairsX = site_classes_files["X_LRT"], site_classes_pairsA = site_classes_files["A_LRT"], 
+                               site_classes_4way=four_way_pos_sel, filename=site_model_plotname)
