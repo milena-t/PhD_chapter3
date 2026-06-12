@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH -A uppmax2026-1-8
 #SBATCH -c 1
-#SBATCH --mem=6G
+#SBATCH --mem=72G
 #SBATCH -t 10:00:00
 #SBATCH -J mapping_bwa_loop
 #SBATCH -o mapping_bwa_loop.log
