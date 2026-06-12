@@ -8,7 +8,7 @@
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user milena.trabert@ebc.uu.se
 
-module load bioinfo-tools  python3  bwa/0.7.17 samtools/1.17 bwa-mem2/2.2.1-20211213-edc703f
+module load SAMtools/1.22.1-GCC-13.3.0 bwa-mem2/2.3-GCC-13.3.0
 
 # Directory with reads
 reads_dir="/proj/coleoptera-genomics-2025/snic2021-6-30/Martyna/PoolSeq/reads_trimmed"

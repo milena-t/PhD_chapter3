@@ -9,7 +9,7 @@
 #SBATCH --mail-user milena.trabert@ebc.uu.se
 
 
-module load bioinfo-tools  python3  bwa/0.7.17 samtools/1.17 bwa-mem2/2.2.1-20211213-edc703f
+module load SAMtools/1.22.1-GCC-13.3.0 bwa-mem2/2.3-GCC-13.3.0
 
 CMAC_index=C_maculatus_superscaffolded_index_for_bwa
 
@@ -23,4 +23,4 @@ SAMPLE=$1
 r1="${reads_dir}/${SAMPLE}_R1.trim.fastq.gz"
 r2="${reads_dir}/${SAMPLE}_R2.trim.fastq.gz"
 echo "======================>> Running bwa-mem on $sample ..."
-bwa mem -t 20 -P $CMAC_index $r1 $r2 | samtools view -u | samtools sort -o "${mapped_dir}/${SAMPLE}.bam"
+bwa-mem2 -t 20 -P $CMAC_index $r1 $r2 | samtools view -u | samtools sort -o "${mapped_dir}/${SAMPLE}.bam"
