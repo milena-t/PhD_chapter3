@@ -300,5 +300,23 @@ This doesn't need re-analysis but maybe some changes in the text to clarify.
         <img loading="lazy" src="data/revision_tests/site_model_comparison.png" width="450px" />
     </p>
 
+<h4>McDonald-Kreitmann test</h4>
+
+<p>
+    Since it seems like the site-model is out, I will run the MK test instead and compare each species to <i>C. maculatus</i> instead. Martyna has poolseq data, but the SNPs are on the old assembly, 
+    and I will have to do new SNP calling on the new assembly. The reads are here <code>/proj/coleoptera-genomics-2025/snic2021-6-30/Martyna/PoolSeq/reads_trimmed</code>.
+</p>
+
+<p>This is the pipeline:</p>
+
+<ol>
+    <li>mapping (individual BAM files for each library)</li>
+    <li>SNP calling with GATK</li>
+    <li>extract the number of synonymous and nonsynonymous polymorphisms for each Cmac coding region (maybe using <a href="https://pcingola.github.io/SnpEff/">SnpEff</a>?)</li>
+    <li>do pairwise alignments of every other species and extract synonymous and nonsynonymous divergent sites (biopython?)</li>
+    <li>run MK test based on this for every ortholog</li>
+    <li>multiple testing correction</li>
+</ol>
+
 </body>
 </html>
