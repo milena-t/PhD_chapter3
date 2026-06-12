@@ -23,4 +23,4 @@ SAMPLE=$1
 r1="${reads_dir}/${SAMPLE}_R1.trim.fastq.gz"
 r2="${reads_dir}/${SAMPLE}_R2.trim.fastq.gz"
 echo "======================>> Running bwa-mem on $sample ..."
-bwa-mem2 -t 20 -P $CMAC_index $r1 $r2 | samtools view -u | samtools sort -o "${mapped_dir}/${SAMPLE}.bam"
+bwa-mem2 mem -t 20 -P $CMAC_index $r1 $r2 | samtools view -u | samtools sort -o "${mapped_dir}/${SAMPLE}.bam"
