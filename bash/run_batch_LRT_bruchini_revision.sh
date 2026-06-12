@@ -34,7 +34,7 @@ else
 fi
 
 cwd=$(pwd)
-for FILE in /Users/miltr339/work/pairwise_blast_chapter_2_3/brh_tables/bruchini_seqs_revision_X/all_bruchini/*.fasta # or bruchini_seqs_revision_A
+for FILE in /proj/coleoptera-genomics-2025/snic2021-6-30/Milena/chapter3/revision/site_model_bruchini/bruchini_fasta_A/*.fasta # or bruchini_seqs_revision_A
 do
     
     cd  $cwd
