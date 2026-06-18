@@ -14,7 +14,7 @@ Handles:
 """
 
 import sys
-
+from tqdm import tqdm
 
 def parse_agp(agp_path):
     """
@@ -73,7 +73,7 @@ def main():
     n_lifted = 0
 
     with open(vcf_path) as fh:
-        for line in fh:
+        for line in tqdm(fh):
             if line.startswith("##"):
                 if line.startswith("##contig"):
                     if not contig_header_written:
