@@ -19,9 +19,10 @@ h3, h4, h5, h6 { margin-top: 1.6em; }
 h1 { border-bottom: 1px solid #d0d7de; padding-bottom: .3em; }
 h2 { border-bottom: 1px solid #d0d7de; padding-bottom: .3em; }
 code {
-  background: #eff1f3;
+  background: #f8f9fa;
+  color:#44506e;
   padding: 0.1em 0.35em;
-  border-radius: 4px;
+  border-radius: 10px;
   font-size: 90%;
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 }
@@ -29,6 +30,13 @@ pre {
   background: #f6f8fa;
   padding: 1em;
   border-radius: 6px;
+  overflow-x: auto;
+}
+
+details {
+  background: #dddee5;
+  padding: 1em;
+  border-radius: 10px;
   overflow-x: auto;
 }
 pre code { background: none; padding: 0; }
@@ -256,7 +264,8 @@ This doesn't need re-analysis but maybe some changes in the text to clarify.
 
 <h4>Compare the results of the 4-way 1-to-1 orthologs with the pairwise comparisons</h4>
 
-
+<details>
+    <summary>toggle down for proof that pairwise site models don't work</summary>
 
 <p>    
     I am checking for every 4-way ortholog, how many of the associated 6 pairs are under positive selection
@@ -302,22 +311,63 @@ This doesn't need re-analysis but maybe some changes in the text to clarify.
     I am testing how correlated the 4-way ω<sub>0</sub> are with the mean ω<sub>0</sub> of all associated pairs and it's bad :(
 </p>
 
-    <p float="left">
-        <img loading="lazy" src="data/revision_tests/site_model_comparison.png" width="450px" />
-    </p>
+<p float="left">
+    <img loading="lazy" src="data/revision_tests/site_model_comparison.png" width="450px" />
+</p>
+
+</details>
 
 <h4>McDonald-Kreitmann test</h4>
 
 <p>
     Since it seems like the site-model is out, I will run the MK test instead and compare each species to <i>C. maculatus</i> instead. Martyna has poolseq data, but the SNPs are on the old assembly, 
-    and I will have to do new SNP calling on the new assembly. The reads are here <code>/proj/coleoptera-genomics-2025/snic2021-6-30/Martyna/PoolSeq/reads_trimmed</code>.
+    and I will have to do new SNP calling on the new assembly. The reads are here <code>/proj/coleoptera-genomics-2025/snic2021-6-30/Martyna/PoolSeq/reads_trimmed</code>, and the SNP data is here:
+    <code>/proj/coleoptera-genomics-2025/snic2021-6-30/Martyna/variant_calling/calls/intersection</code>. It is an intersection of calls from PoolSNP and Freebayes, and the two files named 
+    <code>*shared.vcf</code> contain 9225886 sites (<code>grep -v "^#" file.vcf | wc -l</code>), which is the number martyna mentions in her manuscript so these are the right ones.
 </p>
 
-<p>This is the pipeline:</p>
+<p>This is the pipeline: </p>
 
 <ol>
-    <li>mapping (individual BAM files for each library)</li>
-    <li>SNP calling with GATK (it is not designed for pools, which is why the genotype likelihoods are wrong when calling on pools, but since I don't care about those I can still use it.)</li>
+    <li>
+        get martynas SNP files and filter since we don't care about SNPs from the selection lines. I only use ANC column and remove all sites where ANC has no data. module <code>BCFtools/1.22.1-GCC-13.3.0</code>
+        <pre><code> bcftools view -s ANC /proj/coleoptera-genomics-2025/snic2021-6-30/Martyna/variant_calling/calls/intersection/freebayes_shared.vcf | bcftools +fill-tags -- -t AC,AN,AF > freebayes_ANC_only.vcf
+ bcftools view -s ANC -e 'GT="."' freebayes_ANC_only.vcf > freebayes_ANC_only_.vcf</code></pre>
+        <span style="color:#909bb5">I am going with freebayes for no particular reason, I just had to pick one. The second line does not make a difference and could be skipped.
+            I have an agp file that maps the coordinates of the utg s to a superscaffolded assembly. Help me lift over the SNP coordinates to use the SNPs with the new assembly</span>
+    </li>
+    <li>
+        use the AGP file (<code>/proj/coleoptera-genomics-2025/snic2021-6-30/Milena/chapter4/PhD_chapter4/mTOR_annotation/data/SALSA_superscaffolding_contig_coordinates.agp</code>) 
+        to convert the SNP coordinates. (lifted 7502722 variants, skipped 1723164 on unplaced contigs)
+        <span style="color:#909bb5">I asked AI for a pipeline: </span>
+            <ol>
+                <li>
+                    convert agp to chain file with <code >agp_to_chain.py</code> from <a href="https://github.com/NAL-i5K/remap-gff3.git">remap-gff3</a>
+                    <pre><code> python3 remap-gff3/remap-gff3/bin/agp_to_chain.py \
+    -a SALSA_superscaffolding_contig_coordinates.agp \
+    -t_fa nonsuperscaffolded_Cmac_headers_mod.fna.masked \
+    -q_fa superscaffolded_Cmac.fasta \
+    -o utg_to_superscaffold.chain</code></pre>
+                    There is something wrong with this, the target and query spans don't match. check the exact definition of a chain file wnd write my own script probably
+                </li>
+                <li>
+                    Liftover vcf with chain file using picard (module <code>picard/3.4.0-Java-17</code>)
+                    <pre><code> java -jar $EBROOTPICARD/picard.jar CreateSequenceDictionary -R superscaffolded_Cmac.fasta
+
+ java -jar $EBROOTPICARD/picard.jar LiftoverVcf \
+    --INPUT freebayes_ANC_only.vcf \
+    --OUTPUT freebayes_superscaffolded.vcf \
+    --CHAIN utg_to_superscaffold.chain \
+    --REJECT superscaffolded_rejected_variants.vcf \
+    --REFERENCE_SEQUENCE superscaffolded_Cmac.fasta</code></pre>
+                </li>
+                <li>
+                    Check if it worked by matching vcf ancestral nucleotides with assembly nucleotides (100% correct in non-superscaffolded assembly and original freebayes vcf) 
+                    using <code>check_AGP_conversion_of_VCF.py</code> <span style="color:#909bb5">(this script was created by Claude code and it works when i checked)</span>
+                </li>
+            </ol>
+            Check the results for the superscaffolded assembly <code>/proj/coleoptera-genomics-2025/snic2021-6-30/Milena/annotation_pipeline/only_orthodb_annotation/C_maculatus_superscaffolded/assembly_genomic.fna.masked</code>
+    </li>
     <li>extract the number of synonymous and nonsynonymous polymorphisms for each Cmac coding region (maybe using <a href="https://pcingola.github.io/SnpEff/">SnpEff</a>?)</li>
     <li>do pairwise alignments of every other species and extract synonymous and nonsynonymous divergent sites (biopython?)</li>
     <li>run MK test based on this for every ortholog</li>
