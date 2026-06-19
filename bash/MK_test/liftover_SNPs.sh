@@ -10,7 +10,7 @@
 
 ml picard/3.4.0-Java-17
 
-# java -jar $EBROOTPICARD/picard.jar CreateSequenceDictionary -R superscaffolded_Cmac.fasta
+java -jar $EBROOTPICARD/picard.jar CreateSequenceDictionary -R superscaffolded_Cmac.fasta
 
 java -jar $EBROOTPICARD/picard.jar LiftoverVcf \
 --INPUT freebayes_ANC_only.vcf \

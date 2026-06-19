@@ -50,6 +50,31 @@ iframe { border: 1px solid #d0d7de; border-radius: 4px; }
 a { color: #416793; }
 
 </style>
+
+<style>
+    /*get sub-list numbering right*/
+    ol {
+      counter-reset: item;
+      list-style-type: none;
+      padding-left: 2em;
+    }
+    ol > li {
+    display: block;
+    }
+
+    ol > li::before {
+    counter-increment: item;
+    content: counters(item, ".") ". ";
+    font-weight: bold; /* bold numbers */
+    }
+
+    /* Restore normal bullets for <ul> */
+    ul {
+    list-style-type: disc;
+    padding-left: 1.5em;
+    }
+</style>
+
 <style>
 
 /* Style the tab */
@@ -330,28 +355,27 @@ This doesn't need re-analysis but maybe some changes in the text to clarify.
 
 <ol>
     <li>
-        get martynas SNP files and filter since we don't care about SNPs from the selection lines. I only use ANC column and remove all sites where ANC has no data. module <code>BCFtools/1.22.1-GCC-13.3.0</code>
+        <b>Get ancestral polymorphisms</b> <br>Get martynas SNP files and filter since we don't care about SNPs from the selection lines. I only use ANC column and remove all sites where ANC has no data. module <code>BCFtools/1.22.1-GCC-13.3.0</code>
         <pre><code> bcftools view -s ANC /proj/coleoptera-genomics-2025/snic2021-6-30/Martyna/variant_calling/calls/intersection/freebayes_shared.vcf | bcftools +fill-tags -- -t AC,AN,AF > freebayes_ANC_only.vcf
  bcftools view -s ANC -e 'GT="."' freebayes_ANC_only.vcf > freebayes_ANC_only_.vcf</code></pre>
         <span style="color:#909bb5">I am going with freebayes for no particular reason, I just had to pick one. The second line does not make a difference and could be skipped.
             I have an agp file that maps the coordinates of the utg s to a superscaffolded assembly. Help me lift over the SNP coordinates to use the SNPs with the new assembly</span>
     </li>
     <li>
-        use the AGP file (<code>/proj/coleoptera-genomics-2025/snic2021-6-30/Milena/chapter4/PhD_chapter4/mTOR_annotation/data/SALSA_superscaffolding_contig_coordinates.agp</code>) 
+        <b>Convert VCF to my assembly</b><br>Use the AGP file (<code>/proj/coleoptera-genomics-2025/snic2021-6-30/Milena/chapter4/PhD_chapter4/mTOR_annotation/data/SALSA_superscaffolding_contig_coordinates.agp</code>) 
         to convert the SNP coordinates. (lifted 7502722 variants, skipped 1723164 on unplaced contigs)
         <span style="color:#909bb5">I asked AI for a pipeline: </span>
             <ol>
                 <li>
                     convert agp to chain file with <code >agp_to_chain.py</code> from <a href="https://github.com/NAL-i5K/remap-gff3.git">remap-gff3</a>
+                    <details>
+                        <summary>See details</summary>
                     <pre><code> python3 remap-gff3/remap-gff3/bin/agp_to_chain.py \
     -a SALSA_superscaffolding_contig_coordinates.agp \
     -t_fa nonsuperscaffolded_Cmac_headers_mod.fna.masked \
     -q_fa superscaffolded_Cmac.fasta \
     -o utg_to_superscaffold.chain</code></pre>
-                    There is something wrong with this script, all <code>-</code> strands convert the coordinates wrong and are off by 1 in either direction. This can 
-                    be fixed with an awk script:
-                    <details>
-                        <summary>Toggle down</summary>
+                    There is something wrong with this script, all <code>-</code> strands convert the coordinates wrong and are off by 1 in either direction. This can be fixed with an awk script:
                         <pre><code>awk '{
 if ($1=="chain" && $10=="-") {
         $11 = $11 - 1
@@ -359,30 +383,31 @@ if ($1=="chain" && $10=="-") {
     }
     print
 }' utg_to_superscaffold.chain > utg_to_superscaffold.fixed.chain</code></pre>
-                    </details>
+                        <p>I then remove the old one and replace it with the new.</p></details>
                 </li>
                 <li>
-                    Liftover vcf with chain file using picard (module <code>picard/3.4.0-Java-17</code>)
-                    <pre><code> java -jar $EBROOTPICARD/picard.jar CreateSequenceDictionary -R superscaffolded_Cmac.fasta
-
- java -jar $EBROOTPICARD/picard.jar LiftoverVcf \
-    --INPUT freebayes_ANC_only.vcf \
-    --OUTPUT freebayes_superscaffolded.vcf \
-    --CHAIN utg_to_superscaffold.fixed.chain \
-    --REJECT superscaffolded_rejected_variants.vcf \
-    --REFERENCE_SEQUENCE superscaffolded_Cmac.fasta</code></pre>
+                    Liftover vcf with chain file using picard (module <code>picard/3.4.0-Java-17</code>, this needs to be run as a slurm job, takes quite a bit of memory and also like 15 mins.)
+                    <code>PhD_chapter3/bash/MK_test/liftover_SNPs.sh</code>
                 </li>
                 <li>
-                    Check if it worked by matching vcf ancestral nucleotides with assembly nucleotides (100% correct in non-superscaffolded assembly and original freebayes vcf) 
-                    using <code>check_AGP_conversion_of_VCF.py</code> <span style="color:#909bb5">(this script was created by Claude code and it works when i checked)</span>
+                    Check if it worked by matching vcf ancestral nucleotides with assembly nucleotides (should be identical if all the coordinate conversion was right) 
+                    using <code>check_AGP_conversion_of_VCF.py</code> <span style="color:#909bb5">(this script was created by Claude code and is 100% correct in non-superscaffolded assembly and original freebayes vcf)</span><br>
+                    Check the results for the superscaffolded assembly &rarr; worked!
                 </li>
             </ol>
-            Check the results for the superscaffolded assembly <code>/proj/coleoptera-genomics-2025/snic2021-6-30/Milena/annotation_pipeline/only_orthodb_annotation/C_maculatus_superscaffolded/assembly_genomic.fna.masked</code>
     </li>
-    <li>extract the number of synonymous and nonsynonymous polymorphisms for each Cmac coding region (maybe using <a href="https://pcingola.github.io/SnpEff/">SnpEff</a>?)</li>
-    <li>do pairwise alignments of every other species and extract synonymous and nonsynonymous divergent sites (biopython?)</li>
-    <li>run MK test based on this for every ortholog</li>
-    <li>multiple testing correction</li>
+    <li><b>Run MK test</b><br>use the <a href="https://pypi.org/project/mkado/">mkado python library</a> to run the MK test for all species pair comparisons with <i>C. maculatus</i>.
+        <ol>
+            <li>Requires python3.12+ and the most recent version on uppmax is <code>Python/3.13.5-GCCcore-14.3.0</code> &rarr; make mkado_venv &rarr; <code>pip install mkado</code></li>
+            <li>
+                It has a specific mode to work with population-level polymorphisms and ortholog-alignments to the outgroup, which is exactly my situation: 
+                <a href="https://mkado.readthedocs.io/en/latest/tutorial.html#working-with-ortholog-alignments-orthomam-style-projection">OrthoMaM</a><br>
+                It makes codon-based alignments based on the annotated ortholog cds sequence to get the divergence, and then uses the vcf to create polymorphism sequences. 
+                I am making a new script based on the dNdS one to run this on all the orthologs. <code>PhD_chapter3/src/blast_BRH/calculate_MK_test_from_orthologs.py</code>
+                This workflow makes my data compatible with <code>mkado batch</code>.</li>
+            <li>Interpret results instructions <a href="https://mkado.readthedocs.io/en/latest/tutorial.html#interpreting-results">here</a></li>
+        </ol>
+    </li>
 </ol>
 
 </body>
