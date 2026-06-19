@@ -348,7 +348,18 @@ This doesn't need re-analysis but maybe some changes in the text to clarify.
     -t_fa nonsuperscaffolded_Cmac_headers_mod.fna.masked \
     -q_fa superscaffolded_Cmac.fasta \
     -o utg_to_superscaffold.chain</code></pre>
-                    There is something wrong with this, the target and query spans don't match. check the exact definition of a chain file wnd write my own script probably
+                    There is something wrong with this script, all <code>-</code> strands convert the coordinates wrong and are off by 1 in either direction. This can 
+                    be fixed with an awk script:
+                    <details>
+                        <summary>Toggle down</summary>
+                        <pre><code>awk '{
+if ($1=="chain" && $10=="-") {
+        $11 = $11 - 1
+        $12 = $12 + 1
+    }
+    print
+}' utg_to_superscaffold.chain > utg_to_superscaffold.fixed.chain</code></pre>
+                    </details>
                 </li>
                 <li>
                     Liftover vcf with chain file using picard (module <code>picard/3.4.0-Java-17</code>)
@@ -357,7 +368,7 @@ This doesn't need re-analysis but maybe some changes in the text to clarify.
  java -jar $EBROOTPICARD/picard.jar LiftoverVcf \
     --INPUT freebayes_ANC_only.vcf \
     --OUTPUT freebayes_superscaffolded.vcf \
-    --CHAIN utg_to_superscaffold.chain \
+    --CHAIN utg_to_superscaffold.fixed.chain \
     --REJECT superscaffolded_rejected_variants.vcf \
     --REFERENCE_SEQUENCE superscaffolded_Cmac.fasta</code></pre>
                 </li>
