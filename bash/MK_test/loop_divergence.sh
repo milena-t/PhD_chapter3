@@ -1,8 +1,7 @@
 #!/bin/bash
 #SBATCH -A uppmax2026-1-8
 #SBATCH -c 1
-#SBATCH --mem=52G
-#SBATCH -t 3:00:00
+#SBATCH -t 1:00:00
 #SBATCH -J sp_aln_loop
 #SBATCH -o sp_aln_loop.log
 #SBATCH --mail-type=ALL
