@@ -25,6 +25,7 @@ minimap2 -c -x asm10 $REF_CMAC_ASSEMBLY $QUERY_ASSEMBLY > aln_${SPECIES}.paf
 sort -k6,6 -k8,8n aln_${SPECIES}.paf > aln_${SPECIES}.srt.paf
 
 ## variant calling (needs k8)
+# I got paftools with wget https://raw.githubusercontent.com/lh3/minimap2/refs/heads/master/misc/paftools.js which is 2.31 and not 2.30 like the module
 ${PAFTOOLS_PATH}paftools.js call -f ingroup_reference.fasta -L 5000 -l 5000 aln_${SPECIES}.srt.paf > ${SPECIES}_C_maculatus_divergence.vcf
 
 ## sorting vcf
