@@ -240,6 +240,9 @@ This doesn't need re-analysis but maybe some changes in the text to clarify.
     
 <h3>paml site models: positive selection</h3>
 
+<details>
+    <summary>This did not work out, toggle down for details </summary>
+
 <p>
     The reviewer is a bit vague here, but we interpret their comments to mean that they think the pairwise comparison does not offer enough statistical power to accurately infer positive selection, 
     and that we would need multi-species comparisons for that. the site models are described on p. 29 of the above manual, and I can find no mention that there is a minimum number of species 
@@ -289,8 +292,6 @@ This doesn't need re-analysis but maybe some changes in the text to clarify.
 
 <h4>Compare the results of the 4-way 1-to-1 orthologs with the pairwise comparisons</h4>
 
-<details>
-    <summary>toggle down for proof that pairwise site models don't work</summary>
 
 <p>    
     I am checking for every 4-way ortholog, how many of the associated 6 pairs are under positive selection
@@ -340,9 +341,11 @@ This doesn't need re-analysis but maybe some changes in the text to clarify.
     <img loading="lazy" src="data/revision_tests/site_model_comparison.png" width="450px" />
 </p>
 
+
 </details>
 
-<h4>McDonald-Kreitmann test</h4>
+
+<h3>McDonald-Kreitmann test for positive selection</h3>
 
 <p>
     Since it seems like the site-model is out, I will run the MK test instead and compare each species to <i>C. maculatus</i> instead. Martyna has poolseq data, but the SNPs are on the old assembly, 
@@ -358,11 +361,10 @@ This doesn't need re-analysis but maybe some changes in the text to clarify.
         <b>Get ancestral polymorphisms</b> <br>Get martynas SNP files and filter since we don't care about SNPs from the selection lines. I only use ANC column and remove all sites where ANC has no data. module <code>BCFtools/1.22.1-GCC-13.3.0</code>
         <pre><code> bcftools view -s ANC /proj/coleoptera-genomics-2025/snic2021-6-30/Martyna/variant_calling/calls/intersection/freebayes_shared.vcf | bcftools +fill-tags -- -t AC,AN,AF > freebayes_ANC_only.vcf
  bcftools view -s ANC -e 'GT="."' freebayes_ANC_only.vcf > freebayes_ANC_only_.vcf</code></pre>
-        <span style="color:#909bb5">I am going with freebayes for no particular reason, I just had to pick one. The second line does not make a difference and could be skipped.
-            I have an agp file that maps the coordinates of the utg s to a superscaffolded assembly. Help me lift over the SNP coordinates to use the SNPs with the new assembly</span>
+        <span style="color:#909bb5">I am going with freebayes for no particular reason, I just had to pick one. The second line does not make a difference and could be skipped.</span>
     </li>
     <li>
-        <b>Convert VCF to my assembly</b><br>Use the AGP file (<code>/proj/coleoptera-genomics-2025/snic2021-6-30/Milena/chapter4/PhD_chapter4/mTOR_annotation/data/SALSA_superscaffolding_contig_coordinates.agp</code>) 
+        <b>Convert population-level VCF to my assembly</b><br>Use the AGP file (<code>/proj/coleoptera-genomics-2025/snic2021-6-30/Milena/chapter4/PhD_chapter4/mTOR_annotation/data/SALSA_superscaffolding_contig_coordinates.agp</code>) 
         to convert the SNP coordinates. (lifted 7502722 variants, skipped 1723164 on unplaced contigs)
         <span style="color:#909bb5">I asked AI for a pipeline: </span>
             <ol>
@@ -396,15 +398,29 @@ if ($1=="chain" && $10=="-") {
                 </li>
             </ol>
     </li>
+    <li><b>Create between-species divergence vcf</b>
+        <ol>
+            <li>Align all other genomes against <i>C. maculatus</i> with minmap</li>
+        </ol>
+    </li>
     <li><b>Run MK test</b><br>use the <a href="https://pypi.org/project/mkado/">mkado python library</a> to run the MK test for all species pair comparisons with <i>C. maculatus</i>.
         <ol>
             <li>Requires python3.12+ and the most recent version on uppmax is <code>Python/3.13.5-GCCcore-14.3.0</code> &rarr; make mkado_venv &rarr; <code>pip install mkado</code></li>
-            <li>
-                It has a specific mode to work with population-level polymorphisms and ortholog-alignments to the outgroup, which is exactly my situation: 
+            <details>
+                <summary>OrthoMaM mode would be ideal but there is technical problems:</summary>
+                There is a specific mode to work with population-level polymorphisms and ortholog-alignments to the outgroup, which is exactly my situation: 
                 <a href="https://mkado.readthedocs.io/en/latest/tutorial.html#working-with-ortholog-alignments-orthomam-style-projection">OrthoMaM</a><br>
                 It makes codon-based alignments based on the annotated ortholog cds sequence to get the divergence, and then uses the vcf to create polymorphism sequences. 
-                I am making a new script based on the dNdS one to run this on all the orthologs. <code>PhD_chapter3/src/blast_BRH/calculate_MK_test_from_orthologs.py</code>
-                This workflow makes my data compatible with <code>mkado batch</code>.</li>
+                This workflow makes my data compatible with <code>mkado batch</code>.<br>
+                Unfortunately, according to the documentation there is supposed to be a script to make polymorphism sequences from the vcf but that does not actually exist
+                so I can't use it. I will go with the vcf mode instead where i make one for the divergence based on genome alignments as well. This may result in different
+                ortholog pairs than the dNdS analysis, but since this is all just from the Cmac perspective and I am never directly comparing dNdS and pos. sel. data it should 
+                be fine.
+            </details>
+            <li>
+                I will use the <a href="https://mkado.readthedocs.io/en/latest/vcf-input.html">vcf input mode</a>. It runs the MK test on all <i>C. maculatus</i> genes in the 
+                annotation based on the above created population-level vcf for polymorphism data and the between-species vcf for divergence data.
+            </li>
             <li>Interpret results instructions <a href="https://mkado.readthedocs.io/en/latest/tutorial.html#interpreting-results">here</a></li>
         </ol>
     </li>
