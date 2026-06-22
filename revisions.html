@@ -398,9 +398,12 @@ if ($1=="chain" && $10=="-") {
                 </li>
             </ol>
     </li>
-    <li><b>Create between-species divergence vcf</b>
+    <li><b>Create between-species divergence vcf</b> (everything in <code>bash/MK_test/divergence_vcf.sh</code>)
         <ol>
-            <li>Align all other genomes against <i>C. maculatus</i> with minmap</li>
+            <li>Align all other genomes against <i>C. maculatus</i> with <code>minmap2</code></li>
+            <li>Sort alignment by <i>C. maculatus</i> coordinates</li>
+            <li>Variant calling with the <code>paftools.js</code> module from minimap2</li>
+            <li>Sort and compress vcf</li>
         </ol>
     </li>
     <li><b>Run MK test</b><br>use the <a href="https://pypi.org/project/mkado/">mkado python library</a> to run the MK test for all species pair comparisons with <i>C. maculatus</i>.
