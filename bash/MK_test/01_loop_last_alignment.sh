@@ -14,6 +14,6 @@ for SPECIES in A_obtectus B_siliquastri C_chinensis C_magnifica C_septempunctata
 do
     echo ""
     echo "------------ ${SPECIES}"
-    sbatch -J "${SPECIES}_alignment" -o "${SPECIES}_alignment.out" -t 3-00:00:00 /proj/coleoptera-genomics-2025/snic2021-6-30/Milena/chapter3/PhD_chapter3/bash/MK_test/align_outgroup_npstat.sh $SAMPLE
+    sbatch -J "${SPECIES}_alignment" -o "${SPECIES}_alignment.out" -t 3-00:00:00 /proj/coleoptera-genomics-2025/snic2021-6-30/Milena/chapter3/PhD_chapter3/bash/MK_test/align_outgroup_npstat.sh $SPECIES
 done
  
