@@ -10,11 +10,12 @@
 
 
 LAST_PATH=/gorilla/proj/coleoptera-genomics-2025/snic2021-6-30/Milena/software_install/last-aligner/last-1651/bin/
+ASS_DIR=/gorilla/proj/coleoptera-genomics-2025/snic2021-6-30/Milena/chapter3/revision/MK_test/npstat_MK_test/assemblies
 SPECIES=B_siliquastri
 
 # make reference database and train parameters on query species
-${LAST_PATH}lastdb -P8 Cmacdb assemblies/C_maculatus.fasta.masked
-${LAST_PATH}last-train -P8 --revsym -C2 Cmacdb assemblies/${SPECIES}.fasta.masked > C_maculatus_${SPECIES}.train
+${LAST_PATH}lastdb -P8 Cmacdb ${ASS_DIR}/C_maculatus.fasta.masked
+${LAST_PATH}last-train -P8 --revsym -C2 Cmacdb ${ASS_DIR}/${SPECIES}.fasta.masked > C_maculatus_${SPECIES}.train
 # do alignment
 ${LAST_PATH}lastal -P8 -m2 -D1e9 -C2 --split -p hl.train humdb lemur.fa | ${LAST_PATH}last-split -r | ${LAST_PATH}maf-linked - > out.maf
 
