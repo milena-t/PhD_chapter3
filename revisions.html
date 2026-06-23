@@ -394,7 +394,8 @@ This doesn't need re-analysis but maybe some changes in the text to clarify.
         <b>Make whole genome alignment for outgroup with last</b><br>
         I will use <a href="https://github.com/mcfrith/last-genome-alignments">last</a> from this module <code>LASTZ/1.04.22-GCCcore-13.3.0</code>
         (make-installed with <a href="https://gitlab.com/mcfrith/last">this tutorial</a>), the pipeline is here: <code>bash/MK_test/align_outgroup_npstat.sh</code>
-        and the documentation is <a href="https://gitlab.com/mcfrith/last/-/blob/main/doc/last-cookbook.rst">here</a>.
+        and the documentation is <a href="https://gitlab.com/mcfrith/last/-/blob/main/doc/last-cookbook.rst">here</a>. I run all of it in the same
+        directory as the assemblies otherwise it has some problem with the softlinks.
         <ol>
             <li>make database from reference genome with <code>lastdb</code></li>
             <li>
