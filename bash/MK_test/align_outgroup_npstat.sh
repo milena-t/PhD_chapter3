@@ -8,10 +8,11 @@
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user milena.trabert@ebc.uu.se
 
+ml GCCcore/14.3.0
 
 LAST_PATH=/gorilla/proj/coleoptera-genomics-2025/snic2021-6-30/Milena/software_install/last-aligner/last-1651/bin/
 ASS_DIR=/gorilla/proj/coleoptera-genomics-2025/snic2021-6-30/Milena/chapter3/revision/MK_test/npstat_MK_test/assemblies
-SPECIES=B_siliquastri
+SPECIES=$1
 cd $ASS_DIR
 
 # make reference database and train parameters on query species

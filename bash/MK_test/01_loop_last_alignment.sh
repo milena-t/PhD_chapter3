@@ -8,6 +8,8 @@
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user milena.trabert@ebc.uu.se
 
+ml GCC/14.3.0
+
 for SPECIES in A_obtectus B_siliquastri C_chinensis C_magnifica C_septempunctata T_castaneum T_freemani
 do
     echo ""
