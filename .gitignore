@@ -1,6 +1,7 @@
 # my addition
 *.log
 EI*
+*.sif
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

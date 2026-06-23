@@ -352,10 +352,57 @@ This doesn't need re-analysis but maybe some changes in the text to clarify.
 </p>
 
 <p>
-    Martyna has poolseq data, which needs to be treated carefully for the MK test. I will use <a href="https://link.springer.com/protocol/10.1007/978-1-0716-4583-3_3">npstat</a>.
-    The pipeline requires mpileup files, which martyna has already generated, unfortunately they are based on the old non-superscaffolded assembly (here: 
-    <code>/proj/coleoptera-genomics-2025/snic2021-6-30/Martyna/PoolSeq/pileups</code>).
+    Martyna has poolseq data (pools of 50, see <a href="https://www.biorxiv.org/content/10.64898/2026.02.04.703537v1.full.pdf">paper</a> methods), 
+    which needs to be treated carefully for the MK test. I will use <a href="https://link.springer.com/protocol/10.1007/978-1-0716-4583-3_3">npstat</a>.
+    The pipeline requires mpileup files which have mapping-information on each read of the assembly. It usually works in whole-genome windows, but 
+    if a gff file is given it looks at coding regions and i can use the counts of synonymous and nonsynonymous substitutions for the MK test
 </p>
+
+<ol>
+    <li>
+        <b>Make npstat singularity image</b><br>
+        The installation instructions are about a docker image but since uppmax doesn't like those I will do the same thing as i did for braker and convert 
+        it to singularity using a docker container locally on macos.
+        (The known issue i have with macos blocking docker are fixed with the instructions in this <a href="https://github.com/docker/for-mac/issues/7520">github issue</a>)
+        <details>
+            <summary>see details</summary>
+            <p>I will use the same pipeline as for making the BRAKER3 singularity image for chapter1, <a href="https://github.com/milena-t/PhD_chapter1/tree/main/make_singularity_image_braker3">here</a> 
+            this is all run in the directory where the scripts are to ensure hardcoded paths function.</p>
+            <ul>
+                <li>clone the git directory like described in the pipeline link above and do <code>docker build -t npstat .</code></li>
+                <li>make the singularity image with singularity in a docker container: <code>docker build -t npstatsingularitybuild -f docker2sif.Dockerfile .</code></li>
+                <li>
+                    actually run the container in the command line with mounts <code>/var/run/docker.sock:/var/run/docker.sock</code> 
+                    (has to have some weird dir binding because of macos) and <code>~/singularity_output:/output</code>
+                </li>
+                <li>get the image out of the docker container: <code>docker cp npstatsingularitybuild:/root/npstat.sif ./npstat.sif</code> and copy to uppmax</li>    
+                <li>verify with command <code>singularity run --rm npstat</code> &rarr; works! </li>
+            </ul>
+        </details>
+    </li>
+    <li>
+        <b>Convert coordinates of the pileup file to the superscaffolded assembly</b>
+        <ol>
+            <li>convert pileup coordinates to bed: <code>awk '{print $1, $2-1, $2}' UF-2981-ANC_S1_L001.pileup > UF-2981-ANC_S1_L001.bed</code></li>
+            <il>use crossmap (<code>pip3 install CrossMap</code>) to convert bed file <br>
+            <code>python -m CrossMap.crossmap bed utg_to_superscaffold.chain UF-2981-ANC_S1_L001.bed UF-2981-ANC_S1_L001_superscaffolded.bed</code></il>
+            <li>Make a pileup with 
+                <code>bcftools mpileup -f assemblies/C_maculatus.fasta.masked UF-2981-ANC_S1_L001.superscaffolded.bam > UF-2981-ANC_S1_L001.superscaffolded.mpileup</code></li>
+        </ol>
+    </li>
+    <li>
+        <b>Run npstat</b><br>
+        I will use the above created pileup file, as well as the gff annotation and ortholog information for divergence. The arguments are these:
+        <ul>
+            <li><code>-outgroup</code></li>
+            <li><code>-annot</code> is the <i>C. maculatus</i> Lome gff3 genome annotation</li>
+            <li><code>-n 50</code> for the sample size, which is the number of individuals in the pool</li>
+            <li><code>-nolowfreq 3</code> is a minimum read support threshold for each SNP, and read for depths over 100 it is recommended to set it to 3</li>
+            <li><code>-maxcov 300</code> the default is 100 but just in case the coverage of this is really very high i will also set the maximum very high</li>
+        </ul>
+    </li>
+    
+</ol>
 
 <details>
     <summary>old approach with <a href="https://pypi.org/project/mkado/">mkado python library</a> that does not work for poolseq!</summary>

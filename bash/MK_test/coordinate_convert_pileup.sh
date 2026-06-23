@@ -2,7 +2,7 @@
 #SBATCH -A uppmax2026-1-8
 #SBATCH -c 1
 #SBATCH --mem=72G
-#SBATCH -t 3:00:00
+#SBATCH -t 3-00:00:00
 #SBATCH -J liftover_bam
 #SBATCH -o liftover_bam.log
 #SBATCH --mail-type=ALL
