@@ -349,9 +349,19 @@ This doesn't need re-analysis but maybe some changes in the text to clarify.
 
 <p>
     Since it seems like the site-model is out, I will run the MK test instead and compare each species to <i>C. maculatus</i> instead. 
-    This is the pipeline to get polymorphism and divergence data in the form of vcf files and then run the test for all <i>C. maculatus</i> genes: 
 </p>
 
+<p>
+    Martyna has poolseq data, which needs to be treated carefully for the MK test. I will use <a href="https://link.springer.com/protocol/10.1007/978-1-0716-4583-3_3">npstat</a>.
+    The pipeline requires mpileup files, which martyna has already generated, unfortunately they are based on the old non-superscaffolded assembly (here: 
+    <code>/proj/coleoptera-genomics-2025/snic2021-6-30/Martyna/PoolSeq/pileups</code>).
+</p>
+
+<details>
+    <summary>old approach with <a href="https://pypi.org/project/mkado/">mkado python library</a> that does not work for poolseq!</summary>
+    <p>
+        This is the pipeline to get polymorphism and divergence data in the form of vcf files and then run the test for all <i>C. maculatus</i> genes: 
+    </p>
 <ol>
     <li>
         <b>Get ancestral polymorphisms</b> <br>
@@ -389,7 +399,7 @@ if ($1=="chain" && $10=="-") {
                 </li>
                 <li>
                     Liftover vcf with chain file using picard (module <code>picard/3.4.0-Java-17</code>, this needs to be run as a slurm job, takes quite a bit of memory and also like 15 mins.)
-                    <code>PhD_chapter3/bash/MK_test/liftover_SNPs.sh</code>
+                    <code>PhD_chapter3/bash/MK_test/liftover_SNPs.sh</code>. I also compressed the file with <code>bgzip</code> (not gzip!).
                 </li>
                 <li>
                     Check if it worked by matching vcf ancestral nucleotides with assembly nucleotides (should be identical if all the coordinate conversion was right) 
@@ -397,14 +407,6 @@ if ($1=="chain" && $10=="-") {
                     Check the results for the superscaffolded assembly &rarr; worked!
                 </li>
             </ol>
-    </li>
-    <li><b>Create between-species divergence vcf</b> (everything in <code>bash/MK_test/divergence_vcf.sh</code>, the pipeline mainly comes from the <a href="https://github.com/lh3/minimap2/blob/master/misc/README.md">minimap misc README.md</a>)
-        <ol>
-            <li>Align all other genomes against <i>C. maculatus</i> with <code>minmap2</code></li>
-            <li>Sort alignment by <i>C. maculatus</i> coordinates</li>
-            <li>Variant calling with the <code>paftools.js</code> module from minimap2</li>
-            <li>Sort and compress vcf</li>
-        </ol>
     </li>
     <li><b>Run MK test</b><br>use the <a href="https://pypi.org/project/mkado/">mkado python library</a> to run the MK test for all species pair comparisons with <i>C. maculatus</i>.
         <ol>
@@ -414,20 +416,43 @@ if ($1=="chain" && $10=="-") {
                 There is a specific mode to work with population-level polymorphisms and ortholog-alignments to the outgroup, which is exactly my situation: 
                 <a href="https://mkado.readthedocs.io/en/latest/tutorial.html#working-with-ortholog-alignments-orthomam-style-projection">OrthoMaM</a><br>
                 It makes codon-based alignments based on the annotated ortholog cds sequence to get the divergence, and then uses the vcf to create polymorphism sequences. 
-                This workflow makes my data compatible with <code>mkado batch</code>.<br>
-                Unfortunately, according to the documentation there is supposed to be a script to make polymorphism sequences from the vcf but that does not actually exist
-                so I can't use it. I will go with the vcf mode instead where i make one for the divergence based on genome alignments as well. This may result in different
-                ortholog pairs than the dNdS analysis, but since this is all just from the Cmac perspective and I am never directly comparing dNdS and pos. sel. data it should 
-                be fine.
+                This workflow makes my data compatible with <code>mkado batch</code>.Unfortunately, according to the documentation there is supposed to be a script to make 
+                polymorphism sequences from the vcf but that does not actually exist so I can't use it. <br>
+                <code>mkado vcf</code> is also not a viable option, because the species divergence is too high for a reliable whole-genome alingment that can call SNPs. (I think?
+                maybe CACTUS or some other aligner that is not minimap would do a better job?)
             </details>
             <li>
-                I will use the <a href="https://mkado.readthedocs.io/en/latest/vcf-input.html">vcf input mode</a>. It runs the MK test on all <i>C. maculatus</i> genes in the 
-                annotation based on the above created population-level vcf (step 1 and 2) for polymorphism data and the between-species vcf (step 3) for divergence data.
+                I will use <code>mkado batch</code> still, and make the polymorphism sequences with my own pipeline based on making consensus sequences. Since 
+                my SNP data is from a pool of multiple individuals that cannot be separated after the fact, I will treat them like one sample with many SNPs 
+                for the purposes of this pipeline.
             </li>
+            <details>
+                <summary>Pipeline:</summary>
+                <p>This also requires samtools <code>SAMtools/1.22.1-GCC-13.3.0</code> and gffread <code>gffread/0.12.7-GCCcore-13.3.0</code></p>
+                <ul>
+                    <li>
+                        Keep only SNPs, not indels: <code>bcftools view -v snps freebayes_superscaffolded.vcf.gz -O z -o freebayes_superscaffolded.snps_only.vcf.gz</code>
+                        and then index with <code>bcftools index</code>
+                    </li>
+                    <li>
+                        Make consensus sequences with bcf consensus (only one sample: <code>ANC</code>, see above)
+                        <pre><code> for sample in $(bcftools query -l freebayes_superscaffolded.snps_only.vcf.gz); do 
+    echo $sample
+    bcftools consensus -f ${ASS_DIR}C_maculatus.fasta.masked -s "$sample" -I freebayes_superscaffolded.snps_only.vcf.gz > ${sample}.fasta
+ done</code></pre>
+                    </li>
+                    <li>
+                        Extract cds from consensus sequences with annotation 
+                        <pre><code> samtools faidx ANC.fasta
+ gffread -x ANC_polymorphism_cds.fasta -g ANC.fasta Cmac_Lome_annot.gff</code></pre>
+                    </li>
+                </ul>
+            </details>
             <li>Interpret results instructions <a href="https://mkado.readthedocs.io/en/latest/tutorial.html#interpreting-results">here</a></li>
         </ol>
     </li>
 </ol>
+</details>
 
 </body>
 </html>

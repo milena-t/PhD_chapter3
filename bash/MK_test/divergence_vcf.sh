@@ -18,11 +18,8 @@ QUERY_ASSEMBLY="${ASS_DIR}${SPECIES}.fasta.masked"
 REF_CMAC_ASSEMBLY="${ASS_DIR}C_maculatus.fasta.masked"
 
 ## mapping
-# Cmac needs to be ref so that it uses the Cmac contig coordinates
-minimap2 -cx asm20 --cs $REF_CMAC_ASSEMBLY $QUERY_ASSEMBLY > aln_${SPECIES}.paf
-
-## sorting alignment
-sort -k6,6 -k8,8n aln_${SPECIES}.paf > aln_${SPECIES}.srt.paf
+# Cmac needs to be ref so that it uses the Cmac contig coordinates and sort also by cmac scaffolds and coordinates
+minimap2 -cx asm20 --cs $REF_CMAC_ASSEMBLY $QUERY_ASSEMBLY | sort -k6,6 -k8,8n > aln_${SPECIES}.srt.paf
 echo "-------- ALIGNMENT STATS "
 # (needs k8)
 ${PAFTOOLS_PATH}paftools.js stat aln_${SPECIES}.srt.paf
