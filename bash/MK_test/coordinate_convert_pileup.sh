@@ -11,4 +11,4 @@
 
 cd /gorilla/proj/coleoptera-genomics-2025/snic2021-6-30/Milena/chapter3/revision/MK_test/npstat_MK_test
 
-CrossMap bam utg_to_superscaffold.chain UF-2981-ANC_S1_L001.bam assemblies/C_maculatus.fasta.masked UF-2981-ANC_S1_L001.superscaffolded.bam
+CrossMap bam utg_to_superscaffold.chain UF-2981-ANC_S1_L001.bam UF-2981-ANC_S1_L001.superscaffolded.bam
