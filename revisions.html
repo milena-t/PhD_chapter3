@@ -240,8 +240,6 @@ This doesn't need re-analysis but maybe some changes in the text to clarify.
     
 <h3>paml site models: positive selection</h3>
 
-<details>
-    <summary>This did not work out, toggle down for details </summary>
 
 <p>
     The reviewer is a bit vague here, but we interpret their comments to mean that they think the pairwise comparison does not offer enough statistical power to accurately infer positive selection, 
@@ -342,10 +340,14 @@ This doesn't need re-analysis but maybe some changes in the text to clarify.
 </p>
 
 
-</details>
 
 
 <h3>McDonald-Kreitmann test for positive selection</h3>
+
+This did not work out with our deadline but i really tried.
+
+<details>
+  <summary><code>npstat</code> using whole genome alignment (divergence) and mpileup (polymorphism)</summary>
 
 <p>
     Since it seems like the site-model is out, I will run the MK test instead and compare each species to <i>C. maculatus</i> instead. 
@@ -448,9 +450,14 @@ source maftools_venv_2.7/bin/activate</code></pre>
     
 </ol>
 
+</details>
+
 <details>
-    <summary>old approach with <a href="https://pypi.org/project/mkado/">mkado python library</a> that does not work for poolseq!</summary>
+  <summary><code>MKado</code> using divergence and polymorphism vcf (not suitable for poolseq as vcf)</summary>
+
+
     <p>
+        This is the first attempt with <a href="https://pypi.org/project/mkado/">mkado python library</a> that does not work for poolseq! <br>
         This is the pipeline to get polymorphism and divergence data in the form of vcf files and then run the test for all <i>C. maculatus</i> genes: 
     </p>
 <ol>
