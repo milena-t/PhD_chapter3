@@ -22,7 +22,7 @@ if [ 1 == 1 ] ; then
     # ${LAST_PATH}lastdb -P8 Cmacdb C_maculatus.fasta.masked
     
     echo "running ------- last-train "
-    # ${LAST_PATH}last-train -P8 --revsym -C2 Cmacdb ${SPECIES}.fasta.masked > C_maculatus_${SPECIES}.train
+    ${LAST_PATH}last-train -P8 --revsym -C2 Cmacdb ${SPECIES}.fasta.masked > C_maculatus_${SPECIES}.train
     echo "done ---------- last-train "
 
     # do alignment
