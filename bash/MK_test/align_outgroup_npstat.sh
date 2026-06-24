@@ -31,7 +31,7 @@ if [ false ] ; then
     echo "running ------- last-dotplot "
     ${LAST_PATH}last-dotplot out_${SPECIES}.maf out_${SPECIES}.png
     echo "done ---------- last-dotplot "
-done
+fi
 
 echo "running ------- check coverage"
 ${LAST_PATH}maf-convert bed out_${SPECIES}.maf > aln_${SPECIES}.bed
