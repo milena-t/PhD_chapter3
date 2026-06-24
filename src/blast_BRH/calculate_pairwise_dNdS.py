@@ -763,7 +763,8 @@ if __name__ == '__main__':
                         } 
         start_time = time.time()
         modify_paml_config(codeml_settings_dict=codeml_settings_dict, codeml_config_path=codeml_config, verbose=False)
-        codeml_command = "codeml > codeml.log"
+        codeml_command = f"{codeml_bin} > codeml.log"
+        
         if verbose:
             print(f"running: {codeml_command}")
         os.system(codeml_command) 
