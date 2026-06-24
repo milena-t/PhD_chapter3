@@ -4,8 +4,8 @@
 #SBATCH --mem=6G
 #SBATCH -t 1-00:00:00
 #SBATCH --mail-type=ALL
-#SBATCH -J run_site_model_bruchini
-#SBATCH -o run_site_model_bruchini.log
+#SBATCH -J run_branch_model_bruchini
+#SBATCH -o run_branch_model_bruchini.log
 
 
 IN_LIST=$@ # space separated list of filenames, do like 100 at a time
