@@ -18,7 +18,7 @@ cd $ASS_DIR
 
 # make reference database and train parameters on query species
 # ${LAST_PATH}lastdb -P8 Cmacdb C_maculatus.fasta.masked
-if [ 1 == 2 ] ; then
+if [ 1 == 1 ] ; then
     echo "running ------- last-train "
     ${LAST_PATH}last-train -P8 --revsym -C2 Cmacdb ${SPECIES}.fasta.masked > C_maculatus_${SPECIES}.train
     echo "done ---------- last-train "
