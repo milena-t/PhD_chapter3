@@ -85,6 +85,7 @@ The individual steps consist of:
     site_or_branch.add_argument('--branch_pairwise', action='store_true', help="if you run the branch model and there are only two species, you can choose to explicitly run in pairwise mode (runmode=-2 instead of runmode=1) which does not require a species tree")
     site_or_branch.add_argument('--branch_model', action='store_true', help="run codeml branch-model with model=1 and runmode=1 (suitable for pairwise and multi-species comparisons)")
     site_or_branch.add_argument('--site_model_LRT', action='store_true', help="run codeml site-model with M1a and M2a, do LRT and extract site-classes table")
+    site_or_branch.add_argument('--site_model_LRT_beta', action='store_true', help="run codeml site-model with M7 and M8 (beta distribution), do LRT and extract site-classes table")
 
     # paml_bin = parser.add_mutually_exclusive_group(required=False)
     parser.add_argument('--codemlbin', type=str, help="path to the codeml executeable")
@@ -118,8 +119,8 @@ The individual steps consist of:
     if not args.yn00bin:
         args.yn00bin = "yn00"
     if args.codeml:
-        if not args.branch_model and not args.site_model_LRT and not args.branch_pairwise:
-            raise RuntimeError(f"if you use --codeml, you need to specify if you want --branch_model, --branch_pairwise or --site_model_LRT !")
+        if not args.branch_model and not args.site_model_LRT and not args.branch_pairwise and not args.site_model_LRT_beta:
+            raise RuntimeError(f"if you use --codeml, you need to specify if you want --branch_model, --branch_pairwise, --site_model_LRT or --site_model_LRT_beta !")
     # if not args.verbose:
     #     args.verbose=False
     
@@ -363,7 +364,28 @@ def extract_np_lnL(path, verbose = False):
                 pass
         if not_found:
             raise RuntimeError(f"no lnL value found in {path}")
-        
+
+
+
+def extract_np_lnL_beta(path, verbose = False):
+    """
+    extract the lnL value from the codeml.out file for M7 and M8
+    """
+    with open(path, "r") as outfile:
+        lines = outfile.readlines()
+        not_found = True
+        for line in lines:
+            if line[:4] == "lnL0":
+                not_found=False
+                line = line.strip()
+                lnL = float(line.split()[-1])
+                if verbose:
+                    print(f"\t\tlnL: {lnL}")
+                return lnL
+            else:
+                pass
+        if not_found:
+            raise RuntimeError(f"no lnL value found in {path}")
 
 
 def calculate_LRT(lnL0:float, lnL1:float, df:int):
@@ -738,7 +760,7 @@ if __name__ == '__main__':
 
     ###################################
     ## codeml branch model
-    if run_codeml and not args.site_model_LRT:
+    if run_codeml and not args.site_model_LRT and not args.site_model_LRT_beta:
         if verbose:
             print(f"\n *  run codeml branch-model")
 
@@ -799,64 +821,96 @@ if __name__ == '__main__':
 
     ###################################
     ## codeml site classes
-    if run_codeml and args.site_model_LRT:
+    if run_codeml:
+        
+        if args.site_model_LRT:
+            nullname="M1a"
+            altname="M2a"
 
-        if verbose:
-            print(f"\n *  run codeml site-model")
+            if verbose:
+                print(f"\n *  run codeml site-model {nullname} vs. {altname}")
 
-        codeml_settings_dict_M1a = {"seqfile" : f"{pal2nal_loc}", 
-                        "treefile" : f"{tree_loc}",  
-                        "outfile" : "codeml_M1a.out", 
-                        "model" : "0", 
-                        "NSsites" : "1", # 1 for M1a and 2 for M2a
-                        "verbose" : "1",
-                        "seqtype" : "1",
-                        # "runmode" : "2", # 2 is an automatic run mode, the default is 0 which is a user generated tree. paml documentation p. 15: "The tree search options do not work well, and so use runmode = 0 as much as you can." :D
-                        "CodonFreq" : "2" 
-                        } 
-        codeml_settings_dict_M2a = {"seqfile" : f"{pal2nal_loc}", 
-                        "treefile" : f"{tree_loc}",  
-                        "outfile" : "codeml_M2a.out", 
-                        "model" : "0", 
-                        "NSsites" : "2", # 1 for M1a and 2 for M2a
-                        "verbose" : "1",
-                        "seqtype" : "1",
-                        # "runmode" : "2", # 2 is an automatic run mode, the default is 0 which is a user generated tree. paml documentation p. 15: "The tree search options do not work well, and so use runmode = 0 as much as you can." :D
-                        "CodonFreq" : "2" 
-                        }
-        codeml_settings_dict_both = {"seqfile" : f"{pal2nal_loc}", 
-                        "treefile" : f"{tree_loc}",  
-                        "outfile" : "codeml_M1a_M2a.out", 
-                        "model" : "0", 
-                        "NSsites" : "1 2", # 1 for M1a and 2 for M2a
-                        "verbose" : "1",
-                        "seqtype" : "1",
-                        # "runmode" : "2", # 2 is an automatic run mode, the default is 0 which is a user generated tree. paml documentation p. 15: "The tree search options do not work well, and so use runmode = 0 as much as you can." :D
-                        "CodonFreq" : "2" 
-                        }
+            codeml_settings_dict_null_model = {"seqfile" : f"{pal2nal_loc}", 
+                            "treefile" : f"{tree_loc}",  
+                            "outfile" : "codeml_M1a.out", 
+                            "model" : "0", 
+                            "NSsites" : "1", # 1 for M1a and 2 for M2a
+                            "verbose" : "1",
+                            "seqtype" : "1",
+                            # "runmode" : "2", # 2 is an automatic run mode, the default is 0 which is a user generated tree. paml documentation p. 15: "The tree search options do not work well, and so use runmode = 0 as much as you can." :D
+                            "CodonFreq" : "2" 
+                            } 
+            codeml_settings_dict_alt_model = {"seqfile" : f"{pal2nal_loc}", 
+                            "treefile" : f"{tree_loc}",  
+                            "outfile" : f"codeml_{nullname}.log", 
+                            "model" : "0", 
+                            "NSsites" : "2", # 1 for M1a and 2 for M2a
+                            "verbose" : "1",
+                            "seqtype" : "1",
+                            # "runmode" : "2", # 2 is an automatic run mode, the default is 0 which is a user generated tree. paml documentation p. 15: "The tree search options do not work well, and so use runmode = 0 as much as you can." :D
+                            "CodonFreq" : "2" 
+                            }
+            codeml_settings_dict_both = {"seqfile" : f"{pal2nal_loc}", 
+                            "treefile" : f"{tree_loc}",  
+                            "outfile" : f"codeml_{altname}.log", 
+                            "model" : "0", 
+                            "NSsites" : "1 2", # 1 for M1a and 2 for M2a
+                            "verbose" : "1",
+                            "seqtype" : "1",
+                            # "runmode" : "2", # 2 is an automatic run mode, the default is 0 which is a user generated tree. paml documentation p. 15: "The tree search options do not work well, and so use runmode = 0 as much as you can." :D
+                            "CodonFreq" : "2" 
+                            }
+
+        elif args.site_model_LRT_beta:
+            nullname="M7"
+            altname="M8"
+
+            if verbose:
+                print(f"\n *  run codeml site-model {nullname} vs. {altname}")
+
+            codeml_settings_dict_null_model = {"seqfile" : f"{pal2nal_loc}", 
+                            "treefile" : f"{tree_loc}",  
+                            "outfile" : f"codeml_{nullname}.log", 
+                            "model" : "0", 
+                            "NSsites" : "7", # 7 for model M7
+                            "verbose" : "1",
+                            "seqtype" : "1",
+                            # "runmode" : "2", # 2 is an automatic run mode, the default is 0 which is a user generated tree. paml documentation p. 15: "The tree search options do not work well, and so use runmode = 0 as much as you can." :D
+                            "CodonFreq" : "2" 
+                            } 
+            codeml_settings_dict_alt_model = {"seqfile" : f"{pal2nal_loc}", 
+                            "treefile" : f"{tree_loc}",  
+                            "outfile" : f"codeml_{altname}.log", 
+                            "model" : "0", 
+                            "NSsites" : "8", # 8 for model M8
+                            "verbose" : "1",
+                            "seqtype" : "1",
+                            # "runmode" : "2", # 2 is an automatic run mode, the default is 0 which is a user generated tree. paml documentation p. 15: "The tree search options do not work well, and so use runmode = 0 as much as you can." :D
+                            "CodonFreq" : "2" 
+                            }
         
 
         ## fit M1a and M2a separately
         ## --> do this and not combined outfile because this makes it easier to extract lnL and df for LRT
         if True:
             ## modify the codeml config file for M1a:
-            modify_paml_config(codeml_settings_dict=codeml_settings_dict_M1a, codeml_config_path=codeml_config, verbose=False)
+            modify_paml_config(codeml_settings_dict=codeml_settings_dict_null_model, codeml_config_path=codeml_config, verbose=False)
 
-            codeml_command_M1a = f"{codeml_bin} > codeml_M1a.log"
+            codeml_command_null_model = f"{codeml_bin} > codeml_{nullname}.log"
             if verbose:
-                print(f"\t - running sites-model M1a: {codeml_command_M1a}")
+                print(f"\t - running sites-model {nullname}: {codeml_command_null_model}")
             
             start_time = time.time()
-            os.system(codeml_command_M1a) ## this does not run on the login node on uppmax! Nothing happens, you have to run it as sbatch even for testing
+            os.system(codeml_command_null_model) ## this does not run on the login node on uppmax! Nothing happens, you have to run it as sbatch even for testing
 
             ## modify the codeml config file for M2a:
-            modify_paml_config(codeml_settings_dict=codeml_settings_dict_M2a, codeml_config_path=codeml_config, verbose=False)
+            modify_paml_config(codeml_settings_dict=codeml_settings_dict_alt_model, codeml_config_path=codeml_config, verbose=False)
 
-            codeml_command_M2a = f"{codeml_bin} > codeml_M2a.log"
+            codeml_command_alt_model = f"{codeml_bin} > codeml_{altname}.log"
             if verbose:
-                print(f"\t - running sites-model M2a: {codeml_command_M2a}")
+                print(f"\t - running sites-model {altname}: {codeml_command_alt_model}")
 
-            os.system(codeml_command_M2a) ## this does not run on the login node on uppmax! Nothing happens, you have to run it as sbatch even for testing
+            os.system(codeml_command_alt_model) ## this does not run on the login node on uppmax! Nothing happens, you have to run it as sbatch even for testing
             end_time = time.time()
         
         ## fit both at once and get a combined output file
@@ -875,15 +929,24 @@ if __name__ == '__main__':
         ####################
 
         ### likelihood_ratio_test
+        ## this is still called M1a/M2a in all the variables but if the beta site model is selected it uses the results for M7 and M8 respectively
+        ## The df=2 is the same for the LRT in either analysis accodring to the manual
         
         if verbose:
             print(f"\t - calculating likelihood ratio test")
 
-        M1a_out = codeml_settings_dict_M1a["outfile"]
-        M2a_out = codeml_settings_dict_M2a["outfile"]
+        M1a_out = codeml_settings_dict_null_model["outfile"]
+        M2a_out = codeml_settings_dict_alt_model["outfile"]
 
-        M1a_np, M1a_lnL = extract_np_lnL(M1a_out, verbose=False)
-        M2a_np, M2a_lnL = extract_np_lnL(M2a_out, verbose=False)
+        if args.site_model_LRT:
+            M1a_np, M1a_lnL = extract_np_lnL(M1a_out, verbose=False)
+            M2a_np, M2a_lnL = extract_np_lnL(M2a_out, verbose=False)
+        elif args.site_model_LRT_beta:
+            M1a_lnL = extract_np_lnL_beta(M1a_out, verbose=False)
+            M2a_lnL = extract_np_lnL_beta(M2a_out, verbose=False)
+            M1a_np = 0
+            M2a_np = 0
+
         # use df = 2 according to paml documentation, https://snoweye.github.io/phyclust/document/pamlDOC.pdf p. 28
         df = 2
         
@@ -908,6 +971,6 @@ if __name__ == '__main__':
             passed_time = end_time - start_time
             print(f"\t\tdone! codeml took {passed_time:.2f} seconds, or {passed_time/60.0:.2f} minutes")
         else:
-            print(f"command sites-model M1a: {codeml_command_M1a}")
-            print(f"command sites-model M2a: {codeml_command_M2a}")
+            print(f"command sites-model M1a: {codeml_command_null_model}")
+            print(f"command sites-model M2a: {codeml_command_alt_model}")
 
