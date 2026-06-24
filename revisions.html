@@ -410,6 +410,28 @@ This doesn't need re-analysis but maybe some changes in the text to clarify.
                 I am also making the dotplot
                 </span>
             </li>
+            <li>
+                Convert <code>.maf</code> alignment to gap-filled fasta with the same coordinates as the reference <i>C. maculatus</i> genome using 
+                <a href="https://github.com/dentearl/mafTools">mafTools</a>. it is python2.7 so i will use <code>Python/2.7.18-GCCcore-13.3.0</code>.
+                <details>
+                    <summary>install mafTools</summary>
+                    <p>
+                        it is python2.7 so i will use <code>Python/2.7.18-GCCcore-13.3.0</code> and make a virtual environment in <code>/proj/coleoptera-genomics-2025/snic2021-6-30/Milena/python_venvs</code>
+                    </p>
+                        <pre><code>python2.7 -m pip install virtualenv
+python2.7 -m virtualenv maftools_venv_2.7
+source maftools_venv_2.7/bin/activate</code></pre>
+                    <p>
+                        numpy and scipy are dependencies and i will install the most recent python2.7 compatible versions:
+                        <code>pip install "numpy==1.16.6"</code> and <code>pip install "scipy==1.2.3"</code>
+                    </p>
+                    <p>
+                        The sonLib depencency has to be installed in a sister-directory as per the instructions and that seems to work with also just <code>make</code>
+                    </p>
+                    <p>The path is: <br>
+                    <code>/proj/coleoptera-genomics-2025/snic2021-6-30/Milena/software_install/mafTools/mafTools/bin/mafToFastaStitcher</code></p>
+                </details>
+            </li>
         </ol>
     </li>
     <li>
