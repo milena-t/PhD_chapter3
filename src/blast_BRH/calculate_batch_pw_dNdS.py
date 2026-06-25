@@ -132,10 +132,6 @@ if __name__ == "__main__":
     ########## REVISIONS 
     
     if True:
-        x_paths_nested_dict = make_nested_lists(X_path) # include all species if not specified
-    
-        sp1_list=list(x_paths_nested_dict.keys())
-
         ########
         ## for testing purposes only do a few files of each pair
         ## if 0 then it takes all files, for a normal run
