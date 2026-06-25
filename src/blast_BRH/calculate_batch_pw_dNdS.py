@@ -136,7 +136,7 @@ if __name__ == "__main__":
         ## if 0 then it takes all files, for a normal run
         num_files = 0
         ########
-
+        os.chdir(outdir)
                 
         if chr_type == "A" and num_files == 0:
             ### split into several batches because it doesn't run with too many fasta files
@@ -159,6 +159,7 @@ if __name__ == "__main__":
                 os.system("sleep .5") # wait a little bit after each command so that the job manager can keep up
                 print(f"{dNdS_command[:1000]} ...")
                 i +=1
+
 
     else:
         
