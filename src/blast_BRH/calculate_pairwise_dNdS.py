@@ -821,7 +821,8 @@ if __name__ == '__main__':
 
     ###################################
     ## codeml site classes
-    if run_codeml:
+    run_site_model = args.site_model_LRT or args.site_model_LRT_beta
+    if run_codeml and run_site_model:
         
         if args.site_model_LRT:
             nullname="M1a"
