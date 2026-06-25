@@ -141,7 +141,7 @@ if __name__ == "__main__":
         if chr_type == "A" and num_files == 0:
             ### split into several batches because it doesn't run with too many fasta files
             print(datadir)
-            fastadir=f"{datadir}/bruchini_fasta_A"
+            fastadir=f"{datadir}bruchini_fasta_A/"
             print(fastadir)
             fasta_overall_list = [f"{fastadir}{f}" for f in os.listdir(fastadir)]#  if ".fasta" in f]
             print(fasta_overall_list[:10])
