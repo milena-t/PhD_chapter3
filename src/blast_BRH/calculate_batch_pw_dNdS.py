@@ -67,7 +67,7 @@ if __name__ == "__main__":
         # original pairwise
         # datadir = f"/proj/coleoptera-genomics-2025/snic2021-6-30/Milena/chapter3/dNdS_calculations/"
         # revisions
-        datadir = f"/proj/coleoptera-genomics-2025/snic2021-6-30/Milena/chapter3/revision/site_model_bruchini/"
+        datadir = f"/proj/coleoptera-genomics-2025/snic2021-6-30/Milena/chapter3/revision/site_model_bruchini/bruchini_fasta_A"
 
         bash_dir = f"/proj/coleoptera-genomics-2025/snic2021-6-30/Milena/chapter3/PhD_chapter3/bash"
         dNdS_exec = f"sbatch"
