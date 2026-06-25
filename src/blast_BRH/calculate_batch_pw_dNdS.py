@@ -88,8 +88,8 @@ if __name__ == "__main__":
     # analysis = "dNdS" ## codeml branch model
     
     #### revision
-    analysis = "M7-M8_LRT"
-    # analysis = "LRT"
+    # analysis = "M7-M8_LRT"
+    analysis = "LRT"
     # analysis = "dNdS"
     
     #######
