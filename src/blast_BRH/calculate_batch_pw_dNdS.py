@@ -141,7 +141,8 @@ if __name__ == "__main__":
                 
         if chr_type == "A" and num_files == 0:
             ### split into several batches because it doesn't run with too many fasta files
-            fasta_overall_list = [f"{datadir}{f}" for f in os.listdir(datadir) if ".fasta" in f]
+            print(datadir)
+            fasta_overall_list = [f"{datadir}{f}" for f in os.listdir(datadir)]#  if ".fasta" in f]
             print(fasta_overall_list[:10])
             i = 0
             for fasta_list in chunks(fasta_overall_list, 500):
