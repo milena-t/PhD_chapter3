@@ -149,7 +149,11 @@ if __name__ == "__main__":
             i = 0
             for fasta_list in chunks(fasta_overall_list, 500):
                 fasta_string = " ".join([f"{fasta}" for fasta in fasta_list])
-
+                print(i)
+                print(fasta_string[:200])
+                print()
+                i +=1
+                continue
                 
                 if pelle:
                     jobname = f"{i}_{analysis}_{chr_type}-linked"
