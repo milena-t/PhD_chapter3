@@ -100,13 +100,13 @@ if __name__ == "__main__":
     script_path = f"{bash_dir}/run_batch_{analysis}_bruchini_revision.sh"
     if analysis == "M7-M8_LRT":
         chr_type = "A"
-        outdir = f"{datadir}branch_model_res_{chr_type}/"
+        outdir = f"{datadir}site_model_beta_res_{chr_type}/"
     elif analysis == "LRT":
         chr_type = "A"
         outdir = f"{datadir}site_model_res_{chr_type}/"
     elif analysis == "dNdS":
         chr_type = "A"
-        outdir = f"{datadir}site_model_res_{chr_type}/"
+        outdir = f"{datadir}branch_model_res_{chr_type}/"
 
     ### original pairwise analysis
     ## done: A_dNdS, X_dNdS, X_LRT, A_LRT
@@ -160,8 +160,7 @@ if __name__ == "__main__":
                 print(f"{dNdS_command[:1000]} ...")
                 i +=1
         print(f"FILES IN : {outdir}")
-
-
+ 
 
     else:
         
