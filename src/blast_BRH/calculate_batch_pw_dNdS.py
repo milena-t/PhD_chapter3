@@ -67,7 +67,7 @@ if __name__ == "__main__":
         # original pairwise
         # datadir = f"/proj/coleoptera-genomics-2025/snic2021-6-30/Milena/chapter3/dNdS_calculations/"
         # revisions
-        datadir = f"/proj/coleoptera-genomics-2025/snic2021-6-30/Milena/chapter3/revision/site_model_bruchini/bruchini_fasta_A"
+        datadir = f"/proj/coleoptera-genomics-2025/snic2021-6-30/Milena/chapter3/revision/site_model_bruchini/"
 
         bash_dir = f"/proj/coleoptera-genomics-2025/snic2021-6-30/Milena/chapter3/PhD_chapter3/bash"
         dNdS_exec = f"sbatch"
@@ -124,7 +124,6 @@ if __name__ == "__main__":
     # X_path = f"{datadir}brh_sequences_{chr_type}_Dcar_X_syntenic/"
     # outdir = f"{datadir}brh_results_{chr_type}_Dcar_X_syntenic/"
 
-    os.chdir(outdir)
     # x_paths_nested_dict = make_nested_lists(X_path, include_list=["C_magnifica","C_septempunctata","T_castaneum","T_freemani"])
     # x_paths_nested_dict = make_nested_lists(X_path, include_list=["A_obtectus","B_siliquastri","C_chinensis","C_maculatus"])
     
@@ -142,7 +141,9 @@ if __name__ == "__main__":
         if chr_type == "A" and num_files == 0:
             ### split into several batches because it doesn't run with too many fasta files
             print(datadir)
-            fasta_overall_list = [f"{datadir}{f}" for f in os.listdir(datadir)]#  if ".fasta" in f]
+            fastadir=f"{datadir}/bruchini_fasta_A"
+            print(fastadir)
+            fasta_overall_list = [f"{fastadir}{f}" for f in os.listdir(fastadir)]#  if ".fasta" in f]
             print(fasta_overall_list[:10])
             i = 0
             for fasta_list in chunks(fasta_overall_list, 500):
@@ -165,7 +166,8 @@ if __name__ == "__main__":
                 i +=1
 
     else:
-
+        
+        os.chdir(outdir)
         x_paths_nested_dict = make_nested_lists(X_path) # include all species if not specified
         
         sp1_list=list(x_paths_nested_dict.keys())
