@@ -107,7 +107,6 @@ if __name__ == "__main__":
     elif analysis == "dNdS":
         chr_type = "A"
         outdir = f"{datadir}site_model_res_{chr_type}/"
-    X_path = f"{datadir}bruchini_fasta_{chr_type}/"
 
     ### original pairwise analysis
     ## done: A_dNdS, X_dNdS, X_LRT, A_LRT
