@@ -169,7 +169,7 @@ if __name__ == "__main__":
                 comm_spl=dNdS_command.split(" ")
                 print(len(comm_spl))
                 dNdS_command_print="\n".join(comm_spl)
-                print(f"\t{dNdS_command_print[:500]} ...\n")
+                print(f"\t{dNdS_command_print[:500]}...\n")
                 i +=1
         print(f"FILES IN : {outdir}")
 
