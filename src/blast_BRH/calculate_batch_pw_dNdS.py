@@ -50,8 +50,10 @@ def make_nested_lists(dir_path, include_list = []):
 
 def chunks(lst, n):
     """Yield successive n-sized chunks from lst."""
+    out_list = []
     for i in range(0, len(lst), n):
-        yield lst[i:i + n]
+        out_list.append(lst[i:i + n])
+    return out_list
 
 
 
