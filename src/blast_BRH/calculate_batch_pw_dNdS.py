@@ -167,7 +167,7 @@ if __name__ == "__main__":
                     os.system(dNdS_command)
                     os.system("sleep .5") # wait a little bit after each command so that the job manager can keep up
                 dNdS_command_print="\n".join(dNdS_command.split(" "))
-                print(f"\t{dNdS_command[:10]} ...\n")
+                print(f"\t{dNdS_command_print[:10]} ...\n")
                 i +=1
         print(f"FILES IN : {outdir}")
 
