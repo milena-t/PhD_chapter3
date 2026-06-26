@@ -163,8 +163,9 @@ if __name__ == "__main__":
                 else:
                     dNdS_command = f"{dNdS_exec} {script_path} {fasta_string}"
 
-                os.system(dNdS_command)
-                os.system("sleep .5") # wait a little bit after each command so that the job manager can keep up
+                if False:
+                    os.system(dNdS_command)
+                    os.system("sleep .5") # wait a little bit after each command so that the job manager can keep up
                 dNdS_command_print="\n".join(dNdS_command.split(" "))
                 print(f"\t{dNdS_command[:10]} ...\n")
                 i +=1
