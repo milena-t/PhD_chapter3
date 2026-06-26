@@ -253,6 +253,7 @@ This doesn't need re-analysis but maybe some changes in the text to clarify.
     A good description of paml useage is in the methods of <a href="https://doi.org/10.3390/genes9050234">Krasovec <i>et al.</i></a> (2018), but since they do multi-species comparison they use a 
     clustering approach to identify the 1-to-1 orthologs. I will group 1-to-1 orthologs present in all <i>Bruchini</i> species to compare the results there.
 </p>
+<p><b>TODO update numbers</b></p>
 
 <ol>
     <li>identify <i>Bruchini</i>-wide 1-to-1 orthologs and associate with ortholog pairs
@@ -289,58 +290,68 @@ This doesn't need re-analysis but maybe some changes in the text to clarify.
     </span>
 </ol>
 
-<h4>Compare the results of the 4-way 1-to-1 orthologs with the pairwise comparisons</h4>
-
-
-<p>    
-    I am checking for every 4-way ortholog, how many of the associated 6 pairs are under positive selection
-</p>
-
-<p float="left">
-  <img loading="lazy" src="data/revision_tests/codeml_pos_sel_ortholog_overlap.png" width="900px" />
-</p>
-
-
 <p>
-    I am re-doing my pairwise analysis with only the orthologs that are also part of the 4-way ortholog sets in <i>Bruchini</i> but the results stay the same, still a significant
-    enrichment of positively selected genes on the X.
+    I will run a comparison with the 4-speices <i>Bruchini</i> phylogeny. All the data on uppmax is here: <br>
+    <code>/proj/coleoptera-genomics-2025/snic2021-6-30/Milena/chapter3/revision/site_model_bruchini</code><br>
+    Something went wrong in batches 4 and 5, where it doesn't continue running more orthologs, unsure what and why. maybe skip problematic orthologIDs? check later ones in these batches
 </p>
+
 
 <details>
-    <summary>Toggle down for plot and reampling test</summary>
-    <p float="left">
-        <img loading="lazy" src="data/fastX_ortholog_ident/LRT_site_model_plot_bruchini_4_way_orthologs.png" width="800px" />
+
+    <summary>Compare the results of the 4-way 1-to-1 orthologs with the pairwise comparisons</summary>
+    
+    
+    <p>    
+        I am checking for every 4-way ortholog, how many of the associated 6 pairs are under positive selection
     </p>
-
-    <p>Everything stays the same just the sample sizes get smaller.</p>
-
-    <pre>
-        <code>
-    A_obtectus    vs. B_siliquastri     median(bin_A)-median(bin_X) -->  -0.0549, mean bootstrap diff =  0.00012 with CI [-0.02964,0.02989] --> SIGNIFICANT
-    A_obtectus    vs. C_chinensis       median(bin_A)-median(bin_X) -->  -0.0339, mean bootstrap diff = -0.00000 with CI [-0.02765,0.02765] --> SIGNIFICANT
-    A_obtectus    vs. C_maculatus       median(bin_A)-median(bin_X) -->  -0.0357, mean bootstrap diff =  0.00015 with CI [-0.02352,0.02382] --> SIGNIFICANT
-    B_siliquastri vs. C_chinensis       median(bin_A)-median(bin_X) -->  -0.0575, mean bootstrap diff = -0.00005 with CI [-0.03679,0.03669] --> SIGNIFICANT
-    B_siliquastri vs. C_maculatus       median(bin_A)-median(bin_X) -->  -0.0445, mean bootstrap diff = -0.00039 with CI [-0.03154,0.03076] --> SIGNIFICANT
-    C_chinensis   vs. C_maculatus       median(bin_A)-median(bin_X) -->  -0.0718, mean bootstrap diff = -0.00044 with CI [-0.04355,0.04266] --> SIGNIFICANT</code>
-    </pre>
-
+    
+    <p float="left">
+        <img loading="lazy" src="data/revision_tests/codeml_pos_sel_ortholog_overlap.png" width="900px" />
+    </p>
+    
+    
+    <p>
+        I am re-doing my pairwise analysis with only the orthologs that are also part of the 4-way ortholog sets in <i>Bruchini</i> but the results stay the same, still a significant
+        enrichment of positively selected genes on the X.
+    </p>
+    
+    <details>
+        <summary>Toggle down for plot and reampling test</summary>
+        <p float="left">
+            <img loading="lazy" src="data/fastX_ortholog_ident/LRT_site_model_plot_bruchini_4_way_orthologs.png" width="800px" />
+        </p>
+        
+        <p>Everything stays the same just the sample sizes get smaller.</p>
+        
+        <pre>
+            <code>
+                A_obtectus    vs. B_siliquastri     median(bin_A)-median(bin_X) -->  -0.0549, mean bootstrap diff =  0.00012 with CI [-0.02964,0.02989] --> SIGNIFICANT
+                A_obtectus    vs. C_chinensis       median(bin_A)-median(bin_X) -->  -0.0339, mean bootstrap diff = -0.00000 with CI [-0.02765,0.02765] --> SIGNIFICANT
+                A_obtectus    vs. C_maculatus       median(bin_A)-median(bin_X) -->  -0.0357, mean bootstrap diff =  0.00015 with CI [-0.02352,0.02382] --> SIGNIFICANT
+                B_siliquastri vs. C_chinensis       median(bin_A)-median(bin_X) -->  -0.0575, mean bootstrap diff = -0.00005 with CI [-0.03679,0.03669] --> SIGNIFICANT
+                B_siliquastri vs. C_maculatus       median(bin_A)-median(bin_X) -->  -0.0445, mean bootstrap diff = -0.00039 with CI [-0.03154,0.03076] --> SIGNIFICANT
+                C_chinensis   vs. C_maculatus       median(bin_A)-median(bin_X) -->  -0.0718, mean bootstrap diff = -0.00044 with CI [-0.04355,0.04266] --> SIGNIFICANT</code>
+            </pre>
+            
+        </details>
+        
+        <p>
+            I might also try the branch-site model, where i specify a foreground branch to compare to the new pairwise ortholog. 
+            However you are really not supposed to just test every possible foreground branch for detection of positive selection
+            like i would have to, but instead have a prior hypothesis of one or a few to try that are biologically interesting. 
+        </p>
+        
+        <p>
+            I am testing how correlated the 4-way ω<sub>0</sub> are with the mean ω<sub>0</sub> of all associated pairs and it's bad :(
+            </p>
+            
+            <p float="left">
+                <img loading="lazy" src="data/revision_tests/site_model_comparison.png" width="450px" />
+            </p>
+            
+            
 </details>
-
-<p>
-    I might also try the branch-site model, where i specify a foreground branch to compare to the new pairwise ortholog. 
-    However you are really not supposed to just test every possible foreground branch for detection of positive selection
-    like i would have to, but instead have a prior hypothesis of one or a few to try that are biologically interesting. 
-</p>
-
-<p>
-    I am testing how correlated the 4-way ω<sub>0</sub> are with the mean ω<sub>0</sub> of all associated pairs and it's bad :(
-</p>
-
-<p float="left">
-    <img loading="lazy" src="data/revision_tests/site_model_comparison.png" width="450px" />
-</p>
-
-
 
 
 <h3>McDonald-Kreitmann test for positive selection</h3>
