@@ -12,8 +12,8 @@ def get_log_file_paths(username="miltr339"):
     out_dict = {
         "A" : f"/Users/{username}/work/chapter3/dNdS/site_model_A_all_log_files.out",
         "X" : f"/Users/{username}/work/chapter3/dNdS/site_model_X_all_log_files.out",
-        "A_rev" : f"/Users/{username}/work/pairwise_blast_chapter_2_3/brh_tables/bruchini_seqs_revision_A/run.log",
-        "X_rev" : f"/Users/{username}/work/pairwise_blast_chapter_2_3/brh_tables/bruchini_seqs_revision_X/run.log",
+        "A_rev" : f"/Users/{username}/work/pairwise_blast_chapter_2_3/brh_tables/bruchini_seqs_revision_A/run_site_model.log",
+        "X_rev" : f"/Users/{username}/work/pairwise_blast_chapter_2_3/brh_tables/bruchini_seqs_revision_X/run_site_model.log",
     }
     return out_dict
 
@@ -136,8 +136,8 @@ if __name__ == "__main__":
         "X_LRT" : f"/Users/{username}/work/pairwise_blast_chapter_2_3/brh_tables/brh_results_X/site_classes_summary_X-linked.txt",
         "A_LRT_BH_corr" : f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/site_classes_summary_A_BH_corrected.txt",
         "X_LRT_BH_corr" : f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/site_classes_summary_X_BH_corrected.txt",
-        "A_rev_LRT" : f"/Users/{username}/work/pairwise_blast_chapter_2_3/brh_tables/brh_results_A/site_classes_summary_A-linked.txt",
-        "X_rev_LRT" : f"/Users/{username}/work/pairwise_blast_chapter_2_3/brh_tables/brh_results_X/site_classes_summary_X-linked.txt",
+        # "A_rev_LRT" : f"/Users/{username}/work/pairwise_blast_chapter_2_3/brh_tables/brh_results_A/site_classes_summary_A-linked.txt",
+        # "X_rev_LRT" : f"/Users/{username}/work/pairwise_blast_chapter_2_3/brh_tables/brh_results_X/site_classes_summary_X-linked.txt",
         "A_rev_LRT_BH_corr" : f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/bruchini_rev_site_classes_summary_A_BH_corrected.txt",
         "X_rev_LRT_BH_corr" : f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/bruchini_rev_site_classes_summary_X_BH_corrected.txt",
         "A_list_rev" : f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/bruchini_rev_site_classes_list_A_BH_corrected.txt",
@@ -145,7 +145,7 @@ if __name__ == "__main__":
     }
 
     chromosomes = ["X", "A"]
-    # chromosomes = ["X"]
+    ## original analysis
     if False:
         for chromosome in chromosomes:
             print(f"////////////////////////// {chromosome} //////////////////////////")
@@ -157,8 +157,16 @@ if __name__ == "__main__":
     ## revisions
     if True:
         for chromosome in chromosomes:
+            
             print(f"////////////////////////// {chromosome} //////////////////////////")
             pvals_dict = get_pvals_dict_from_log(log_file_path=log_paths_dict[f"{chromosome}_rev"])
             bh_pvals_dict = multiple_testing_correction(pvals_dict)
+            i = 0
+            for ortholog,pval in pvals_dict.items():
+                pval_bh = bh_pvals_dict[ortholog]
+                if pval<0.1 and i<25:
+                    print(f"\t({i}) {ortholog} :\t{pval}, \tbh-corrected: {pval_bh:.5f}")
+                    i+=1
             pos_sel_orthologs = write_output(bh_pvals_dict, p_sig=p_sig, outfile_path=files[f"{chromosome}_list_rev"])
-            modify_original_file(site_classes_path=files[f"{chromosome}_rev_LRT"], bh_pos_sel_orthologs=pos_sel_orthologs, outfile=files[f"{chromosome}_rev_LRT_BH_corr"])
+            ## 
+            # modify_original_file(site_classes_path=files[f"{chromosome}_rev_LRT"], bh_pos_sel_orthologs=pos_sel_orthologs, outfile=files[f"{chromosome}_rev_LRT_BH_corr"])

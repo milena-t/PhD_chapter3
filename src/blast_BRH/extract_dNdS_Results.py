@@ -328,9 +328,11 @@ if __name__ == "__main__":
                 get_dNdS_values_by_ortholog(results_path_dNdS, outfile_name= f"dNdS_by_{chr_type}_ortholog_pairwise_revisions.txt", file_prefix="2ML")
         if True:
             ## site-model
-            chr_types = ["X","A"]
+            # chr_types = ["X","A"]
+            chr_types = ["A"]
             for chr_type in chr_types:
-                results_path_LRT = f"/Users/{username}/work/pairwise_blast_chapter_2_3/brh_tables/bruchini_seqs_revision_{chr_type}/results_site_model_{chr_type}"
+                #results_path_LRT = f"/Users/{username}/work/pairwise_blast_chapter_2_3/brh_tables/bruchini_seqs_revision_{chr_type}/results_site_model_{chr_type}"
+                results_path_LRT = "/proj/coleoptera-genomics-2025/snic2021-6-30/Milena/chapter3/revision/site_model_bruchini/site_model_res_A"
                 print(f"\n//////////////////// {chr_type} ////////////////////\n")
                 get_site_classes_multi_species_comparison(results_path_LRT, outfile_name= f"site_classes_summary_{chr_type}-linked.txt")
 
