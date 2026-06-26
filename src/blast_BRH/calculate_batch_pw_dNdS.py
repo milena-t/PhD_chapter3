@@ -144,11 +144,12 @@ if __name__ == "__main__":
             fastadir=f"{datadir}bruchini_fasta_A/"
             print(fastadir)
             fasta_overall_list = [f"{fastadir}{f}" for f in os.listdir(fastadir)  if ".fasta" in f]
-            print(fasta_overall_list[:10])
+            print(f"{len(fasta_overall_list)} fasta files: {fasta_overall_list[:10]}...\n")
             i = 0
             for fasta_list in chunks(fasta_overall_list, 500):
+                print(f"\t * {len(fasta_list)} fasta list: {fasta_list[:2]}...")
+                continue
                 fasta_string = " ".join([f"{fasta}" for fasta in fasta_list])
-                
                 if pelle:
                     jobname = f"{i}_{analysis}_{chr_type}-linked"
                     dNdS_command = f"{dNdS_exec} -J {jobname} -o {jobname}.out {script_path} {fasta_string}"
@@ -160,7 +161,8 @@ if __name__ == "__main__":
                 print(f"{dNdS_command[:1000]} ...")
                 i +=1
         print(f"FILES IN : {outdir}")
- 
+
+    ########## ORIGINAL PAIRWISE ANALYSIS
 
     else:
         
