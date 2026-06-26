@@ -91,8 +91,8 @@ if __name__ == "__main__":
     
     #### revision
     # analysis = "M7-M8_LRT"
-    # analysis = "LRT"
-    analysis = "dNdS"
+    analysis = "LRT"
+    # analysis = "dNdS"
     
     #######
     ###############
