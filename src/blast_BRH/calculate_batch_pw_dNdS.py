@@ -90,9 +90,9 @@ if __name__ == "__main__":
     # analysis = "dNdS" ## codeml branch model
     
     #### revision
-    analysis = "M7-M8_LRT"
+    # analysis = "M7-M8_LRT"
     # analysis = "LRT"
-    # analysis = "dNdS"
+    analysis = "dNdS"
     
     #######
     ###############
@@ -163,7 +163,7 @@ if __name__ == "__main__":
                 else:
                     dNdS_command = f"{dNdS_exec} {script_path} {fasta_string}"
 
-                if False:
+                if True:
                     os.system(dNdS_command)
                     os.system("sleep .5") # wait a little bit after each command so that the job manager can keep up
                 comm_spl=dNdS_command.split(" ")
