@@ -46,6 +46,7 @@
 import argparse
 from Bio import SeqIO, AlignIO
 from Bio.SeqRecord import SeqRecord
+from Bio.Seq import Seq
 import os
 import subprocess
 import re
@@ -264,7 +265,7 @@ def make_proteinfasta(cds_fasta_path, outdir, auto_modify_headers = False):
         nuc_records = []
     
     for i, seq_record in enumerate(SeqIO.parse(cds_fasta_path, "fasta")):
-        prot_record = SeqRecord("")
+        prot_record = SeqRecord(Seq(""), id="")
         # to avoid some weird in-place editing of the nucleotide SeqRecords I am doing it this way
         try:
             nuc_seq = seq_record.seq
