@@ -158,6 +158,7 @@ if __name__ == "__main__":
                 ## re-do 4 and 5
                 if i not in [4,5]:
                     print(f"skip : {i}")
+                    i +=1
                     continue
 
                 print(f"\t * {len(fasta_list_sublist)} fasta list: {fasta_list_sublist[0]}...")
