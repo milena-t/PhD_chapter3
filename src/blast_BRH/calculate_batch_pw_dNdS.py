@@ -157,11 +157,13 @@ if __name__ == "__main__":
 
                 ## re-do 4 and 5
                 if i not in [4,5]:
+                    print("------------------------------")
                     print(f"skip : {i}")
                     i +=1
                     continue
 
-                print(f"\t * {len(fasta_list_sublist)} fasta list: {fasta_list_sublist[0][50:]}...{fasta_list_sublist[-1][50:]}")
+                print("------------------------------")
+                print(f"\t * {len(fasta_list_sublist)} fasta list: {fasta_list_sublist[0][51:]}...{fasta_list_sublist[-1][51:]}")
                 fasta_string = " ".join(fasta_list_sublist)
                 if pelle:
                     jobname = f"{i}_{analysis}_{chr_type}-linked"
