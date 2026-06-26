@@ -90,8 +90,8 @@ if __name__ == "__main__":
     # analysis = "dNdS" ## codeml branch model
     
     #### revision
-    analysis = "M7-M8_LRT"
-    # analysis = "LRT"
+    # analysis = "M7-M8_LRT"
+    analysis = "LRT"
     # analysis = "dNdS"
     
     #######
@@ -161,7 +161,7 @@ if __name__ == "__main__":
                     i +=1
                     continue
 
-                print(f"\t * {len(fasta_list_sublist)} fasta list: {fasta_list_sublist[0]}...")
+                print(f"\t * {len(fasta_list_sublist)} fasta list: {fasta_list_sublist[0][50:]}...{fasta_list_sublist[-1][50:]}")
                 fasta_string = " ".join(fasta_list_sublist)
                 if pelle:
                     jobname = f"{i}_{analysis}_{chr_type}-linked"
