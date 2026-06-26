@@ -152,10 +152,11 @@ if __name__ == "__main__":
                 
             i = 0
             sep_lists = chunks(fasta_unique_list, 500)
-            for fasta_list in sep_lists:
-                print(f"\t * {len(fasta_list)} fasta list: {fasta_list[0]}...")
+            print(f"run {len(sep_lists)} jobs ... \n")
+            for fasta_list_sublist in sep_lists:
 
-                fasta_string = " ".join([f"{fasta}" for fasta in fasta_list])
+                print(f"\t * {len(fasta_list_sublist)} fasta list: {fasta_list_sublist[0]}...")
+                fasta_string = " ".join(fasta_list_sublist)
                 if pelle:
                     jobname = f"{i}_{analysis}_{chr_type}-linked"
                     dNdS_command = f"{dNdS_exec} -J {jobname} -o {jobname}.out {script_path} {fasta_string}"
@@ -164,7 +165,8 @@ if __name__ == "__main__":
 
                 os.system(dNdS_command)
                 os.system("sleep .5") # wait a little bit after each command so that the job manager can keep up
-                print(f"{dNdS_command[:1000]} ...")
+                dNdS_command_print="\n".join(dNdS_command.split(" "))
+                print(f"\t{dNdS_command[:10]} ...\n")
                 i +=1
         print(f"FILES IN : {outdir}")
 
