@@ -147,11 +147,12 @@ if __name__ == "__main__":
             print(fastadir)
             fasta_overall_list = [f"{fastadir}{f}" for f in os.listdir(fastadir)  if ".fasta" in f]
             print(f"{len(fasta_overall_list)} fasta files: {fasta_overall_list[:10]}...\n")
-            fasta_unique_list = list(set(fasta_overall_list))
+            
+            fasta_unique_list = sorted(list(set(fasta_overall_list)))
             print(f"\n{len(fasta_unique_list)} unique fasta files: {fasta_unique_list[:10]}...\n")
                 
             i = 0
-            sep_lists = chunks(fasta_overall_list, 500)
+            sep_lists = chunks(fasta_unique_list, 500)
             for fasta_list in sep_lists:
                 print(f"\t * {len(fasta_list)} fasta list: {fasta_list[:2]}...")
                 continue
