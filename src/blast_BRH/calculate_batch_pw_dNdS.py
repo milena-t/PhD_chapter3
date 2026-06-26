@@ -155,6 +155,11 @@ if __name__ == "__main__":
             print(f"run {len(sep_lists)} jobs ... \n")
             for fasta_list_sublist in sep_lists:
 
+                ## re-do 4 and 5
+                if i not in [4,5]:
+                    print(f"skip : {i}")
+                    continue
+
                 print(f"\t * {len(fasta_list_sublist)} fasta list: {fasta_list_sublist[0]}...")
                 fasta_string = " ".join(fasta_list_sublist)
                 if pelle:
