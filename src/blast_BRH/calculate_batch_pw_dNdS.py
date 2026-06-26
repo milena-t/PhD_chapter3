@@ -91,8 +91,8 @@ if __name__ == "__main__":
     
     #### revision
     # analysis = "M7-M8_LRT"
-    analysis = "LRT"
-    # analysis = "dNdS"
+    # analysis = "LRT"
+    analysis = "dNdS"
     
     #######
     ###############
@@ -175,7 +175,7 @@ if __name__ == "__main__":
                 comm_spl=dNdS_command.split(" ")
                 print(len(comm_spl))
                 dNdS_command_print="\n".join(comm_spl)
-                print(f"\t{dNdS_command_print[:500]}...\n")
+                print(f"\t{dNdS_command_print[:500]}...{dNdS_command_print[-50:]}\n")
                 i +=1
         print(f"FILES IN : {outdir}")
 
