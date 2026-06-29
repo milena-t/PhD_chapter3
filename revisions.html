@@ -253,7 +253,6 @@ This doesn't need re-analysis but maybe some changes in the text to clarify.
     A good description of paml useage is in the methods of <a href="https://doi.org/10.3390/genes9050234">Krasovec <i>et al.</i></a> (2018), but since they do multi-species comparison they use a 
     clustering approach to identify the 1-to-1 orthologs. I will group 1-to-1 orthologs present in all <i>Bruchini</i> species to compare the results there.
 </p>
-<p><b>TODO update numbers</b></p>
 
 <ol>
     <li>identify <i>Bruchini</i>-wide 1-to-1 orthologs and associate with ortholog pairs
@@ -283,7 +282,7 @@ This doesn't need re-analysis but maybe some changes in the text to clarify.
                 <li><b>Autosomes:</b> 1675 under pos. sel, 4826 not</li>
                 <li><b>X-chromosome:</b> 74 under pos. sel, 200 not</li>
             </ul>
-            <p>No enrichment of positively selected genes on the X (code in <code>src/plotting/plot_revision_test.py</code></p>
+            <p>No enrichment of positively selected genes on the X (code in <code>src/plotting/plot_revision_test.py</code>)</p>
 
             <pre><code>bootstrap_pos_sel(X_data={"pos_sel" : 74 , "non_pos_sel" : 200}, A_data={"pos_sel" : 1675 , "non_pos_sel" : 4826}, num_permutations=10000)
 """
@@ -298,7 +297,7 @@ mean bootstrap diff = 0.00046 with CI [-0.05247,0.05339] --> (nonsignificant)
                 <li><b>Autosomes:</b> 182 under pos. sel, 5531 not</li>
                 <li><b>X-chromosome:</b> 6 under pos. sel, 268 not</li>
             </ul>
-            <p>No enrichment of positively selected genes on the X (code in <code>src/plotting/plot_revision_test.py</code></p>
+            <p>No enrichment of positively selected genes on the X (code in <code>src/plotting/plot_revision_test.py</code>)</p>
 
             <pre><code>bootstrap_pos_sel(X_data={"pos_sel" : 6 , "non_pos_sel" : 268}, A_data={"pos_sel" : 60 , "non_pos_sel" : 1881}, num_permutations=10000)
 """
@@ -315,16 +314,14 @@ mean bootstrap diff = -0.00006 with CI [-0.02177,0.02166] --> (nonsignificant)
           </div>
           
     <p>
-        I will continue with H<sub>0</sub>(M7) vs. H<sub>1</sub>(M8). After multiple testing correction, H<sub>0</sub>(M1a) vs. H<sub>1</sub>(M2a) has so few genes under positive selection
+        I will continue with <b>H<sub>0</sub>(M7) vs. H<sub>1</sub>(M8)</b>. After multiple testing correction, H<sub>0</sub>(M1a) vs. H<sub>1</sub>(M2a) has so few genes under positive selection
         it is mostly useless for analysis. Neither shows a significant difference in the proportion of genes under positive selection between X-chromosome and autosomes.
     </p>  
     </li>
 </ol>
 
 <p>
-    I will run a comparison with the 4-speices <i>Bruchini</i> phylogeny. All the data on uppmax is here: <br>
-    <code>/proj/coleoptera-genomics-2025/snic2021-6-30/Milena/chapter3/revision/site_model_bruchini/*res_A.out</code><br>
-    Something went wrong in batches 4 and 5, where it doesn't continue running more orthologs, unsure what and why. maybe skip problematic orthologIDs? check later ones in these batches
+    
 </p>
 
 
@@ -387,7 +384,9 @@ mean bootstrap diff = -0.00006 with CI [-0.02177,0.02166] --> (nonsignificant)
 
 <h3>McDonald-Kreitmann test for positive selection</h3>
 
-This did not work out with our deadline but i really tried.
+This did not work out with our deadline but i really tried. There are existing software packages, but none of them work with existing aligned orthologs (<code>npstat</code> requires WGA for divergence instead) and
+pool-seq for polymorphism (<code>MKado</code> requires individual sequencing). I would have to write something from scratch to make the 2-way contingency table by counting the SNPs in the exon regions 
+from the pool seq and counting the divergent sites from the codon-based ortholog alignments and that is super difficult to get right i think and would therefore probably take a long time. 
 
 <details>
   <summary><code>npstat</code> using whole genome alignment (divergence) and mpileup (polymorphism)</summary>
