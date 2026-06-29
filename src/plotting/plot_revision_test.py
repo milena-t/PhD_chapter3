@@ -170,9 +170,45 @@ def make_4way_bin_tuples(four_way_orthologs_IDs:str, four_way_pos_sel:str, speci
             pos_sel_genes.append(([Aobt,Bsil,Cchi,Cmac],pos_sel))
             pos_sel_genes_sp_split["A_obtectus"][Aobt] = pos_sel
             pos_sel_genes_sp_split["B_siliquastri"][Bsil] = pos_sel
-            pos_sel_genes_sp_split["C_maculatus"][Cchi] = pos_sel
-            pos_sel_genes_sp_split["C_chinensis"][Cmac] = pos_sel
+            pos_sel_genes_sp_split["C_maculatus"][Cmac] = pos_sel
+            pos_sel_genes_sp_split["C_chinensis"][Cchi] = pos_sel
     print(f"{count} 4-way orthogroups failed the paml run or i did not run them because i was impatient")
+    return pos_sel_genes
+
+
+def make_4way_bin_tuples_beta(four_way_orthologs_IDs:str, four_way_pos_sel:str, species_list:list):
+    """
+    make dict for every geneID in the four-way orthologs that assigns positive selection, separated by species
+    Formatting assumes the outfile after multiple testing correction, which is just ortholog\tTRUE (or FALSE)
+    returns { species : {geneID:True, geneID:False, ...}, ...} with True and False showing positive selection
+    """
+    sel_bin_dir = {"FALSE" : False, "TRUE" : True}
+    # read pos_sel_ortholog_IDs into dict like {ortholog_ID : True} for pos. sel.=True or false
+    pos_sel_IDs_dict = {}
+    with open(four_way_pos_sel, "r") as pos_sel_IDs_file:
+        for line in pos_sel_IDs_file.readlines():
+            OG_id,bool_ = line.split("_dNdS/")
+            bool_ = bool_.strip()
+            OG_id = OG_id.split("_")[-1]
+            pos_sel_IDs_dict[OG_id] = sel_bin_dir[bool_]
+
+    # get dict with pos sel IDs
+    pos_sel_genes_sp_split = {species : {} for species in species_list}
+    pos_sel_genes = []
+    count = 0
+    with open(four_way_orthologs_IDs, "r") as orthologs_IDs_file:
+        for line in orthologs_IDs_file.readlines():
+            OG_id,chromosome,Aobt,Bsil,Cchi,Cmac = line.strip().split(",")
+            try:
+                pos_sel = pos_sel_IDs_dict[OG_id]
+            except: 
+                count +=1
+                continue
+            pos_sel_genes.append(([Aobt,Bsil,Cchi,Cmac],pos_sel))
+            pos_sel_genes_sp_split["A_obtectus"][Aobt] = pos_sel
+            pos_sel_genes_sp_split["B_siliquastri"][Bsil] = pos_sel
+            pos_sel_genes_sp_split["C_maculatus"][Cmac] = pos_sel
+            pos_sel_genes_sp_split["C_chinensis"][Cchi] = pos_sel
     return pos_sel_genes
 
 
@@ -229,11 +265,15 @@ def make_pairwise_bin_dict(pairwise_orthologs_IDs:str, pairwise_pos_sel:str, spe
 
 
 
-def plot_pos_sel_overlap_bruchini(four_way_orthologs_IDs:str, four_way_pos_sel:str, pairwise_orthologs_IDs:str, pairwise_pos_sel:str, species_list:list, pairs_list:list, filename = ""):
+def plot_pos_sel_overlap_bruchini(four_way_orthologs_IDs:str, four_way_pos_sel:str, pairwise_orthologs_IDs:str, pairwise_pos_sel:str, species_list:list, pairs_list:list, filename = "", beta_site_model=False):
     """
     plot the number of pairwise positive selection for every 4-way ortholog
     """
-    four_way_pos_sel_genes = make_4way_bin_tuples(four_way_orthologs_IDs=four_way_orthologs_IDs, four_way_pos_sel=four_way_pos_sel, species_list=species_list)
+    if beta_site_model:
+        print(f"--> run beta distribution results!")
+        four_way_pos_sel_genes = make_4way_bin_tuples_beta(four_way_orthologs_IDs=four_way_orthologs_IDs, four_way_pos_sel=four_way_pos_sel, species_list=species_list)
+    else:
+        four_way_pos_sel_genes = make_4way_bin_tuples(four_way_orthologs_IDs=four_way_orthologs_IDs, four_way_pos_sel=four_way_pos_sel, species_list=species_list)
     pairwise_pos_sel_genes = make_pairwise_bin_dict(pairwise_orthologs_IDs=pairwise_orthologs_IDs, pairwise_pos_sel=pairwise_pos_sel, species_list=species_list)
 
     print(f"\nFOUR-WAY ANALYSIS")
@@ -506,16 +546,69 @@ def plot_omega_association(ortholog_IDs_association, site_classes_pairsX, site_c
     print(f"plot saved in current working directory as: {filename}")
 
 
+def make_Cmac_pos_sel_IDs_list(four_way_orthologs_IDs:str, four_way_pos_sel:str, outfile_prefix:str):
+    """
+    make dict for every geneID in the four-way orthologs that assigns positive selection, separated by species
+    Formatting assumes the outfile after multiple testing correction, which is just ortholog\tTRUE (or FALSE)
+    returns { species : {geneID:True, geneID:False, ...}, ...} with True and False showing positive selection
+    """
+    sel_bin_dir = {"FALSE" : False, "TRUE" : True}
+    # read pos_sel_ortholog_IDs into dict like {ortholog_ID : True} for pos. sel.=True or false
+    pos_sel_IDs_dict = {}
+    with open(four_way_pos_sel, "r") as pos_sel_IDs_file:
+        for line in pos_sel_IDs_file.readlines():
+            OG_id,bool_ = line.split("_dNdS/")
+            bool_ = bool_.strip()
+            OG_id = OG_id.split("_")[-1]
+            pos_sel_IDs_dict[OG_id] = sel_bin_dir[bool_]
+
+    # get dict with pos sel IDs
+
+    geneIDs_lists = {True : {"X" : [], "A" : []}, False : {"X" : [], "A" : []}} #True/False for positively selected
+    count = 0
+    with open(four_way_orthologs_IDs, "r") as orthologs_IDs_file:
+        for line in orthologs_IDs_file.readlines():
+            OG_id,chromosome,Aobt,Bsil,Cchi,Cmac = line.strip().split(",")
+            try:
+                pos_sel = pos_sel_IDs_dict[OG_id]
+            except: 
+                count +=1
+                continue
+            geneIDs_lists[pos_sel][chromosome].append(Cmac)
+    
+    outfiles_dict = {True : 
+        {
+            "X" : f"{outfile_prefix}_sig_X.txt", 
+            "A" : f"{outfile_prefix}_sig_A.txt"
+        }, 
+        False : 
+        {
+            "X" : f"{outfile_prefix}_all_X.txt", 
+            "A" : f"{outfile_prefix}_all_A.txt"
+        }
+    } 
+
+    for pos_sel, chr_dicts in geneIDs_lists.items():
+        for chromosome, geneIDs_list in chr_dicts.items():
+            with open(outfiles_dict[pos_sel][chromosome], "w") as outfile:
+                outfile.write(",".join(geneIDs_list)+"\n")
+                print(f"pos.sel '{pos_sel}' {chromosome} outfile written to {outfiles_dict[pos_sel][chromosome]}")
+
+    print(f"{count} 4-way orthogroups could not be included")
+    
+    return geneIDs_lists
+
+
 if __name__ == "__main__":
 
-    # username = "miltr339"
-    username = "milena"
+    username = "miltr339"
+    # username = "milena"
     paths = in_paths(username=username)
 
     if False:
         # plot the correlation of codeml dN and dS values for pairwise comparisons of runmode=1 and runmode=-2
         plot_correlation(def_file=paths["default"], pair_file=paths["pairwise"], filename=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/revision_tests/codeml_dNdS_correlation.png")
-    if True:
+    if False:
         # do permutation test on the 4-way 1-to-1 orthologs in Bruchini
         ## M1a vs. M2a (not multiple testing corrected!)
         bootstrap_pos_sel(X_data={"pos_sel" : 6 , "non_pos_sel" : 268}, A_data={"pos_sel" : 60 , "non_pos_sel" : 1881}, num_permutations=10000)
@@ -524,6 +617,7 @@ if __name__ == "__main__":
     
     four_way_ortholog_IDs=f"/Users/{username}/work/pairwise_blast_chapter_2_3/brh_tables/bruchini_orthologs.csv"
     four_way_pos_sel=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/site_classes_bruchini_all_orthologs_pos_sel_no_err.txt"
+    four_way_pos_sel_beta=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/site_classes_beta_bruchini_all_orthologs_pos_sel.txt"
     pairwise_ortholog_IDs=f"/Users/{username}/work/pairwise_blast_chapter_2_3/brh_tables/pairwise_ortholog_IDs_association.txt"
     pairwise_ortholog_IDs_4way_filt = f"/Users/{username}/work/pairwise_blast_chapter_2_3/brh_tables/pairwise_ortholog_IDs_association_only_4way_orthologs.txt"
     pairwise_pos_sel=f"/Users/{username}/work/pairwise_blast_chapter_2_3/brh_tables/pairwise_site_classes_summary.txt"
@@ -541,11 +635,21 @@ if __name__ == "__main__":
     pairs_list = sorted([f"{sp1}_{sp2}" for sp1,sp2 in list(set(pairs_list))])
     
     if False:
+        # positive selection M1a vs. M2a
         # Compare positively selected orthologs in the pairwise tests to if they are also positively selected in the 4-way comparison
         plot_pos_sel_overlap_bruchini(four_way_orthologs_IDs=four_way_ortholog_IDs, four_way_pos_sel=four_way_pos_sel, 
             pairwise_orthologs_IDs=pairwise_ortholog_IDs, pairwise_pos_sel=pairwise_pos_sel, 
             species_list=species_list, pairs_list=pairs_list, 
             filename=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/revision_tests/codeml_pos_sel_ortholog_overlap.png")
+
+    if False:
+        # positive selection M1a vs. M2a
+        # Compare positively selected orthologs in the pairwise tests to if they are also positively selected in the 4-way comparison
+        plot_pos_sel_overlap_bruchini(four_way_orthologs_IDs=four_way_ortholog_IDs, four_way_pos_sel=four_way_pos_sel_beta, 
+            pairwise_orthologs_IDs=pairwise_ortholog_IDs, pairwise_pos_sel=pairwise_pos_sel, 
+            species_list=species_list, pairs_list=pairs_list, 
+            filename=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/revision_tests/codeml_pos_sel_beta_ortholog_overlap.png", 
+            beta_site_model=True)
 
     if False:
         # filter pair IDs of pairwise orthologs to include only ones that are present in 4-way orthologs
@@ -567,3 +671,9 @@ if __name__ == "__main__":
         # make_orthologs_association_file(four_way_lookup_table=four_way_ortholog_IDs, pairs_lookup_table=pairwise_ortholog_IDs_4way_filt, outfile = pairs_fourWay_association)
         plot_omega_association(ortholog_IDs_association = pairs_fourWay_association, site_classes_pairsX = site_classes_files["X_LRT"], site_classes_pairsA = site_classes_files["A_LRT"], 
                                site_classes_4way=four_way_pos_sel, filename=site_model_plotname)
+
+    if True:
+        # make cmac GeneID lists for positive selection GO enrichment (just single-line csv list.)
+        outdir = f"/Users/{username}/work/PhD_code/PhD_chapter3/data/GO_enrichment"
+        make_Cmac_pos_sel_IDs_list(four_way_orthologs_IDs = four_way_ortholog_IDs, four_way_pos_sel = four_way_pos_sel_beta, 
+        outfile_prefix = f"/Users/{username}/work/PhD_code/PhD_chapter3/data/GO_enrichment/bruchini_site_model_beta_Cmac_geneIDs")

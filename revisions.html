@@ -276,8 +276,8 @@ except <i>C. maculatus</i> - <i>C. chinensis</i>, which is borderline nonsignifi
     <li>compare the new positive selection results with the original pairwise results and see if X is enriched for positively selected genes. There are two model-LRT comparisons 
         that can be used to test this: H<sub>0</sub>(M1a) vs. H<sub>1</sub>(M2a) which is more stringent, and H<sub>0</sub>(M7) vs. H<sub>1</sub>(M8) which is less stringent, I try for both.
         <div class="tab">
-            <button class="tablinks" onclick="openTab(event, 'M7 vs. M8 LRT')">M7 vs. M8 LRT</button>
-            <button class="tablinks" onclick="openTab(event, 'M1a vs. M2a LRT')">M1a vs. M2a LRT</button>
+            <button class="tablinks" onclick="openTab(event, 'M7 vs. M8 LRT')">M7 vs. M8 site model</button>
+            <button class="tablinks" onclick="openTab(event, 'M1a vs. M2a LRT')">M1a vs. M2a site model</button>
           </div>
           
           <div id="M7 vs. M8 LRT" class="tabcontent">
@@ -334,61 +334,77 @@ mean bootstrap diff = -0.00006 with CI [-0.02177,0.02166] --> (nonsignificant)
 </p>
 
 
-<details>
-
-    <summary>Compare the results of the 4-way 1-to-1 orthologs with the pairwise comparisons (M1a vs M2a! may be too conservative)</summary>
+<h4>Compare the results of the 4-way 1-to-1 orthologs with the pairwise comparisons</h4>
     
     
     <p>    
         I am checking for every 4-way ortholog, how many of the associated 6 pairs are under positive selection
     </p>
     
-    <p float="left">
-        <img loading="lazy" src="data/revision_tests/codeml_pos_sel_ortholog_overlap.png" width="900px" />
-    </p>
+    <div class="tab">
+        <button class="tablinks" onclick="openTab(event, 'M7 vs. M8 LRT comparison')">M7 vs. M8 site model</button>
+        <button class="tablinks" onclick="openTab(event, 'M1a vs. M2a LRT comparison')">M1a vs. M2a site model</button>
+    </div>
     
-    
-    <p>
-        I am re-doing my pairwise analysis with only the orthologs that are also part of the 4-way ortholog sets in <i>Bruchini</i> but the results stay the same, still a significant
-        enrichment of positively selected genes on the X.
-    </p>
-    
-    <details>
-        <summary>Toggle down for plot and reampling test</summary>
-        <p float="left">
-            <img loading="lazy" src="data/fastX_ortholog_ident/LRT_site_model_plot_bruchini_4_way_orthologs.png" width="800px" />
+    <div id="M7 vs. M8 LRT comparison" class="tabcontent">
+        
+        <p>
+            The distributions are very similar (mind different axis ranges though), so it is likely true that the pairwise analysis is inappropriate for the site model.
         </p>
         
-        <p>Everything stays the same just the sample sizes get smaller.</p>
+        <p float="left">
+            <img loading="lazy" src="data/revision_tests/codeml_pos_sel_beta_ortholog_overlap.png" width="900px" />
+        </p>
+
+        <p>
+            For updated GO-term enrichment see <a href="index.html">main text results</a>
+        </p>
+
+    </div>
+    
+    <div id="M1a vs. M2a LRT comparison" class="tabcontent">
+
+        <p>
+            Most orthologs that are positively selected in the four-way comparison have at least one positively selected pair in them, which is better than the M7-M8 comparison, but 
+            still does not correlate well. 
+        </p>
         
-        <pre>
-            <code>
-                A_obtectus    vs. B_siliquastri     median(bin_A)-median(bin_X) -->  -0.0549, mean bootstrap diff =  0.00012 with CI [-0.02964,0.02989] --> SIGNIFICANT
-                A_obtectus    vs. C_chinensis       median(bin_A)-median(bin_X) -->  -0.0339, mean bootstrap diff = -0.00000 with CI [-0.02765,0.02765] --> SIGNIFICANT
-                A_obtectus    vs. C_maculatus       median(bin_A)-median(bin_X) -->  -0.0357, mean bootstrap diff =  0.00015 with CI [-0.02352,0.02382] --> SIGNIFICANT
-                B_siliquastri vs. C_chinensis       median(bin_A)-median(bin_X) -->  -0.0575, mean bootstrap diff = -0.00005 with CI [-0.03679,0.03669] --> SIGNIFICANT
-                B_siliquastri vs. C_maculatus       median(bin_A)-median(bin_X) -->  -0.0445, mean bootstrap diff = -0.00039 with CI [-0.03154,0.03076] --> SIGNIFICANT
-                C_chinensis   vs. C_maculatus       median(bin_A)-median(bin_X) -->  -0.0718, mean bootstrap diff = -0.00044 with CI [-0.04355,0.04266] --> SIGNIFICANT</code>
-            </pre>
+        <p float="left">
+            <img loading="lazy" src="data/revision_tests/codeml_pos_sel_ortholog_overlap.png" width="900px" />
+        </p>
+        
+        <p>
+            Even when downsampling the pairwise analysis to only the orthologs that are also part of the 4-way ortholog sets in <i>Bruchini</i> does not change the 
+            pairwise result, still a significant enrichment of positively selected genes on the X.
+        </p>
+        
+        <details>
+            <summary>Toggle down for plot and reampling test</summary>
+            <p float="left">
+                <img loading="lazy" src="data/fastX_ortholog_ident/LRT_site_model_plot_bruchini_4_way_orthologs.png" width="800px" />
+            </p>
             
+            <p>Everything stays the same just the sample sizes get smaller.</p>
+            
+            <pre><code> A_obtectus    vs. B_siliquastri     median(bin_A)-median(bin_X) -->  -0.0549, mean bootstrap diff =  0.00012 with CI [-0.02964,0.02989] --> SIGNIFICANT
+ A_obtectus    vs. C_chinensis       median(bin_A)-median(bin_X) -->  -0.0339, mean bootstrap diff = -0.00000 with CI [-0.02765,0.02765] --> SIGNIFICANT
+ A_obtectus    vs. C_maculatus       median(bin_A)-median(bin_X) -->  -0.0357, mean bootstrap diff =  0.00015 with CI [-0.02352,0.02382] --> SIGNIFICANT
+ B_siliquastri vs. C_chinensis       median(bin_A)-median(bin_X) -->  -0.0575, mean bootstrap diff = -0.00005 with CI [-0.03679,0.03669] --> SIGNIFICANT
+ B_siliquastri vs. C_maculatus       median(bin_A)-median(bin_X) -->  -0.0445, mean bootstrap diff = -0.00039 with CI [-0.03154,0.03076] --> SIGNIFICANT
+ C_chinensis   vs. C_maculatus       median(bin_A)-median(bin_X) -->  -0.0718, mean bootstrap diff = -0.00044 with CI [-0.04355,0.04266] --> SIGNIFICANT</code></pre>
+                
         </details>
         
         <p>
-            I might also try the branch-site model, where i specify a foreground branch to compare to the new pairwise ortholog. 
-            However you are really not supposed to just test every possible foreground branch for detection of positive selection
-            like i would have to, but instead have a prior hypothesis of one or a few to try that are biologically interesting. 
+            I am testing how correlated the 4-way ω<sub>0</sub> are with the mean ω<sub>0</sub> of all associated pairs and it's bad :(
+        </p>
+            
+        <p float="left">
+            <img loading="lazy" src="data/revision_tests/site_model_comparison.png" width="450px" />
         </p>
         
-        <p>
-            I am testing how correlated the 4-way ω<sub>0</sub> are with the mean ω<sub>0</sub> of all associated pairs and it's bad :(
-            </p>
-            
-            <p float="left">
-                <img loading="lazy" src="data/revision_tests/site_model_comparison.png" width="450px" />
-            </p>
-            
-            
-</details>
+    </div>
+                
 
 
 <h3>McDonald-Kreitmann test for positive selection</h3>
