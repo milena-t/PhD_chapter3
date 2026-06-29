@@ -90,8 +90,8 @@ if __name__ == "__main__":
     # analysis = "dNdS" ## codeml branch model
     
     #### revision
-    analysis = "M7-M8_LRT"
-    # analysis = "LRT"
+    # analysis = "M7-M8_LRT"
+    analysis = "LRT"
     # analysis = "dNdS"
     
     #######
@@ -160,8 +160,8 @@ if __name__ == "__main__":
             print(f"run {len(sep_lists)} jobs ... \n")
             for fasta_list_sublist in sep_lists:
 
-                # re-do 4 and 5
-                if i not in [20,25]:
+                # re-do specific batches, 4,5 or 20,25 where there is something weird
+                if i not in [4,5]:
                     print("------------------------------")
                     print(f"skip : {i}")
                     i +=1
