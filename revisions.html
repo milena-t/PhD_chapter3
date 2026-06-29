@@ -209,16 +209,8 @@ This doesn't need re-analysis but maybe some changes in the text to clarify.
         (for information on <code>runmode = -2</code> see p. 19 in the paml manual)</li>
 </ul>
 
-<h4>My thoughts</h4>
-
-<p>
-    I think that these will give very similar results, because I hypothesize that <code>runmode= 1</code> with a two-species tree collapses into <code>runmode= -2</code> 
-    with maybe some rounding error. I implemented the <code>--branch_pairwise</code> flag in the pipeline script to run this. I will run on a subset of the orthologs for the normal 
-    branch model and test a correlation to see how similar they are. If it's not very similar, I can re-run the entire thing in this mode and re-do the analysis. It would be a bit 
-    annoying to update all the SI tables but the rest is pretty automated.
-</p>
-
 <h4>Test results</h4>
+
 <p>
   I will test with a subset of 200 autosomal genes which are all the <code>B_siliquastri_C_maculatus_A-linked_ortholog_9*</code> orthologs.
 </p>
@@ -239,8 +231,25 @@ This doesn't need re-analysis but maybe some changes in the text to clarify.
     that was not significant before. This does not change any of our conclusions and everything else stays.</li>
 </ul>
     
-<h3>paml site models: positive selection</h3>
+<h4>Compare with multispecies branch-model</h4>
 
+I ran the first version with <code>runmode= 1, CodonFreq = 2</code> using the 4-speices <i>Bruchini</i> orthologs (see below in the site-models). Still significant enrichment in all cases, 
+except <i>C. maculatus</i> - <i>C. chinensis</i>, which is borderline nonsignificant but still higher on A than X
+
+<details>
+    <summary>See permutation test results</summary>
+
+    <pre><code> A_obtectus_B_siliquastri :  median(dNdS_A)-median(dNdS_X) = 0.01734, mean bootstrap diff = -0.00003 with CI [-0.00878,0.00872] --> SIGNIFICANT
+ A_obtectus_C_chinensis :    median(dNdS_A)-median(dNdS_X) = 0.01332, mean bootstrap diff =  0.00001 with CI [-0.00865,0.00866] --> SIGNIFICANT
+ A_obtectus_C_maculatus :    median(dNdS_A)-median(dNdS_X) = 0.01764, mean bootstrap diff =  0.00004 with CI [-0.00815,0.00822] --> SIGNIFICANT
+ B_siliquastri_C_chinensis : median(dNdS_A)-median(dNdS_X) = 0.01510, mean bootstrap diff =  0.00003 with CI [-0.00953,0.00958] --> SIGNIFICANT
+ B_siliquastri_C_maculatus : median(dNdS_A)-median(dNdS_X) = 0.01843, mean bootstrap diff =  0.00003 with CI [-0.00879,0.00884] --> SIGNIFICANT
+ C_chinensis_C_maculatus :   median(dNdS_A)-median(dNdS_X) = 0.01005, mean bootstrap diff = -0.00003 with CI [-0.01094,0.01089] --> (nonsignificant)</code></pre>
+</details>
+
+
+
+<h3>paml site models: positive selection</h3>
 
 <p>
     The reviewer is a bit vague here, but we interpret their comments to mean that they think the pairwise comparison does not offer enough statistical power to accurately infer positive selection, 
@@ -314,7 +323,7 @@ mean bootstrap diff = -0.00006 with CI [-0.02177,0.02166] --> (nonsignificant)
           </div>
           
     <p>
-        I will continue with <b>H<sub>0</sub>(M7) vs. H<sub>1</sub>(M8)</b>. After multiple testing correction, H<sub>0</sub>(M1a) vs. H<sub>1</sub>(M2a) has so few genes under positive selection
+        I will use <b>H<sub>0</sub>(M7) vs. H<sub>1</sub>(M8)</b>. After multiple testing correction, H<sub>0</sub>(M1a) vs. H<sub>1</sub>(M2a) has so few genes under positive selection
         it is mostly useless for analysis. Neither shows a significant difference in the proportion of genes under positive selection between X-chromosome and autosomes.
     </p>  
     </li>
