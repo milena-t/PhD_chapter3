@@ -160,14 +160,14 @@ if __name__ == "__main__":
             print(f"run {len(sep_lists)} jobs ... \n")
             for fasta_list_sublist in sep_lists:
 
-                ## re-do 4 and 5
-                # if i not in [4,5]:
-                #     print("------------------------------")
-                #     print(f"skip : {i}")
-                #     i +=1
-                #     continue
+                # re-do 4 and 5
+                if i not in [20,25]:
+                    print("------------------------------")
+                    print(f"skip : {i}")
+                    i +=1
+                    continue
 
-                # fasta_list_sublist.reverse()
+                fasta_list_sublist.reverse()
                 
                 print("------------------------------")
                 print(f"\t * {len(fasta_list_sublist)} fasta list: {fasta_list_sublist[0][51:]}...{fasta_list_sublist[-1][51:]}")
