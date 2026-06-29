@@ -161,7 +161,7 @@ if __name__ == "__main__":
                     print(f"skip : {i}")
                     i +=1
                     continue
-
+                fasta_list_sublist.reverse()
                 print("------------------------------")
                 print(f"\t * {len(fasta_list_sublist)} fasta list: {fasta_list_sublist[0][51:]}...{fasta_list_sublist[-1][51:]}")
                 fasta_string = " ".join(fasta_list_sublist)
