@@ -515,9 +515,12 @@ if __name__ == "__main__":
     if False:
         # plot the correlation of codeml dN and dS values for pairwise comparisons of runmode=1 and runmode=-2
         plot_correlation(def_file=paths["default"], pair_file=paths["pairwise"], filename=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/revision_tests/codeml_dNdS_correlation.png")
-    if False:
+    if True:
         # do permutation test on the 4-way 1-to-1 orthologs in Bruchini
+        ## M1a vs. M2a (not multiple testing corrected!)
         bootstrap_pos_sel(X_data={"pos_sel" : 6 , "non_pos_sel" : 268}, A_data={"pos_sel" : 60 , "non_pos_sel" : 1881}, num_permutations=10000)
+        # M7 vs. M8
+        bootstrap_pos_sel(X_data={"pos_sel" : 74 , "non_pos_sel" : 200}, A_data={"pos_sel" : 1675 , "non_pos_sel" : 4826}, num_permutations=10000)
     
     four_way_ortholog_IDs=f"/Users/{username}/work/pairwise_blast_chapter_2_3/brh_tables/bruchini_orthologs.csv"
     four_way_pos_sel=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/site_classes_bruchini_all_orthologs_pos_sel_no_err.txt"
@@ -557,7 +560,7 @@ if __name__ == "__main__":
         filt_site_classes(filt_lookup_table_file = pairwise_ortholog_IDs_4way_filt, site_classes_table = site_classes_files["X_LRT_BH_corr"])
         filt_site_classes(filt_lookup_table_file = pairwise_ortholog_IDs_4way_filt, site_classes_table = site_classes_files["A_LRT_BH_corr"])
 
-    if True:
+    if False:
         # correlate w_0 for the positively selected genes
         pairs_fourWay_association = f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/ortholog_IDs_geneIDs_4_way_and_pairs_Bruchini.txt"
         site_model_plotname = f"/Users/{username}/work/PhD_code/PhD_chapter3/data/revision_tests/site_model_comparison.png"

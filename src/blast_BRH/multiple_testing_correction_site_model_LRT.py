@@ -12,8 +12,10 @@ def get_log_file_paths(username="miltr339"):
     out_dict = {
         "A" : f"/Users/{username}/work/chapter3/dNdS/site_model_A_all_log_files.out",
         "X" : f"/Users/{username}/work/chapter3/dNdS/site_model_X_all_log_files.out",
-        "A_rev" : f"/Users/{username}/work/pairwise_blast_chapter_2_3/brh_tables/bruchini_seqs_revision_A/run_site_model.log",
+        "A_rev" : f"/Users/{username}/work/pairwise_blast_chapter_2_3/brh_tables/bruchini_seqs_revision_A/site_model_bruchini_res_A.log",
+        "A_beta_rev" : f"/Users/{username}/work/pairwise_blast_chapter_2_3/brh_tables/bruchini_seqs_revision_A/site_model_beta_bruchini_res_A.log",
         "X_rev" : f"/Users/{username}/work/pairwise_blast_chapter_2_3/brh_tables/bruchini_seqs_revision_X/run_site_model.log",
+        "X_beta_rev" : f"/Users/{username}/work/pairwise_blast_chapter_2_3/brh_tables/bruchini_seqs_revision_X/run_site_model_beta.log",
     }
     return out_dict
 
@@ -140,8 +142,11 @@ if __name__ == "__main__":
         # "X_rev_LRT" : f"/Users/{username}/work/pairwise_blast_chapter_2_3/brh_tables/brh_results_X/site_classes_summary_X-linked.txt",
         "A_rev_LRT_BH_corr" : f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/bruchini_rev_site_classes_summary_A_BH_corrected.txt",
         "X_rev_LRT_BH_corr" : f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/bruchini_rev_site_classes_summary_X_BH_corrected.txt",
+
         "A_list_rev" : f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/bruchini_rev_site_classes_list_A_BH_corrected.txt",
         "X_list_rev" : f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/bruchini_rev_site_classes_list_X_BH_corrected.txt",
+        "A_beta_list_rev" : f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/bruchini_rev_site_classes_beta_list_A_BH_corrected.txt",
+        "X_beta_list_rev" : f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/bruchini_rev_site_classes_beta_list_X_BH_corrected.txt",
     }
 
     chromosomes = ["X", "A"]
@@ -156,6 +161,7 @@ if __name__ == "__main__":
 
     ## revisions
     if True:
+        chromosomes = ["X", "A", "A_beta", "X_beta"]
         for chromosome in chromosomes:
             
             print(f"////////////////////////// {chromosome} //////////////////////////")
