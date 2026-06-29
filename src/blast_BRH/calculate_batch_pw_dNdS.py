@@ -90,9 +90,9 @@ if __name__ == "__main__":
     # analysis = "dNdS" ## codeml branch model
     
     #### revision
-    # analysis = "M7-M8_LRT"
+    analysis = "M7-M8_LRT"
     # analysis = "LRT"
-    analysis = "dNdS"
+    # analysis = "dNdS"
     
     #######
     ###############
@@ -149,18 +149,23 @@ if __name__ == "__main__":
             
             fasta_unique_list = sorted(list(set(fasta_overall_list)))
             print(f"\n{len(fasta_unique_list)} unique fasta files: {fasta_unique_list[:2]}...\n")
-                
-            i = 0
-            sep_lists = chunks(fasta_unique_list, 500)
+            
+            if analysis == "M7-M8_LRT":
+                batch_size = 100
+            else:
+                batch_size = 500
+            i = 0 # counter
+
+            sep_lists = chunks(fasta_unique_list, batch_size)
             print(f"run {len(sep_lists)} jobs ... \n")
             for fasta_list_sublist in sep_lists:
 
                 ## re-do 4 and 5
-                if i not in [4,5]:
-                    print("------------------------------")
-                    print(f"skip : {i}")
-                    i +=1
-                    continue
+                # if i not in [4,5]:
+                #     print("------------------------------")
+                #     print(f"skip : {i}")
+                #     i +=1
+                #     continue
 
                 # fasta_list_sublist.reverse()
                 
