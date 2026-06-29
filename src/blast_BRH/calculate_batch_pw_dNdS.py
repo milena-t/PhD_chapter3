@@ -167,7 +167,7 @@ if __name__ == "__main__":
                     i +=1
                     continue
 
-                fasta_list_sublist.reverse() 
+                # fasta_list_sublist.reverse() 
                 # some batches contain orthologs where the loop does not continue, but the job also does not terminate
                 # So I re-run those from the other side (reversed list) to get all orthologs in that batch. 
                 # remember to rename the first output files to keep the results from the first half of the orthologs in this batch!
