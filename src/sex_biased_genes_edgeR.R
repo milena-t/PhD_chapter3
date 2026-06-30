@@ -14,8 +14,7 @@ if (FALSE){
 library(tidyverse)
 library(ggplot2)
 library(edgeR)
-library(limma)
-library(DESeq2)
+library(dplyr)
 
 ######################
 #### load data
@@ -25,6 +24,9 @@ if (TRUE){
   Cmac_path <- "Cmac_gene_counts_short_headers.txt"
   Csep_path <- "Csep_gene_counts_short_headers.txt"
   Tcas_path <- "Tcas_gene_counts_short_headers.txt"
+  #Cmac gene lengths
+  Cmac_gene_lengths <- read.delim("Cmac_gene_lengths.txt", comment.char = "#")
+
   ## normalized counts outfiles
   Cmac_path_out <- "/Users/miltr339/work/PhD_code/PhD_chapter3/data/DE_analysis/Cmac_gene_counts_edgeR_normalized.txt"
   Csep_path_out <- "Csep_gene_counts_short_headers_vst.txt"
@@ -42,6 +44,7 @@ if (TRUE){
   #### do one species of the three
   data_path <- Cmac_path
   out_path_vst <- Cmac_path_out
+  out_path_rpkm <- "/Users/miltr339/work/PhD_code/PhD_chapter3/data/DE_analysis/Cmac_gene_counts_edgeR_rpkm_length_normalized.txt"
   out_path_lfc <- Cmac_path_out_lfc
   metadata <- Cmac_metadata
 }
@@ -91,8 +94,13 @@ if (TRUE){
 if (TRUE){
   log_norm_counts <- cpm(DE_normalized,normalized.lib.sizes = TRUE,log = TRUE,prior.count = 1)
   write.table(log_norm_counts,file = out_path_vst,sep = "\t",quote = FALSE)# ,col.names = NA)
-  
 }
+## export the gene-length normalized counts file for DC
+if (TRUE){
+  length_norm_counts <- rpkm(DE_counts, gene.length = Cmac_gene_lengths$Length)
+  write.table(length_norm_counts,file = out_path_rpkm,sep = "\t",quote = FALSE)# ,col.names = NA)
+}
+
 
 #####################
 #### set up DE analysis
