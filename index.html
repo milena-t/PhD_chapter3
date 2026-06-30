@@ -87,7 +87,7 @@ a { color: #416793; }
 /* Style the tab content */
 .tabcontent {
   display: none;
-  padding: 6px 12px;
+  padding: 12px 12px;
   border: 1.5px solid #909bb5;
   border-top: none;
   border-radius: 0 0 25px 25px;
@@ -873,67 +873,76 @@ We will use TopGo to perform GO-enrichment on the positively selected genes. I r
 <h3>X-chromosome vs. Autosomes comparison</h3>
 
 <p>
-    The comparisons are either all X-linked genes compared to the background set of all autosomal genes, 
-    or X-linked genes under positive selection compared to autosomal genes under positive selection
+    Any enrichment analyses only include the 4-way orthologs that are used in the codeml site model, other genes are not considered (even for the background set).
 </p>
 
 
+
 <div class="tab">
-    <button class="tablinks" onclick="openTab(event, 'XA_GO_all')">all genes (<i>Bruchini</i>-wide site model)</button>
-    <button class="tablinks" onclick="openTab(event, 'XA_GO_pos_sel')">positively selected genes (<i>Bruchini</i>-wide site model)</button>
-    <button class="tablinks" onclick="openTab(event, 'XA_GO_all_pairwise')">all genes (pairwise site model: old)</button>
-    <button class="tablinks" onclick="openTab(event, 'XA_GO_pos_sel_pairwise')">positively selected genes (pairwise site model: old)</button>
+    <button class="tablinks" onclick="openTab(event, 'AX')">X enrichment over A</button>
+    <button class="tablinks" onclick="openTab(event, 'sig')">Sig. enrichment over nonsig</button>
 </div>
 
-<div id="XA_GO_all" class="tabcontent">
+<div id="AX" class="tabcontent">
+    <div class="tab">
+        <button class="tablinks" onclick="openTab(event, 'all_AX')">all orthologs</button>
+        <button class="tablinks" onclick="openTab(event, 'nonsig_AX')">nonsig. orthologs</button>
+        <button class="tablinks" onclick="openTab(event, 'sig_AX')">sig. orthologs</button>
+    </div>
 
-    <p>
-        H<sub>0</sub>(M7) vs. H<sub>1</sub>(M8): <code>data/GO_enrichment/all_AX_enriched_GOs.csv</code>. 
-    </p>
+    <div id="all_AX" class="tabcontent">
+        <p><code>data/GO_enrichment/all_AX_enriched_GOs_revision.csv</code></p>
 
-    <div id="AX_all_table" class="tableframe"></div>
+        <div id="AX_all_table" class="tableframe"></div>
     <script>
         loadCSVTable("data/GO_enrichment/all_AX_enriched_GOs_revision.csv", "AX_all_table");
     </script>
+    </div>
+    <div id="nonsig_AX" class="tabcontent">
+        <p><code>data/GO_enrichment/nonsig_AX_enriched_GOs_revision.csv</code></p>
+
+        <div id="AX_all_table" class="tableframe"></div>
+    <script>
+        loadCSVTable("data/GO_enrichment/nonsig_AX_enriched_GOs_revision.csv", "AX_all_table");
+    </script>
+    </div>
+    <div id="sig_AX" class="tabcontent">
+        <p><code>data/GO_enrichment/sig_AX_enriched_GOs_revision.csv</code></p>
+
+        <div id="AX_all_table" class="tableframe"></div>
+    <script>
+        loadCSVTable("data/GO_enrichment/sig_AX_enriched_GOs_revision.csv", "AX_all_table");
+    </script>
+    </div>
+
+</div>
+<div id="sig" class="tabcontent">
+    <div class="tab">
+        <button class="tablinks" onclick="openTab(event, 'A_sig')">Autosomes</button>
+        <button class="tablinks" onclick="openTab(event, 'X_sig')">X-chromosome</button>
+    </div>
+
+    <div id="A_sig" class="tabcontent">
+        <p><code>data/GO_enrichment/A_sig_enriched_GOs_revision.csv</code></p>
+
+        <div id="AX_all_table" class="tableframe"></div>
+    <script>
+        loadCSVTable("data/GO_enrichment/A_sig_enriched_GOs_revision.csv", "AX_all_table");
+    </script>
+    </div>
+    <div id="X_sig" class="tabcontent">
+        <p><code>data/GO_enrichment/X_sig_enriched_GOs_revision.csv</code></p>
+
+        <div id="AX_all_table" class="tableframe"></div>
+    <script>
+        loadCSVTable("data/GO_enrichment/X_sig_enriched_GOs_revision.csv", "AX_all_table");
+    </script>
+    </div>
+
+
+</div>
         
-</div>
 
-<div id="XA_GO_pos_sel" class="tabcontent">
-    
-    <p>
-        H<sub>0</sub>(M7) vs. H<sub>1</sub>(M8): <code>data/GO_enrichment/sig_AX_enriched_GOs.csv</code>. dosage compensation is enriched here!
-    </p>
- 
-    <div id="AX_sig_table" class="tableframe"></div>
-    <script>
-        loadCSVTable("data/GO_enrichment/sig_AX_enriched_GOs_revision.csv", "AX_sig_table");
-    </script>
-</div>
-
-<div id="XA_GO_all_pairwise" class="tabcontent">
-
-    <p>
-        H<sub>0</sub>(M7) vs. H<sub>1</sub>(M8): <code>data/GO_enrichment/all_AX_enriched_GOs.csv</code>. 
-    </p>
-
-    <div id="AX_all_table" class="tableframe"></div>
-    <script>
-        loadCSVTable("data/GO_enrichment/all_AX_enriched_GOs.csv", "AX_all_table");
-    </script>
-        
-</div>
-
-<div id="XA_GO_pos_sel_pairwise" class="tabcontent">
-    
-    <p>
-        H<sub>0</sub>(M7) vs. H<sub>1</sub>(M8): <code>data/GO_enrichment/sig_AX_enriched_GOs.csv</code>. dosage compensation is enriched here!
-    </p>
- 
-    <div id="AX_sig_table" class="tableframe"></div>
-    <script>
-        loadCSVTable("data/GO_enrichment/sig_AX_enriched_GOs.csv", "AX_sig_table");
-    </script>
-</div>
 
 
 

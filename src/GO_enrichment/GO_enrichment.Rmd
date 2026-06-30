@@ -49,27 +49,15 @@ annotation = read.csv(annotation_path, sep="\t", comment.char = "#", header=FALS
 # sig_geneIDs_X_all_species_union = strsplit(readLines("sig_geneIDs_X_all_species_union.txt"), ",")[[1]]
 
 ### bruchini-site model files 
-all_geneIDs_A_all_species_union = strsplit(readLines("bruchini_site_model_beta_Cmac_geneIDs_all_A.txt"), ",")[[1]]
-all_geneIDs_X_all_species_union = strsplit(readLines("bruchini_site_model_beta_Cmac_geneIDs_all_X.txt"), ",")[[1]]
-sig_geneIDs_A_all_species_union = strsplit(readLines("bruchini_site_model_beta_Cmac_geneIDs_sig_A.txt"), ",")[[1]]
-sig_geneIDs_X_all_species_union = strsplit(readLines("bruchini_site_model_beta_Cmac_geneIDs_sig_X.txt"), ",")[[1]]
+nonsig_geneIDs_A = strsplit(readLines("bruchini_site_model_beta_Cmac_geneIDs_all_A.txt"), ",")[[1]]
+nonsig_geneIDs_X = strsplit(readLines("bruchini_site_model_beta_Cmac_geneIDs_all_X.txt"), ",")[[1]]
+sig_geneIDs_A = strsplit(readLines("bruchini_site_model_beta_Cmac_geneIDs_sig_A.txt"), ",")[[1]]
+sig_geneIDs_X = strsplit(readLines("bruchini_site_model_beta_Cmac_geneIDs_sig_X.txt"), ",")[[1]]
 
-all_geneIDs_all_species_union = append(all_geneIDs_A_all_species_union, all_geneIDs_X_all_species_union)
-sig_geneIDs_all_species_union = append(sig_geneIDs_A_all_species_union, sig_geneIDs_X_all_species_union)
-
-geneIDs_A_A_obtectus_sig = strsplit(readLines("geneIDs_A_A_obtectus_sig.txt"), ",")[[1]]
-geneIDs_A_B_siliquastri_sig = strsplit(readLines("geneIDs_A_B_siliquastri_sig.txt"), ",")[[1]]
-geneIDs_A_C_chinensis_sig = strsplit(readLines("geneIDs_A_C_chinensis_sig.txt"), ",")[[1]]
-geneIDs_X_A_obtectus_sig = strsplit(readLines("geneIDs_X_A_obtectus_sig.txt"), ",")[[1]]
-geneIDs_X_B_siliquastri_sig = strsplit(readLines("geneIDs_X_B_siliquastri_sig.txt"), ",")[[1]]
-geneIDs_X_C_chinensis_sig = strsplit(readLines("geneIDs_X_C_chinensis_sig.txt"), ",")[[1]]
-
-geneIDs_A_A_obtectus = read.csv("geneIDs_A_A_obtectus_all.txt", sep=",", header=TRUE)
-geneIDs_A_B_siliquastri = read.csv("geneIDs_A_B_siliquastri_all.txt", sep=",", header=TRUE)
-geneIDs_A_C_chinensis = read.csv("geneIDs_A_C_chinensis_all.txt", sep=",", header=TRUE)
-geneIDs_X_A_obtectus = read.csv("geneIDs_X_A_obtectus_all.txt", sep=",", header=TRUE)
-geneIDs_X_B_siliquastri = read.csv("geneIDs_X_B_siliquastri_all.txt", sep=",", header=TRUE)
-geneIDs_X_C_chinensis = read.csv("geneIDs_X_C_chinensis_all.txt", sep=",", header=TRUE)
+nonsig_geneIDs = append(nonsig_geneIDs_A, nonsig_geneIDs_X)
+sig_geneIDs = append(sig_geneIDs_A, sig_geneIDs_X)
+A_geneIDs = append(nonsig_geneIDs_A, sig_geneIDs_A)
+X_geneIDs = append(nonsig_geneIDs_X, sig_geneIDs_X)
 
 ```
 
@@ -89,22 +77,24 @@ A_C_chinensis_enrichment_list <- make_gene_list(geneIDs_A_C_chinensis)
 # X_B_siliquastri_enrichment_list <- make_gene_list(geneIDs_X_B_siliquastri)
 X_C_chinensis_enrichment_list <- make_gene_list(geneIDs_X_C_chinensis)
 
-make_contrasts_for_AvsX <- function(list_A, list_X){
-  all_geneIDs <- append(list_A,list_X)
-  AX_presence <- rep(FALSE, length(all_geneIDs))
+make_contrasts_for_AvsX <- function(background_excl, foreground){
+  all_geneIDs <- append(background_excl,foreground)
+  union_set <- rep(FALSE, length(all_geneIDs))
   for (i in 1:length(all_geneIDs)){
-    if (all_geneIDs[i] %in% list_X){
-      AX_presence[i]<-TRUE
+    if (all_geneIDs[i] %in% foreground){
+      union_set[i]<-TRUE
     }
   }
-  geneList <- factor(as.integer(AX_presence))
+  geneList <- factor(as.integer(union_set))
   names(geneList) <- all_geneIDs
   return(geneList)
 }
 
-all_AX_contrast <- make_contrasts_for_AvsX(list_A = all_geneIDs_A_all_species_union, list_X = all_geneIDs_X_all_species_union)
-sig_AX_contrast <- make_contrasts_for_AvsX(list_A = sig_geneIDs_A_all_species_union, list_X = sig_geneIDs_X_all_species_union)
-all_sig_contrast <- make_contrasts_for_AvsX(list_A = all_geneIDs_all_species_union, list_X = sig_geneIDs_all_species_union)
+AX_contrast <- make_contrasts_for_AvsX(background_excl = A_geneIDs, foreground = X_geneIDs)
+nonsig_AX_contrast <- make_contrasts_for_AvsX(background_excl = nonsig_geneIDs_A, foreground = nonsig_geneIDs_X)
+sig_AX_contrast <- make_contrasts_for_AvsX(background_excl = sig_geneIDs_A, foreground = sig_geneIDs_X)
+A_sig_contrast <- make_contrasts_for_AvsX(background_excl = nonsig_geneIDs_A, foreground = sig_geneIDs_A)
+X_sig_contrast <- make_contrasts_for_AvsX(background_excl = nonsig_geneIDs_X, foreground = sig_geneIDs_X)
 ```
 
 prepare eggnog annotation file
@@ -136,34 +126,24 @@ GO_enrichment_analysis <- function(geneList, annotation_df){
   return(allRes)
 }
 
-# A_A_obtectus_enriched_GOs <- GO_enrichment_analysis(geneList = A_A_obtectus_enrichment_list, annotation_df = gene2GO)
-# A_B_siliquastri_enriched_GOs <- GO_enrichment_analysis(geneList = A_B_siliquastri_enrichment_list, annotation_df = gene2GO)
-# A_C_chinensis_enriched_GOs <- GO_enrichment_analysis(geneList = A_C_chinensis_enrichment_list, annotation_df = gene2GO)
-# X_A_obtectus_enriched_GOs <- GO_enrichment_analysis(geneList = X_A_obtectus_enrichment_list, annotation_df = gene2GO)
-# X_B_siliquastri_enriched_GOs <- GO_enrichment_analysis(geneList = X_B_siliquastri_enrichment_list, annotation_df = gene2GO)
-# X_C_chinensis_enriched_GOs <- GO_enrichment_analysis(geneList = X_C_chinensis_enrichment_list, annotation_df = gene2GO)
-
-# write.csv(A_A_obtectus_enriched_GOs, "/Users/miltr339/work/PhD_code/PhD_chapter3/data/GO_enrichment/A_A_obtectus_enriched_GOs.csv", row.names=TRUE)
-# write.csv(A_B_siliquastri_enriched_GOs, "/Users/miltr339/work/PhD_code/PhD_chapter3/data/GO_enrichment/A_B_siliquastri_enriched_GOs.csv", row.names=TRUE)
-# write.csv(A_C_chinensis_enriched_GOs, "/Users/miltr339/work/PhD_code/PhD_chapter3/data/GO_enrichment/A_C_chinensis_enriched_GOs.csv", row.names=TRUE)
-# write.csv(X_A_obtectus_enriched_GOs, "/Users/miltr339/work/PhD_code/PhD_chapter3/data/GO_enrichment/X_A_obtectus_enriched_GOs.csv", row.names=TRUE)
-# write.csv(X_B_siliquastri_enriched_GOs, "/Users/miltr339/work/PhD_code/PhD_chapter3/data/GO_enrichment/X_B_siliquastri_enriched_GOs.csv", row.names=TRUE)
-# write.csv(X_C_chinensis_enriched_GOs, "/Users/miltr339/work/PhD_code/PhD_chapter3/data/GO_enrichment/X_C_chinensis_enriched_GOs.csv", row.names=TRUE)
-
-
 ### A to X comparison
-all_AX_enriched_GOs <- GO_enrichment_analysis(geneList = all_AX_contrast, annotation_df = gene2GO)
+all_AX_enriched_GOs <- GO_enrichment_analysis(geneList = AX_contrast, annotation_df = gene2GO)
+nonsig_AX_enriched_GOs <- GO_enrichment_analysis(geneList = nonsig_AX_contrast, annotation_df = gene2GO)
 sig_AX_enriched_GOs <- GO_enrichment_analysis(geneList = sig_AX_contrast, annotation_df = gene2GO)
+### sig to nonsig comparison
+A_sig_enriched_GOs <- GO_enrichment_analysis(geneList = A_sig_contrast, annotation_df = gene2GO)
+X_sig_enriched_GOs <- GO_enrichment_analysis(geneList = X_sig_contrast, annotation_df = gene2GO)
 
 write.csv(all_AX_enriched_GOs, "/Users/miltr339/work/PhD_code/PhD_chapter3/data/GO_enrichment/all_AX_enriched_GOs_revision.csv", row.names=TRUE)
+write.csv(nonsig_AX_enriched_GOs, "/Users/miltr339/work/PhD_code/PhD_chapter3/data/GO_enrichment/nonsig_AX_enriched_GOs_revision.csv", row.names=TRUE)
 write.csv(sig_AX_enriched_GOs, "/Users/miltr339/work/PhD_code/PhD_chapter3/data/GO_enrichment/sig_AX_enriched_GOs_revision.csv", row.names=TRUE)
-
-### all to sig comparison
-all_sig_enriched_GOs <- GO_enrichment_analysis(geneList = all_sig_contrast, annotation_df = gene2GO)
-write.csv(all_sig_enriched_GOs, "/Users/miltr339/work/PhD_code/PhD_chapter3/data/GO_enrichment/allsig_enriched_GOs_revision.csv", row.names=TRUE)
+write.csv(A_sig_enriched_GOs, "/Users/miltr339/work/PhD_code/PhD_chapter3/data/GO_enrichment/A_sig_enriched_GOs_revision.csv", row.names=TRUE)
+write.csv(X_sig_enriched_GOs, "/Users/miltr339/work/PhD_code/PhD_chapter3/data/GO_enrichment/X_sig_enriched_GOs_revision.csv", row.names=TRUE)
 ```
 
 # Try semantic clustering with Viseago
+
+This did not work out but I will keep it for posterity just in case
 
 ## load libraries
 ```{r}
