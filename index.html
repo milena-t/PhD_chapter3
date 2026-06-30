@@ -99,7 +99,16 @@ a { color: #416793; }
     overflow:auto; 
     border:1px solid #909bb5;
 }
-
+</style>
+<style>
+    .left-div {
+       float: left;
+       width: 49%;
+    }
+    .right-div {
+       float: right;
+       width: 49%;
+    }
 </style>
 <script>
 function openTab(evt, cityName) {
@@ -1001,9 +1010,186 @@ We will use TopGo to perform GO-enrichment on the positively selected genes. I r
 
 <h2 id="DC">Dosage Compensation</h2>
 
-<p float="center">
-    <img loading="lazy" src="data/DE_analysis/DC_boxplot_somatic.png" width="39%" />
-    <img loading="lazy" src="data/DE_analysis/DC_boxplot_reproductive.png" width="39%" />
+<p>
+    <span style="color: #909bb5">
+        There are three biological replicates for each condition. I have taken the <i>mean</i> of all replicates for each gene as the data vector for all subsequent analyses.<br>
+        I am unsure if i should include genes where this mean is 0 or not, I have implemented both.
+    </span>
 </p>
+
+<p>
+    It looks like the male X is upregulated to the level of the female X in somatic tissues from the boxplots (mostly in the unfiltered one, but you can still kind of see 
+    the upregulation in the filtered plot). I implemented two kinds of median-difference tests, and the results are a bit confusing. The overall trend definitely shows that 
+    there is a difference between male and female X in the reproductive tissues that is reduced in the somatic tissues, 
+</p>
+
+<div class="left-div">
+    <h4>somatic tissues</h4>
+
+    <div class="tab">
+        <button class="tablinks" onclick="openTab(event, 'unfiltered_somatic')">Unfiltered expression</button>
+        <button class="tablinks" onclick="openTab(event, 'filtered_somatic')">Expression filtered > 0</button>
+    </div>
+
+    <div id="unfiltered_somatic" class="tabcontent">
+
+        <p float="center">
+            <img loading="lazy" src="data/DE_analysis/DC_boxplot_somatic.png" width="95%" />
+        </p>
+        <p>Statistical comparison of median X-linked expression to median autosomal expression.</p>    
+        <div class="left-div">
+            <b>Males</b>
+            <p>Mood's median differences test</p>
+            <ul>
+                <li>Chi-sq statistic: 6.7050</li>
+                <li>p-value: 0.0096</li>
+            </ul>
+            <p>Mann-Whitney U rank test</p>
+            <ul>
+                <li>U statistic: 4315148.5</li>
+                <li>p-value: 5.979&sdot;10<sup>-5</sup></li>
+            </ul>
+        </div>
+        
+        <div class="right-div">
+            <b>Females</b>
+            <p>Mood's median differences test</p>
+            <ul>
+                <li>Chi-sq statistic: 8.4290</li>
+                <li>p-value: 0.0037</li>
+            </ul>
+            <p>Mann-Whitney U rank test</p>
+            <ul>
+                <li>U statistic: 4372524.5</li>
+                <li>p-value: 6.285&sdot;10<sup>-5</sup></li>
+            </ul>
+        </div>
+        <div style="clear: both;"></div>
+    </div>
+
+    <div id="filtered_somatic" class="tabcontent">
+
+        <p float="center">
+            <img loading="lazy" src="data/DE_analysis/DC_boxplot_somatic_filtered.png" width="95%" />
+        </p>
+        <p>Statistical comparison of median X-linked expression to median autosomal expression.</p>    
+
+        <div class="left-div">
+            <b>Males</b>
+            <p>Mood's median differences test</p>
+            <ul>
+                <li>Chi-sq statistic: 4.771</li>
+                <li>p-value: 0.0290</li>
+            </ul>
+            <p>Mann-Whitney U rank test</p>
+            <ul>
+                <li>U statistic: 2953857.0</li>
+                <span style="color: #909bb5"><li>p-value: 0.128</li></span>
+            </ul>
+        </div>
+        
+        <div class="right-div">
+            <b>Females</b>
+            <p>Mood's median differences test</p>
+            <ul>
+                <li>Chi-sq statistic: 0.3070</li>
+                <span style="color: #909bb5"><li>p-value: 0.580</li></span>
+            </ul>
+            <p>Mann-Whitney U rank test</p>
+            <ul>
+                <li>U statistic: 2865564.5</li>
+                <span style="color: #909bb5"><li>p-value: 0.560</li></span>
+            </ul>
+        </div>
+        <div style="clear: both;"></div>
+    </div>
+
+</div>
+
+<div class="right-div">
+    <h4>reproductive tissues</h4>
+
+    <div class="tab">
+        <button class="tablinks" onclick="openTab(event, 'unfiltered_reproductive')">Unfiltered expression</button>
+        <button class="tablinks" onclick="openTab(event, 'filtered_reproductive')">Expression filtered > 0</button>
+    </div>
+
+    <div id="unfiltered_reproductive" class="tabcontent">
+
+        <p float="center">
+            <img loading="lazy" src="data/DE_analysis/DC_boxplot_reproductive.png" width="95%" />
+        </p>
+        <p>Statistical comparison of median X-linked expression to median autosomal expression.</p>    
+
+        <div class="left-div">
+            <b>Males</b>
+            <p>Mood's median differences test</p>
+            <ul>
+                <li>Chi-sq statistic: 32.811</li>
+                <li>p-value: <b>1.016&sdot;10<sup>-8</sup></b></li>
+            </ul>
+            <p>Mann-Whitney U rank test</p>
+            <ul>
+                <li>U statistic: 3972051.0</li>
+                <li>p-value: <b>1.561&sdot;10<sup>-14</sup></b></li>
+            </ul>
+        </div>
+        
+        <div class="right-div">
+            <b>Females</b>
+            <p>Mood's median differences test</p>
+            <ul>
+                <li>Chi-sq statistic: 6.7050</li>
+                <li>p-value: 0.0096</li>
+            </ul>
+            <p>Mann-Whitney U rank test</p>
+            <ul>
+                <li>U statistic: 4313650.5</li>
+                <li>p-value: 5.536&sdot;10<sup>-6</sup></li>
+            </ul>
+        </div>
+        <div style="clear: both;"></div>
+    </div>
+    <div id="filtered_reproductive" class="tabcontent">
+
+        <p float="center">
+            <img loading="lazy" src="data/DE_analysis/DC_boxplot_reproductive_filtered.png" width="95%" />
+        </p>
+        <p>Statistical comparison of median X-linked expression to median autosomal expression.</p>    
+
+        <div class="left-div">
+            <b>Males</b>
+            <p>Mood's median differences test</p>
+            <ul>
+                <li>Chi-sq statistic: 0.862</li>
+                <span style="color: #909bb5"><li>p-value: 0.353</li></span>
+            </ul>
+            <p>Mann-Whitney U rank test</p>
+            <ul>
+                <li>U statistic: 2709111.0</li>
+                <li>p-value: 0.023</li>
+            </ul>
+        </div>
+        
+        <div class="right-div">
+            <b>Females</b>
+            <p>Mood's median differences test</p>
+            <ul>
+                <li>Chi-sq statistic: 0.265</li>
+                <span style="color: #909bb5"><li>p-value: 0.60</li></span>
+            </ul>
+            <p>Mann-Whitney U rank test</p>
+            <ul>
+                <li>U statistic: 2861423.5</li>
+                <span style="color: #909bb5"><li>p-value: 0.248</li></span>
+            </ul>
+        </div>
+        <div style="clear: both;"></div>
+    </div>
+
+</div>
+<div style="clear: both;"></div>
+
+
 
 </body>

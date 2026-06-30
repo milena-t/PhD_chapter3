@@ -5,6 +5,7 @@ Assess dosage compensation by comparing mean expression on A and X-linked genes 
 import pandas as pd
 import matplotlib.pyplot as plt
 import parse_gff as gff
+import scipy.stats as sts
 
 username="miltr339"
 rpkm_norm_counts = f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/Cmac_gene_counts_edgeR_rpkm_length_normalized.txt"
@@ -101,6 +102,20 @@ def make_boxplot(data_dict:dict, outfile:str, tissue:str):
     plt.savefig(outfile, dpi = dpi, transparent = True)
     print(f"plot saved in current working directory as: {outfile}")
 
+
+def test_median_diff(data_dict):
+    """mood's median test as implemented in scipy.stats.median_Test"""
+    for sex in ["male","female"]:
+        print(f" ......... {sex} .........")
+        statistic,pvalue,median,table = sts.median_test(data_dict[f"{sex} X"], data_dict[f"{sex} A"])
+        print(f"\tMood's : \t Chi-sq statistic: {statistic}, p-value: {pvalue}")
+
+        stat, pval = sts.mannwhitneyu(data_dict[f"{sex} X"], data_dict[f"{sex} A"], alternative='two-sided')
+        print(f"\tMann-Whitney : \t U statistic: {stat}, p-value: {pval}")
+        
+    print()
+
+
 if __name__ == "__main__":
 
     # get A and X gene lists
@@ -134,15 +149,36 @@ if __name__ == "__main__":
         A_F_df["gene_mean"] = A_F_df.mean(axis=1)
         A_M_df = A_df[column_categories[f"{tissue}_M"]]
         A_M_df["gene_mean"] = A_M_df.mean(axis=1)
-        sample_mean_expressions = {
-            "male X" : X_M_df["gene_mean"].tolist(),
-            "female X" : X_F_df["gene_mean"].tolist(),
-            "male A" : A_M_df["gene_mean"].tolist(),
-            "female A" : A_F_df["gene_mean"].tolist(),
-        }
+        
+        filt_expr =True
+        if not filt_expr:
+            # no expression filtering to remove 0-counts genes
+            sample_mean_expressions = {
+                "male X" : X_M_df["gene_mean"].tolist(),
+                "female X" : X_F_df["gene_mean"].tolist(),
+                "male A" : A_M_df["gene_mean"].tolist(),
+                "female A" : A_F_df["gene_mean"].tolist(),
+            }
+            outfile = f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/DC_boxplot_{tissue}.png"    
+        else:
+            # remove genes that have mean expression 0 across all samples from the list
+            min_expr = 0
+            sample_mean_expressions = {
+                "male X" : [expr_val for expr_val in X_M_df["gene_mean"].tolist() if expr_val>min_expr],
+                "female X" : [expr_val for expr_val in X_F_df["gene_mean"].tolist() if expr_val>min_expr],
+                "male A" : [expr_val for expr_val in A_M_df["gene_mean"].tolist() if expr_val>min_expr],
+                "female A" : [expr_val for expr_val in A_F_df["gene_mean"].tolist() if expr_val>min_expr],
+            }
+            outfile = f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/DC_boxplot_{tissue}_filtered.png"    
+
+
         for key,val in sample_mean_expressions.items():
             print(f"{key} : {len(val)}")
 
-        make_boxplot(data_dict=sample_mean_expressions, outfile = f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/DC_boxplot_{tissue}.png", tissue=tissue)
+        make_boxplot(data_dict=sample_mean_expressions, outfile = outfile, tissue=tissue)
+
+        ## test for statistical differences: 
+        print(f"\n -------------- {tissue} stats (filtered: {filt_expr}) --------------")
+        test_median_diff(data_dict=sample_mean_expressions)
     
 
