@@ -226,12 +226,14 @@ def make_boxplot_both_tissues(data_dict:dict, outfile:str, tissue:str):
 
     ## make statistical annotation
     if True:
-        def add_significance_bar_log(ax, x1, x2, data1, data2, y, factor=1.5, color='black', lw=lw, fs=fs):
+        def add_significance_bar_log(ax, x1, x2, sample1, sample2, data, y, factor=1.5, color='black', lw=lw, fs=fs):
             """
             This function was modified from one created by claude code
             """
             # run the test
-            _, p = sts.mannwhitneyu(data1, data2, alternative='two-sided')
+            data1 = data[sample1]
+            data2 = data[sample2]
+            stat, p = sts.mannwhitneyu(data1, data2, alternative='two-sided')
 
             # convert p-value to stars
             text = 'ns'
@@ -241,19 +243,24 @@ def make_boxplot_both_tissues(data_dict:dict, outfile:str, tissue:str):
                 text = '*'
                 color="#343434"# darker grey
                 ax.text((x1+x2)/2, tick_top*0.7, text, ha='center', va='bottom', color=color, fontsize=fs)
+                print(f"  * Mann-Whitney {sample1}-{sample2} : \t U statistic: {stat}, p-value: {p}")
             else:
+                print(f"    Mann-Whitney {sample1}-{sample2} : \t U statistic: {stat}, p-value: {p}")
                 ax.text((x1+x2)/2, tick_top, text, ha='center', va='bottom', color=color, fontsize=fs)
             ax.plot([x1, x1, x2, x2], [y, tick_top, tick_top, y], lw=lw, color=color)
                 
         y0 = max(data_dict['reproductive_male_X'] + data_dict['reproductive_male_A'] + data_dict['reproductive_female_X'] + data_dict['reproductive_female_A'] + 
                 data_dict['somatic_male_X'] + data_dict['somatic_male_A'] + data_dict['somatic_female_X'] + data_dict['somatic_female_A']) * 1.1
 
-        add_significance_bar_log(ax=ax, x1=tickpos[0], x2=tickpos[1], data1=data_dict[samples_sorted_keys[0]], data2=data_dict[samples_sorted_keys[1]], y=y0 * 2)
-        add_significance_bar_log(ax=ax, x1=tickpos[2], x2=tickpos[3], data1=data_dict[samples_sorted_keys[2]], data2=data_dict[samples_sorted_keys[3]], y=y0 * 2)
-        add_significance_bar_log(ax=ax, x1=tickpos[4], x2=tickpos[5], data1=data_dict[samples_sorted_keys[4]], data2=data_dict[samples_sorted_keys[5]], y=y0 * 2)
-        add_significance_bar_log(ax=ax, x1=tickpos[6], x2=tickpos[7], data1=data_dict[samples_sorted_keys[6]], data2=data_dict[samples_sorted_keys[7]], y=y0 * 2)
+        add_significance_bar_log(ax=ax, x1=tickpos[0], x2=tickpos[1], sample1=samples_sorted_keys[0], sample2=samples_sorted_keys[1], data=data_dict, y=y0 * 2)
+        add_significance_bar_log(ax=ax, x1=tickpos[2], x2=tickpos[3], sample1=samples_sorted_keys[2], sample2=samples_sorted_keys[3], data=data_dict, y=y0 * 2)
+        add_significance_bar_log(ax=ax, x1=tickpos[4], x2=tickpos[5], sample1=samples_sorted_keys[4], sample2=samples_sorted_keys[5], data=data_dict, y=y0 * 2)
+        add_significance_bar_log(ax=ax, x1=tickpos[6], x2=tickpos[7], sample1=samples_sorted_keys[6], sample2=samples_sorted_keys[7], data=data_dict, y=y0 * 2)
+        
+        add_significance_bar_log(ax=ax, x1=tickpos[0], x2=tickpos[2], sample1=samples_sorted_keys[0], sample2=samples_sorted_keys[2], data=data_dict, y=y0 * 50)
+        add_significance_bar_log(ax=ax, x1=tickpos[4], x2=tickpos[6], sample1=samples_sorted_keys[4], sample2=samples_sorted_keys[6], data=data_dict, y=y0 * 50)
 
-        ax.set_ylim(0,y0*20)
+        ax.set_ylim(0,y0*1000)
         
 
 
