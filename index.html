@@ -904,7 +904,7 @@ We will use TopGo to perform GO-enrichment on the positively selected genes. I r
 
         <div id="all_AX_table" class="tableframe"></div>
     <script>
-        loadCSVTable("data/GO_enrichment/all_AX_enriched_GOs_revision.csv", "AX_all_table");
+        loadCSVTable("data/GO_enrichment/all_AX_enriched_GOs_revision.csv", "all_AX_table");
     </script>
     </div>
     <div id="nonsig_AX" class="tabcontent">
@@ -912,7 +912,7 @@ We will use TopGo to perform GO-enrichment on the positively selected genes. I r
 
         <div id="nonsig_AX_table" class="tableframe"></div>
     <script>
-        loadCSVTable("data/GO_enrichment/nonsig_AX_enriched_GOs_revision.csv", "AX_all_table");
+        loadCSVTable("data/GO_enrichment/nonsig_AX_enriched_GOs_revision.csv", "nonsig_AX_table");
     </script>
     </div>
     <div id="sig_AX" class="tabcontent">
@@ -920,7 +920,7 @@ We will use TopGo to perform GO-enrichment on the positively selected genes. I r
 
         <div id="sig_AX_table" class="tableframe"></div>
     <script>
-        loadCSVTable("data/GO_enrichment/sig_AX_enriched_GOs_revision.csv", "AX_all_table");
+        loadCSVTable("data/GO_enrichment/sig_AX_enriched_GOs_revision.csv", "sig_AX_table");
     </script>
     </div>
 
@@ -936,7 +936,7 @@ We will use TopGo to perform GO-enrichment on the positively selected genes. I r
 
         <div id="A_sig_table" class="tableframe"></div>
     <script>
-        loadCSVTable("data/GO_enrichment/A_sig_enriched_GOs_revision.csv", "AX_all_table");
+        loadCSVTable("data/GO_enrichment/A_sig_enriched_GOs_revision.csv", "A_sig_table");
     </script>
     </div>
     <div id="X_sig" class="tabcontent">
@@ -944,7 +944,7 @@ We will use TopGo to perform GO-enrichment on the positively selected genes. I r
 
         <div id="X_sig_table" class="tableframe"></div>
     <script>
-        loadCSVTable("data/GO_enrichment/X_sig_enriched_GOs_revision.csv", "AX_all_table");
+        loadCSVTable("data/GO_enrichment/X_sig_enriched_GOs_revision.csv", "X_sig_table");
     </script>
     </div>
 
@@ -1013,7 +1013,7 @@ We will use TopGo to perform GO-enrichment on the positively selected genes. I r
 <p>
     <span style="color: #909bb5">
         There are three biological replicates for each condition. I have taken the <i>mean</i> of all replicates for each gene as the data vector for all subsequent analyses.<br>
-        I am unsure if i should include genes where this mean is 0 or not, I have implemented both.
+        Genes with median expression of 0 should not be included in the analysis, therefore the filtered results are what is relevant (I keep the non-filtered ones for posterity)
     </span>
 </p>
 
