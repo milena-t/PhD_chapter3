@@ -78,7 +78,7 @@ def calculate_list_CI(values_list:list, cl = 0.95, verbose = False):
 
 
 
-def plot_dNdS_permutations(boot_diff:dict, measure_diff:dict, A_dict:dict, X_dict:dict, filename = "dNdS_permutations.png", dark_mode=False, hist_label = r"$\text{dNdS}_A - \text{dNdS}_X$", violin_label="dNdS", violin_ymax = 0, transparent=True, binary = False):
+def plot_dNdS_permutations(boot_diff:dict, measure_diff:dict, A_dict:dict, X_dict:dict, filename = "dNdS_permutations.png", dark_mode=False, hist_label = r"$\text{dNdS}_A - \text{dNdS}_X$", violin_label="dN/dS", violin_ymax = 0, transparent=True, binary = False):
     """
     plot a grid of histogram distribution plots for all pairwise comparisons
     """
@@ -177,9 +177,9 @@ def plot_dNdS_permutations(boot_diff:dict, measure_diff:dict, A_dict:dict, X_dic
         lwd = 3
         pdf_ax = axes[row,col].twinx()
         if measure_diff[pair] > max(data_boot):
-            pdf_x = np.arange(min(data_boot),measure_diff[pair], 0.00001)
+            pdf_x = np.arange(min(data_boot)*1.1,measure_diff[pair]*1.1, 0.00001)
         else:
-            pdf_x = np.arange(min(data_boot),max(data_boot), 0.00001)
+            pdf_x = np.arange(min(data_boot)*1.1,max(data_boot)*1.1, 0.00001)
         mean_cor,std_cor,lower_CI,upper_CI = calculate_list_CI(data_boot)
         pdf_y = sts.norm.pdf(pdf_x, mean_cor, std_cor)
         pdf_ax.plot(pdf_x,pdf_y, linewidth=lwd, color=colors_dict["pdf"], label = r"mean $\text{dNdS}_A - \text{dNdS}_X$"+f": {mean_cor:.3f}")#, linestyle="--")
@@ -241,7 +241,7 @@ def plot_dNdS_permutations(boot_diff:dict, measure_diff:dict, A_dict:dict, X_dic
     print(f"plot saved in current working directory as: {filename} and {filename_tr}")
 
 
-def plot_dNdS_permutations_one_pair(boot_diff:dict, measure_diff:dict, A_dict:dict, X_dict:dict, filename = "dNdS_permutations.png", dark_mode=False, hist_label = r"$\text{dNdS}_A - \text{dNdS}_X$", violin_label="dNdS", violin_ymax = 0, transparent=True, binary = False):
+def plot_dNdS_permutations_one_pair(boot_diff:dict, measure_diff:dict, A_dict:dict, X_dict:dict, filename = "dNdS_permutations.png", dark_mode=False, hist_label = r"$\text{dNdS}_A - \text{dNdS}_X$", violin_label="dN/dS", violin_ymax = 0, transparent=True, binary = False):
     """
     plot a grid of histogram distribution plots for all pairwise comparisons
     """
@@ -259,7 +259,7 @@ def plot_dNdS_permutations_one_pair(boot_diff:dict, measure_diff:dict, A_dict:di
     cols = species_count
     rows = 1
     fig, axes = plt.subplots(rows, cols, figsize=(16, 9)) # for less than three rows
-    fs = 33
+    fs = 38
     plt.rcParams['text.usetex'] = True
 
     colors_dict = {
@@ -284,7 +284,7 @@ def plot_dNdS_permutations_one_pair(boot_diff:dict, measure_diff:dict, A_dict:di
 
         species1_lab = species1.replace("_", ". ")
         species2_lab = species2.replace("_", ". ")
-        fig.suptitle(f"{species1_lab} vs. {species2_lab}: \nA and X dNdS violin plot and permutation test", fontsize = fs*1.5)
+        fig.suptitle(f"{species1_lab} vs. {species2_lab}: \nA and X dNdS violin plot and permutation test", fontsize = fs*1.25)
         
         ### plot bootstraps
 
@@ -304,9 +304,9 @@ def plot_dNdS_permutations_one_pair(boot_diff:dict, measure_diff:dict, A_dict:di
         lwd = 3
         pdf_ax = axes[1].twinx()
         if measure_diff[pair] > max(data_boot):
-            pdf_x = np.arange(min(data_boot),measure_diff[pair], 0.00001)
+            pdf_x = np.arange(min(data_boot)*1.1,measure_diff[pair]*1.1, 0.00001)
         else:
-            pdf_x = np.arange(min(data_boot),max(data_boot), 0.00001)
+            pdf_x = np.arange(min(data_boot)*1.1,max(data_boot)*1.1, 0.00001)
         mean_cor,std_cor,lower_CI,upper_CI = calculate_list_CI(data_boot)
         pdf_y = sts.norm.pdf(pdf_x, mean_cor, std_cor)
         pdf_ax.plot(pdf_x,pdf_y, linewidth=lwd, color=colors_dict["pdf"], label = r"mean $\text{dNdS}_A - \text{dNdS}_X$"+f": {mean_cor:.3f}")#, linestyle="--")
@@ -351,20 +351,18 @@ def plot_dNdS_permutations_one_pair(boot_diff:dict, measure_diff:dict, A_dict:di
         print(f"{species1_lab} vs. {species2_lab} --> mean(dNdS_A)-mean(dNdS_X) bootstrap: {mean_boot:.5f}, measured: {measure_diff[pair]:.3f}")
 
     # Adjust layout to prevent overlap (left, bottom, right, top)
-    plt.tight_layout(rect=[0, 0.05, 1, 1])
+    print(f" adjust layout")
+    plt.tight_layout(rect=[0.01, 0.05, 1, 1])
 
     if dark_mode:
         filename = filename.replace(".png", "_darkmode.png")
 
     # transparent background
     plt.savefig(filename, dpi = 300, transparent = True)
-    # non-transparent background
-    filename_tr = filename.replace(".png", "_white_bg.png")
-    plt.savefig(filename_tr, dpi = 300, transparent = False)
-    print(f"plot saved in current working directory as: {filename} and {filename_tr}")
+    print(f"plot saved in current working directory as: {filename}")
 
 
-def plot_dNdS_pos_sel(A_dict_dNdS:dict, X_dict_dNdS:dict, pos_list_A:dict, pos_list_X:dict, filename = "dNdS_pos_sel.png", dark_mode=False, violin_label="dNdS", violin_ymax = 0):
+def plot_dNdS_pos_sel(A_dict_dNdS:dict, X_dict_dNdS:dict, pos_list_A:dict, pos_list_X:dict, filename = "dNdS_pos_sel.png", dark_mode=False, violin_label="dN/dS", violin_ymax = 0):
     """
     plot a grid of histogram distribution plots for all pairwise comparisons
     """
@@ -505,14 +503,11 @@ def plot_dNdS_pos_sel(A_dict_dNdS:dict, X_dict_dNdS:dict, pos_list_A:dict, pos_l
 
     # transparent background
     plt.savefig(filename, dpi = 300, transparent = True)
-    # non-transparent background
-    filename_tr = filename.replace(".png", "_white_bg.png")
-    plt.savefig(filename_tr, dpi = 300, transparent = False)
-    print(f"plot saved in current working directory as: {filename} and {filename_tr}")
+    print(f"plot saved in current working directory as: {filename}")
 
 
 
-def plot_dNdS_pos_sel_one_pair(A_dict_dNdS:dict, X_dict_dNdS:dict, pos_list_A:dict, pos_list_X:dict, filename = "dNdS_pos_sel.png", dark_mode=False, violin_label="dNdS", violin_ymax = 0):
+def plot_dNdS_pos_sel_one_pair(A_dict_dNdS:dict, X_dict_dNdS:dict, pos_list_A:dict, pos_list_X:dict, filename = "dNdS_pos_sel.png", dark_mode=False, violin_label="dN/dS", violin_ymax = 0):
     """
     plot a grid of histogram distribution plots for all pairwise comparisons
     """
@@ -606,6 +601,7 @@ def plot_dNdS_pos_sel_one_pair(A_dict_dNdS:dict, X_dict_dNdS:dict, pos_list_A:di
         print(f"{species1_lab} vs. {species2_lab} --> dNdS violin plot\n")        
 
     # Adjust layout to prevent overlap (left, bottom, right, top)
+    
     plt.tight_layout(rect=[0, 0.05, 1, 1])
 
     if dark_mode:
@@ -613,19 +609,16 @@ def plot_dNdS_pos_sel_one_pair(A_dict_dNdS:dict, X_dict_dNdS:dict, pos_list_A:di
 
     # transparent background
     plt.savefig(filename, dpi = 300, transparent = True)
-    # non-transparent background
-    filename_tr = filename.replace(".png", "_white_bg.png")
-    plt.savefig(filename_tr, dpi = 300, transparent = False)
-    print(f"plot saved in current working directory as: {filename} and {filename_tr}")
+    print(f"plot saved in current working directory as: {filename}")
 
 
 
 if __name__ == """__main__""":
 
-    username = "milena"
-    # username = "miltr339"
+    # username = "milena"
+    username = "miltr339"
     chromosome = "A"
-    data_files = {"A" : ["A_dNdS", "A_LRT"],
+    data_files = {"A" : ["A_dNdS", "A_LRT"], # this is the files from the revision with runmode=-2
                   "X" : ["X_dNdS", "X_LRT"]}
     summary_paths = get_summary_paths(username=username)
 
@@ -634,7 +627,7 @@ if __name__ == """__main__""":
         species_excl = ["D_carinulata", "D_sublineata", "T_castaneum", "T_freemani", "C_septempunctata", "C_magnifica"]
         filename =f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/fastX_permutation_bruchini.png"
     # coccinella
-    elif False:
+    elif True:
         species_excl = ["D_carinulata", "D_sublineata", "T_castaneum", "T_freemani", "B_siliquastri", "A_obtectus", "C_maculatus", "C_chinensis"]
         filename =f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/fastX_permutation_coccinella.png"
     # tribolium
@@ -652,22 +645,30 @@ if __name__ == """__main__""":
 
     bootstraps = { pair : [] for pair in pairs_list}
     median_diffs = {pair : np.nan for pair in pairs_list}
-    
-    ### test with 100, takes a bit of time otherwise
-    ### actual analysis with 10000
-    num_permutations = 10000
 
-    for pair in pairs_list:
-        dNdS_A = dNdS_dict_A[pair]
-        dNdS_X = dNdS_dict_X[pair]
-        median_diffs[pair] = np.nanmedian(dNdS_A) - np.nanmedian(dNdS_X)
-        bootstraps[pair] = permutate_dNdS(dNdS_A=dNdS_A, dNdS_X=dNdS_X, num_permut=num_permutations)
-        mean_boot = np.mean(bootstraps[pair])
-        print(f" *  {pair} --> \t median(dNdS_A)-median(dNdS_X) = {median_diffs[pair]:.3f}, mean bootstrap diff = {mean_boot:.5f}")
-    
-    if len(pairs_list)>1:
-        print(f"plot pairwise matrix ...")
-        plot_dNdS_permutations(boot_diff=bootstraps,measure_diff=median_diffs, A_dict=dNdS_dict_A, X_dict=dNdS_dict_X, filename = filename)
+    if False:
+        ### test with 100, takes a bit of time otherwise
+        ### actual analysis with 10000
+        num_permutations = 10000
+
+        for pair in pairs_list:
+            dNdS_A = dNdS_dict_A[pair]
+            dNdS_X = dNdS_dict_X[pair]
+            median_diffs[pair] = np.nanmedian(dNdS_A) - np.nanmedian(dNdS_X)
+            bootstraps[pair] = permutate_dNdS(dNdS_A=dNdS_A, dNdS_X=dNdS_X, num_permut=num_permutations)
+            mean_boot = np.mean(bootstraps[pair])
+            print(f" *  {pair} --> \t median(dNdS_A)-median(dNdS_X) = {median_diffs[pair]:.3f}, mean bootstrap diff = {mean_boot:.5f}")
+        
+        if len(pairs_list)>1:
+            print(f"plot pairwise matrix ...")
+            plot_dNdS_permutations(boot_diff=bootstraps,measure_diff=median_diffs, A_dict=dNdS_dict_A, X_dict=dNdS_dict_X, filename = filename)
+        else:
+            print(f"plot one pair ...")
+            plot_dNdS_permutations_one_pair(boot_diff=bootstraps,measure_diff=median_diffs, A_dict=dNdS_dict_A, X_dict=dNdS_dict_X, filename = filename)
+
     else:
-        print(f"plot one pair ...")
-        plot_dNdS_permutations_one_pair(boot_diff=bootstraps,measure_diff=median_diffs, A_dict=dNdS_dict_A, X_dict=dNdS_dict_X, filename = filename)
+        for pair in pairs_list:
+            dNdS_A = dNdS_dict_A[pair]
+            dNdS_X = dNdS_dict_X[pair]
+            frac = np.nanmedian(dNdS_A) / np.nanmedian(dNdS_X)
+            print(f" *  {pair} --> \t median(dNdS_A) / median(dNdS_X) = {frac:.5f}")
