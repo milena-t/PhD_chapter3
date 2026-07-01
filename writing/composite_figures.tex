@@ -130,17 +130,23 @@
 
 \begin{figure}[H]
     \centering
+        \begin{overpic}[width=0.75\textwidth]{../data/DE_analysis/DC_boxplot_both_tissues_filtered.png}
+            \put(2,36){\textbf{A}}
+        \end{overpic}
         \begin{overpic}[width=0.75\textwidth]{../data/DE_analysis/DE_conservation_rank_proportions_sep_panels.png}
-            \put(2,75){\textbf{A}}
+            \put(2,75){\textbf{B}}
         \end{overpic}
         \begin{overpic}[width=0.75\textwidth]{../data/DE_analysis/conservation_rank_sig_sex_bias_proportion.png}
-            \put(2,65){\textbf{B}}
+            \put(2,65){\textbf{C}}
         \end{overpic}
-    \caption{\textbf{gene age and sex-bias analysis}: X-axes ticks show sample size in parentheses, as well as 
-    gene age (less conserved orthologs of age 1 to most conserved orthologs of age 5), and autosomal or X-linkage of orthologs (A or X). 
-    (\textbf{A}): proportion of sex-bias categories for each gene age category according to abdominal or head and thorax tissues, 
+    \caption{\textbf{DC and gene age by sex-bias analysis}: blue boxplots show male samples and red boxplots show female samples. 
+    X-axes ticks show sample size in parentheses, as well as gene age (less conserved orthologs of age 1 to most conserved orthologs of age 5), 
+    or autosomal or X-linkage of orthologs (A or X). 
+    (\textbf{A}): Gene expression (FPKM-normalized mean $>$ 0 across three biological replicates) split by tissue and 
+    A or X-linkage. Mann-Whitney-U test for significant differences is applied and significant differences are marked with an asterisk.
+    (\textbf{B}): proportion of sex-bias categories for each gene age category according to abdominal or head and thorax tissues, 
     as well as autosomal or X-linked orthologs. Unbiased in grey, female-biased in red and male-biased in blue.
-    (\textbf{B}): Absolute log2FC for significantly male-biased (blue) or female-biased (red) orthologs of \textit{C. maculatus}
+    (\textbf{C}): Absolute log2FC for significantly male-biased (blue) or female-biased (red) orthologs of \textit{C. maculatus}
     and \textit{C. chinensis} for increasing gene age. Split by autosomal and X-linked orthologs, as well as 
     log2FC determined from abdominal tissue (reproductive) or head and thorax tissue (somatic).}
 \end{figure}
