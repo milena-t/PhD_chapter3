@@ -1,0 +1,42 @@
+////////////////// C_chinensis //////////////////
+
+------------> no sex bias
+Formula: positive_selection ~  C(chromosome) * C(level_most_dist_ortholog)
+                           Logit Regression Results                           
+==============================================================================
+Dep. Variable:     positive_selection   No. Observations:                 6744
+Model:                          Logit   Df Residuals:                     6738
+Method:                           MLE   Df Model:                            5
+Date:                Thu, 02 Jul 2026   Pseudo R-squ.:                0.001752
+Time:                        15:52:47   Log-Likelihood:                -3844.9
+converged:                      False   LL-Null:                       -3851.6
+Covariance Type:            nonrobust   LLR p-value:                   0.01913
+=======================================================================================================================
+                                                          coef    std err          z      P>|z|      [0.025      0.975]
+-----------------------------------------------------------------------------------------------------------------------
+Intercept                                              -1.3380      0.109    -12.260      0.000      -1.552      -1.124
+C(chromosome)[T.X]                                    -30.4177   2.28e+06  -1.33e-05      1.000   -4.47e+06    4.47e+06
+C(level_most_dist_ortholog)[T.4]                        0.3399      0.125      2.717      0.007       0.095       0.585
+C(level_most_dist_ortholog)[T.5]                        0.2917      0.114      2.555      0.011       0.068       0.515
+C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.4]    30.2263   2.28e+06   1.33e-05      1.000   -4.47e+06    4.47e+06
+C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.5]    30.5279   2.28e+06   1.34e-05      1.000   -4.47e+06    4.47e+06
+=======================================================================================================================AIC: 7701.7506
+
+run model without age rank to see difference
+------------> no conservation rank
+Formula: positive_selection ~  C(chromosome)
+                           Logit Regression Results                           
+==============================================================================
+Dep. Variable:     positive_selection   No. Observations:                 6744
+Model:                          Logit   Df Residuals:                     6742
+Method:                           MLE   Df Model:                            1
+Date:                Thu, 02 Jul 2026   Pseudo R-squ.:               1.352e-05
+Time:                        15:52:47   Log-Likelihood:                -3851.6
+converged:                       True   LL-Null:                       -3851.6
+Covariance Type:            nonrobust   LLR p-value:                    0.7469
+======================================================================================
+                         coef    std err          z      P>|z|      [0.025      0.975]
+--------------------------------------------------------------------------------------
+Intercept             -1.0574      0.028    -37.269      0.000      -1.113      -1.002
+C(chromosome)[T.X]     0.0471      0.145      0.324      0.746      -0.238       0.332
+======================================================================================

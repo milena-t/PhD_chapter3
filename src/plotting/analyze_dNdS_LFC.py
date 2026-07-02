@@ -13,8 +13,12 @@ from matplotlib.ticker import FuncFormatter
 
 def get_full_table_path(username="miltr339"):
     out_dict = {
-        "A" : f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/DE_summary_table_A_chr.tsv",
-        "X" : f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/DE_summary_table_X_chr.tsv",
+        # old pairwise site model
+        "A_old" : f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/DE_summary_table_A_chr.tsv",
+        "X_old" : f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/DE_summary_table_X_chr.tsv",
+        # new bruchini wide site model for positive selection
+        "A" : f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/DE_summary_table_A_chr_site_model_bruchini_revision.tsv",
+        "X" : f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/DE_summary_table_X_chr_site_model_bruchini_revision.tsv",
     }
     return out_dict
 
@@ -310,10 +314,14 @@ def statistical_analysis_pos_sel(full_table_paths_dict, table_outfile = "pos_sel
             if include_sex_bias and "C_chinensis" in partner:
                 
                 # only significantly sex-biased genes -> remove LFC
-                formula_a = f"positive_selection ~  C(SB_abdomen)  * C(chromosome) * C(level_most_dist_ortholog)"
-                formula_a_no = f"positive_selection ~  C(SB_abdomen)  * C(chromosome)"
-                formula_ht = f"positive_selection ~  C(SB_head_thorax)  * (C(chromosome) + C(level_most_dist_ortholog))"
-                formula_ht_no = f"positive_selection ~  C(SB_head_thorax)  * C(chromosome)"
+                formula_a = f"positive_selection ~  C(SB_abdomen) * C(chromosome) * C(level_most_dist_ortholog)"
+                formula_a_no = f"positive_selection ~  C(SB_abdomen) * C(chromosome)"
+                formula_a_noint = f"positive_selection ~  C(SB_abdomen) + C(chromosome)"
+
+                formula_ht = f"positive_selection ~  C(SB_head_thorax) * (C(chromosome) + C(level_most_dist_ortholog))"
+                formula_ht_no = f"positive_selection ~  C(SB_head_thorax) * C(chromosome)"
+                formula_ht_noint = f"positive_selection ~  C(SB_head_thorax) + C(chromosome)"
+                
                 formula_no = f"positive_selection ~  C(chromosome) * C(level_most_dist_ortholog)"
                 formula_nono = f"positive_selection ~  C(chromosome)"
                 
@@ -323,6 +331,7 @@ def statistical_analysis_pos_sel(full_table_paths_dict, table_outfile = "pos_sel
                     table_out.write(f"\n------------> NO AGE RANK: abdomen\nFormula: {formula_a_no}\n")
                     test = smf.logit(formula=formula_a_no, data=filt_df).fit()
                     table_out.write(test.summary().as_text())
+                    table_out.write(f"AIC: {test.aic:.4f}")
                     table_out.write(f"\n\nrun model with age rank to see difference\n------------> abdomen\nFormula: {formula_a}\n")
                     test = smf.logit(formula=formula_a, data=filt_df).fit()
                     table_out.write(test.summary().as_text())
@@ -334,6 +343,7 @@ def statistical_analysis_pos_sel(full_table_paths_dict, table_outfile = "pos_sel
                     table_out.write(f"\n------------> NO AGE RANK: head+thorax\nFormula: {formula_ht_no}\n")
                     test = smf.logit(formula=formula_ht_no, data=filt_df).fit()
                     table_out.write(test.summary().as_text())
+                    table_out.write(f"AIC: {test.aic:.4f}")
                     table_out.write(f"\n\nrun model with age rank to see difference\n------------> head+thorax\nFormula: {formula_ht}\n")
                     test = smf.logit(formula=formula_ht, data=filt_df).fit()
                     table_out.write(test.summary().as_text())
@@ -345,6 +355,7 @@ def statistical_analysis_pos_sel(full_table_paths_dict, table_outfile = "pos_sel
                     table_out.write(f"\n------------> no sex bias\nFormula: {formula_no}\n")
                     test = smf.logit(formula=formula_no, data=filt_df).fit()
                     table_out.write(test.summary().as_text())
+                    table_out.write(f"AIC: {test.aic:.4f}")
                     table_out.write(f"\n\nrun model without age rank to see difference\n------------> no conservation rank\nFormula: {formula_nono}\n")
                     test = smf.logit(formula=formula_nono, data=filt_df).fit()
                     table_out.write(test.summary().as_text())
@@ -1409,7 +1420,7 @@ if __name__ == "__main__":
         ## analyze positive selection in site classes
         ## logistic regression for categorical response (positive selection True/False)
         do_chinensis_sex_bias=True
-        table_name = f"/Users/{username}/work/PhD_code/PhD_chapter3/data/stats_summary_files/pos_sel_vs_gene_age_LR_wald_test.txt"
+        table_name = f"/Users/{username}/work/PhD_code/PhD_chapter3/data/stats_summary_files/pos_sel_vs_gene_age_LR_wald_test_revision.txt"
         ###################################################
         statistical_analysis_pos_sel(full_table_paths_dict=full_tables_dict, table_outfile=table_name, include_sex_bias=do_chinensis_sex_bias)
         ###################################################

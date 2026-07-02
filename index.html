@@ -392,6 +392,110 @@ I also re-did all the plots, but the results stay the same, only the numbers and
 
 <h3>Positive selection analysis</h3>
 
+<p>
+    This is the new analysis of positve selection with the <i>Bruchini</i>-wide site model.
+</p>
+
+<h4>within sex-bias test for fastX</h4>
+
+<p>
+    See if the X or A enrichment is maybe restricted to one sex bias category
+</p>
+
+<div class="left-div">
+    <p><b>abdominal tissue</b></p>
+    <details>
+        <summary>Toggle down for fisher test results</summary>
+
+<pre><code>	male-biased contingency table (cols: pos_sel/neg_sel and rows: A/X):
+    [[ 390 1111]
+    [   9   29]]
+ male --> Fisher's exact p-value: 0.8527424739199208
+            
+ unbiased contingency table (cols: pos_sel/neg_sel and rows: A/X):
+    [[ 886 2506]
+    [  43  111]]
+ unbiased --> Fisher's exact p-value: 0.6395404887131211
+            
+ female-biased contingency table (cols: pos_sel/neg_sel and rows: A/X):
+    [[ 398 1202]
+    [  15   44]]
+ female --> Fisher's exact p-value: 0.8792893593505391</code></pre>
+    </details>
+</div>
+<div class="right-div">
+    <p><b>head+thorax tissue</b></p>
+    <details>
+        <summary>Toggle down for fisher test results</summary>
+
+<pre><code>	male-biased contingency table (cols: pos_sel/neg_sel and rows: A/X):
+    [[141 443]
+    [  3  16]]
+ male --> Fisher's exact p-value: 0.5855872420234314
+            
+ unbiased contingency table (cols: pos_sel/neg_sel and rows: A/X):
+    [[1429 4095]
+    [  61  160]]
+ unbiased --> Fisher's exact p-value: 0.5838175939569907
+            
+ female-biased contingency table (cols: pos_sel/neg_sel and rows: A/X):
+    [[104 281]
+    [  3   8]]
+ female --> Fisher's exact p-value: 1.0</code></pre>
+    </details>
+</div>
+
+<div style="clear: both;"></div>
+
+<p>
+    I re-do the original wald-test analysis to check for the importance of major effects with the new positive selection results
+</p>
+
+<div class="tab">
+    <button class="tablinks" onclick="openTab(event, 'pos_sel_rev_age_wald_C_chinensis')">abdominal sex bias</button>
+    <button class="tablinks" onclick="openTab(event, 'pos_sel_rev_age_wald_B_siliquastri')">head+thoax sex bias</button>
+    <button class="tablinks" onclick="openTab(event, 'pos_sel_rev_age_wald_A_obtectus')">no sex bias</button>
+</div>
+<div id="pos_sel_rev_age_wald_C_chinensis" class="tabcontent">
+    <p><code>pos_sel_vs_gene_age_LR_wald_test_revision_with_sex_bias_C_chinensis_abdomen.txt</code>
+    </p>
+    <iframe
+        src="data/stats_summary_files/pos_sel_vs_gene_age_LR_wald_test_revision_with_sex_bias_C_chinensis_abdomen.txt"
+        frameBorder="0"
+        class=""
+        scrolling="auto"
+        style="width:100%; height:30vh;">
+    </iframe>
+</div>
+<div id="pos_sel_rev_age_wald_B_siliquastri" class="tabcontent">
+    <p><code>pos_sel_vs_gene_age_LR_wald_test_revision_with_sex_bias_C_chinensis_head_thorax.txt</code>
+    </p>
+    <iframe
+        src="data/stats_summary_files/pos_sel_vs_gene_age_LR_wald_test_revision_with_sex_bias_C_chinensis_head_thorax.txt"
+        frameBorder="0"
+        class=""
+        scrolling="auto"
+        style="width:100%; height:30vh;">
+    </iframe>
+</div>
+<div id="pos_sel_rev_age_wald_A_obtectus" class="tabcontent">
+    <p><code>pos_sel_vs_gene_age_LR_wald_test_revision_with_sex_bias_C_chinensis_no_expression_data.txt</code>
+    </p>
+    <iframe
+        src="data/stats_summary_files/pos_sel_vs_gene_age_LR_wald_test_revision_with_sex_bias_C_chinensis_no_expression_data.txt"
+        frameBorder="0"
+        class=""
+        scrolling="auto"
+        style="width:100%; height:30vh;">
+    </iframe>
+</div>
+
+
+
+<details>
+    <summary>Old inaccurate stuff with pairwise site model</summary>
+
+
 <p>This does not change for the revision for dNdS with codeml <code>runmode=-2</code>, the code is <code>src/plotting/analyze_site_classes.py</code>.</p>
 
 <details>
@@ -446,6 +550,9 @@ I also re-did all the plots, but the results stay the same, only the numbers and
         <img loading="lazy" src="data/fastX_ortholog_ident/pos_sel_dNdS_summaryplot_tribolium.png" width="25%" />
     </p>
 </details>
+
+</details>
+
 
 <h2>Orthologs separated by gene age</h2>
 
