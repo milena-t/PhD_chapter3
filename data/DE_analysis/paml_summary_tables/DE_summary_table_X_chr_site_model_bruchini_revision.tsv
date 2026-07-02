@@ -1,4 +1,4 @@
-focal_species	other_species	ortholog_number	focal_transcript	other_transcript	dN	dS	dN/dS	focal_gene_ID	LFC_abdomen	FDR_pval_abdomen	LFC_head+thorax	FDR_pval_head+thorax	level_most_dist_ortholog	orthogroup_ID	pos_sel
+focal_species	other_species	ortholog_number	focal_transcript	other_transcript	dN	dS	dN/dS	focal_gene_ID	LFC_abdomen	FDR_pval_abdomen	LFC_head+thorax	FDR_pval_head+thorax	level_most_dist_ortholog	orthogroup_ID	positive_selection
 C_maculatus	B_siliquastri	68	g1512.t1	BRAKERILHT00000017120	0.0154	0.6335	0.024309392265193373	g1512	0.719266746519886	6.562541706387929e-11	-0.107198357834529	0.444458277012692	5	978	False
 C_maculatus	B_siliquastri	249	g1545.t1	BRAKERILHT00000018004	0.0269	0.6352	0.042348866498740555	g1545	-1.79425583110863	6.80091288566852e-64	-0.537239232081561	1.11454366530477e-06	5	1047	False
 C_maculatus	B_siliquastri	95	g1602.t1	BRAKERILHT00000017735	0.0665	0.7268	0.0914969730324711	g1602	-0.869978253385206	0.0315291983675358	-1.27488861696811	0.0103758793502163	5	994	False

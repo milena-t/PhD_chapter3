@@ -341,7 +341,7 @@ def add_revision_site_model(summary_table:str, pos_sel_table:str, orthogroup_gen
     orthogroup_geneIDs_df = orthogroup_geneIDs_df[orthogroup_geneIDs_df["chromosome"]==chromosome]
     
     pos_sel_geneID_df = pd.merge(pos_sel_df,orthogroup_geneIDs_df, on="orthogroup_ID").drop(columns=["chromosome","A_obtectus","B_siliquastri","C_chinensis"]).rename(columns={"C_maculatus":"focal_transcript"}) # keeps only orthogroup IDs that appear in both dataframes
-    revised_summary = pd.merge(summary_df, pos_sel_geneID_df, on="focal_transcript")
+    revised_summary = pd.merge(summary_df, pos_sel_geneID_df, on="focal_transcript").rename(columns={"pos_sel":"positive_selection"})
 
     revised_summary.to_csv(outfile_name, sep='\t', index=False) 
     print(f"file saved to {outfile_name}")
