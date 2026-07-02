@@ -8,7 +8,7 @@ Dep. Variable:     positive_selection   No. Observations:                 6744
 Model:                          Logit   Df Residuals:                     6738
 Method:                           MLE   Df Model:                            5
 Date:                Thu, 02 Jul 2026   Pseudo R-squ.:               0.0003427
-Time:                        15:52:47   Log-Likelihood:                -3850.3
+Time:                        16:26:11   Log-Likelihood:                -3850.3
 converged:                       True   LL-Null:                       -3851.6
 Covariance Type:            nonrobust   LLR p-value:                    0.7553
 ====================================================================================================================
@@ -20,7 +20,9 @@ C(SB_head_thorax)[T.unbiased]                       -0.0588      0.119     -0.49
 C(chromosome)[T.X]                                   0.0131      0.687      0.019      0.985      -1.333       1.359
 C(SB_head_thorax)[T.male]:C(chromosome)[T.X]        -0.5423      0.936     -0.579      0.562      -2.377       1.293
 C(SB_head_thorax)[T.unbiased]:C(chromosome)[T.X]     0.0754      0.704      0.107      0.915      -1.304       1.454
-====================================================================================================================AIC: 7712.6086
+====================================================================================================================
+AIC1: 7712.6086
+
 
 run model with age rank to see difference
 ------------> head+thorax
@@ -31,7 +33,7 @@ Dep. Variable:     positive_selection   No. Observations:                 6744
 Model:                          Logit   Df Residuals:                     6732
 Method:                           MLE   Df Model:                           11
 Date:                Thu, 02 Jul 2026   Pseudo R-squ.:                0.002580
-Time:                        15:52:47   Log-Likelihood:                -3841.7
+Time:                        16:26:11   Log-Likelihood:                -3841.7
 converged:                       True   LL-Null:                       -3851.6
 Covariance Type:            nonrobust   LLR p-value:                   0.04705
 ==================================================================================================================================
@@ -50,3 +52,6 @@ C(SB_head_thorax)[T.unbiased]:C(level_most_dist_ortholog)[T.4]     1.0457      0
 C(SB_head_thorax)[T.male]:C(level_most_dist_ortholog)[T.5]         0.6592      0.467      1.411      0.158      -0.257       1.575
 C(SB_head_thorax)[T.unbiased]:C(level_most_dist_ortholog)[T.5]     0.5616      0.417      1.347      0.178      -0.255       1.379
 ==================================================================================================================================
+AIC2: 7707.3709
+AIC1 - AIC2 : 7712.6086 - 7707.3709 = 5.2377
+AIC1 is sig. better than AIC2

@@ -312,7 +312,7 @@ def statistical_analysis_pos_sel(full_table_paths_dict, table_outfile = "pos_sel
             # the syntax with the parentheses (LFC_abdomen + LFC_head_thorax) * C(chromosome) means this:
             # LFC_abdomen + LFC_head_thorax + C(chromosome) + LFC_abdomen:C(chromosome) + LFC_head_thorax:C(chromosome)
             if include_sex_bias and "C_chinensis" in partner:
-                
+                print(f"------------{partner} ")
                 # only significantly sex-biased genes -> remove LFC
                 formula_a = f"positive_selection ~  C(SB_abdomen) * C(chromosome) * C(level_most_dist_ortholog)"
                 formula_a_no = f"positive_selection ~  C(SB_abdomen) * C(chromosome)"
@@ -329,36 +329,72 @@ def statistical_analysis_pos_sel(full_table_paths_dict, table_outfile = "pos_sel
                 with open(table_outfile_species_abd, "w") as table_out:
                     table_out.write(f"////////////////// {partner} //////////////////\n")
                     table_out.write(f"\n------------> NO AGE RANK: abdomen\nFormula: {formula_a_no}\n")
+                    print(f"\n------------> NO AGE RANK: abdomen\nFormula: {formula_a_no}\n")
                     test = smf.logit(formula=formula_a_no, data=filt_df).fit()
                     table_out.write(test.summary().as_text())
-                    table_out.write(f"AIC: {test.aic:.4f}")
+                    aic1 = test.aic
+                    table_out.write(f"\nAIC1: {aic1:.4f}\n")
                     table_out.write(f"\n\nrun model with age rank to see difference\n------------> abdomen\nFormula: {formula_a}\n")
                     test = smf.logit(formula=formula_a, data=filt_df).fit()
                     table_out.write(test.summary().as_text())
+                    aic2 = test.aic
+                    table_out.write(f"\nAIC2: {aic2:.4f}\n")
+                    aic_diff = aic1-aic2
+                    table_out.write(f"AIC1 - AIC2 : {aic1:.4f} - {aic2:.4f} = {aic_diff:.4f}")
+                    if abs(aic_diff)<2:
+                        table_out.write(f"\nno significant difference")
+                    elif aic_diff<-2:
+                        table_out.write(f"\nAIC2 is sig. better than AIC1")
+                    else:
+                        table_out.write(f"\nAIC1 is sig. better than AIC2")
                 print(f"--------> outfile written to: {table_outfile_species_abd}")
 
                 table_outfile_species_ht = table_outfile_species.replace(".txt", "_head_thorax.txt")
                 with open(table_outfile_species_ht, "w") as table_out:
                     table_out.write(f"////////////////// {partner} //////////////////\n")
                     table_out.write(f"\n------------> NO AGE RANK: head+thorax\nFormula: {formula_ht_no}\n")
+                    print(f"\n------------> NO AGE RANK: head+thorax\nFormula: {formula_ht_no}\n")
                     test = smf.logit(formula=formula_ht_no, data=filt_df).fit()
                     table_out.write(test.summary().as_text())
-                    table_out.write(f"AIC: {test.aic:.4f}")
+                    aic1 = test.aic
+                    table_out.write(f"\nAIC1: {aic1:.4f}\n")
                     table_out.write(f"\n\nrun model with age rank to see difference\n------------> head+thorax\nFormula: {formula_ht}\n")
                     test = smf.logit(formula=formula_ht, data=filt_df).fit()
                     table_out.write(test.summary().as_text())
+                    aic2 = test.aic
+                    table_out.write(f"\nAIC2: {aic2:.4f}\n")
+                    aic_diff = aic1-aic2
+                    table_out.write(f"AIC1 - AIC2 : {aic1:.4f} - {aic2:.4f} = {aic_diff:.4f}")
+                    if abs(aic_diff)<2:
+                        table_out.write(f"\nno significant difference")
+                    elif aic_diff<-2:
+                        table_out.write(f"\nAIC2 is sig. better than AIC1")
+                    else:
+                        table_out.write(f"\nAIC1 is sig. better than AIC2")
                 print(f"--------> outfile written to: {table_outfile_species_ht}")
 
                 table_outfile_species_noexpr = table_outfile_species.replace(".txt", "_no_expression_data.txt")
                 with open(table_outfile_species_noexpr, "w") as table_out:
                     table_out.write(f"////////////////// {partner} //////////////////\n")
                     table_out.write(f"\n------------> no sex bias\nFormula: {formula_no}\n")
+                    print(f"\n------------> no sex bias\nFormula: {formula_no}\n")
                     test = smf.logit(formula=formula_no, data=filt_df).fit()
                     table_out.write(test.summary().as_text())
-                    table_out.write(f"AIC: {test.aic:.4f}")
+                    aic1 = test.aic
+                    table_out.write(f"\nAIC1: {aic1:.4f}\n")
                     table_out.write(f"\n\nrun model without age rank to see difference\n------------> no conservation rank\nFormula: {formula_nono}\n")
                     test = smf.logit(formula=formula_nono, data=filt_df).fit()
                     table_out.write(test.summary().as_text())
+                    aic2 = test.aic
+                    table_out.write(f"\nAIC2: {aic2:.4f}\n")
+                    aic_diff = aic1-aic2
+                    table_out.write(f"AIC1 - AIC2 : {aic1:.4f} - {aic2:.4f} = {aic_diff:.4f}")
+                    if abs(aic_diff)<2:
+                        table_out.write(f"\nno significant difference")
+                    elif aic_diff<-2:
+                        table_out.write(f"\nAIC2 is sig. better than AIC1")
+                    else:
+                        table_out.write(f"\nAIC1 is sig. better than AIC2")
                 print(f"--------> outfile written to: {table_outfile_species_noexpr}")
 
 
