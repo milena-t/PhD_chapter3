@@ -10,7 +10,8 @@ import scipy.stats as sts
 from statannotations.Annotator import Annotator
 
 
-username="miltr339"
+username="milena"
+
 rpkm_norm_counts = f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/Cmac_gene_counts_edgeR_rpkm_length_normalized.txt"
 Cmac_annotation = f"/Users/{username}/work/native_annotations/all_native_annot/C_maculatus_superscaffolded_LomeRNA_braker_isoform_filtered.gff"
 sex_chromosomes = { 

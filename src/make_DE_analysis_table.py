@@ -328,10 +328,16 @@ def make_summary_table(lookup_table_path, DE_paths_dict, paml_paths_dict, chromo
 
     print(f"outfile written to: {outfile_name}")     
 
+def add_revision_site_model(summary_table:str, pos_sel_table:str, orthogroup_geneID_association:str):
+    """
+    add a column in the exosting output table for the bruchini-wide site model
+    """
+
+
 if __name__=="__main__":
     
     ### load data
-    username="miltr339"
+    username="milena"
     outdir_tables=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables"
     lookup_tables_dict = get_lookup_tables(username=username)
     DE_paths_dict = get_DE_paths(username=username)
@@ -341,7 +347,7 @@ if __name__=="__main__":
     
     chromosomes = ["A", "X"]
 
-    if True:
+    if False:
         for chromosome in chromosomes:
             print(f"\n//////////////////////// {chromosome} ////////////////////////")
             make_summary_table(lookup_table_path=lookup_tables_dict[chromosome], 
@@ -352,3 +358,10 @@ if __name__=="__main__":
                 brhs_lists = brhs_list, distances_dict = distances_dict,
                 outfile_name=f"{outdir_tables}/DE_summary_table_{chromosome}_chr.tsv")
             
+    if True:
+        # add a column for the Bruchini-wide site model to the table
+        for chromosome in chromosomes:
+            summary_table = f"{outdir_tables}/DE_summary_table_{chromosome}_chr.tsv"
+            bruchini_pos_sel_table = f"{outdir_tables}/bruchini_rev_site_classes_beta_list_{chromosome}_BH_corrected.txt"
+            orthologs_geneIDs_table = f"/Users/{username}/work/pairwise_blast_chapter_2_3/brh_tables/bruchini_orthologs.csv"
+        

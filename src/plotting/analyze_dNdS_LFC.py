@@ -1405,7 +1405,7 @@ if __name__ == "__main__":
 
     ###### site model (pos. sel) stats and some plotting
     ## if plotting not here then in PhD_chapter3/src/plotting/analyze_site_classes.py
-    if False:
+    if True:
         ## analyze positive selection in site classes
         ## logistic regression for categorical response (positive selection True/False)
         do_chinensis_sex_bias=True
@@ -1426,7 +1426,7 @@ if __name__ == "__main__":
         run_fisher_test(fisher_counts_dict, verbose=True)
         ###################################################
 
-    if True:
+    if False:
         ###################################################
         ## boxplot dNdS by rank and chromosome but no sex bias
         filename=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/dNdS_vs_conservation_rank.png"
