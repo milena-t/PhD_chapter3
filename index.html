@@ -457,6 +457,10 @@ I also re-did all the plots, but the results stay the same, only the numbers and
     <button class="tablinks" onclick="openTab(event, 'pos_sel_rev_age_wald_no')">no sex bias</button>
 </div>
 <div id="pos_sel_rev_age_wald_abdominal" class="tabcontent">
+    <p>
+        According to AIC, the three-way interaction of <code>ositive_selection ~  C(SB_abdomen) * C(chromosome) * C(level_most_dist_ortholog)</code>
+        is the significanlty better model fit.
+    </p>
     <p><code>data/stats_summary_files/pos_sel_vs_gene_age_LR_wald_test_revision_with_sex_bias_C_chinensis_abdomen.txt</code>
     </p>
     <iframe
@@ -468,6 +472,11 @@ I also re-did all the plots, but the results stay the same, only the numbers and
     </iframe>
 </div>
 <div id="pos_sel_rev_age_wald_head+thoax" class="tabcontent">
+    <p>
+        Accodring to AIC, the two-way interaction <code>positive_selection ~  C(SB_head_thorax) * C(chromosome)</code> is the 
+        significantly better model fit than both the three way interaction that is the best for abdominal data, as well as the 
+        no-interaction model with just two factors.
+    </p>
     <p><code>data/stats_summary_files/pos_sel_vs_gene_age_LR_wald_test_revision_with_sex_bias_C_chinensis_head_thorax.txt</code>
     </p>
     <iframe
@@ -479,6 +488,10 @@ I also re-did all the plots, but the results stay the same, only the numbers and
     </iframe>
 </div>
 <div id="pos_sel_rev_age_wald_no" class="tabcontent">
+    <p>
+        According to AIC, <code>positive_selection ~  C(chromosome)</code> is a better model than a two-way interaction that 
+        includes gene age, but even here the chromosome coefficient is positive but not at all significant (p =0.746).
+    </p>
     <p><code>data/stats_summary_files/pos_sel_vs_gene_age_LR_wald_test_revision_with_sex_bias_C_chinensis_no_expression_data.txt</code>
     </p>
     <iframe

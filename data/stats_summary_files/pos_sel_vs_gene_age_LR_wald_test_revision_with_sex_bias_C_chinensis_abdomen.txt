@@ -8,7 +8,7 @@ Dep. Variable:     positive_selection   No. Observations:                 6744
 Model:                          Logit   Df Residuals:                     6738
 Method:                           MLE   Df Model:                            5
 Date:                Thu, 02 Jul 2026   Pseudo R-squ.:               0.0001789
-Time:                        16:26:11   Log-Likelihood:                -3850.9
+Time:                        16:43:48   Log-Likelihood:                -3850.9
 converged:                       True   LL-Null:                       -3851.6
 Covariance Type:            nonrobust   LLR p-value:                    0.9267
 ================================================================================================================
@@ -33,7 +33,7 @@ Dep. Variable:     positive_selection   No. Observations:                 6744
 Model:                          Logit   Df Residuals:                     6726
 Method:                           MLE   Df Model:                           17
 Date:                Thu, 02 Jul 2026   Pseudo R-squ.:                0.002646
-Time:                        16:26:11   Log-Likelihood:                -3841.4
+Time:                        16:43:48   Log-Likelihood:                -3841.4
 converged:                      False   LL-Null:                       -3851.6
 Covariance Type:            nonrobust   LLR p-value:                    0.2552
 =================================================================================================================================================

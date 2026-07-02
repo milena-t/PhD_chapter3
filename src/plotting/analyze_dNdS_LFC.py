@@ -346,7 +346,15 @@ def statistical_analysis_pos_sel(full_table_paths_dict, table_outfile = "pos_sel
                     elif aic_diff<-2:
                         table_out.write(f"\nAIC2 is sig. better than AIC1")
                     else:
-                        table_out.write(f"\nAIC1 is sig. better than AIC2")
+                        table_out.write(f"\nAIC1 is sig. better than AIC2\n\n")
+                        table_out.write(f"\n\nrun model with no interaction to see difference\n------------> abdomen\nFormula: {formula_a_noint}\n")
+                        test = smf.logit(formula=formula_a_noint, data=filt_df).fit()
+                        table_out.write(test.summary().as_text())
+                        aic3 = test.aic
+                        table_out.write(f"\nAIC3: {aic3:.4f}\n")
+                        aic_diff =aic1-aic3
+                        table_out.write(f"AIC1 - AIC3 : {aic1:.4f} - {aic3:.4f} = {aic_diff:.4f}")
+
                 print(f"--------> outfile written to: {table_outfile_species_abd}")
 
                 table_outfile_species_ht = table_outfile_species.replace(".txt", "_head_thorax.txt")
@@ -370,7 +378,15 @@ def statistical_analysis_pos_sel(full_table_paths_dict, table_outfile = "pos_sel
                     elif aic_diff<-2:
                         table_out.write(f"\nAIC2 is sig. better than AIC1")
                     else:
-                        table_out.write(f"\nAIC1 is sig. better than AIC2")
+                        table_out.write(f"\nAIC1 is sig. better than AIC2\n\n")
+                        table_out.write(f"\n\nrun model with age no interaction see difference\n------------> head+thorax\nFormula: {formula_ht_noint}\n")
+                        test = smf.logit(formula=formula_ht_noint, data=filt_df).fit()
+                        table_out.write(test.summary().as_text())
+                        aic3 = test.aic
+                        table_out.write(f"\nAIC3: {aic3:.4f}\n")
+                        aic_diff =aic1-aic3
+                        table_out.write(f"AIC1 - AIC3 : {aic1:.4f} - {aic3:.4f} = {aic_diff:.4f}")
+
                 print(f"--------> outfile written to: {table_outfile_species_ht}")
 
                 table_outfile_species_noexpr = table_outfile_species.replace(".txt", "_no_expression_data.txt")

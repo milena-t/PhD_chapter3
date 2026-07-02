@@ -8,7 +8,7 @@ Dep. Variable:     positive_selection   No. Observations:                 6744
 Model:                          Logit   Df Residuals:                     6738
 Method:                           MLE   Df Model:                            5
 Date:                Thu, 02 Jul 2026   Pseudo R-squ.:               0.0003427
-Time:                        16:26:11   Log-Likelihood:                -3850.3
+Time:                        16:43:48   Log-Likelihood:                -3850.3
 converged:                       True   LL-Null:                       -3851.6
 Covariance Type:            nonrobust   LLR p-value:                    0.7553
 ====================================================================================================================
@@ -33,7 +33,7 @@ Dep. Variable:     positive_selection   No. Observations:                 6744
 Model:                          Logit   Df Residuals:                     6732
 Method:                           MLE   Df Model:                           11
 Date:                Thu, 02 Jul 2026   Pseudo R-squ.:                0.002580
-Time:                        16:26:11   Log-Likelihood:                -3841.7
+Time:                        16:43:48   Log-Likelihood:                -3841.7
 converged:                       True   LL-Null:                       -3851.6
 Covariance Type:            nonrobust   LLR p-value:                   0.04705
 ==================================================================================================================================
@@ -55,3 +55,28 @@ C(SB_head_thorax)[T.unbiased]:C(level_most_dist_ortholog)[T.5]     0.5616      0
 AIC2: 7707.3709
 AIC1 - AIC2 : 7712.6086 - 7707.3709 = 5.2377
 AIC1 is sig. better than AIC2
+
+
+
+run model with age no interaction see difference
+------------> head+thorax
+Formula: positive_selection ~  C(SB_head_thorax) + C(chromosome)
+                           Logit Regression Results                           
+==============================================================================
+Dep. Variable:     positive_selection   No. Observations:                 6744
+Model:                          Logit   Df Residuals:                     6740
+Method:                           MLE   Df Model:                            3
+Date:                Thu, 02 Jul 2026   Pseudo R-squ.:               0.0002130
+Time:                        16:43:48   Log-Likelihood:                -3850.8
+converged:                       True   LL-Null:                       -3851.6
+Covariance Type:            nonrobust   LLR p-value:                    0.6502
+=================================================================================================
+                                    coef    std err          z      P>|z|      [0.025      0.975]
+-------------------------------------------------------------------------------------------------
+Intercept                        -0.9949      0.113     -8.786      0.000      -1.217      -0.773
+C(SB_head_thorax)[T.male]        -0.1658      0.148     -1.120      0.263      -0.456       0.124
+C(SB_head_thorax)[T.unbiased]    -0.0562      0.117     -0.480      0.631      -0.286       0.173
+C(chromosome)[T.X]                0.0465      0.146      0.319      0.749      -0.239       0.332
+=================================================================================================
+AIC3: 7709.6080
+AIC1 - AIC3 : 7712.6086 - 7709.6080 = 3.0006
