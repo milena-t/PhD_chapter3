@@ -328,16 +328,30 @@ def make_summary_table(lookup_table_path, DE_paths_dict, paml_paths_dict, chromo
 
     print(f"outfile written to: {outfile_name}")     
 
-def add_revision_site_model(summary_table:str, pos_sel_table:str, orthogroup_geneID_association:str):
+def add_revision_site_model(summary_table:str, pos_sel_table:str, orthogroup_geneID_association:str, chromosome:str):
     """
     add a column in the exosting output table for the bruchini-wide site model
     """
+    outfile_name = summary_table.replace(".tsv", "_site_model_bruchini_revision.tsv")
+
+    summary_df = pd.read_csv(summary_table, sep="\t").drop("positive_selection", axis=1)
+    pos_sel_df = pd.read_csv(pos_sel_table, sep="\t", names=["orthogroup_ID", "pos_sel"])
+    pos_sel_df["orthogroup_ID"] = pos_sel_df["orthogroup_ID"].apply(lambda x: int(x.split("_")[3]))
+    orthogroup_geneIDs_df = pd.read_csv(orthogroup_geneID_association, sep=",")
+    orthogroup_geneIDs_df = orthogroup_geneIDs_df[orthogroup_geneIDs_df["chromosome"]==chromosome]
+    
+    pos_sel_geneID_df = pd.merge(pos_sel_df,orthogroup_geneIDs_df, on="orthogroup_ID").drop(columns=["chromosome","A_obtectus","B_siliquastri","C_chinensis"]).rename(columns={"C_maculatus":"focal_transcript"}) # keeps only orthogroup IDs that appear in both dataframes
+    revised_summary = pd.merge(summary_df, pos_sel_geneID_df, on="focal_transcript")
+
+    revised_summary.to_csv(outfile_name, sep='\t', index=False) 
+    print(f"file saved to {outfile_name}")
+
 
 
 if __name__=="__main__":
     
     ### load data
-    username="milena"
+    username="miltr339"
     outdir_tables=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables"
     lookup_tables_dict = get_lookup_tables(username=username)
     DE_paths_dict = get_DE_paths(username=username)
@@ -361,7 +375,9 @@ if __name__=="__main__":
     if True:
         # add a column for the Bruchini-wide site model to the table
         for chromosome in chromosomes:
+            print(f"\n//////////////////////// {chromosome} ////////////////////////")
             summary_table = f"{outdir_tables}/DE_summary_table_{chromosome}_chr.tsv"
             bruchini_pos_sel_table = f"{outdir_tables}/bruchini_rev_site_classes_beta_list_{chromosome}_BH_corrected.txt"
             orthologs_geneIDs_table = f"/Users/{username}/work/pairwise_blast_chapter_2_3/brh_tables/bruchini_orthologs.csv"
-        
+
+            add_revision_site_model(summary_table=summary_table, pos_sel_table=bruchini_pos_sel_table, orthogroup_geneID_association=orthologs_geneIDs_table, chromosome=chromosome)
