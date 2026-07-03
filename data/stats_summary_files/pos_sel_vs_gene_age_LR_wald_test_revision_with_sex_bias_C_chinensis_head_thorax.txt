@@ -1,14 +1,55 @@
 ////////////////// C_chinensis //////////////////
 
-------------> NO AGE RANK: head+thorax
+------------> ONLY SEX BIAS: head_thorax
+Formula: positive_selection ~  C(SB_head_thorax)
+                           Logit Regression Results                           
+==============================================================================
+Dep. Variable:     positive_selection   No. Observations:                 6744
+Model:                          Logit   Df Residuals:                     6741
+Method:                           MLE   Df Model:                            2
+Date:                Fri, 03 Jul 2026   Pseudo R-squ.:               0.0001998
+Time:                        15:49:23   Log-Likelihood:                -3850.9
+converged:                       True   LL-Null:                       -3851.6
+Covariance Type:            nonrobust   LLR p-value:                    0.4632
+=================================================================================================
+                                    coef    std err          z      P>|z|      [0.025      0.975]
+-------------------------------------------------------------------------------------------------
+Intercept                        -0.9936      0.113     -8.780      0.000      -1.215      -0.772
+C(SB_head_thorax)[T.male]        -0.1656      0.148     -1.119      0.263      -0.456       0.125
+C(SB_head_thorax)[T.unbiased]    -0.0557      0.117     -0.476      0.634      -0.285       0.174
+=================================================================================================
+AIC1: 7707.7093
+
+------------> SEX BIAS AND CHROMOSOME MAIN EFFECT: head_thorax
+Formula: positive_selection ~  C(SB_head_thorax) + C(chromosome)
+                           Logit Regression Results                           
+==============================================================================
+Dep. Variable:     positive_selection   No. Observations:                 6744
+Model:                          Logit   Df Residuals:                     6740
+Method:                           MLE   Df Model:                            3
+Date:                Fri, 03 Jul 2026   Pseudo R-squ.:               0.0002130
+Time:                        15:49:23   Log-Likelihood:                -3850.8
+converged:                       True   LL-Null:                       -3851.6
+Covariance Type:            nonrobust   LLR p-value:                    0.6502
+=================================================================================================
+                                    coef    std err          z      P>|z|      [0.025      0.975]
+-------------------------------------------------------------------------------------------------
+Intercept                        -0.9949      0.113     -8.786      0.000      -1.217      -0.773
+C(SB_head_thorax)[T.male]        -0.1658      0.148     -1.120      0.263      -0.456       0.124
+C(SB_head_thorax)[T.unbiased]    -0.0562      0.117     -0.480      0.631      -0.286       0.173
+C(chromosome)[T.X]                0.0465      0.146      0.319      0.749      -0.239       0.332
+=================================================================================================
+AIC2: 7709.6080
+AIC1 - AIC2 : 7707.7093 - 7709.6080 = -1.8987
+------------> SEX BIAS AND CHROMOSOME INTERACTION: head_thorax
 Formula: positive_selection ~  C(SB_head_thorax) * C(chromosome)
                            Logit Regression Results                           
 ==============================================================================
 Dep. Variable:     positive_selection   No. Observations:                 6744
 Model:                          Logit   Df Residuals:                     6738
 Method:                           MLE   Df Model:                            5
-Date:                Thu, 02 Jul 2026   Pseudo R-squ.:               0.0003427
-Time:                        16:43:48   Log-Likelihood:                -3850.3
+Date:                Fri, 03 Jul 2026   Pseudo R-squ.:               0.0003427
+Time:                        15:49:23   Log-Likelihood:                -3850.3
 converged:                       True   LL-Null:                       -3851.6
 Covariance Type:            nonrobust   LLR p-value:                    0.7553
 ====================================================================================================================
@@ -21,62 +62,42 @@ C(chromosome)[T.X]                                   0.0131      0.687      0.01
 C(SB_head_thorax)[T.male]:C(chromosome)[T.X]        -0.5423      0.936     -0.579      0.562      -2.377       1.293
 C(SB_head_thorax)[T.unbiased]:C(chromosome)[T.X]     0.0754      0.704      0.107      0.915      -1.304       1.454
 ====================================================================================================================
-AIC1: 7712.6086
+AIC2 interaction: 7712.6086
+AIC1 - AIC2int : 7707.7093 - 7712.6086 = -4.8993
 
-
-run model with age rank to see difference
-------------> head+thorax
-Formula: positive_selection ~  C(SB_head_thorax) * (C(chromosome) + C(level_most_dist_ortholog))
+------------> AGE RANK: head_thorax
+Formula: positive_selection ~  C(SB_head_thorax) * C(chromosome) * C(level_most_dist_ortholog)
                            Logit Regression Results                           
 ==============================================================================
 Dep. Variable:     positive_selection   No. Observations:                 6744
-Model:                          Logit   Df Residuals:                     6732
-Method:                           MLE   Df Model:                           11
-Date:                Thu, 02 Jul 2026   Pseudo R-squ.:                0.002580
-Time:                        16:43:48   Log-Likelihood:                -3841.7
-converged:                       True   LL-Null:                       -3851.6
-Covariance Type:            nonrobust   LLR p-value:                   0.04705
-==================================================================================================================================
-                                                                     coef    std err          z      P>|z|      [0.025      0.975]
-----------------------------------------------------------------------------------------------------------------------------------
-Intercept                                                         -0.7376      0.367     -2.012      0.044      -1.456      -0.019
-C(SB_head_thorax)[T.male]                                         -0.6367      0.420     -1.517      0.129      -1.459       0.186
-C(SB_head_thorax)[T.unbiased]                                     -0.6884      0.392     -1.757      0.079      -1.456       0.079
-C(chromosome)[T.X]                                                 0.0414      0.689      0.060      0.952      -1.310       1.392
-C(level_most_dist_ortholog)[T.4]                                  -0.5499      0.442     -1.243      0.214      -1.417       0.317
-C(level_most_dist_ortholog)[T.5]                                  -0.1932      0.392     -0.493      0.622      -0.961       0.575
-C(SB_head_thorax)[T.male]:C(chromosome)[T.X]                      -0.7056      0.941     -0.750      0.454      -2.551       1.139
-C(SB_head_thorax)[T.unbiased]:C(chromosome)[T.X]                   0.0495      0.706      0.070      0.944      -1.335       1.434
-C(SB_head_thorax)[T.male]:C(level_most_dist_ortholog)[T.4]         0.6887      0.512      1.345      0.179      -0.315       1.692
-C(SB_head_thorax)[T.unbiased]:C(level_most_dist_ortholog)[T.4]     1.0457      0.468      2.233      0.026       0.128       1.964
-C(SB_head_thorax)[T.male]:C(level_most_dist_ortholog)[T.5]         0.6592      0.467      1.411      0.158      -0.257       1.575
-C(SB_head_thorax)[T.unbiased]:C(level_most_dist_ortholog)[T.5]     0.5616      0.417      1.347      0.178      -0.255       1.379
-==================================================================================================================================
-AIC2: 7707.3709
-AIC1 - AIC2 : 7712.6086 - 7707.3709 = 5.2377
-AIC1 is sig. better than AIC2
-
-
-
-run model with age no interaction see difference
-------------> head+thorax
-Formula: positive_selection ~  C(SB_head_thorax) + C(chromosome)
-                           Logit Regression Results                           
-==============================================================================
-Dep. Variable:     positive_selection   No. Observations:                 6744
-Model:                          Logit   Df Residuals:                     6740
-Method:                           MLE   Df Model:                            3
-Date:                Thu, 02 Jul 2026   Pseudo R-squ.:               0.0002130
-Time:                        16:43:48   Log-Likelihood:                -3850.8
-converged:                       True   LL-Null:                       -3851.6
-Covariance Type:            nonrobust   LLR p-value:                    0.6502
-=================================================================================================
-                                    coef    std err          z      P>|z|      [0.025      0.975]
--------------------------------------------------------------------------------------------------
-Intercept                        -0.9949      0.113     -8.786      0.000      -1.217      -0.773
-C(SB_head_thorax)[T.male]        -0.1658      0.148     -1.120      0.263      -0.456       0.124
-C(SB_head_thorax)[T.unbiased]    -0.0562      0.117     -0.480      0.631      -0.286       0.173
-C(chromosome)[T.X]                0.0465      0.146      0.319      0.749      -0.239       0.332
-=================================================================================================
-AIC3: 7709.6080
-AIC1 - AIC3 : 7712.6086 - 7709.6080 = 3.0006
+Model:                          Logit   Df Residuals:                     6727
+Method:                           MLE   Df Model:                           16
+Date:                Fri, 03 Jul 2026   Pseudo R-squ.:                    -inf
+Time:                        15:49:23   Log-Likelihood:                   -inf
+converged:                      False   LL-Null:                       -3851.6
+Covariance Type:            nonrobust   LLR p-value:                     1.000
+=====================================================================================================================================================
+                                                                                        coef    std err          z      P>|z|      [0.025      0.975]
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+Intercept                                                                            -0.7376      0.367     -2.012      0.044      -1.456      -0.019
+C(SB_head_thorax)[T.male]                                                            -0.6742      0.421     -1.601      0.109      -1.499       0.151
+C(SB_head_thorax)[T.unbiased]                                                        -0.8004      0.394     -2.031      0.042      -1.573      -0.028
+C(chromosome)[T.X]                                                                 8.355e+07        nan        nan        nan         nan         nan
+C(level_most_dist_ortholog)[T.4]                                                     -0.5083      0.442     -1.149      0.251      -1.375       0.359
+C(level_most_dist_ortholog)[T.5]                                                     -0.2061      0.392     -0.526      0.599      -0.974       0.562
+C(SB_head_thorax)[T.male]:C(chromosome)[T.X]                                       1.087e+07        nan        nan        nan         nan         nan
+C(SB_head_thorax)[T.unbiased]:C(chromosome)[T.X]                                   7.267e+07        nan        nan        nan         nan         nan
+C(SB_head_thorax)[T.male]:C(level_most_dist_ortholog)[T.4]                            0.6842      0.514      1.332      0.183      -0.322       1.691
+C(SB_head_thorax)[T.unbiased]:C(level_most_dist_ortholog)[T.4]                        1.1303      0.471      2.402      0.016       0.208       2.052
+C(SB_head_thorax)[T.male]:C(level_most_dist_ortholog)[T.5]                            0.7228      0.469      1.541      0.123      -0.196       1.642
+C(SB_head_thorax)[T.unbiased]:C(level_most_dist_ortholog)[T.5]                        0.6868      0.419      1.638      0.101      -0.135       1.509
+C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.4]                               -8.355e+07        nan        nan        nan         nan         nan
+C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.5]                               -8.355e+07        nan        nan        nan         nan         nan
+C(SB_head_thorax)[T.male]:C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.4]     -1.087e+07        nan        nan        nan         nan         nan
+C(SB_head_thorax)[T.unbiased]:C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.4] -7.267e+07   2492.888  -2.92e+04      0.000   -7.27e+07   -7.27e+07
+C(SB_head_thorax)[T.male]:C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.5]     -1.087e+07        nan        nan        nan         nan         nan
+C(SB_head_thorax)[T.unbiased]:C(chromosome)[T.X]:C(level_most_dist_ortholog)[T.5] -7.267e+07          0       -inf      0.000   -7.27e+07   -7.27e+07
+=====================================================================================================================================================
+AIC3: inf
+AIC2int. - AIC3 : 7712.6086 - inf = -inf
+AIC3 is sig. better than AIC2

@@ -399,7 +399,7 @@ I also re-did all the plots, but the results stay the same, only the numbers and
 <h4>within sex-bias test for fastX</h4>
 
 <p>
-    See if the X or A enrichment is maybe restricted to one sex bias category
+    See if the X or A enrichment is maybe restricted to one sex bias category -> NO, all still insignificant.
 </p>
 
 <div class="left-div">
@@ -448,7 +448,39 @@ I also re-did all the plots, but the results stay the same, only the numbers and
 <div style="clear: both;"></div>
 
 <p>
-    I re-do the original wald-test analysis to check for the importance of major effects with the new positive selection results
+    <i>Hypothesis:</i> male-biased genes in reproductive tissues evolve the fastest &rarr; positively selected genes should be positively associated 
+    with male-biased expression.
+</p>
+<p>
+    We have expression data from abdomen (reproductive) and head+thorax (somatic), and I will test several models via logistic regression and compare 
+    model fit via AIC.
+
+    <ul>
+        <li><code>pos_sel ~ C(gene_age)</code>: is the best model without expression data, but still worse than the worst models with expression data for either tissue</li>
+        <li>
+            <code>pos_sel ~ C(sex_bias)</code>: <span style="color: #909bb5">Since sex bias is not enriched in either chromosome I tried without a chromosome explanatory variable first</span>
+            <ul>
+                <li><i>abdomen</i>: Positive male-biased coefficient over female biased intercept in reproductive tissues, like predicted, but not significant</li>
+                <li><i>head+thorax</i>: negativ male-biased coefficient, also nonsignificant</li>
+                <li><i>AIC</i>: Worse overall fit than the model that takes chromosome category into account</li>
+            </ul>
+        </li>
+        <li>
+            <code>pos_sel ~ C(sex_bias) * C(chromosome)</code>:
+            <ul>
+                <li><i>abdomen</i>: male coefficient is positive in agreement with the hypothesis, but all effects are nonsignificant</li>
+                <li><i>head+thorax</i>: but male and male:X coefficients are negative (compared to female:A intercept) and nonsignificant</li>
+                <li><i>AIC</i>: significantly better fir than the model without chromosome category. <code>pos_sel ~ C(sex_bias) + C(chromosome)</code> 
+                    has no significant improvement over the above model, and is significantly worse than the model with the interaction effect.</li>
+            </ul>
+        </li>
+        <li>
+            <code>positive_selection ~  C(SB_abdomen) * C(chromosome) * C(level_most_dist_ortholog)</code>:
+            <li><i>abdomen</i>: all effects are nonsignificant, and the male effect does have a negative effect compared to the female intercept</li>
+            <li><i>head+thorax</i>: some issues with estimation, maybe the X does not have positively selected genes of every age category?</li>
+            <li><i>AIC</i>: significantly better than the model without the age rank in abdominal samples, could not be estimated (<i>inf</i>) in head+thorax</li>
+        </li>
+    </ul>
 </p>
 
 <div class="tab">
