@@ -458,7 +458,7 @@ I also re-did all the plots, but the results stay the same, only the numbers and
     <ul>
         <li><code>pos_sel ~ C(gene_age)</code>: is the best model without expression data, but still worse than the worst models with expression data for either tissue</li>
         <li>
-            <code>pos_sel ~ C(sex_bias)</code>: <span style="color: #909bb5">Since sex bias is not enriched in either chromosome I tried without a chromosome explanatory variable first</span>
+            <code>pos_sel ~ C(sex_bias)</code>: <span style="color: #909bb5">(Since sex bias is not enriched in either chromosome I tried without a chromosome explanatory variable first)</span>
             <ul>
                 <li><i>abdomen</i>: Positive male-biased coefficient over female biased intercept in reproductive tissues, like predicted, but not significant</li>
                 <li><i>head+thorax</i>: negativ male-biased coefficient, also nonsignificant</li>
@@ -477,7 +477,7 @@ I also re-did all the plots, but the results stay the same, only the numbers and
         <li>
             <code>positive_selection ~  C(SB_abdomen) * C(chromosome) * C(level_most_dist_ortholog)</code>:
             <ul>
-                <li><i>abdomen</i>: all effects are nonsignificant, and the male effect does have a negative effect compared to the female intercept</li>
+                <li><i>abdomen</i>: all effects are nonsignificant, and the male effect does have a negative coefficient (compared to the female:age1 intercept)</li>
                 <li><i>head+thorax</i>: some issues with estimation, maybe the X does not have positively selected genes of every age category?</li>
                 <li><i>AIC</i>: significantly better than the model without the age rank in abdominal samples, could not be estimated (<i>inf</i>) in head+thorax</li>
             </ul>
