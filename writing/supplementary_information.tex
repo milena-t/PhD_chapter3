@@ -387,9 +387,8 @@ SRR3113348, SRR3113384, SRR3113350, SRR3113385, SRR3113352, SRR3113386, SRR31134
     \caption{Gene age categories of \textit{C. maculatus} orthologs in the X chromosome and the autosomes. 
     Percentages and absolute counts of genes in each ortholog age category are shown for pairwise comparisons between 
     \textit{C. maculatus} and \textit{C. chinensis}, \textit{B. siliquastri}, and \textit{A. obtectus}. 
-    Age categories are defined relative to \textit{C. maculatus} orthologs. Because evolutionary distance 
-    is measured from the \textit{C. maculatus} lineage, the minimum detectable age category differs among comparisons, 
-    with \textit{B. siliquastri} and \textit{A. obtectus} comparisons starting at categories 1 and 2, respectively.}
+    Age categories are defined relative to \textit{C. maculatus} orthologs. and therefore the minimum detectable age category differs among comparisons, 
+    with \textit{B. siliquastri} and \textit{A. obtectus} comparisons starting at categories 2 and 3, respectively.}
     \label{SItab:conservation}
     \begin{tabular}{c |c | c}
         \multicolumn{3}{c}{\textit{C. chinensis}}\\
@@ -582,7 +581,7 @@ SRR3113348, SRR3113384, SRR3113350, SRR3113385, SRR3113352, SRR3113386, SRR31134
     \label{SIfig:dosagecompensation}
 \end{figure}
 
-
+\iffalse 
 \begin{table}[H]
     \centering
     \caption{Multinomial logistic regression of sex-bias category on the autosomes and the X chromosome as a function of gene age. 
@@ -654,7 +653,7 @@ SRR3113348, SRR3113384, SRR3113350, SRR3113385, SRR3113352, SRR3113386, SRR31134
         \hline
     \end{tabular}
 
-\hspace{1cm}
+    \hspace{1cm}
 
     \begin{tabular}{l |c  |c| c}
         \multicolumn{4}{c}{X-linked abdomen (df=8)}\\
@@ -722,6 +721,8 @@ SRR3113348, SRR3113384, SRR3113350, SRR3113385, SRR3113352, SRR3113386, SRR31134
         \hline
     \end{tabular}
 \end{table}
+
+\fi
 
 
 
@@ -889,27 +890,52 @@ SRR3113348, SRR3113384, SRR3113350, SRR3113385, SRR3113352, SRR3113386, SRR31134
 
 \begin{table}[H]
     \centering
-    \caption{Fisher's exact test for enrichment of number of positively selected genes on X compared to A split by sex-bias categories.
-    Raw and Benjamini-Hochberg corrected p-values are shown, significance highlighted in bold.}
-    \label{SItab:fisher_pos_sel}
-    \begin{tabular}{l|l|c|c}
-        tissue & sex-bias & raw p-value & BH-corrected \\
+    \caption{Detailed results from Fisher's exact test to test for Faster-X restricted to female- male- or unbiased orthologs. Shows the contingency 
+    tables with numbers of positively selected (pos. sel.) and not pos. sel. orthologs linked to autosomes (A) or X. Sex bias is determined from
+    reproductive tissues (abdomen) or somatic tissues (head $+$ thorax).\\
+    Note that the numbers do not add up with Fig. \ref{SIfig:SB_prop}, since the process of estimating codons under postive selection removes genes from
+    the data due to incorrect start/stop codons or other issues that make running paml impossible.}
+    \label{SITab:fisher-pos_sel}
+    \begin{tabular}{l | c | c || c | c}
+        \multicolumn{5}{c}{\textbf{male-biased genes}}\\
+        \hline
+        & \multicolumn{2}{l ||}{abdominal} & \multicolumn{2}{l}{head+thorax}\\
+        & \multicolumn{2}{l ||}{p-value : $0.8527$} & \multicolumn{2}{l}{p-value : $0.5856$}\\
         \hline
         \hline
-        abdomen & male & 0.059340 & 0.118681\\
+        chromosome & pos. sel. & not pos. sel. & pos. sel. & not pos. sel. \\
         \hline
-        abdomen & unbiased & 0.000047 & \textbf{0.000142}\\
+        A & 390 &  1111 & 141 & 443\\
         \hline
-        abdomen & female & 0.742779 & 0.742779\\
-        \hline
-        head+thorax & male & 0.197809 & 0.296713\\
-        \hline
-        head+thorax & unbiased & 0.000039 & \textbf{0.000142}\\
-        \hline
-        head+thorax & female & 0.482241 & 0.578690\\
-        \hline
+        X &  9 &  29 & 3 & 16 \\
     \end{tabular}
-\end{table}
+    \begin{tabular}{l | c | c || c | c}
+        \multicolumn{5}{c}{\textbf{female-biased genes}}\\
+        \hline
+        & \multicolumn{2}{l ||}{abdominal} & \multicolumn{2}{l}{head+thorax}\\
+        & \multicolumn{2}{l ||}{p-value : $0.8793$} & \multicolumn{2}{l}{p-value : $1.0$}\\
+        \hline
+        \hline
+        chromosome & pos. sel. & not pos. sel. & pos. sel. & not pos. sel. \\
+        \hline
+        A & 398 &  1202 & 104 & 281\\
+        \hline
+        X &  15 &  44 & 3 & 8 \\
+    \end{tabular}
+    \begin{tabular}{l | c | c || c | c}
+        \multicolumn{5}{c}{\textbf{unbiased genes}}\\
+        \hline
+        & \multicolumn{2}{l ||}{abdominal} & \multicolumn{2}{l}{head+thorax}\\
+        & \multicolumn{2}{l ||}{p-value : $0.6395$} & \multicolumn{2}{l}{p-value : $0.5838$}\\
+        \hline
+        \hline
+        chromosome & pos. sel. & not pos. sel. & pos. sel. & not pos. sel. \\
+        \hline
+        A & 886 &  2506 & 1429 & 4095\\
+        \hline
+        X &  43 &  111 & 61 & 160 \\
+    \end{tabular}
+    \end{table}
 
 \iffalse
 

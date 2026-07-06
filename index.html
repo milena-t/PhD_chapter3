@@ -524,7 +524,7 @@ I also re-did all the plots, but the results stay the same, only the numbers and
         </p>
     </div>
     <div class="right-div">
-        <p>Numbers of genes under positive selection (True) in the individual age ranks</p>
+        <p>Numbers of genes under positive selection in the individual age ranks</p>
         <pre><code> -------- 3
  no_positive_selection    412
  positive_selection       106
@@ -535,11 +535,11 @@ I also re-did all the plots, but the results stay the same, only the numbers and
  no_positive_selection    3575
  positive_selection       1262</code></pre>
         <p>Back-calculating the coefficients of <code>positive_selection ~ C(level_most_dist_ortholog)</code> from log regression</p>
-        <pre><code>                                    log coeff    math.exp(coeff)
+        <pre><code>                                       coeff    math.exp(coeff)
  Intercept                           -1.3576     0.2573
  C(level_most_dist_ortholog)[T.4]     0.3555     1.4269
  C(level_most_dist_ortholog)[T.5]     0.3163     1.3720</code></pre>
-        <p>Note on the numbers and the actual plot seemingly contradicting each other at gene age 3: The plot shows pos_sel/all=0.205, but the coefficient is pos_sel/non_pos_sel=0.2573</p>
+        <p>Note on the numbers and the plot seemingly contradicting each other at gene age 3: The plot shows pos_sel/all=0.205, but the coefficient is pos_sel/non_pos_sel=0.2573</p>
             
         </div>
     <div style="clear: both;"></div>
