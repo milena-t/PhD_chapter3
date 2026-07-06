@@ -370,34 +370,55 @@ def statistical_analysis_pos_sel(full_table_paths_dict, table_outfile = "pos_sel
                     print(f"--------> outfile written to: {table_outfile_species_abd}")
                 
             elif include_sex_bias == False and partner == "C_chinensis":
+
+                def chisq_LRT(model_big,model_small):
+                    LR_stat = -2 * (model_small.llf - model_big.llf)
+                    df_diff = model_big.df_model - model_small.df_model
+                    p_value = stats.chi2.sf(LR_stat, df_diff)
+                    return LR_stat,p_value,df_diff
                 
-                formula_no = f"positive_selection ~  C(chromosome) * C(level_most_dist_ortholog)"
-                formula_noint = f"positive_selection ~  C(chromosome) + C(level_most_dist_ortholog)"
-                formula_nochr = f"positive_selection ~  C(level_most_dist_ortholog)"
-                formula_nono = f"positive_selection ~  C(chromosome)"
+                formula_no = f"positive_selection ~ C(chromosome) * C(level_most_dist_ortholog)"
+                formula_noint = f"positive_selection ~ C(chromosome) + C(level_most_dist_ortholog)"
+                formula_nochr = f"positive_selection ~ C(level_most_dist_ortholog)"
+                formula_nono = f"positive_selection ~ C(chromosome)"
 
                 table_outfile_species_noexpr = table_outfile_species.replace(".txt", "_no_expression_data.txt")
                 with open(table_outfile_species_noexpr, "w") as table_out:
                     table_out.write(f"\n------------>\nFormula: {formula_no}\n")
-                    test = smf.logit(formula=formula_no, data=filt_df).fit()
-                    table_out.write(test.summary().as_text())
-                    aic1 = test.aic
+                    test1 = smf.logit(formula=formula_no, data=filt_df).fit()
+                    table_out.write(test1.summary().as_text())
+                    aic1 = test1.aic
                     table_out.write(f"\nAIC1: {aic1:.4f}\n")
                     table_out.write(f"\n------------>\nFormula: {formula_noint}\n")
-                    test = smf.logit(formula=formula_noint, data=filt_df).fit()
-                    table_out.write(test.summary().as_text())
-                    aic2 = test.aic
+                    test2 = smf.logit(formula=formula_noint, data=filt_df).fit()
+                    table_out.write(test2.summary().as_text())
+                    aic2 = test2.aic
                     table_out.write(f"\nAIC2: {aic2:.4f}\n")
                     table_out.write(f"\n\n------------>\nFormula: {formula_nono}\n")
-                    test = smf.logit(formula=formula_nono, data=filt_df).fit()
-                    table_out.write(test.summary().as_text())
-                    aic3 = test.aic
+                    test3 = smf.logit(formula=formula_nono, data=filt_df).fit()
+                    table_out.write(test3.summary().as_text())
+                    aic3 = test3.aic
                     table_out.write(f"\nAIC3: {aic3:.4f}\n")
                     table_out.write(f"\n\n------------>\nFormula: {formula_nochr}\n")
-                    test = smf.logit(formula=formula_nochr, data=filt_df).fit()
-                    table_out.write(test.summary().as_text())
-                    aic4 = test.aic
+                    test4 = smf.logit(formula=formula_nochr, data=filt_df).fit()
+                    table_out.write(test4.summary().as_text())
+                    aic4 = test4.aic
                     table_out.write(f"\nAIC4: {aic4:.4f}\n")
+
+                    table_out.write(f"\n\n------------>\nLIKELIHOOD RATIO TESTS\n")
+                    table_out.write(f"\nTEST1: [{formula_no}] vs. [{formula_noint}]\n")
+                    lr_stat_1_2, p_value_1_2, df_diff_1_2 = chisq_LRT(model_big=test1,model_small= test2)
+                    table_out.write(f"LR stat = {lr_stat_1_2:.4f}, p-val = {p_value_1_2:.4f}, df = {df_diff_1_2}\n")
+
+                    table_out.write(f"\nTEST2: [{formula_no}] vs. [{formula_nochr}]\n")
+                    lr_stat_1_4, p_value_1_4, df_diff_1_4 = chisq_LRT(model_big=test1,model_small= test4)
+                    table_out.write(f"LR stat = {lr_stat_1_4:.4f}, p-val = {p_value_1_4:.4f}, df = {df_diff_1_4}\n")
+
+                    table_out.write(f"\nTEST3: [{formula_no}] vs. [{formula_nono}]\n")
+                    lr_stat_1_3, p_value_1_3, df_diff_1_3 = chisq_LRT(model_big=test1,model_small= test3)
+                    table_out.write(f"LR stat = {lr_stat_1_3:.4f}, p-val = {p_value_1_3:.4f}, df = {df_diff_1_3}\n")
+
+
                 print(f"--------> outfile no sex bias written to: {table_outfile_species_noexpr}")
 
             elif False:

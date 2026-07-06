@@ -1,10 +1,12 @@
-import matplotlib.pyplot as plt
 from scipy.stats import pearsonr
 from bootstrap_dNdS import permutate_dNdS,calculate_list_CI
+import analyze_dNdS_LFC as lfc_func
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
 import ast
+import matplotlib.pyplot as plt
+from matplotlib.ticker import FuncFormatter
 
 def in_paths(username="miltr339"):
     files_dir=f"/Users/{username}/work/chapter3/revision_tests"
@@ -599,6 +601,67 @@ def make_Cmac_pos_sel_IDs_list(four_way_orthologs_IDs:str, four_way_pos_sel:str,
     return geneIDs_lists
 
 
+def plot_pos_sel_ages_barplot(full_table_paths_dict:dict, outfile:str):
+
+    # prepare df
+    X_df = pd.read_csv(full_table_paths_dict["X"], sep="\t")
+    A_df = pd.read_csv(full_table_paths_dict["A"], sep="\t")
+    X_df["chromosome"] = ["X"]*X_df.shape[0]
+    A_df["chromosome"] = ["A"]*A_df.shape[0]
+    df = pd.concat([A_df,X_df], ignore_index=True)
+    df = df.rename(columns={'LFC_head+thorax': 'LFC_head_thorax'})
+    df = df.rename(columns={'FDR_pval_head+thorax': 'FDR_pval_head_thorax'})
+    df["SB_abdomen"] = df.apply(lfc_func.make_sex_bias_cat_row, axis=1, args=("abdomen",))
+    df["SB_head_thorax"] = df.apply(lfc_func.make_sex_bias_cat_row, axis=1, args=("head_thorax",))
+    df["LFC_abdomen"] = abs(df["LFC_abdomen"])
+    df["LFC_head_thorax"] = abs(df["LFC_head_thorax"])
+    df = df[df["other_species"] == "C_chinensis"]
+
+    # get counts for gene age 3,4,5
+    list_age_levels = list(set(df["level_most_dist_ortholog"].to_list()))
+    percentage_pos = [0 for i in list_age_levels]
+    percentage_non = [0 for i in list_age_levels]
+    counts_all = [0 for i in list_age_levels]
+    age_labels = ["" for i in list_age_levels]
+    for i,age in enumerate(list_age_levels):
+        print(f"-------- {age}")
+        df_age = df[df["level_most_dist_ortholog"] == age]
+        age_counts = df_age.value_counts("positive_selection")
+        counts_all[i] = age_counts[True] + age_counts[False]
+        percentage_pos[i] = 100*age_counts[True]/counts_all[i]
+        percentage_non[i] = 100*age_counts[False]/counts_all[i]
+        age_labels[i] = f"age rank {age}\n({counts_all[i]})"
+        print(age_counts)
+    
+
+    fs = 35 # font size
+
+    # set figure aspect ratio
+    aspect_ratio = 20 / 15
+    height_pixels = 1300  # Height in pixels
+    width_pixels = int(height_pixels * aspect_ratio)  # Width in pixels
+
+    fig, ax = plt.subplots(1,1,figsize=(width_pixels / 100, height_pixels / 100), dpi=100)
+    
+    ax.bar(list_age_levels, percentage_pos, label='not under selection', color="#44506e")#, alpha=0.7)
+    ax.bar(list_age_levels, percentage_non, bottom=percentage_pos, label='positive selection', color="#909bb5")
+    ax.yaxis.set_major_formatter(FuncFormatter(lambda x, pos: '' if x > 100 and x<1 else f'{int(x)}%'))
+
+    ax.set_xticks(ticks = list_age_levels, labels = age_labels, fontsize=fs)#, rotation=45, ha='right')
+    ax.tick_params(axis='x', labelsize=fs)# , rotation = 90)
+    ax.tick_params(axis='y', labelsize=fs)
+    ax.set_ylim(0,100)
+
+    plt.title(f"proportion of positively selected genes", fontsize = fs*1.1)
+
+    plt.tight_layout()
+    plt.savefig(outfile, dpi = 300, transparent = True)
+    print(f"plot saved in current working directory as: {outfile}")
+    
+
+
+
+
 if __name__ == "__main__":
 
     username = "miltr339"
@@ -672,8 +735,15 @@ if __name__ == "__main__":
         plot_omega_association(ortholog_IDs_association = pairs_fourWay_association, site_classes_pairsX = site_classes_files["X_LRT"], site_classes_pairsA = site_classes_files["A_LRT"], 
                                site_classes_4way=four_way_pos_sel, filename=site_model_plotname)
 
-    if True:
+    if False:
         # make cmac GeneID lists for positive selection GO enrichment (just single-line csv list.)
         outdir = f"/Users/{username}/work/PhD_code/PhD_chapter3/data/GO_enrichment"
         make_Cmac_pos_sel_IDs_list(four_way_orthologs_IDs = four_way_ortholog_IDs, four_way_pos_sel = four_way_pos_sel_beta, 
         outfile_prefix = f"/Users/{username}/work/PhD_code/PhD_chapter3/data/GO_enrichment/bruchini_site_model_beta_Cmac_geneIDs")
+
+    if True:
+        # plot barplot for proportion of positive selection for each age rank (3,4,5)
+        username = "miltr339"
+        full_table_paths_dict = lfc_func.get_full_table_path(username=username)
+        outfile = f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/pos_sel_age_bruchini_proportions.png"
+        plot_pos_sel_ages_barplot(full_table_paths_dict, outfile=outfile)
