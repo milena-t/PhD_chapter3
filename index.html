@@ -456,32 +456,17 @@ I also re-did all the plots, but the results stay the same, only the numbers and
     model fit via AIC.
 
     <ul>
-        <li><code>pos_sel ~ C(gene_age)</code>: is the best model without expression data, but still worse than the worst models with expression data for either tissue</li>
-        <li>
-            <code>pos_sel ~ C(sex_bias)</code>: <span style="color: #909bb5">(Since sex bias is not enriched in either chromosome I tried without a chromosome explanatory variable first)</span>
-            <ul>
-                <li><i>abdomen</i>: Positive male-biased coefficient over female biased intercept in reproductive tissues, like predicted, but not significant</li>
-                <li><i>head+thorax</i>: negativ male-biased coefficient, also nonsignificant</li>
-                <li><i>AIC</i>: Worse overall fit than the model that takes chromosome category into account</li>
-            </ul>
+        <li>Models with sex bias all have a higher AIC than the models without sex bias, but I still include the results below</li>
+        <li>The AIC values for the models without expression data are:
+            <ol>
+                <li><code>positive_selection ~  C(chromosome) * C(level_most_dist_ortholog)</code>: 7701.7506</li>
+                <li><code>positive_selection ~  C(chromosome) + C(level_most_dist_ortholog)</code>: 7702.0720</li>
+                <li><code>positive_selection ~  C(chromosome)</code>: 7707.1444</li>
+                <li><code>positive_selection ~  C(level_most_dist_ortholog)</code>: 7700.1365</li>
+            </ol>
+            The best model is (4) without the chromosome category. Model (1) is not significantly worse, but much more complex, especially with the interaction effect. 
         </li>
-        <li>
-            <code>pos_sel ~ C(sex_bias) * C(chromosome)</code>:
-            <ul>
-                <li><i>abdomen</i>: male coefficient is positive in agreement with the hypothesis, but all effects are nonsignificant</li>
-                <li><i>head+thorax</i>: but male and male:X coefficients are negative (compared to female:A intercept) and nonsignificant</li>
-                <li><i>AIC</i>: significantly better fir than the model without chromosome category. <code>pos_sel ~ C(sex_bias) + C(chromosome)</code> 
-                    has no significant improvement over the model without chromosome categoy, and is significantly worse than the model with the interaction effect.</li>
-            </ul>
-        </li>
-        <li>
-            <code>positive_selection ~  C(SB_abdomen) * C(chromosome) * C(level_most_dist_ortholog)</code>:
-            <ul>
-                <li><i>abdomen</i>: all effects are nonsignificant, and the male effect does have a negative coefficient (compared to the female:age1 intercept)</li>
-                <li><i>head+thorax</i>: some issues with estimation, maybe the X does not have positively selected genes of every age category?</li>
-                <li><i>AIC</i>: significantly better than the model without the age rank in abdominal samples, could not be estimated (<i>inf</i>) in head+thorax</li>
-            </ul>
-        </li>
+            
     </ul>
     In conclusion, I don't think i find support for the hypothesis. See below for the detailed model output.
 </p>
@@ -527,10 +512,10 @@ I also re-did all the plots, but the results stay the same, only the numbers and
         According to AIC, <code>positive_selection ~  C(chromosome)</code> is a better model than a two-way interaction that 
         includes gene age, but even here the chromosome coefficient is positive but not at all significant (p =0.746).
     </p>
-    <p><code>data/stats_summary_files/pos_sel_vs_gene_age_LR_wald_test_revision_with_sex_bias_C_chinensis_no_expression_data.txt</code>
+    <p><code>data/stats_summary_files/pos_sel_vs_gene_age_LR_wald_test_revision_C_chinensis_no_expression_data.txt</code>
     </p>
     <iframe
-        src="data/stats_summary_files/pos_sel_vs_gene_age_LR_wald_test_revision_with_sex_bias_C_chinensis_no_expression_data.txt"
+        src="data/stats_summary_files/pos_sel_vs_gene_age_LR_wald_test_revision_C_chinensis_no_expression_data.txt"
         frameBorder="0"
         class=""
         scrolling="auto"
