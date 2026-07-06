@@ -511,9 +511,9 @@ I also re-did all the plots, but the results stay the same, only the numbers and
 
     <p>
         According to p-value from LRT comparison <span style="color: #909bb5">(scroll all the way down in the above file)</span>, 
-        <code>positive_selection ~  C(level_most_dist_ortholog)</code> is the best model, it is a significantly better fit than 
-        <code>positive_selection ~  C(chromosome)</code> and not sig. improved by the more complicated models incorporating both 
-        effects or their interaction. 
+        <code>positive_selection ~  C(level_most_dist_ortholog)</code> is the best model, and not sig. improved by the more complicated models incorporating both 
+        effects or their interaction. The model with just <code>positive_selection ~ C(chromosome)</code> is not directly nested and can't be compared with 
+        LRT, but it has a sig. higher AIC value (diff > 2) and is therefore significantly worse.
     </p>
     <p>
         It shows that the least conserved genes (age 3, <i>Bruchini</i>-exclusive) have a lower proportion of positive selection compared to the other two age ranks
