@@ -1111,8 +1111,18 @@ We will use TopGo to perform GO-enrichment on the positively selected genes. I r
 </div>
 <div id="sig" class="tabcontent">
     <div class="tab">
+        <button class="tablinks" onclick="openTab(event, 'all_sig')">whole genome</button>
         <button class="tablinks" onclick="openTab(event, 'A_sig')">Autosomes</button>
         <button class="tablinks" onclick="openTab(event, 'X_sig')">X-chromosome</button>
+    </div>
+
+    <div id="all_sig" class="tabcontent">
+        <p><code>data/GO_enrichment/A_sig_enriched_GOs_revision.csv</code></p>
+
+        <div id="all_sig_table" class="tableframe"></div>
+    <script>
+        loadCSVTable("data/GO_enrichment/all_sig_enriched_GOs_revision.csv", "all_sig_table");
+    </script>
     </div>
 
     <div id="A_sig" class="tabcontent">

@@ -308,9 +308,8 @@ SRR3113348, SRR3113384, SRR3113350, SRR3113385, SRR3113352, SRR3113386, SRR31134
     \end{subfigure}
     
     
-    \caption{\textbf{d$_S$ vs. d$_N$ scatterplots and violin plots of d$_S$ values from X-linked and autosomal orthologs.} 
-    Pairwise comparisons between members of three lineages with violin plots of d$_S$ values for X-linked and 
-    autosomal 1-to-1 orthologs, and scatterplots of d$_S$ vs. d$_N$. For permutation tests see Table S2.% (n=10000) show that d$_S$ is significantly lower for X-linked orthologs in all comparisons within \textit{Bruchini} (\textbf{A}) and \textit{Coccinella} (\textbf{B}), but not \textit{Tribolium} (\textbf{C}).
+    \caption{\textbf{$dS$ vs. $dN$ scatterplots, as well as violin plots of $dS$ values from X-linked and autosomal orthologs.} 
+    For permutation tests see Table \ref{SItab:dS_permutation}.% (n=10000) show that $dS$ is significantly lower for X-linked orthologs in all comparisons within \textit{Bruchini} (\textbf{A}) and \textit{Coccinella} (\textbf{B}), but not \textit{Tribolium} (\textbf{C}).
     }\label{dS_plots}
     
 \end{figure}
@@ -320,9 +319,9 @@ SRR3113348, SRR3113384, SRR3113350, SRR3113385, SRR3113352, SRR3113386, SRR31134
 
 \begin{table}[H]
     \centering
-    \caption{\textbf{d$_S$ permutation test}: Permutation test results for all pairwise species comparisons. Measured dS$_A$-dS$_X$, and estimated dS$_A$-dS$_X$ calculated from mean of
+    \caption{\textbf{$dS$ permutation test}: Permutation test results for all pairwise species comparisons. Measured dS$_A$-dS$_X$, and estimated dS$_A$-dS$_X$ calculated from mean of
     10000 permutations, 95\% Confidence interval (CI) calculated from normal distribution of permuted dS$_A$-dS$_X$ values.}
-    \label{SItab:BUSCO}
+    \label{SItab:dS_permutation}
     \begin{tabular}{l | l | c |c | c}
         species 1  & species 2 & dS$_A$-dS$_X$ & est. dS$_A$-dS$_X$ and CI & significance \\
         \hline
@@ -347,10 +346,11 @@ SRR3113348, SRR3113384, SRR3113350, SRR3113385, SRR3113352, SRR3113386, SRR31134
     \end{tabular}
 \end{table}
 
+\iffalse
 
 \begin{table}[H]
     \centering
-    \caption{\textbf{d$_N$/d$_S$ permutation test}: Permutation test results for all pairwise species comparisons. Measured dN$_A$/dS$_A$-dN$_X$/dS$_X$, and estimated dN$_A$/dS$_A$-dN$_X$/dS$_X$ calculated from mean of
+    \caption{\textbf{$dN$/$dS$ ratio}: Permutation test results for all pairwise species comparisons. Measured dN$_A$/dS$_A$-dN$_X$/dS$_X$, and estimated dN$_A$/dS$_A$-dN$_X$/dS$_X$ calculated from mean of
     10000 permutations, 95\% Confidence interval (CI) calculated from normal distribution of permuted dN$_A$/dS$_A$-dN$_X$/dS$_X$ values.}
     \label{SItab:BUSCO}
     \begin{tabular}{l | l | c |c | c}
@@ -377,7 +377,7 @@ SRR3113348, SRR3113384, SRR3113350, SRR3113385, SRR3113352, SRR3113386, SRR31134
     \end{tabular}
 \end{table}
 
-
+\fi
 
 \subsection*{Gene age of orthologs}
 
@@ -385,9 +385,10 @@ SRR3113348, SRR3113384, SRR3113350, SRR3113385, SRR3113352, SRR3113386, SRR31134
     \centering
     \caption{Gene age categories of \textit{C. maculatus} orthologs in the X chromosome and the autosomes. 
     Percentages and absolute counts of genes in each ortholog age category are shown for pairwise comparisons between 
-    \textit{C. maculatus} and \textit{C. chinensis}, \textit{B. siliquastri}, and \textit{A. obtectus}. 
+    \textit{C. maculatus} and \textit{C. chinensis}, \textit{B. siliquastri}, or \textit{A. obtectus}. 
     Age categories are defined relative to \textit{C. maculatus} orthologs. and therefore the minimum detectable age category differs among comparisons, 
-    with \textit{B. siliquastri} and \textit{A. obtectus} comparisons starting at categories 2 and 3, respectively. The last row shows the results of a proportion test for age 5 orhtologs on X and A.}
+    with \textit{B. siliquastri} and \textit{A. obtectus} comparisons starting at categories 2 and 3, respectively. 
+    The bottom of each table shows the results of a Z-test for age 4 and 5 orhtologs on X and A.}
     \label{SItab:conservation}
     \begin{tabular}{c |c | c}
         \multicolumn{3}{c}{\textit{C. chinensis}}\\
@@ -722,7 +723,7 @@ SRR3113348, SRR3113384, SRR3113350, SRR3113385, SRR3113352, SRR3113386, SRR31134
     \centering
     \caption{Median regression results for autosomal orthologs (model: \texttt{log2FC $\sim$ sex-bias category * gene age}). 
     The intercept corresponds to female-biased genes in gene-age category 1. 
-    The Wald test evaluates the joint significance of all two-way interaction terms.}
+    The Wald test at the top of each table evaluates the joint significance of all two-way interaction terms.}
     \label{SItab:A_logFCconservation}
     \begin{tabular}{l |c |c| c}
         \multicolumn{4}{c}{autosomal abdomen (df=9)}\\
@@ -788,7 +789,8 @@ SRR3113348, SRR3113384, SRR3113350, SRR3113385, SRR3113352, SRR3113386, SRR31134
 \begin{table}[H]
     \centering
     \caption{Median regression results for X-linked orthologs (model: \texttt{log2FC $\sim$ sex-bias category * gene age}). 
-    The intercept corresponds to female-biased genes in gene-age category 1. The Wald test evaluates the joint significance of all two-way interaction terms.}
+    The intercept corresponds to female-biased genes in gene-age category 1. 
+    The Wald test at the top of each table evaluates the joint significance of all two-way interaction terms.}
     \label{SItab:X_logFCconservation}
     \begin{tabular}{l |c |c | c}
         \multicolumn{4}{c}{X-linked abdomen (df=8)}\\
@@ -850,7 +852,7 @@ SRR3113348, SRR3113384, SRR3113350, SRR3113385, SRR3113352, SRR3113386, SRR31134
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.75\linewidth]{../data/DE_analysis/dNdS_vs_conservation_rank_medians_lineplot_head_thorax_only_A.png}
-    \caption{d$_N$/d$_S$ across gene age for male-biased (blue), unbiased (grey), and female-biased (red) autosomal genes of somatic tissues.}
+    \caption{$dN$/$dS$ across gene age for male-biased (blue), unbiased (grey), and female-biased (red) autosomal genes of somatic tissues.}
     \label{SIfig:SBmag_a}
 \end{figure}
 
@@ -858,7 +860,7 @@ SRR3113348, SRR3113384, SRR3113350, SRR3113385, SRR3113352, SRR3113386, SRR31134
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.75\linewidth]{../data/DE_analysis/dNdS_vs_conservation_rank_medians_lineplot_head_thorax_only_X.png}
-    \caption{d$_N$/d$_S$ across gene age for male-biased (blue), unbiased (grey), and female-biased (red) X-linked genes of somatic tissues.}
+    \caption{$dN$/$dS$ across gene age for male-biased (blue), unbiased (grey), and female-biased (red) X-linked genes of somatic tissues.}
     \label{SIfig:SBmag_ht}
 \end{figure}
 
@@ -873,7 +875,7 @@ SRR3113348, SRR3113384, SRR3113350, SRR3113385, SRR3113352, SRR3113386, SRR31134
         \end{overpic}
         \includegraphics[width=0.49\textwidth]{../data/DE_analysis/dNdS_merged_conservation_rank_boxplot_head_thorax.png}
     \end{minipage}%
-    \caption{d$_N$/d$_S$ by chromosome, for sex bias according to either abdominal (abd.) or head and thorax tissues (h+t). Blue is male-biased, grey is
+    \caption{$dN$/$dS$ by chromosome, for sex bias according to either abdominal (abd.) or head and thorax tissues (h+t). Blue is male-biased, grey is
     unbiased and red is female-biased, dotted lines are autosomal and bold lines are X-linked. All gene age categories are merged, 
     resulting in a misleading median estimate.}
 \end{figure}
@@ -885,8 +887,7 @@ SRR3113348, SRR3113384, SRR3113350, SRR3113385, SRR3113352, SRR3113386, SRR31134
     \caption{Detailed results from Fisher's exact test to test for Faster-X restricted to female- male- or unbiased orthologs. Shows the contingency 
     tables with numbers of positively selected (pos. sel.) and not pos. sel. orthologs linked to autosomes (A) or X. Sex bias is determined from
     reproductive tissues (abdomen) or somatic tissues (head $+$ thorax).\\
-    Note that the numbers do not add up with Fig. \ref{SIfig:SB_prop}, since the process of estimating codons under postive selection removes genes from
-    the data due to the requirement to be 1-to-1 orthologs, incorrect start/stop codons, or other issues that make running paml impossible.}
+    Note that the numbers do not add up with Fig. \ref{SIfig:SB_prop} which includes all expressed genes, but postive selection estimation requires genes to be 1-to-1 orthologs.}
     \label{SITab:fisher-pos_sel}
     \begin{tabular}{l | c | c || c | c}
         \multicolumn{5}{c}{\textbf{male-biased genes}}\\

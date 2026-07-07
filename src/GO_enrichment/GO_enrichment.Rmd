@@ -83,6 +83,7 @@ nonsig_AX_contrast <- make_contrasts_for_AvsX(background_excl = nonsig_geneIDs_A
 sig_AX_contrast <- make_contrasts_for_AvsX(background_excl = sig_geneIDs_A, foreground = sig_geneIDs_X)
 A_sig_contrast <- make_contrasts_for_AvsX(background_excl = nonsig_geneIDs_A, foreground = sig_geneIDs_A)
 X_sig_contrast <- make_contrasts_for_AvsX(background_excl = nonsig_geneIDs_X, foreground = sig_geneIDs_X)
+all_sig_contrast <- make_contrasts_for_AvsX(background_excl = nonsig_geneIDs, foreground = sig_geneIDs)
 ```
 
 prepare eggnog annotation file
@@ -126,12 +127,14 @@ sig_AX_enriched_GOs <- GO_enrichment_analysis(geneList = sig_AX_contrast, annota
 ### sig to nonsig comparison
 A_sig_enriched_GOs <- GO_enrichment_analysis(geneList = A_sig_contrast, annotation_df = gene2GO)
 X_sig_enriched_GOs <- GO_enrichment_analysis(geneList = X_sig_contrast, annotation_df = gene2GO)
+all_sig_enriched_GOs <- GO_enrichment_analysis(geneList = all_sig_contrast, annotation_df = gene2GO)
 
 write.csv(all_AX_enriched_GOs, "/Users/miltr339/work/PhD_code/PhD_chapter3/data/GO_enrichment/all_AX_enriched_GOs_revision.csv", row.names=TRUE)
 write.csv(nonsig_AX_enriched_GOs, "/Users/miltr339/work/PhD_code/PhD_chapter3/data/GO_enrichment/nonsig_AX_enriched_GOs_revision.csv", row.names=TRUE)
 write.csv(sig_AX_enriched_GOs, "/Users/miltr339/work/PhD_code/PhD_chapter3/data/GO_enrichment/sig_AX_enriched_GOs_revision.csv", row.names=TRUE)
 write.csv(A_sig_enriched_GOs, "/Users/miltr339/work/PhD_code/PhD_chapter3/data/GO_enrichment/A_sig_enriched_GOs_revision.csv", row.names=TRUE)
 write.csv(X_sig_enriched_GOs, "/Users/miltr339/work/PhD_code/PhD_chapter3/data/GO_enrichment/X_sig_enriched_GOs_revision.csv", row.names=TRUE)
+write.csv(all_sig_enriched_GOs, "/Users/miltr339/work/PhD_code/PhD_chapter3/data/GO_enrichment/all_sig_enriched_GOs_revision.csv", row.names=TRUE)
 ```
 
 # Try semantic clustering with Viseago
