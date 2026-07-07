@@ -261,7 +261,7 @@ def make_boxplot_both_tissues(data_dict:dict, outfile:str, tissue:str):
         # add_significance_bar_log(ax=ax, x1=tickpos[0], x2=tickpos[2], sample1=samples_sorted_keys[0], sample2=samples_sorted_keys[2], data=data_dict, y=y0 * 50)
         # add_significance_bar_log(ax=ax, x1=tickpos[4], x2=tickpos[6], sample1=samples_sorted_keys[4], sample2=samples_sorted_keys[6], data=data_dict, y=y0 * 50)
 
-        ax.set_ylim(0,y0*100)
+        ax.set_ylim(0,y0*20)
         
 
 
