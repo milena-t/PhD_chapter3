@@ -253,18 +253,14 @@ SRR3113348, SRR3113384, SRR3113350, SRR3113385, SRR3113352, SRR3113386, SRR31134
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.49\linewidth]{../data/GO_enrichment/geneID_overlap_Venn_A.png}
-    \includegraphics[width=0.49\linewidth]{../data/GO_enrichment/geneID_overlap_Venn_A_pos_sel_genes.png}
-    \caption{Overlap of A-linked orthologs from \textit{C. maculatus} identified in all three \textit{Bruchini} pairwise comparisons (left) 
-    and same for subset that is positively selected (right)}
+    \includegraphics[width=0.75\linewidth]{../data/GO_enrichment/geneID_overlap_Venn_A.png}
+    \caption{Overlap of A-linked orthologs from \textit{C. maculatus} identified in all three \textit{Bruchini} pairwise comparisons}
     \label{SIfig:GO_venn_A}
 \end{figure}
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.49\linewidth]{../data/GO_enrichment/geneID_overlap_Venn_X.png}
-    \includegraphics[width=0.49\linewidth]{../data/GO_enrichment/geneID_overlap_Venn_X_pos_sel_genes.png}
-    \caption{Overlap of X-linked orthologs from \textit{C. maculatus} identified in all three \textit{Bruchini} pairwise comparisons (left) 
-    and same for subset that is positively selected (right)}
+    \includegraphics[width=0.75\linewidth]{../data/GO_enrichment/geneID_overlap_Venn_X.png}
+    \caption{Overlap of X-linked orthologs from \textit{C. maculatus} identified in all three \textit{Bruchini} pairwise comparisons}
     \label{SIfig:GO_venn_X}
 \end{figure}
 
@@ -388,7 +384,7 @@ SRR3113348, SRR3113384, SRR3113350, SRR3113385, SRR3113352, SRR3113386, SRR31134
     Percentages and absolute counts of genes in each ortholog age category are shown for pairwise comparisons between 
     \textit{C. maculatus} and \textit{C. chinensis}, \textit{B. siliquastri}, and \textit{A. obtectus}. 
     Age categories are defined relative to \textit{C. maculatus} orthologs. and therefore the minimum detectable age category differs among comparisons, 
-    with \textit{B. siliquastri} and \textit{A. obtectus} comparisons starting at categories 2 and 3, respectively.}
+    with \textit{B. siliquastri} and \textit{A. obtectus} comparisons starting at categories 2 and 3, respectively. The last row shows the results of a proportion test for age 5 orhtologs on X and A.}
     \label{SItab:conservation}
     \begin{tabular}{c |c | c}
         \multicolumn{3}{c}{\textit{C. chinensis}}\\
@@ -406,6 +402,12 @@ SRR3113348, SRR3113384, SRR3113350, SRR3113385, SRR3113352, SRR3113386, SRR31134
         \hline
         5 & 61.829\% (5836) & 81.844\% (284)\\
         \hline
+        \hline
+        & \multicolumn{2}{c}{two-proportion Z-test}\\
+        \hline
+        4 & $Z = 4.4597$ & $p < 0.0001$ \\
+        \hline
+        5 & $Z = -7.5654$ & $p < 0.0001$ \\
     \end{tabular}
     \hspace{1cm}
     \begin{tabular}{c |c | c}
@@ -424,6 +426,12 @@ SRR3113348, SRR3113384, SRR3113350, SRR3113385, SRR3113352, SRR3113386, SRR31134
         \hline
         5 & 63.978\% (5815) & 81.538\% (318)\\
         \hline
+        \hline
+        & \multicolumn{2}{c}{two-proportion Z-test}\\
+        \hline
+        4 & $Z = 4.9481$ & $p < 0.0001$ \\
+        \hline
+        5 & $Z = -7.1081$ & $p < 0.0001$ \\
     \end{tabular}
     \begin{tabular}{c |c | c}
         \multicolumn{3}{c}{\textit{A. obtectus}}\\
@@ -441,6 +449,12 @@ SRR3113348, SRR3113384, SRR3113350, SRR3113385, SRR3113352, SRR3113386, SRR31134
         \hline
         5 & 62.694\% (5818) & 82.609\% (323)\\
         \hline
+        \hline
+        & \multicolumn{2}{c}{two-proportion Z-test}\\
+        \hline
+        4 & $Z = 5.0115$ & $p < 0.0001$ \\
+        \hline
+        5 & $Z = -8.0125$ & $p < 0.0001$ \\
     \end{tabular}
 \end{table}
 

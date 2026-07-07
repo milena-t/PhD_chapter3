@@ -7,6 +7,7 @@ from tqdm import tqdm
 import ast
 import matplotlib.pyplot as plt
 from matplotlib.ticker import FuncFormatter
+import statsmodels.api as sm
 
 def in_paths(username="miltr339"):
     files_dir=f"/Users/{username}/work/chapter3/revision_tests"
@@ -659,7 +660,19 @@ def plot_pos_sel_ages_barplot(full_table_paths_dict:dict, outfile:str):
     print(f"plot saved in current working directory as: {outfile}")
     
 
-
+def Z_test(pos_counts, all_counts):
+    """
+    Assume that the 0-index is X and 1 is A
+    """
+    if "X" in pos_counts:
+        pos_counts = np.array([i for i in pos_counts.values()])
+        all_counts = np.array([i for i in all_counts.values()])
+    stat, pval = sm.stats.proportions_ztest(pos_counts, all_counts)
+    X_prop = 100*pos_counts[0]/all_counts[0]
+    A_prop = 100*pos_counts[1]/all_counts[1]
+    print(f"X: {pos_counts[0]}/{all_counts[0]} = {X_prop:.2f}%")
+    print(f"A: {pos_counts[1]}/{all_counts[1]} = {A_prop:.2f}%")
+    print(f"two-proportion Z-test:\nZ-statistic = {stat:.4f}, p-value = {pval}")
 
 
 if __name__ == "__main__":
@@ -677,6 +690,40 @@ if __name__ == "__main__":
         bootstrap_pos_sel(X_data={"pos_sel" : 6 , "non_pos_sel" : 268}, A_data={"pos_sel" : 60 , "non_pos_sel" : 1881}, num_permutations=10000)
         # M7 vs. M8
         bootstrap_pos_sel(X_data={"pos_sel" : 74 , "non_pos_sel" : 200}, A_data={"pos_sel" : 1675 , "non_pos_sel" : 4826}, num_permutations=10000)
+    if False:
+        # do Z-test for pos sel
+        X_data={"pos_sel" : 74 , "non_pos_sel" : 200}
+        A_data={"pos_sel" : 1675 , "non_pos_sel" : 4826}
+        pos_sel = np.array([X_data["pos_sel"],A_data["pos_sel"]])
+        all_orthologs = np.array([X_data["pos_sel"]+X_data["non_pos_sel"], A_data["pos_sel"]+A_data["non_pos_sel"]])
+        Z_test(pos_counts=pos_sel, all_counts=all_orthologs)
+    if True:
+        # Z-test for enrichment of older orhtologs
+        print(f"\nZ-test chinensis age rank 5 on X")
+        chinensis_5 = {"A" : 5836, "X": 284}
+        chinensis_all = {"A" : 9439, "X": 347}
+        Z_test(pos_counts=chinensis_5, all_counts=chinensis_all)
+        print(f"\nZ-test siliquastri age rank 5 on X")
+        siliquastri_5 = {"A" : 5815, "X": 318}
+        siliquastri_all = {"A" : 9090, "X": 390}
+        Z_test(pos_counts=siliquastri_5, all_counts=siliquastri_all)
+        print(f"\nZ-test obtectus age rank 5 on X")
+        obtectus_5 = {"A" : 5818, "X": 323}
+        obtectus_all = {"A" : 9280, "X": 391}
+        Z_test(pos_counts=obtectus_5, all_counts=obtectus_all)
+        print(f"----------------------------------------------------")
+        print(f"\nZ-test chinensis age rank 4 on X")
+        chinensis_5 = {"A" : 2190, "X": 45}
+        chinensis_all = {"A" : 9439, "X": 347}
+        Z_test(pos_counts=chinensis_5, all_counts=chinensis_all)
+        print(f"\nZ-test siliquastri age rank 4 on X")
+        siliquastri_5 = {"A" : 2091, "X": 48}
+        siliquastri_all = {"A" : 9090, "X": 390}
+        Z_test(pos_counts=siliquastri_5, all_counts=siliquastri_all)
+        print(f"\nZ-test obtectus age rank 4 on X")
+        obtectus_5 = {"A" : 2173, "X": 49}
+        obtectus_all = {"A" : 9280, "X": 391}
+        Z_test(pos_counts=obtectus_5, all_counts=obtectus_all)
     
     four_way_ortholog_IDs=f"/Users/{username}/work/pairwise_blast_chapter_2_3/brh_tables/bruchini_orthologs.csv"
     four_way_pos_sel=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/site_classes_bruchini_all_orthologs_pos_sel_no_err.txt"
@@ -741,7 +788,7 @@ if __name__ == "__main__":
         make_Cmac_pos_sel_IDs_list(four_way_orthologs_IDs = four_way_ortholog_IDs, four_way_pos_sel = four_way_pos_sel_beta, 
         outfile_prefix = f"/Users/{username}/work/PhD_code/PhD_chapter3/data/GO_enrichment/bruchini_site_model_beta_Cmac_geneIDs")
 
-    if True:
+    if False:
         # plot barplot for proportion of positive selection for each age rank (3,4,5)
         username = "miltr339"
         full_table_paths_dict = lfc_func.get_full_table_path(username=username)
