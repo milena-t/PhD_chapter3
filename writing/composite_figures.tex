@@ -57,7 +57,7 @@
 
 % pdflatex -pdf composite_figures.tex
 
-
+% pdftoppm -png -r 300 composite_figures.pdf composite_figure_revision
 
 
 \begin{figure}[H]
@@ -98,10 +98,10 @@
     \end{subfigure}
     
     
-    \caption{\textbf{d$_N$/d$_S$ and abundance of positively selected (pos. sel.) genes.} 
-    \textit{Violin plots}: Pairwise comparisons between members of three species groups with violin plots of d$_N$/d$_S$ values 
-    for X-linked and autosomal 1-to-1 orthologs. Permutation tests (n=10000, visualized with histograms, pink line shows measured median difference) 
-    show that d$_N$/d$_S$ is significantly lower for X-linked orthologs in all comparisons within \textit{Bruchini} (\textbf{A}), 
+    \caption{\textbf{$dN$/$dS$ of autosomal (A) and X-linked (X) genes} 
+    Pairwise comparisons between members of three species groups with violin plots of $dN$/$dS$ values for X-linked and autosomal 
+    1-to-1 orthologs. Permutation tests (n=10000, visualized with histograms, pink line shows measured median difference) 
+    show that $dN$/$dS$ is significantly lower for X-linked orthologs in all comparisons within \textit{Bruchini} (\textbf{A}), 
     \textit{Coccinella} (\textbf{B}), and \textit{Tribolium} (\textbf{C}). 
     }\label{dS_plots}
     
@@ -116,9 +116,9 @@
     \includegraphics[width=0.33\textwidth]{../data/DE_analysis/dNdS_vs_conservation_rank_all_comparisons.png}
 
 \caption{\textbf{Gene age}: Pairwise comparisons of \textit{C. maculatus} with \textit{A. obtectus}, \textit{B. siliquastri} and \textit{C. chinensis} respectively. 
-    X-axes ticks show sample size in parentheses, as well as gene age (less conserved orthologs of age 1 to most conserved orthologs of age 5), 
-    and autosomal or X-linkage of orthologs (A or X). The box plots show d$_N$/d$_S$ for autosomal (yellow)
-    or X-linked (red) orthologs by gene age for \textit{C. maculatus} compared to three other textit{Bruchini} species.}
+    The X-axis shows sample size in parentheses, as well as gene age (less conserved orthologs of age 1 to most conserved orthologs of age 5), 
+    and autosomal or X-linkage of orthologs (A or X). The box plots show $dN$/$dS$ for autosomal (yellow)
+    or X-linked (red) orthologs by gene age for \textit{C. maculatus} compared to three other \textit{Bruchini} species.}
 \end{figure}
 
 
@@ -157,9 +157,9 @@
     \end{overpic}
 \hfill
     
-    \caption{\textbf{Impact of gene age and sex-bias on d$_N$d$_S$ and positively selected genes}: X-axes ticks show sample size in parentheses, as well as 
+    \caption{\textbf{Impact of gene age and sex-bias on $dN$/$dS$ and positively selected genes}: X-axes ticks show sample size in parentheses, as well as 
     gene age from less conserved orthologs (age 1) to highly conserved orthologs (age 5), or autosomal or X-linkage of orthologs (A or X). 
-    (\textbf{A},\textbf{B}): median d$_N$d$_S$ and standard error of autosomal orthologs, split by gene age as well as sex-bias 
+    (\textbf{A},\textbf{B}): median $dN$/$dS$ and standard error of autosomal orthologs, split by gene age as well as sex-bias 
     category according to abdominal tissues with male-bias being blue, unbiased being grey and female-biased being red. 
     (A): autosomal, (B): X-linked. 
     }

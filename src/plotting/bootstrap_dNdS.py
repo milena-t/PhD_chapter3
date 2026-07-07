@@ -131,10 +131,10 @@ def plot_dNdS_permutations(boot_diff:dict, measure_diff:dict, A_dict:dict, X_dic
         # put this here before otherwise the last row/col label never gets reached
         if row == len(species_list)-1:
             species1_lab = species1.replace("_", ". ")
-            axes[row,row].text(0.1,0.4,f"{species1_lab}", fontsize = fs*1.4)
+            axes[row,row].text(0.1,0.4,f"\\textit{{{species1_lab}}}", fontsize = fs*1.4)
         if col == len(species_list)-1:
             species2_lab = species2.replace("_", ". ")
-            axes[col,col].text(0.1,0.4,f"{species2_lab}", fontsize = fs*1.4)
+            axes[col,col].text(0.1,0.4,f"\\textit{{{species2_lab}}}", fontsize = fs*1.4)
 
         # only do top right matrix
         if row>col:
@@ -151,7 +151,7 @@ def plot_dNdS_permutations(boot_diff:dict, measure_diff:dict, A_dict:dict, X_dic
         if row not in diagonals_done:
             axes[row,row+1].set_xlabel(hist_label, fontsize = fs)
             # axes[row,row].text(0.8,0.2,f"{species1_lab}", rotation = 90, fontsize = fs*1.3)
-            axes[row,row].text(0.1,0.4,f"{species1_lab}", fontsize = fs*1.4)
+            axes[row,row].text(0.1,0.4,f"\\textit{{{species1_lab}}}", fontsize = fs*1.4)
             diagonals_done.append(row)
         
         ### plot bootstraps
@@ -226,7 +226,7 @@ def plot_dNdS_permutations(boot_diff:dict, measure_diff:dict, A_dict:dict, X_dic
 
         print(f"{row}, {col} : {species1_lab} vs. {species2_lab} --> mean(dNdS_A)-mean(dNdS_X) bootstrap: {mean_boot:.5f}, measured: {measure_diff[pair]:.3f}")
 
-    fig.suptitle(f"Bruchini: A and X dNdS violin plot and permutation test\n ", fontsize = fs*1.5)
+    fig.suptitle(f"\\textit{{Bruchini}}: A and X dNdS violin plot and permutation test\n ", fontsize = fs*1.5)
     # Adjust layout to prevent overlap  (left, bottom, right, top)
     plt.tight_layout(rect=[0.01, 0, 1, 1])
 
@@ -284,7 +284,7 @@ def plot_dNdS_permutations_one_pair(boot_diff:dict, measure_diff:dict, A_dict:di
 
         species1_lab = species1.replace("_", ". ")
         species2_lab = species2.replace("_", ". ")
-        fig.suptitle(f"{species1_lab} vs. {species2_lab}: \nA and X dNdS violin plot and permutation test", fontsize = fs*1.25)
+        fig.suptitle(f"\\textit{{{species1_lab}}} vs. \\textit{{{species2_lab}}}: \nA and X dNdS violin plot and permutation test", fontsize = fs*1.25)
         
         ### plot bootstraps
 
@@ -627,7 +627,7 @@ if __name__ == """__main__""":
         species_excl = ["D_carinulata", "D_sublineata", "T_castaneum", "T_freemani", "C_septempunctata", "C_magnifica"]
         filename =f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/fastX_permutation_bruchini.png"
     # coccinella
-    elif True:
+    elif False:
         species_excl = ["D_carinulata", "D_sublineata", "T_castaneum", "T_freemani", "B_siliquastri", "A_obtectus", "C_maculatus", "C_chinensis"]
         filename =f"/Users/{username}/work/PhD_code/PhD_chapter3/data/fastX_ortholog_ident/fastX_permutation_coccinella.png"
     # tribolium
@@ -646,7 +646,7 @@ if __name__ == """__main__""":
     bootstraps = { pair : [] for pair in pairs_list}
     median_diffs = {pair : np.nan for pair in pairs_list}
 
-    if False:
+    if True:
         ### test with 100, takes a bit of time otherwise
         ### actual analysis with 10000
         num_permutations = 10000
