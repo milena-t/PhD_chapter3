@@ -697,7 +697,7 @@ if __name__ == "__main__":
         pos_sel = np.array([X_data["pos_sel"],A_data["pos_sel"]])
         all_orthologs = np.array([X_data["pos_sel"]+X_data["non_pos_sel"], A_data["pos_sel"]+A_data["non_pos_sel"]])
         Z_test(pos_counts=pos_sel, all_counts=all_orthologs)
-    if True:
+    if False:
         # Z-test for enrichment of older orhtologs
         print(f"\nZ-test chinensis age rank 5 on X")
         chinensis_5 = {"A" : 5836, "X": 284}
@@ -724,6 +724,31 @@ if __name__ == "__main__":
         obtectus_5 = {"A" : 2173, "X": 49}
         obtectus_all = {"A" : 9280, "X": 391}
         Z_test(pos_counts=obtectus_5, all_counts=obtectus_all)
+    if True:
+        # Z-test for sex bias
+        all_ht = {"A" : 1302+784+8812, "X": 29+21+389}
+        male_ht = {"A" : 1302, "X": 29}
+        female_ht = {"A" : 784, "X": 21}
+        unb_ht = {"A" : 8812, "X": 389}
+        print(f"Z-statistics head+thorax (somatic)")
+        print(f"sex_bias: male")    
+        Z_test(pos_counts=male_ht, all_counts=all_ht)
+        print(f"sex_bias: female")    
+        Z_test(pos_counts=female_ht, all_counts=all_ht)
+        print(f"sex_bias: unbiased")    
+        Z_test(pos_counts=unb_ht, all_counts=all_ht)
+        print(f"----------------------------------------------------")
+        all_a = {"A" : 3186+2681+5031, "X": 79+112+248}
+        male_a = {"A" : 3186, "X": 79}
+        female_a = {"A" : 2681, "X": 112}
+        unb_a = {"A" : 5031, "X": 248}
+        print(f"Z-statistics abdomen (reproductive)")
+        print(f"sex_bias: male")    
+        Z_test(pos_counts=male_a, all_counts=all_a)
+        print(f"sex_bias: female")    
+        Z_test(pos_counts=female_a, all_counts=all_a)
+        print(f"sex_bias: unbiased")    
+        Z_test(pos_counts=unb_a, all_counts=all_a)
     
     four_way_ortholog_IDs=f"/Users/{username}/work/pairwise_blast_chapter_2_3/brh_tables/bruchini_orthologs.csv"
     four_way_pos_sel=f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/paml_summary_tables/site_classes_bruchini_all_orthologs_pos_sel_no_err.txt"

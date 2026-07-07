@@ -408,15 +408,19 @@ def statistical_analysis_pos_sel(full_table_paths_dict, table_outfile = "pos_sel
                     table_out.write(f"\n\n------------>\nLIKELIHOOD RATIO TESTS\n")
                     table_out.write(f"\nTEST1: [{formula_no}] vs. [{formula_noint}]\n")
                     lr_stat_1_2, p_value_1_2, df_diff_1_2 = chisq_LRT(model_big=test1,model_small= test2)
+                    table_out.write(f"AICs: {aic1:.2f} and {aic2:2f}\n")
                     table_out.write(f"LR stat = {lr_stat_1_2:.4f}, p-val = {p_value_1_2:.4f}, df = {df_diff_1_2}\n")
 
-                    table_out.write(f"\nTEST2: [{formula_no}] vs. [{formula_nochr}]\n")
-                    lr_stat_1_4, p_value_1_4, df_diff_1_4 = chisq_LRT(model_big=test1,model_small= test4)
-                    table_out.write(f"LR stat = {lr_stat_1_4:.4f}, p-val = {p_value_1_4:.4f}, df = {df_diff_1_4}\n")
+                    table_out.write(f"\nTEST2: [{formula_noint}] vs. [{formula_nono}]\n")
+                    lr_stat_2_3, p_value_2_3, df_diff_2_3 = chisq_LRT(model_big=test2,model_small= test3)
+                    table_out.write(f"AICs: {aic2:.2f} and {aic3:2f}\n")
+                    table_out.write(f"LR stat = {lr_stat_2_3:.4f}, p-val = {p_value_2_3:.4f}, df = {df_diff_2_3}\n")
 
-                    table_out.write(f"\nTEST3: [{formula_no}] vs. [{formula_nono}]\n")
-                    lr_stat_1_3, p_value_1_3, df_diff_1_3 = chisq_LRT(model_big=test1,model_small= test3)
-                    table_out.write(f"LR stat = {lr_stat_1_3:.4f}, p-val = {p_value_1_3:.4f}, df = {df_diff_1_3}\n")
+                    table_out.write(f"\nTEST3: [{formula_noint}] vs. [{formula_nochr}]\n")
+                    lr_stat_2_4, p_value_2_4, df_diff_2_4 = chisq_LRT(model_big=test2,model_small= test4)
+                    table_out.write(f"AICs: {aic2:.2f} and {aic4:2f}\n")
+                    table_out.write(f"LR stat = {lr_stat_2_4:.4f}, p-val = {p_value_2_4:.4f}, df = {df_diff_2_4}\n")
+
 
 
                 print(f"--------> outfile no sex bias written to: {table_outfile_species_noexpr}")

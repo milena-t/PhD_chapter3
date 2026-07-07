@@ -6,8 +6,8 @@ Formula: positive_selection ~ C(chromosome) * C(level_most_dist_ortholog)
 Dep. Variable:     positive_selection   No. Observations:                 6744
 Model:                          Logit   Df Residuals:                     6738
 Method:                           MLE   Df Model:                            5
-Date:                Mon, 06 Jul 2026   Pseudo R-squ.:                0.001752
-Time:                        15:06:57   Log-Likelihood:                -3844.9
+Date:                Tue, 07 Jul 2026   Pseudo R-squ.:                0.001752
+Time:                        12:42:57   Log-Likelihood:                -3844.9
 converged:                      False   LL-Null:                       -3851.6
 Covariance Type:            nonrobust   LLR p-value:                   0.01913
 =======================================================================================================================
@@ -29,8 +29,8 @@ Formula: positive_selection ~ C(chromosome) + C(level_most_dist_ortholog)
 Dep. Variable:     positive_selection   No. Observations:                 6744
 Model:                          Logit   Df Residuals:                     6740
 Method:                           MLE   Df Model:                            3
-Date:                Mon, 06 Jul 2026   Pseudo R-squ.:                0.001191
-Time:                        15:06:57   Log-Likelihood:                -3847.0
+Date:                Tue, 07 Jul 2026   Pseudo R-squ.:                0.001191
+Time:                        12:42:57   Log-Likelihood:                -3847.0
 converged:                       True   LL-Null:                       -3851.6
 Covariance Type:            nonrobust   LLR p-value:                   0.02703
 ====================================================================================================
@@ -51,8 +51,8 @@ Formula: positive_selection ~ C(chromosome)
 Dep. Variable:     positive_selection   No. Observations:                 6744
 Model:                          Logit   Df Residuals:                     6742
 Method:                           MLE   Df Model:                            1
-Date:                Mon, 06 Jul 2026   Pseudo R-squ.:               1.352e-05
-Time:                        15:06:57   Log-Likelihood:                -3851.6
+Date:                Tue, 07 Jul 2026   Pseudo R-squ.:               1.352e-05
+Time:                        12:42:57   Log-Likelihood:                -3851.6
 converged:                       True   LL-Null:                       -3851.6
 Covariance Type:            nonrobust   LLR p-value:                    0.7469
 ======================================================================================
@@ -71,8 +71,8 @@ Formula: positive_selection ~ C(level_most_dist_ortholog)
 Dep. Variable:     positive_selection   No. Observations:                 6744
 Model:                          Logit   Df Residuals:                     6741
 Method:                           MLE   Df Model:                            2
-Date:                Mon, 06 Jul 2026   Pseudo R-squ.:                0.001183
-Time:                        15:06:57   Log-Likelihood:                -3847.1
+Date:                Tue, 07 Jul 2026   Pseudo R-squ.:                0.001183
+Time:                        12:42:57   Log-Likelihood:                -3847.1
 converged:                       True   LL-Null:                       -3851.6
 Covariance Type:            nonrobust   LLR p-value:                   0.01050
 ====================================================================================================
@@ -89,10 +89,13 @@ AIC4: 7700.1365
 LIKELIHOOD RATIO TESTS
 
 TEST1: [positive_selection ~ C(chromosome) * C(level_most_dist_ortholog)] vs. [positive_selection ~ C(chromosome) + C(level_most_dist_ortholog)]
+AICs: 7701.75 and 7702.071981
 LR stat = 4.3213, p-val = 0.1152, df = 2.0
 
-TEST2: [positive_selection ~ C(chromosome) * C(level_most_dist_ortholog)] vs. [positive_selection ~ C(level_most_dist_ortholog)]
-LR stat = 4.3859, p-val = 0.2227, df = 3.0
+TEST2: [positive_selection ~ C(chromosome) + C(level_most_dist_ortholog)] vs. [positive_selection ~ C(chromosome)]
+AICs: 7702.07 and 7707.144415
+LR stat = 9.0724, p-val = 0.0107, df = 2.0
 
-TEST3: [positive_selection ~ C(chromosome) * C(level_most_dist_ortholog)] vs. [positive_selection ~ C(chromosome)]
-LR stat = 13.3938, p-val = 0.0095, df = 4.0
+TEST3: [positive_selection ~ C(chromosome) + C(level_most_dist_ortholog)] vs. [positive_selection ~ C(level_most_dist_ortholog)]
+AICs: 7702.07 and 7700.136546
+LR stat = 0.0646, p-val = 0.7994, df = 1.0

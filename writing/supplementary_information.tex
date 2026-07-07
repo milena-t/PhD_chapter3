@@ -529,54 +529,29 @@ SRR3113348, SRR3113384, SRR3113350, SRR3113385, SRR3113352, SRR3113386, SRR31134
     \end{tabular}
 \end{table}
 
-\iffalse
-
-\subsubsection*{logistic regression}
+\subsubsection*{Logistic regression}
 
 \begin{table}[H]
     \centering
-    \caption{Logistic regression results for the model \texttt{pos. sel. $\sim$ chromosome + gene age}. 
-    The intercept corresponds to autosomal genes in gene-age category 1 (reference level). 
-    Positive coefficients for the chromosome term indicate an increased probability of positive selection among X-linked genes.}
+    \caption{logistic regression results for the model \texttt{positive selection $\sim$ gene age}. 
+    The intercept corresponds to autosomal genes that are \textit{Bruchini}-exclusive (age$\leq$3), with age 4 being restricted to 
+    \textit{Coleoptera}, and age 5 being conserved up to \textit{Diptera}. Gene age 4 and 5 show a significant increase in the proporiton 
+    of positively selected genes compared to the intercept.}
     \label{SItab:conservation}
     \begin{tabular}{c |c | c|c}
-        \multicolumn{3}{c}{\textit{C. chinensis} (df=1)}\\
-        \hline
         Main effect & coefficient & z-statistic & p-value \\
         \hline
         \hline
-        Intercept & -1.7839 & -58.616 & 0.000 \\
+        Intercept & -1.3576 & -12.465 & 0.000\\
         \hline
-        chromosome:X & 0.5665 & 4.172 & 0.000 \\
+        gene age:4 &  0.3555 &   2.853 & 0.004\\
         \hline
-    \end{tabular}
-    \hspace{0.5cm}
-    \begin{tabular}{c |c | c|c}
-        \multicolumn{3}{c}{\textit{B. siliquastri} (df=1)}\\
-        \hline
-        Main effect & coefficient & z-statistic & p-value \\
-        \hline
-        \hline
-        Intercept & -2.4419 & -63.107 & 0.000 \\
-        \hline
-        chromosome:X & 0.4108 & 2.517  & 0.012 \\
-        \hline
-    \end{tabular}
-    \hspace{0.5cm}
-    \begin{tabular}{c |c | c| c}
-        \multicolumn{3}{c}{\textit{A. obtectus} (df=1)}\\
-        \hline
-        Main effect & coefficient & z-statistic & p-value \\
-        \hline
-        \hline
-        Intercept & -3.1106 & -60.565 & 0.000 \\
-        \hline
-        chromosome:X & 0.7266 & 3.844 & 0.000 \\
+        gene age:5 &  0.3163 &   2.781 & 0.005\\
         \hline
     \end{tabular}
 \end{table}
 
-\fi
+
 
 % \subsection*{Additional differential expression analyses}
 
