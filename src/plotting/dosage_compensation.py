@@ -10,7 +10,7 @@ import scipy.stats as sts
 from statannotations.Annotator import Annotator
 
 
-username="milena"
+username="miltr339"
 
 rpkm_norm_counts = f"/Users/{username}/work/PhD_code/PhD_chapter3/data/DE_analysis/Cmac_gene_counts_edgeR_rpkm_length_normalized.txt"
 Cmac_annotation = f"/Users/{username}/work/native_annotations/all_native_annot/C_maculatus_superscaffolded_LomeRNA_braker_isoform_filtered.gff"
@@ -258,10 +258,10 @@ def make_boxplot_both_tissues(data_dict:dict, outfile:str, tissue:str):
         add_significance_bar_log(ax=ax, x1=tickpos[4], x2=tickpos[5], sample1=samples_sorted_keys[4], sample2=samples_sorted_keys[5], data=data_dict, y=y0 * 2)
         add_significance_bar_log(ax=ax, x1=tickpos[6], x2=tickpos[7], sample1=samples_sorted_keys[6], sample2=samples_sorted_keys[7], data=data_dict, y=y0 * 2)
         
-        add_significance_bar_log(ax=ax, x1=tickpos[0], x2=tickpos[2], sample1=samples_sorted_keys[0], sample2=samples_sorted_keys[2], data=data_dict, y=y0 * 50)
-        add_significance_bar_log(ax=ax, x1=tickpos[4], x2=tickpos[6], sample1=samples_sorted_keys[4], sample2=samples_sorted_keys[6], data=data_dict, y=y0 * 50)
+        # add_significance_bar_log(ax=ax, x1=tickpos[0], x2=tickpos[2], sample1=samples_sorted_keys[0], sample2=samples_sorted_keys[2], data=data_dict, y=y0 * 50)
+        # add_significance_bar_log(ax=ax, x1=tickpos[4], x2=tickpos[6], sample1=samples_sorted_keys[4], sample2=samples_sorted_keys[6], data=data_dict, y=y0 * 50)
 
-        ax.set_ylim(0,y0*1000)
+        ax.set_ylim(0,y0*100)
         
 
 
