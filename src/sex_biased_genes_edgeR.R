@@ -11,7 +11,22 @@ if (FALSE){
   install.packages("tidyverse") 
   install.packages("gtable") 
 }
+
 library(tidyverse)
+
+if (TRUE){
+  ## if tidyverse doesn't work load these instead
+library(dplyr)
+library(tidyr)
+library(readr)
+library(purrr)
+library(tibble)
+library(stringr)
+library(forcats)
+library(lubridate)
+}
+
+
 library(ggplot2)
 library(edgeR)
 library(dplyr)
